@@ -67,6 +67,10 @@ class ArrayLoader implements LoaderInterface
                 $scenario->key($data['options']['key']);
             }
 
+            if (isset($data['options']['endpoint'])) {
+                $scenario->endpoint($data['options']['endpoint']);
+            }
+
             if (isset($data['options']['values'])) {
                 foreach ($data['options']['values'] as $key => $value) {
                     $scenario->value($key, $value);

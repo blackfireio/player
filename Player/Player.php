@@ -187,9 +187,7 @@ class Player
     private function getRequestFactory()
     {
         if (null === $this->requestFactory) {
-            $baseUri = $this->clients[0]->getConfig('base_uri');
-
-            $this->requestFactory = new RequestFactory($this->getLanguage(), $baseUri);
+            $this->requestFactory = new RequestFactory($this->getLanguage());
         }
 
         return $this->requestFactory;

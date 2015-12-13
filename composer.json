@@ -22,7 +22,8 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "blackfire/php-sdk": "^1.4.7",
+        "blackfire/php-sdk": "^1.5.1",
+        "symfony/console": "^2.7",
         "symfony/yaml": "^2.7",
         "mtdowling/jmespath.php": "^2.2"
     },
