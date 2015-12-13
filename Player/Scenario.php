@@ -22,6 +22,7 @@ class Scenario
     private $root;
     private $key;
     private $values;
+    private $endpoint;
 
     public function __construct($title = null, array $values = array())
     {
@@ -47,9 +48,9 @@ class Scenario
             throw new LogicException('Unable to add an empty scenario.');
         }
 
-        $this->root = clone $step;
+        $scenario->getRoot()->copyDefaults($this->root);
 
-        return $this->root->getLast();
+        return $this->root = $scenario->getRoot();
     }
 
     public function header($key, $value)
@@ -69,6 +70,13 @@ class Scenario
     public function delay($delay)
     {
         $this->root->setDefaultDelay($delay);
+
+        return $this;
+    }
+
+    public function endpoint($endpoint)
+    {
+        $this->root->setEndpoint($endpoint);
 
         return $this;
     }

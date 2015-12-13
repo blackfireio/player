@@ -27,7 +27,8 @@ class Step
     private $method;
     private $defaultHeaders = [];
     private $removedHeaders = [];
-    private $defaultDelay = null;
+    private $defaultDelay;
+    private $endpoint;
     private $headers = [];
     private $linkSelector;
     private $formSelector;
@@ -36,7 +37,7 @@ class Step
     private $extractions = [];
     private $title = '';
     private $follow = false;
-    private $delay = null;
+    private $delay;
     private $json = false;
     private $next;
 
@@ -59,9 +60,21 @@ class Step
             throw new LogicException('Unable to add an empty scenario.');
         }
 
-        $this->rootStep = clone $step;
+        if ($this->root) {
+            throw new LogicException('Unable to add a scenario at the root step.');
+        }
 
-        return $this->rootStep->getLast();
+        $this->next = $scenario->getRoot();
+
+        // re-index steps
+        $step = $this->next;
+        $index = $this->index;
+        while ($step) {
+            $step->index = ++$index;
+            $step = $step->next;
+        }
+
+        return $this->next->getLast();
     }
 
     public function visit($uri, $method = 'GET', $values = [])
@@ -194,14 +207,7 @@ class Step
             return;
         }
 
-        // propagate defaults
-        $this->next->defaultHeaders = $this->defaultHeaders;
-        $this->next->defaultDelay = $this->defaultDelay;
-
-        // propagate default delay
-        if (null !== $this->defaultDelay && null === $this->next->delay) {
-            $this->next->delay = $this->defaultDelay;
-        }
+        $this->next->copyDefaults($this);
 
         return $this->next;
     }
@@ -209,6 +215,18 @@ class Step
     public function getIndex()
     {
         return $this->index;
+    }
+
+    /**
+     * @internal
+     */
+    public function setEndpoint($endpoint)
+    {
+        if (!$this->root) {
+            throw new LogicException('Endpoint can only be set on root steps.');
+        }
+
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -241,6 +259,11 @@ class Step
     public function setDefaultAuth($username, $password)
     {
         $this->setDefaultHeader('Authorization', $this->generateAuthorizationHeader($username, $password));
+    }
+
+    public function getEndpoint()
+    {
+        return $this->endpoint;
     }
 
     public function getHeaders()
@@ -336,6 +359,22 @@ class Step
         }
 
         return $this->next->getLast();
+    }
+
+    /**
+     * @internal
+     */
+    public function copyDefaults(Step $from)
+    {
+        // propagate defaults
+        $this->defaultHeaders = $from->defaultHeaders;
+        $this->defaultDelay = $from->defaultDelay;
+        $this->endpoint = $from->endpoint;
+
+        // propagate default delay
+        if (null !== $from->defaultDelay && null === $this->delay) {
+            $this->delay = $from->defaultDelay;
+        }
     }
 
     private function generateAuthorizationHeader($username, $password)

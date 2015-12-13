@@ -28,12 +28,10 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 class RequestFactory
 {
     private $language;
-    private $baseUri;
 
-    public function __construct(ExpressionLanguage $language, $baseUri)
+    public function __construct(ExpressionLanguage $language)
     {
         $this->language = $language;
-        $this->baseUri = $baseUri;
     }
 
     public function create(Step $step, ValueBag $values = null, RequestInterface $request = null, ResponseInterface $response = null, Crawler $crawler = null)
@@ -64,7 +62,7 @@ class RequestFactory
         $headers = $step->getHeaders();
         $body = $this->createBody($values, $step->getFormValues(), $headers, $step->isJson());
 
-        return new Request($step->getMethod(), $this->fixUri($uri), $headers, $body);
+        return new Request($step->getMethod(), $this->fixUri($step, $uri), $headers, $body);
     }
 
     private function createRequestFromLink(Step $step, ValueBag $values, Crawler $crawler = null)
@@ -77,7 +75,7 @@ class RequestFactory
         }
         $link = $link->link();
 
-        return new Request($link->getMethod(), $this->fixUri($link->getUri()), $step->getHeaders());
+        return new Request($link->getMethod(), $this->fixUri($step, $link->getUri()), $step->getHeaders());
     }
 
     private function createRequestFromForm(Step $step, ValueBag $values, Crawler $crawler = null)
@@ -103,7 +101,7 @@ class RequestFactory
         }
         */
 
-        return new Request($form->getMethod(), $this->fixUri($form->getUri()), $headers, $body);
+        return new Request($form->getMethod(), $this->fixUri($step, $form->getUri()), $headers, $body);
     }
 
     private function createRequestFromFollow(Step $step, ValueBag $values, RequestInterface $request = null, ResponseInterface $response = null, Crawler $crawler = null)
@@ -148,13 +146,13 @@ class RequestFactory
         return Psr7\modify_request($request, $modify);
     }
 
-    private function fixUri($uri)
+    private function fixUri(Step $step, $uri)
     {
-        if (!$this->baseUri) {
+        if (!$step->getEndpoint()) {
             return $uri;
         }
 
-        return Psr7\Uri::resolve(Psr7\uri_for($this->baseUri), $uri);
+        return Psr7\Uri::resolve(Psr7\uri_for($step->getEndpoint()), $uri);
     }
 
     private function createBody(ValueBag $values, $parameters, &$headers, $isJson)

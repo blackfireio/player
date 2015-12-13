@@ -77,6 +77,11 @@ A **scenario** is a sequence of HTTP calls (**steps**) that share the HTTP
 cookies/session. Scenario definitions are **declarative**, the order of method
 calls within a "step" do not matter.
 
+.. tip::
+
+    For big scenarios, you might want to avoid hitting the default PHP timeout
+    by adding ``set_time_limit(0);`` to your script.
+
 Instead of making discrete requests like above, you can also **interact** with
 the HTTP response if the content type is HTML by clicking on links, submitting
 forms, or follow redirections (see `Making requests`_ for more information):
@@ -689,6 +694,18 @@ Note that scenarios defined with a key are abstract and are not be run by
 
     When Blackfire support is enabled, scenarios defined in ``.blackfire.yml``
     files are also supported.
+
+Running a YAML Scenario from the Console
+----------------------------------------
+
+YAML scenarios can be run from the command line via the ``blackfire-player``
+utility:
+
+.. code-block::
+
+    ./vendor/bin/blackfire-player run scenario.yml
+
+Run the command with ``--help`` to learn about all supported options.
 
 Scenarios as a PHP Array
 ------------------------

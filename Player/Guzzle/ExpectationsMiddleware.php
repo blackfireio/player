@@ -17,7 +17,6 @@ use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\ValueBag;
 use GuzzleHttp\Promise\PromiseInterface;
-use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -87,7 +86,7 @@ class ExpectationsMiddleware
     {
         $crawler = null;
         if ($response->hasHeader('Content-Type') && false !== strpos($response->getHeaderLine('Content-Type'), 'html')) {
-            $crawler = new Crawler(null, $this->fixUri($request->getUri()));
+            $crawler = new Crawler(null, $request->getUri());
             $crawler->addContent((string) $response->getBody(), $response->getHeaderLine('Content-Type'));
         }
 
@@ -139,15 +138,6 @@ class ExpectationsMiddleware
                 throw new ExpectationErrorException($msg);
             }
         }
-    }
-
-    private function fixUri($uri)
-    {
-        if (isset($options['base_uri'])) {
-            return Psr7\Uri::resolve(Psr7\uri_for($options['base_uri']), $uri);
-        }
-
-        return $uri;
     }
 
     private function extractVariables($extractions, ValueBag $values = null, Crawler $crawler = null, RequestInterface $request, ResponseInterface $response)
