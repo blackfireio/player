@@ -7,7 +7,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
 
     $scenario
         ->visit(url('/blog/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
         ->extract('latest_post_title', 'css(".post h2").first()')
         ->extract('latest_post_href', 'css(".post h2 a").first()', 'href')
         ->extract('latest_posts', 'css(".post h2 a")', ['_text', 'href'])
@@ -46,7 +46,7 @@ as regular expression variables:
 
     $scenario
         ->visit(url('/blog/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
         ->expect('css(".posts")')
         ->extract('latest_post_title', 'css(".post h2 a").first()')
 
@@ -68,7 +68,7 @@ Variable values can also be injected before running a scenario (via the
     $scenario
         ->value('current_year' => 2016)
         ->visit(url('/blog/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
         ->expect('css(".copyright_year") matches /current_year/')
     ;
 
@@ -82,7 +82,7 @@ values:
     $scenario = new Scenario();
     $scenario
         ->visit(url('/blog/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
         ->extract('post_url', 'css(".posts")', 'href')
     ;
 
@@ -106,12 +106,12 @@ Here is another example for a JSON API:
         ->auth('api_username', 'api_password')
 
         ->visit(url('profiles/' ~ profile_uuid))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
         ->extract('sql_queries', 'json("arguments.\"sql.pdo.queries\".keys(@)")')
         ->extract('store_url', 'json("_links.store.href")')
 
         ->visit('url(store_url)', 'POST', '{ "foo": "batman" }')
-        ->expect('status_code == 202')
+        ->expect('status_code() == 202')
     ;
 
     $player->run($scenario);

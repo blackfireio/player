@@ -5,15 +5,13 @@ Expectations are **expressions** evaluated against the current HTTP response
 and if one of them returns a falsy value, Blackfire Player throws a
 ``Blackfire\Player\Exception\ExpectationFailureException`` exception.
 
-Expressions have access to the following variables:
+Expressions have access to the following functions:
 
-* ``status_code``: The HTTP status code for the current HTTP response;
-
-* ``body``: The HTTP body for the current HTTP response.
-
-Expressions can also use the following functions:
+* ``status_code()``: The HTTP status code for the current HTTP response;
 
 * ``header()``: Returns the value of an HTTP header;
+
+* ``body()``: The HTTP body for the current HTTP response;
 
 * ``css()``: Returns nodes matching the CSS selector (for HTML responses);
 
@@ -53,7 +51,7 @@ Here are some common expressions:
     'header("Age")'
 
     // check that the HTML body contains "Welcome"
-    'body matches "/Welcome/"'
+    'body() matches "/Welcome/"'
 
     // extract a value
     'json("_links.store.href")'

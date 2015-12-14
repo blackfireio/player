@@ -43,6 +43,10 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_crawler']->selectButton($selector);
             }),
 
+            new ExpressionFunction('status_code', $compiler, function ($arguments) {
+                return $arguments['_response']->getStatusCode();
+            }),
+
             new ExpressionFunction('headers', $compiler, function ($arguments) {
                 $headers = [];
                 foreach ($arguments['_response']->getHeaders() as $key => $value) {
@@ -50,6 +54,10 @@ class Provider implements ExpressionFunctionProviderInterface
                 }
 
                 return $headers;
+            }),
+
+            new ExpressionFunction('body', $compiler, function ($arguments) {
+                return (string) $arguments['_response']->getBody();
             }),
 
             new ExpressionFunction('header', $compiler, function ($arguments, $name) {

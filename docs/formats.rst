@@ -35,14 +35,14 @@ Here is an example of a YAML scenario that uses all Blackfire Player features:
               headers:
                   'Accept-Language': 'en-US'
               expect:
-                  - status_code == 200
+                  - status_code() == 200
                   - header('content_type') matches '/html/'
                   - css('body')
 
             - title: "Releases"
               click: link('Releases')
               expect:
-                  - status_code == 200
+                  - status_code() == 200
                   - css('body.releases')
               extract:
                   latest_release_title: 'css(".post h2 a").first()'
@@ -109,7 +109,7 @@ Scenarios can be described via a PHP array:
                 'title' => 'Blog Homepage',
                 'url' => '/blog/',
                 'expect' => [
-                    'status_code == 200',
+                    'status_code() == 200',
                 ],
             ],
         ],

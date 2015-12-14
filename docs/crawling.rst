@@ -14,7 +14,7 @@ Blackfire Player lets you crawl an application via an intuitive PHP API:
     $scenario
         ->endpoint('http://example.com')
         ->visit(url('/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
     ;
 
     // create the HTTP client
@@ -39,10 +39,10 @@ You can chain requests:
     $scenario = new Scenario();
     $scenario
         ->visit(url('/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
 
         ->visit(url('/blog/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
     ;
 
     $player->run($scenario);
@@ -65,10 +65,10 @@ forms, or follow redirections (see `Making requests`_ for more information):
     $scenario = new Scenario();
     $scenario
         ->visit(url('/'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
 
         ->click('link("Read more")')
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
     ;
 
     $player->run($scenario);
@@ -140,16 +140,16 @@ There are several ways you can jump from on HTTP request to the next:
       $loginScenario = new Scenario('Login');
       $loginScenario
           ->visit(url('/login'))
-          ->expect('status_code == 200')
+          ->expect('status_code() == 200')
           ->submit('button("Login")', ['user' => "'admin'", 'password' => "'admin'"])
-          ->expect('status_code == 200')
+          ->expect('status_code() == 200')
       ;
 
       $scenario = new Scenario('Symfony Blog');
       $scenario
           ->add($loginScenario)
           ->visit(url('/admin'))
-          ->expect('status_code == 200')
+          ->expect('status_code() == 200')
       ;
 
   Scenarios can be embedded at any step in a scenario.
@@ -230,7 +230,7 @@ store them in a ``ScenarioSet`` instance and run them via ``runMulti()``:
     $scenario
         ->visit(url('/blog/'))
         ->title('Blog homepage')
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
 
         // ...
     ;
@@ -281,9 +281,9 @@ login, account creation, or deletion steps, ...):
     $loginScenario = new Scenario('Login');
     $loginScenario
         ->visit(url('/login'))
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
         ->submit('button("Login")', ['user' => "'admin'", 'password' => "'admin'"])
-        ->expect('status_code == 200')
+        ->expect('status_code() == 200')
     ;
 
     $scenarios = new ScenarioSet();
