@@ -48,29 +48,7 @@ final class PlayerCommand extends Command
             ])
             ->setDescription('Runs a scenario YAML file')
             ->setHelp(<<<EOF
-The <info>%command.name%</info> runs a scenario defined in a YAML file:
-
-<info>php %command.full_name% scenario.yml --team=TEAM_NAME_OR_UUID</info>
-
-Use the <comment>--endpoint</comment> option to override the endpoint defined in the scenarios:
-
-<info>php %command.full_name% scenario.yml --team=TEAM_NAME_OR_UUID --endpoint=http://example.com/</info>
-
-Use the <comment>--concurrency</comment> option to run scenarios in parallel:
-
-<info>php %command.full_name% scenario.yml --team=TEAM_NAME_OR_UUID --concurrency=5</info>
-
-Use the <comment>--output</comment> option to save extracted values as a JSON file:
-
-<info>php %command.full_name% scenario.yml --team=TEAM_NAME_OR_UUID --output=values.json</info>
-
-Use the <comment>--blackire</comment> to enable Blackfire:
-
-<info>php %command.full_name% scenario.yml --team=TEAM_NAME_OR_UUID --blackire</info>
-
-Use <comment>-vv</comment> or <comment>-vvv</comment> to get logs about the progress of the player.
-
-The command returns 1 if at least one scenario fails.
+Read https://blackfire.io/docs/player/cli to learn about all supported options.
 EOF
             );
     }
