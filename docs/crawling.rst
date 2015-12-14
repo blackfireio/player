@@ -1,3 +1,5 @@
+:access: ROLE_ADMIN
+
 Crawling an HTTP application
 ============================
 

@@ -1,3 +1,5 @@
+:access: ROLE_ADMIN
+
 Running Scenarios from the Console
 ----------------------------------
 

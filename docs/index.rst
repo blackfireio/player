@@ -1,4 +1,5 @@
 :status: alpha
+:access: ROLE_ADMIN
 
 Player
 ======
