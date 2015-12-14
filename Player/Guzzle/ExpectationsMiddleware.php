@@ -179,11 +179,6 @@ class ExpectationsMiddleware
 
     private function createVariables(ResponseInterface $response, Crawler $crawler = null)
     {
-        return [
-            'status_code' => $response->getStatusCode(),
-            'body' => (string) $response->getBody(),
-            '_response' => $response,
-            '_crawler' => $crawler,
-        ];
+        return ['_response' => $response, '_crawler' => $crawler];
     }
 }
