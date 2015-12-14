@@ -3,7 +3,7 @@
     "type": "library",
     "description": "A powerful web crawler and web scraper with Blackfire support",
     "keywords": ["scraper", "crawler", "blackfire"],
-    "homepage": "https://player.blackfire.io/",
+    "homepage": "https://blackfire.io/player",
     "license": "MIT",
     "authors": [
         {
