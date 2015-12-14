@@ -22,13 +22,11 @@ class Step
     use BlackfireStepTrait;
 
     private $root;
-    private $index;
+    private $index = 1;
     private $uri;
     private $method;
-    private $defaultHeaders = [];
+    private $options;
     private $removedHeaders = [];
-    private $defaultDelay;
-    private $endpoint;
     private $headers = [];
     private $linkSelector;
     private $formSelector;
@@ -41,14 +39,21 @@ class Step
     private $json = false;
     private $next;
 
-    public function __construct($root = true, $index = 1)
+    public function __construct($root = true)
     {
-        $this->root = $root;
-        $this->index = $index;
+        $this->root = (bool) $root;
+
+        if ($this->root) {
+            $this->options = new StepOptions();
+        }
     }
 
     public function __clone()
     {
+        if ($this->root) {
+            $this->options = clone $this->options;
+        }
+
         if ($this->next) {
             $this->next = clone $this->next;
         }
@@ -64,15 +69,9 @@ class Step
             throw new LogicException('Unable to add a scenario at the root step.');
         }
 
-        $this->next = $scenario->getRoot();
-
-        // re-index steps
-        $step = $this->next;
-        $index = $this->index;
-        while ($step) {
-            $step->index = ++$index;
-            $step = $step->next;
-        }
+        $this->next = clone $scenario->getRoot();
+        $this->next->root = false;
+        $this->next->options = $this->options;
 
         return $this->next->getLast();
     }
@@ -82,7 +81,7 @@ class Step
         if ($this->root && !$this->uri) {
             $step = $this;
         } else {
-            $step = new self(false, $this->index + 1);
+            $step = new self(false);
             $this->next = $step;
         }
 
@@ -99,7 +98,7 @@ class Step
             throw new LogicException(sprintf('%s() cannot be called as a first step.', __METHOD__));
         }
 
-        $step = new self(false, $this->index + 1);
+        $step = new self(false);
         $step->linkSelector = $selector;
 
         $this->next = $step;
@@ -113,7 +112,7 @@ class Step
             throw new LogicException(sprintf('%s() cannot be called as a first step.', __METHOD__));
         }
 
-        $step = new self(false, $this->index + 1);
+        $step = new self(false);
         $step->formSelector = $selector;
         $step->formValues = $values;
 
@@ -128,7 +127,7 @@ class Step
             throw new LogicException(sprintf('%s() cannot be called as a first step.', __METHOD__));
         }
 
-        $step = new self(false, $this->index + 1);
+        $step = new self(false);
         $step->follow = true;
 
         $this->next = $step;
@@ -174,7 +173,7 @@ class Step
         if (false === $password) {
             $this->header('Authorization', false);
         } else {
-            $this->header('Authorization', $this->generateAuthorizationHeader($username, $password));
+            $this->header('Authorization', $this->options->generateAuthorizationHeader($username, $password));
         }
 
         return $this;
@@ -207,7 +206,8 @@ class Step
             return;
         }
 
-        $this->next->copyDefaults($this);
+        $this->next->options = $this->options;
+        $this->next->index = $this->index + 1;
 
         return $this->next;
     }
@@ -217,58 +217,19 @@ class Step
         return $this->index;
     }
 
-    /**
-     * @internal
-     */
-    public function setEndpoint($endpoint)
+    public function getDelay()
     {
-        if (!$this->root) {
-            throw new LogicException('Endpoint can only be set on root steps.');
-        }
-
-        $this->endpoint = $endpoint;
-    }
-
-    /**
-     * @internal
-     */
-    public function setDefaultDelay($delay)
-    {
-        if (!$this->root) {
-            throw new LogicException('Default delay can only be set on root steps.');
-        }
-
-        $this->defaultDelay = $delay;
-    }
-
-    /**
-     * @internal
-     */
-    public function setDefaultHeader($key, $value)
-    {
-        if (!$this->root) {
-            throw new LogicException('Default headers can only be set on root steps.');
-        }
-
-        $this->defaultHeaders[$key][] = $value;
-    }
-
-    /**
-     * @internal
-     */
-    public function setDefaultAuth($username, $password)
-    {
-        $this->setDefaultHeader('Authorization', $this->generateAuthorizationHeader($username, $password));
+        return null !== $this->delay ? $this->delay : $this->options->getDelay();
     }
 
     public function getEndpoint()
     {
-        return $this->endpoint;
+        return $this->options->getEndpoint();
     }
 
     public function getHeaders()
     {
-        $headers = $this->defaultHeaders;
+        $headers = $this->options->getHeaders();
         foreach ($this->headers as $key => $values) {
             $headers[$key] = array_merge($headers[$key], $values);
         }
@@ -352,6 +313,22 @@ class Step
     /**
      * @internal
      */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @internal
+     */
+    public function setOptions(StepOptions $options)
+    {
+        $this->options = $options;
+    }
+
+    /**
+     * @internal
+     */
     public function getLast()
     {
         if (!$this->next) {
@@ -359,26 +336,5 @@ class Step
         }
 
         return $this->next->getLast();
-    }
-
-    /**
-     * @internal
-     */
-    public function copyDefaults(Step $from)
-    {
-        // propagate defaults
-        $this->defaultHeaders = $from->defaultHeaders;
-        $this->defaultDelay = $from->defaultDelay;
-        $this->endpoint = $from->endpoint;
-
-        // propagate default delay
-        if (null !== $from->defaultDelay && null === $this->delay) {
-            $this->delay = $from->defaultDelay;
-        }
-    }
-
-    private function generateAuthorizationHeader($username, $password)
-    {
-        return 'Basic '.base64_encode(sprintf('%s:%s', $username, $password));
     }
 }

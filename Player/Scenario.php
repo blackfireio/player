@@ -48,35 +48,37 @@ class Scenario
             throw new LogicException('Unable to add an empty scenario.');
         }
 
-        $scenario->getRoot()->copyDefaults($this->root);
+        $options = $this->root->getOptions();
+        $this->root = clone $scenario->getRoot()
+        $this->root->setOptions($options);
 
-        return $this->root = $scenario->getRoot();
+        return ;
     }
 
     public function header($key, $value)
     {
-        $this->root->setDefaultHeader($key, $value);
+        $this->root->getOptions()->header($key, $value);
 
         return $this;
     }
 
     public function auth($username, $password)
     {
-        $this->root->setDefaultAuth($username, $password);
+        $this->root->getOptions()->auth($username, $password);
 
         return $this;
     }
 
     public function delay($delay)
     {
-        $this->root->setDefaultDelay($delay);
+        $this->root->getOptions()->delay($delay);
 
         return $this;
     }
 
     public function endpoint($endpoint)
     {
-        $this->root->setEndpoint($endpoint);
+        $this->root->getOptions()->endpoint($endpoint);
 
         return $this;
     }
