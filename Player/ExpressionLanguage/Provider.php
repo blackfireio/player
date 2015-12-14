@@ -70,6 +70,10 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getHeader($name)[0];
             }),
 
+            new ExpressionFunction('scalar', $compiler, function ($arguments, $string) {
+                return $string;
+            }),
+
             new ExpressionFunction('css', $compiler, function ($arguments, $selector) {
                 if (null === $arguments['_crawler']) {
                     throw new LogicException(sprintf('Unable to get "%s" CSS selector as the page is not crawlable.', $selector));

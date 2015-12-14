@@ -85,7 +85,7 @@ You can also define multiple scenarios in a single YAML file:
                   visit: url('/api')
                   method: POST
                   params:
-                      foo: "'bar'"
+                      foo: scalar('bar')
                   json: true
 
 Note that scenarios defined with a key are abstract and are not be run by
