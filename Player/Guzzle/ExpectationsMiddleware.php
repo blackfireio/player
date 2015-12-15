@@ -121,7 +121,7 @@ class ExpectationsMiddleware
             try {
                 $result = $this->language->evaluate($expression, $variables + $values->all(true));
 
-                if (null !== $result && false !== $result) {
+                if (null !== $result && false !== $result && 0 !== $result) {
                     $this->logger and $this->logger->debug(sprintf('Expectation "%s" pass', $expression), ['request' => $request->getHeaderLine('X-Request-Id')]);
                 } else {
                     $msg = sprintf('Expectation "%s" failed', $expression);
