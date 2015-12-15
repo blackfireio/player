@@ -10,3 +10,8 @@ Install Blackfire Player via Composer:
     composer require blackfire/player
 
 Note that Blackfire Player requires **PHP 5.5.9+** and **Guzzle 6+**.
+
+.. note::
+
+    Blackfire Player `source code <https://github.com/blackfireio/player>`_ is
+    hosted on Github.
