@@ -40,11 +40,10 @@ final class PlayerCommand extends Command
             ->setName('run')
             ->setDefinition([
                 new InputArgument('file', InputArgument::REQUIRED, 'The YAML file defining the scenarios'),
-                new InputOption('team', 't', InputOption::VALUE_REQUIRED, 'Associate the build with a team', null),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of client to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('output', 'o', InputOption::VALUE_REQUIRED, 'Saves the extracted values', null),
-                new InputOption('blackfire', '', InputOption::VALUE_NONE, 'Enabled Blackfire', null),
+                new InputOption('blackfire', '', InputOption::VALUE_REQUIRED, 'Enabled Blackfire and use the specified environment', null),
             ])
             ->setDescription('Runs a scenario YAML file')
             ->setHelp(<<<EOF
@@ -69,9 +68,9 @@ EOF
         $player = new Player($clients);
         $player->setLogger($logger);
 
-        if ($input->getOption('blackfire')) {
+        if ($env = $input->getOption('blackfire')) {
             $blackfireConfig = new BlackfireClientConfiguration();
-            $blackfireConfig->setEnv($input->getOption('team'));
+            $blackfireConfig->setEnv($env);
             $blackfire = new BlackfireClient($blackfireConfig);
 
             $player->addExtension(new \Blackfire\Player\Extension\BlackfireExtension($blackfire, $logger));
