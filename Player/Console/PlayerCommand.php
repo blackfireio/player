@@ -44,6 +44,7 @@ final class PlayerCommand extends Command
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('output', 'o', InputOption::VALUE_REQUIRED, 'Saves the extracted values', null),
                 new InputOption('blackfire', '', InputOption::VALUE_REQUIRED, 'Enabled Blackfire and use the specified environment', null),
+                new InputOption('variables', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
             ])
             ->setDescription('Runs a scenario YAML file')
             ->setHelp(<<<EOF
@@ -79,9 +80,19 @@ EOF
         $loader = new YamlLoader();
         $scenarios = $loader->load(file_get_contents($file));
 
-        if ($input->getOption('endpoint')) {
-            foreach ($scenarios as $scenario) {
+        $variables = array();
+        foreach ($input->getOption('variables') as $variable) {
+            list($key, $value) = explode('=', $variable, 2);
+            $variables[$key] = $value;
+        }
+
+        foreach ($scenarios as $scenario) {
+            if ($input->getOption('endpoint')) {
                 $scenario->endpoint($input->getOption('endpoint'));
+            }
+
+            foreach ($variables as $key => $value) {
+                $scenario->value($key, $value);
             }
         }
 
