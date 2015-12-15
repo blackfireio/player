@@ -112,7 +112,7 @@ class ExpectationsMiddleware
 
     private function checkExpectations(array $expectations, ValueBag $values = null, Crawler $crawler = null, RequestInterface $request, ResponseInterface $response)
     {
-        if (null !== $values) {
+        if (null === $values) {
             $values = new ValueBag();
         }
         $variables = $this->createVariables($response, $crawler);
