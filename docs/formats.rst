@@ -26,6 +26,8 @@ Here is an example of a YAML scenario that uses all Blackfire Player features:
         options:
             title: Blackfire Player Scenario
             auth: [foo, bar]
+            variables:
+                foo: bar
 
         steps:
             - title: "Blog Homepage"
