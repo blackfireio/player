@@ -49,7 +49,7 @@ class Scenario
         }
 
         $options = $this->root->getOptions();
-        $this->root = clone $scenario->getRoot()
+        $this->root = clone $scenario->getRoot();
         $this->root->setOptions($options);
 
         return $this->root;
