@@ -91,7 +91,7 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('json', $compiler, function ($arguments, $selector) {
-                if (null === $data = @json_decode($arguments['body'], true)) {
+                if (null === $data = json_decode((string) $arguments['_response']->getBody(), true)) {
                     throw new LogicException(sprintf(' Unable to get the "%s" JSON path as the Response body does not seem to be JSON.', $selector));
                 }
 
