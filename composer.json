@@ -35,6 +35,7 @@
             "/Tests/"
         ]
     },
+    "bin": ["bin/blackfire-player"],
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
