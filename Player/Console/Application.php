@@ -22,8 +22,11 @@ final class Application extends BaseApplication
     {
         error_reporting(-1);
 
-        $composer = json_decode(__DIR__.'/../../composer.json', true);
-        $version = $composer['extra']['branch-alias']['dev-master'];
+        $version = '@git-version@';
+        if ('@'.'git-version@' == $version) {
+            $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
+            $version = $composer['extra']['branch-alias']['dev-master'];
+        }
 
         parent::__construct('Blackfire Player', $version);
 

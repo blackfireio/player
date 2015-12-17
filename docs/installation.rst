@@ -5,7 +5,9 @@ Blackfire Player Scenarios can be run from PHP or from a YAML file.
 
 YAML files can be run via the Blackfire Player PHAR:
 
-XXX
+.. code-block:: bash
+
+    curl -OLsS http://get.blackfire.io/blackfire-player.phar
 
 To integrate scenarios into your own PHP code, install Blackfire Player via
 Composer:
