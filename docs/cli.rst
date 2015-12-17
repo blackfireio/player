@@ -9,6 +9,12 @@ instructions):
 
     ./vendor/bin/blackfire-player run scenario.yml
 
+The command accepts multiple scenario files as arguments:
+
+.. code-block:: bash
+
+    ./vendor/bin/blackfire-player run scenario1.yml scenario2.yml scenario3.yml
+
 Use the ``--endpoint`` option to override the endpoint defined in the scenarios:
 
 .. code-block:: bash
