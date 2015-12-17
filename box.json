@@ -1,0 +1,23 @@
+{
+    "output": "blackfire-player.phar",
+    "chmod": "0755",
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "extract": false,
+    "files": [
+        "LICENSE"
+    ],
+    "finder": [
+        {
+            "exclude": ["Tests", "tests"],
+            "in": ["bin", "Player", "vendor"]
+        }
+    ],
+    "git-commit": "git-commit",
+    "main": "bin/blackfire-player.php",
+    "stub": true,
+    "git-commit-short": "git-commit-short",
+    "git-version": "git-version",
+    "web": false
+}
