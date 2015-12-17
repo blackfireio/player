@@ -3,17 +3,33 @@ Scraping Values
 
 When crawling an HTTP application you can extract values from HTTP responses:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario
-        ->visit(url('/blog/'))
-        ->expect('status_code() == 200')
-        ->extract('latest_post_title', 'css(".post h2").first()')
-        ->extract('latest_post_href', 'css(".post h2 a").first()', 'href')
-        ->extract('latest_posts', 'css(".post h2 a")', ['_text', 'href'])
-        ->extract('header("Age")')
-        ->extract('header("Content-Type")')
-    ;
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - visit: url('/')
+                  expect:
+                      - status_code() == 200
+                  extract:
+                      latest_post_title: css(".post h2").first()
+                      latest_post_href: css(".post h2 a").first().attr("href")
+                      latest_posts: [css(".post h2 a"), ['_text', 'href']]
+                      age: header("Age")
+                      content_type: header("Content-Type")
+
+    .. code-block:: php
+
+        $scenario
+            ->visit("url('/blog/')")
+            ->expect('status_code() == 200')
+            ->extract('latest_post_title', 'css(".post h2").first()')
+            ->extract('latest_post_href', 'css(".post h2 a").first().attr("href")')
+            ->extract('latest_posts', 'css(".post h2 a")', ['_text', 'href'])
+            ->extract('age', 'header("Age")')
+            ->extract('content_type', 'header("Content-Type")')
+        ;
 
 The ``extract()`` method takes three arguments:
 
@@ -22,22 +38,29 @@ The ``extract()`` method takes three arguments:
 * An expression to evaluate (the value of the evaluated expression);
 
 * *Optionally*, an attribute to extract or an array of attributes to extract
-  (use `_text` to extract the node text value, which is the default).
+  (use ``_text`` to extract the node text value, which is the default).
 
 The extracted values are also available at the end of a crawling session:
 
-.. code-block:: php
+.. configuration-block::
 
-    $result = $player->run($scenario);
-    $value = $result['latest_post_title'];
+    .. code-block:: bash
 
-    // get all values
-    $values = $result->getValues();
+        # use --output to store extracted values
+        blackfire-player run scenario.yml --output values.json
 
-    // iterate over all values
-    foreach ($result as $key => $value) {
-        // ...
-    }
+    .. code-block:: php
+
+        $result = $player->run($scenario);
+        $value = $result['latest_post_title'];
+
+        // get all values
+        $values = $result->getValues();
+
+        // iterate over all values
+        foreach ($result as $key => $value) {
+            // ...
+        }
 
 Extracted values can be used in expressions for subsequent requests via the
 as regular expression variables:
@@ -45,7 +68,7 @@ as regular expression variables:
 .. code-block:: php
 
     $scenario
-        ->visit(url('/blog/'))
+        ->visit("url('/blog/')")
         ->expect('status_code() == 200')
         ->expect('css(".posts")')
         ->extract('latest_post_title', 'css(".post h2 a").first()')
@@ -67,7 +90,7 @@ Variable values can also be injected before running a scenario (via the
     $scenario = new Scenario('Scenario Title', ['current_year' => 2016]);
     $scenario
         ->value('current_year' => 2016)
-        ->visit(url('/blog/'))
+        ->visit("url('/blog/')")
         ->expect('status_code() == 200')
         ->expect('css(".copyright_year") matches /current_year/')
     ;
@@ -81,9 +104,9 @@ values:
 
     $scenario = new Scenario();
     $scenario
-        ->visit(url('/blog/'))
+        ->visit("url('/blog/')")
         ->expect('status_code() == 200')
-        ->extract('post_url', 'css(".posts")', 'href')
+        ->extract('post_url', 'css(".posts").attr("href")')
     ;
 
     $result = $player->run($scenario);
@@ -94,24 +117,47 @@ values:
 
 Here is another example for a JSON API:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario = new Scenario('Scenario title', [
-        'api_username' => 'xxxx',
-        'api_password' => 'yyyy',
-        'profile_uuid' => 'zzzz',
-    ]);
+    .. code-block:: yaml
 
-    $scenario
-        ->auth('api_username', 'api_password')
+        scenario:
+            options:
+                title: Scenario title
+                auth: [api_username, api_password]
+                variables:
+                    profile_uuid: zzzz
 
-        ->visit(url('profiles/' ~ profile_uuid))
-        ->expect('status_code() == 200')
-        ->extract('sql_queries', 'json("arguments.\"sql.pdo.queries\".keys(@)")')
-        ->extract('store_url', 'json("_links.store.href")')
+            steps:
+                - visit: url('/profiles' ~ profile_uuid)
+                  expect:
+                      - status_code() == 200
+                  extract:
+                      sql_queries: json('arguments."sql.pdo.queries".keys(@)')
+                      store_url: json("_links.store.href")
 
-        ->visit('url(store_url)', 'POST', '{ "foo": "batman" }')
-        ->expect('status_code() == 202')
-    ;
+                - visit: url(store_url)
+                  method: POST
+                  body: '{ "foo": "batman" }'
+                  expect:
+                      - status_code() == 200
 
-    $player->run($scenario);
+    .. code-block:: php
+
+        $scenario = new Scenario('Scenario title', [
+            'profile_uuid' => 'zzzz',
+        ]);
+
+        $scenario
+            ->auth('api_username', 'api_password')
+
+            ->visit("url('profiles/' ~ profile_uuid)")
+            ->expect('status_code() == 200')
+            ->extract('sql_queries', 'json("arguments.\"sql.pdo.queries\".keys(@)")')
+            ->extract('store_url', 'json("_links.store.href")')
+
+            ->visit('url(store_url)', 'POST', '{ "foo": "batman" }')
+            ->expect('status_code() == 202')
+        ;
+
+        $player->run($scenario);

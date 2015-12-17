@@ -1,55 +1,91 @@
 Crawling an HTTP application
 ============================
 
-Blackfire Player lets you crawl an application via an intuitive PHP API:
+Blackfire Player lets you crawl an application thanks to descriptive scenarios
+written with PHP or YAML:
 
-.. code-block:: php
+.. configuration-block::
 
-    use GuzzleHttp\Client as GuzzleClient;
-    use Blackfire\Player\Player;
-    use Blackfire\Player\Scenario;
+    .. code-block:: yaml
 
-    // create a scenario
-    $scenario = new Scenario('Scenario Name');
-    $scenario
-        ->endpoint('http://example.com')
-        ->visit(url('/'))
-        ->expect('status_code() == 200')
-    ;
+        scenario:
+            options:
+                title: Scenario Name
+                endpoint: http://example.com/
 
-    // create the HTTP client
-    $client = new GuzzleClient([
-        // maintain a session between HTTP requests
-        'cookies' => true,
-    ]);
+            steps:
+                - visit: url('/')
+                  expect:
+                      - status_code() == 200
 
-    // run the scenario
-    $player = new Player($client);
-    $player->run($scenario);
+    .. code-block:: php
+
+        use GuzzleHttp\Client as GuzzleClient;
+        use Blackfire\Player\Player;
+        use Blackfire\Player\Scenario;
+
+        // create a scenario
+        $scenario = new Scenario('Scenario Name');
+        $scenario
+            ->endpoint('http://example.com')
+            ->visit("url('/')")
+            ->expect('status_code() == 200')
+        ;
+
+        // create the HTTP client
+        $client = new GuzzleClient([
+            // maintain a session between HTTP requests
+            'cookies' => true,
+        ]);
+
+        // run the scenario
+        $player = new Player($client);
+        $player->run($scenario);
 
 This simple example shows you how you can make requests on an HTTP application
 (``http://examples.com/``) and be sure that it behaves the way you expect it to
 via :doc:`Writing Expectations </player/expectations>` (the response status
 code is 200).
 
+If you are using the YAML representation for scenarios, run them via the
+`Blackfire Player console tool </player/cli>`_:
+
+.. code-block:: bash
+
+    blackfire-player run scenario.yml
+
 You can chain requests:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario = new Scenario();
-    $scenario
-        ->visit(url('/'))
-        ->expect('status_code() == 200')
+    .. code-block:: yaml
 
-        ->visit(url('/blog/'))
-        ->expect('status_code() == 200')
-    ;
+        scenario:
+            steps:
+                - visit: url('/')
+                  expect:
+                      - status_code() == 200
 
-    $player->run($scenario);
+                - visit: url('/blog/')
+                  expect:
+                      - status_code() == 200
+
+    .. code-block:: php
+
+        $scenario = new Scenario();
+        $scenario
+            ->visit("url('/')")
+            ->expect('status_code() == 200')
+
+            ->visit("url('/blog/')")
+            ->expect('status_code() == 200')
+        ;
+
+        $player->run($scenario);
 
 A **scenario** is a sequence of HTTP calls (**steps**) that share the HTTP
-cookies/session. Scenario definitions are **declarative**, the order of method
-calls within a "step" do not matter.
+session and cookies. Scenario definitions are **declarative**, the order of
+method calls within a "step" does not matter.
 
 .. tip::
 
@@ -60,18 +96,32 @@ Instead of making discrete requests like above, you can also **interact** with
 the HTTP response if the content type is HTML by clicking on links, submitting
 forms, or follow redirections (see `Making requests`_ for more information):
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario = new Scenario();
-    $scenario
-        ->visit(url('/'))
-        ->expect('status_code() == 200')
+    .. code-block:: yaml
 
-        ->click('link("Read more")')
-        ->expect('status_code() == 200')
-    ;
+        scenario:
+            steps:
+                - visit: url('/')
+                  expect:
+                      - status_code() == 200
 
-    $player->run($scenario);
+                - click: link('Read more')
+                  expect:
+                      - status_code() == 200
+
+    .. code-block:: php
+
+        $scenario = new Scenario();
+        $scenario
+            ->visit("url('/')")
+            ->expect('status_code() == 200')
+
+            ->click('link("Read more")')
+            ->expect('status_code() == 200')
+        ;
+
+        $player->run($scenario);
 
 .. tip::
 
@@ -82,136 +132,297 @@ forms, or follow redirections (see `Making requests`_ for more information):
 
     If your scenarios do not work as expected, :ref:`Enabling Logging
     <player-logging>` might help in getting more information about what's going
-    on.
+    on or use ``-vvv`` to get verbose output with the Player console tool.
 
 Making Requests
 ---------------
 
-There are several ways you can jump from on HTTP request to the next:
+There are several ways you can jump from on HTTP request to the next.
 
-* ``visit()``: Go directly to the referenced HTTP URL (defaults to the ``GET``
-  HTTP method unless you pass one explicitly as a second argument):
+Visiting a Page with ``visit``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  .. code-block:: php
+``visit`` goes directly to the referenced HTTP URL (defaults to the ``GET``
+HTTP method unless you pass one explicitly):
 
-      $scenario->visit(url('/blog'), 'POST');
+.. configuration-block::
 
-  You can also pass the Request body as a third argument:
+    .. code-block:: yaml
 
-  .. code-block:: php
+        scenario:
+            steps:
+                - visit: url('/')
+                  method: POST
 
-      $scenario->visit(url('/blog'), 'PUT', '{ "title": "New Title" }');
+    .. code-block:: php
 
-* ``click()``: Click on a link in an HTML page (takes an expression as an
-  argument):
+        $scenario->visit("url('/blog')", 'POST');
 
-  .. code-block:: php
+You can also pass the Request body:
 
-      // reference a link via the ``link()`` function
-      $scenario->click('link("Add a blog post")');
+.. configuration-block::
 
-* ``submit()``: Submit a form in an HTML page (takes an expression as an
-  argument and an array of values to submit with the form):
+    .. code-block:: yaml
 
-  .. code-block:: php
+        scenario:
+            steps:
+                - visit: url('/')
+                  method: PUT
+                  body: '{ "title": "New Title" }'
 
-      // reference a button via the ``button()`` function
-      $scenario->submit('button("Submit")', [
-          'title' => "'Happy Scraping'",
-          'content' => "'Scraping with Blackfire Player is so easy!'",
-      ]);
+    .. code-block:: php
 
-  Note that submitted values are expressions, so you need to quote plain
-  strings.
+        $scenario->visit("url('/blog')", 'PUT', '{ "title": "New Title" }');
 
-* ``follow()``: Follows a redirection (redirections are never followed
-  automatically to let you write expectations and assertions on all requests):
+Clicking on a Link with ``click``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  .. code-block:: php
+``click`` clicks on a link in an HTML page (takes an expression as an argument):
 
-      $scenario->follow();
+.. configuration-block::
 
-* ``add()``: Embeds a scenario into another one:
+    .. code-block:: yaml
 
-  .. code-block:: php
+        scenario:
+            steps:
+                - click: url(link("Add a blog post"))
 
-      use Blackfire\Player\Scenario;
+    .. code-block:: php
 
-      $loginScenario = new Scenario('Login');
-      $loginScenario
-          ->visit(url('/login'))
-          ->expect('status_code() == 200')
-          ->submit('button("Login")', ['user' => "'admin'", 'password' => "'admin'"])
-          ->expect('status_code() == 200')
-      ;
+        // reference a link via the ``link()`` function
+        $scenario->click('link("Add a blog post")');
 
-      $scenario = new Scenario('Symfony Blog');
-      $scenario
-          ->add($loginScenario)
-          ->visit(url('/admin'))
-          ->expect('status_code() == 200')
-      ;
+Submitting Forms with ``submit``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  Scenarios can be embedded at any step in a scenario.
+``submit`` submits a form in an HTML page (takes an expression as an argument
+and an array of values to submit with the form):
 
-Configure the Request
----------------------
+.. configuration-block::
 
-Each step can be configured via the following options:
+    .. code-block:: yaml
 
-* ``header()``: Sets a header:
+        scenario:
+            steps:
+                - submit: button("Submit")
+                - params:
+                    title: scalar('Happy Scraping')
+                    content: scalar('Scraping with Blackfire Player is so easy!')
 
-  .. code-block:: php
+    .. code-block:: php
 
-      $scenario
-          ->visit(url('/'))
-          ->header('Accept-Language', 'en-US')
-      ;
+        // reference a button via the ``button()`` function
+        $scenario->submit('button("Submit")', [
+            'title' => "'Happy Scraping'",
+            'content' => "'Scraping with Blackfire Player is so easy!'",
+        ]);
 
-* ``auth()``: Sets the ``Authorization`` header:
+Note that submitted values are expressions, so you need to quote plain strings
+(or use ``scalar()``).
 
-  .. code-block:: php
+Following Redirections with ``follow``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      $scenario
-          ->visit(url('/'))
-          ->auth('username', 'password')
-      ;
+``follow`` follows a redirection (redirections are never followed automatically
+to let you write expectations and assertions on all requests):
 
-* ``delay()``: Adds a delay in milliseconds before sending the request:
+.. configuration-block::
 
-  .. code-block:: php
+    .. code-block:: yaml
 
-      $scenario
-          ->visit(url('/'))
-          ->delay(10000)
-      ;
+        scenario:
+            steps:
+                - follow: true
 
-* ``json()``: Configures the Request to upload JSON encoded data as the body:
+    .. code-block:: php
 
-  .. code-block:: php
+        $scenario->follow();
 
-      $scenario
-          ->visit(url('/'), 'POST', ['foo': 'bar'])
-          ->json()
-      ;
+Embedding Scenarios with ``add``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``add`` embeds a scenario into another one at any step:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+        :emphasize-lines: 1,2,16
+
+        scenarios:
+            - options: { key: login }
+              steps:
+                  - visit: url('/login')
+                    expect:
+                        - status_code() == 200
+
+                  - submit: button('Login')
+                    params:
+                        user: scalar('admin')
+                        password: scalar('admin')
+
+            - options: { title: "Scenario Name" }
+              steps:
+                  - add: login
+
+                  - url('/admin')
+                    expect:
+                        - status_code() == 200
+
+    .. code-block:: php
+
+        use Blackfire\Player\Scenario;
+
+        $loginScenario = new Scenario('Login');
+        $loginScenario
+            ->visit("url('/login')")
+            ->expect('status_code() == 200')
+
+            ->submit('button("Login")', ['user' => "'admin'", 'password' => "'admin'"])
+            ->expect('status_code() == 200')
+        ;
+
+        $scenario = new Scenario('Scenario Name');
+        $scenario
+            ->add($loginScenario)
+
+            ->visit("url('/admin')")
+            ->expect('status_code() == 200')
+        ;
+
+Configuring the Request
+-----------------------
+
+Each step can be configured via the following options.
+
+Setting a Header with ``header``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``header`` sets a header:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - visit: url('/')
+                  headers:
+                      Accept-Language: en-US
+
+    .. code-block:: php
+
+        $scenario
+            ->visit("url('/')")
+            ->header('Accept-Language', 'en-US')
+        ;
+
+Setting a User and Password with ``auth``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``auth`` sets the ``Authorization`` header:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - visit: url('/')
+                  auth: [username, password]
+
+    .. code-block:: php
+
+        $scenario
+            ->visit("url('/')")
+            ->auth('username', 'password')
+        ;
+
+Waiting before Sending with ``delay``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``delay`` adds a delay in milliseconds before sending the request:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - visit: url('/')
+                  delay: 10000
+
+    .. code-block:: php
+
+        $scenario
+            ->visit("url('/')")
+            ->delay(10000)
+        ;
+
+Sending a JSON Body with ``json``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``json`` configures the Request to upload JSON encoded data as the body:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - visit: url('/')
+                  method: POST
+                  params:
+                      foo: bar
+                  json: true
+
+    .. code-block:: php
+
+        $scenario
+            ->visit("url('/')", 'POST', ['foo': 'bar'])
+            ->json()
+        ;
+
+Settings Options for all Steps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also set some of these options for all steps of a scenario:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario
-        ->auth('username', 'password')
-        ->header('Accept-Language', 'en-US')
-    ;
+    .. code-block:: yaml
+
+        scenario:
+            options:
+                auth: [username, password]
+                headers:
+                    Accept-Language: en-US
+
+    .. code-block:: php
+
+        $scenario
+            ->auth('username', 'password')
+            ->header('Accept-Language', 'en-US')
+        ;
 
 ... which can be disabled on any given step by setting the value to ``false``:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario
-        ->header('Accept-Language', false)
-        ->auth(false)
-    ;
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - visit: url('/')
+                  headers:
+                      Accept-Language: false
+                  auth: false
+
+    .. code-block:: php
+
+        $scenario
+            ->header('Accept-Language', false)
+            ->auth(false)
+        ;
 
 Running Multiple Scenarios
 --------------------------
@@ -219,48 +430,79 @@ Running Multiple Scenarios
 Instead of running your scenarios one after the other via ``run()`` calls,
 store them in a ``ScenarioSet`` instance and run them via ``runMulti()``:
 
-.. code-block:: php
+.. configuration-block::
 
-    use Blackfire\Player\ScenarioSet;
-    use Blackfire\Player\Scenario;
+    .. code-block:: yaml
 
-    $scenarios = new ScenarioSet();
+        scenarios:
+            - options: { title: Blog }
+              steps:
+                  - visit: url('/blog/')
+                    title: Blog homepage
+                    expect:
+                        - status_code() == 200
 
-    $scenarios->add($scenario = new Scenario('Blog'));
-    $scenario
-        ->visit(url('/blog/'))
-        ->title('Blog homepage')
-        ->expect('status_code() == 200')
+                    # ...
 
-        // ...
-    ;
+            - options: { title: "Homepage" }
+              steps:
+                  - url('/admin')
 
-    $scenarios->add($scenario = new Scenario('Homepage'));
-    $scenario
-        ->visit(url('/'))
+                  # ...
 
-        // ...
-    ;
+    .. code-block:: php
 
-    $results = $player->runMulti($scenarios);
+        use Blackfire\Player\ScenarioSet;
+        use Blackfire\Player\Scenario;
+
+        $scenarios = new ScenarioSet();
+
+        $scenarios->add($scenario = new Scenario('Blog'));
+        $scenario
+            ->visit("url('/blog/')")
+            ->title('Blog homepage')
+            ->expect('status_code() == 200')
+
+            // ...
+        ;
+
+        $scenarios->add($scenario = new Scenario('Homepage'));
+        $scenario
+            ->visit("url('/')")
+
+            // ...
+        ;
+
+        $results = $player->runMulti($scenarios);
 
 ``runMulti()`` returns an array of ``Result`` instances (in the same order as
 the scenarios stored in ``ScenarioSet``). Like with ``run()``, each scenario is
 run independently from the other ones (cookies are cleared).
 
-One benefit of ``runMulti`` is its ability to **run scenarios in parallel**
-when you pass multiple instance of clients to Blackfire Player:
+.. note::
 
-.. code-block:: php
+    When using the Blackfire Player console tool, all scenarios are run.
 
-    $baseUri = 'http://example.com';
-    $clients = [
-        new GuzzleClient(['cookies' => true]),
-        new GuzzleClient(['cookies' => true]),
-        new GuzzleClient(['cookies' => true]),
-    ];
+One benefit of ``runMulti()`` is its ability to **run scenarios in parallel**
+when you pass multiple instance of clients to Blackfire Player or use
+``--concurrency`` when using the Blackfire Player console tool:
 
-    $player = new Player($clients);
+.. configuration-block::
+
+    .. code-block:: bash
+
+        blackfire-player run scenarios.yml --concurrency=3
+
+    .. code-block:: php
+
+        $baseUri = 'http://example.com';
+        $clients = [
+            new GuzzleClient(['cookies' => true]),
+            new GuzzleClient(['cookies' => true]),
+            new GuzzleClient(['cookies' => true]),
+        ];
+
+        $player = new Player($clients);
 
 ``runMulti()`` automatically computes the best number of concurrent scenarios
 to run in parallel depending on the number of clients and scenarios. You can
@@ -275,35 +517,72 @@ also explicitly set the level of concurrency:
 When defining multiple scenarios, you can factor out re-usable scenarios (like
 login, account creation, or deletion steps, ...):
 
-.. code-block:: php
+.. configuration-block::
 
-    // create a login scenario
-    $loginScenario = new Scenario('Login');
-    $loginScenario
-        ->visit(url('/login'))
-        ->expect('status_code() == 200')
-        ->submit('button("Login")', ['user' => "'admin'", 'password' => "'admin'"])
-        ->expect('status_code() == 200')
-    ;
+    .. code-block:: yaml
 
-    $scenarios = new ScenarioSet();
+        scenarios:
 
-    // add a first scenario that needs to be logged-in
-    $scenarios->add($scenario = new Scenario('Blog'));
-    $scenario
-        ->add($loginScenario)
-        ->visit(url('/stats/'))
+            # create a login scenario
+            - options: { key: login }
+              steps:
+                  - visit: url('/login')
+                    expect:
+                        - status_code() == 200
 
-        // ...
-    ;
+                  - submit: button('Login')
+                    params:
+                        user: scalar('admin')
+                        password: scalar('admin')
 
-    // add a second scenario that needs to be logged-in
-    $scenarios->add($scenario = new Scenario('Homepage'));
-    $scenario
-        ->add($loginScenario)
-        ->visit(url('/admin/'))
+            # add a first scenario that needs to be logged-in
+            - options: { title: "Blog" }
+              steps:
+                  - add: login
 
-        // ...
-    ;
+                  - url('/stats')
 
-    $results = $player->runMulti($scenarios);
+                  # ...
+
+            # add a second scenario that needs to be logged-in
+            - options: { title: "Homepage" }
+              steps:
+                  - add: login
+
+                  - url('/admin/')
+
+                  # ...
+
+    .. code-block:: php
+
+        // create a login scenario
+        $loginScenario = new Scenario('Login');
+        $loginScenario
+            ->visit("url('/login')")
+            ->expect('status_code() == 200')
+
+            ->submit('button("Login")', ['user' => "'admin'", 'password' => "'admin'"])
+            ->expect('status_code() == 200')
+        ;
+
+        $scenarios = new ScenarioSet();
+
+        // add a first scenario that needs to be logged-in
+        $scenarios->add($scenario = new Scenario('Blog'));
+        $scenario
+            ->add($loginScenario)
+            ->visit("url('/stats/')")
+
+            // ...
+        ;
+
+        // add a second scenario that needs to be logged-in
+        $scenarios->add($scenario = new Scenario('Homepage'));
+        $scenario
+            ->add($loginScenario)
+            ->visit("url('/admin/')")
+
+            // ...
+        ;
+
+        $results = $player->runMulti($scenarios);

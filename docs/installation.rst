@@ -1,15 +1,24 @@
 Installation
 ============
 
-Install Blackfire Player via Composer:
+Blackfire Player Scenarios can be run from PHP or from a YAML file.
+
+YAML files can be run via the Blackfire Player PHAR:
+
+XXX
+
+To integrate scenarios into your own PHP code, install Blackfire Player via
+Composer:
 
 .. code-block:: bash
 
     composer require blackfire/player
 
-Note that Blackfire Player requires **PHP 5.5.9+** and **Guzzle 6+**.
+.. caution::
+
+    Note that Blackfire Player requires **PHP 5.5.9+** and **Guzzle 6+**.
 
 .. note::
 
-    Blackfire Player `source code <https://github.com/blackfireio/player>`_ is
-    hosted on Github.
+    Blackfire Player is licensed under the MIT Open-Source license. Its `source
+    code <https://github.com/blackfireio/player>`_ is hosted on Github.

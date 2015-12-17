@@ -33,28 +33,31 @@ function returns a PHP array.
 
 Here are some common expressions:
 
-.. code-block:: php
+.. code-block:: yaml
 
-    // return all HTML nodes matching ".post h2 a"
-    'css(".post h2 a")'
+    # return all HTML nodes matching ".post h2 a"
+    - css(".post h2 a")
 
-    // return the first node matching ".post h2 a"
-    'css(".post h2 a").first'
+    # return the text of the first node matching ".post h2 a"
+    - css(".post h2 a").first().text()
 
-    // check that "h1" contains "Welcome"
-    'css("h1:contains(\'Welcome\')")'
+    # return the href attribute of the first node matching ".post h2 a"
+    - css(".post h2 a").first().attr("href")
 
-    // same as above
-    'css("h1").first().text() matches "/Welcome/"'
+    # check that "h1" contains "Welcome"
+    - css("h1:contains('Welcome')")
 
-    // return the Age request HTTP header
-    'header("Age")'
+    # same as above
+    - css("h1").first().text() matches "/Welcome/"
 
-    // check that the HTML body contains "Welcome"
-    'body() matches "/Welcome/"'
+    # return the Age request HTTP header
+    - header("Age")
 
-    // extract a value
-    'json("_links.store.href")'
+    # check that the HTML body contains "Welcome"
+    - body() matches "/Welcome/"
 
-    // extract keys
-    'json("arguments.\"sql.pdo.queries\".keys(@)")'
+    # extract a value
+    - json("_links.store.href")
+
+    # extract keys
+    - json("arguments."sql.pdo.queries".keys(@)")
