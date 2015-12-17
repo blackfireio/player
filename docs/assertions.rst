@@ -3,47 +3,73 @@ Writing Blackfire Assertions
 
 Blackfire Player natively supports Blackfire:
 
-.. code-block:: php
+.. configuration-block::
 
-    use Blackfire\Client as BlackfireClient;
-    use Blackfire\ClientConfiguration;
+    .. code-block:: bash
 
-    $player = new Player($client);
+        blackfire-player run scenario.yml --blackfire=ENV_NAME_OR_UUID
 
-    // enable the Blackfire extension
-    $config = (new ClientConfiguration())->setEnv('Env name');
-    $blackfire = new BlackfireClient($config);
+    .. code-block:: php
 
-    $player->addExtension(new \Blackfire\Player\Extension\BlackfireExtension($blackfire, $logger));
+        use Blackfire\Client as BlackfireClient;
+        use Blackfire\ClientConfiguration;
+
+        $player = new Player($client);
+
+        // enable the Blackfire extension
+        $config = (new ClientConfiguration())->setEnv('ENV_NAME_OR_UUID');
+        $blackfire = new BlackfireClient($config);
+
+        $player->addExtension(new \Blackfire\Player\Extension\BlackfireExtension($blackfire, $logger));
 
 When running a scenario, Blackfire creates a build that contains all profiles
 and assertion reports for requests made in the executed scenario; the scenario
 name is then used as the build name:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario = new Scenario('Scenario Name');
+    .. code-block:: yaml
+
+        scenario:
+            options:
+                title: Scenario Name
+
+    .. code-block:: php
+
+        $scenario = new Scenario('Scenario Name');
 
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
 are automatically run along side expectations.
 
 Additional features are also automatically activated:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario
-        ->visit(url('/blog/'))
+    .. code-block:: yaml
 
-        // set a title
-        ->title('Blog homepage')
+        scenario:
+            steps:
+                - visit: url('/blog/')
+                  title: Blog homepage
+                  assert:
+                      - main.peak_memory < 10M
+                  samples: 2
 
-        // add a Blackfire assertion
-        ->assert('main.peak_memory < 10M')
+    .. code-block:: php
 
-        // take 2 samples
-        ->samples(2)
+        $scenario
+            ->visit("url('/blog/')")
 
-    $result = $player->run($scenario);
+            // set a title
+            ->title('Blog homepage')
+
+            // add a Blackfire assertion
+            ->assert('main.peak_memory < 10M')
+
+            // take 2 samples
+            ->samples(2)
+
+        $result = $player->run($scenario);
 
 By default, all requests are profiled via Blackfire, you can disable it for
 some requests by calling ``blackfire(false)``.
@@ -57,19 +83,35 @@ You can easily access the Blackfire Report via the Result returned by
 
 Variables are a great way to make your Blackfire assertions conditional:
 
-.. code-block:: php
+.. configuration-block::
 
-    $scenario
-        ->value('env', 'prod')
-        ->visit(url('/blog/'))
+    .. code-block:: yaml
 
-        // no Twig template compilation in production
-        // not enforced on other environments
-        ->assert('"prod" == env and metrics.twig.compile.count == 0')
-    ;
+        scenario:
+            options:
+                variables:
+                    env: prod
 
-    $player->run($scenario);
+            steps:
+                # no Twig template compilation in production
+                # not enforced on other environments
+                - visit: url('/blog/')
+                  assert:
+                      - "prod" == env and metrics.twig.compile.count == 0
+
+    .. code-block:: php
+
+        $scenario
+            ->value('env', 'prod')
+
+            // no Twig template compilation in production
+            // not enforced on other environments
+            ->visit("url('/blog/')")
+            ->assert('"prod" == env and metrics.twig.compile.count == 0')
+        ;
+
+        $player->run($scenario);
 
 .. caution::
 
-    This ``assert()`` feature is not supported yet.
+    The ``assert()`` feature is **not supported yet**.
