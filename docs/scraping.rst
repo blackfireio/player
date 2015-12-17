@@ -1,5 +1,3 @@
-:access: ROLE_ADMIN
-
 Scraping Values
 ===============
 
