@@ -382,8 +382,8 @@ Sending a JSON Body with ``json``
             ->json()
         ;
 
-Settings Options for all Steps
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setting Options for all Steps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also set some of these options for all steps of a scenario:
 
@@ -484,7 +484,7 @@ run independently from the other ones (cookies are cleared).
     When using the Blackfire Player console tool, all scenarios are run.
 
 One benefit of ``runMulti()`` is its ability to **run scenarios in parallel**
-when you pass multiple instance of clients to Blackfire Player or use
+when you pass multiple instances of clients to Blackfire Player or use
 ``--concurrency`` when using the Blackfire Player console tool:
 
 .. configuration-block::

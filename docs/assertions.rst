@@ -94,7 +94,7 @@ Variables are a great way to make your Blackfire assertions conditional:
 
             steps:
                 # no Twig template compilation in production
-                # not enforced on other environments
+                # not enforced in other environments
                 - visit: url('/blog/')
                   assert:
                       - "prod" == env and metrics.twig.compile.count == 0
