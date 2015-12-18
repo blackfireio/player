@@ -43,7 +43,7 @@ written with PHP or YAML:
         $player->run($scenario);
 
 This simple example shows you how you can make requests on an HTTP application
-(``http://examples.com/``) and be sure that it behaves the way you expect it to
+(``http://example.com/``) and be sure that it behaves the way you expect it to
 via :doc:`Writing Expectations </player/expectations>` (the response status
 code is 200).
 
@@ -53,6 +53,9 @@ If you are using the YAML representation for scenarios, run them via the
 .. code-block:: bash
 
     blackfire-player run scenario.yml
+
+    # or
+    php blackfire-player.phar run scenario.yml
 
 You can chain requests:
 
