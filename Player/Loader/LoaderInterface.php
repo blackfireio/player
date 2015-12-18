@@ -19,6 +19,8 @@ use Blackfire\Player\Scenario;
 interface LoaderInterface
 {
     /**
+     * @param mixed $data
+     *
      * @return Scenario
      */
     public function load($data);
