@@ -16,15 +16,15 @@
     "require": {
         "php": ">=5.5.9",
         "guzzlehttp/guzzle": "^6.1",
-        "symfony/dom-crawler": "^2.7",
-        "symfony/css-selector": "^2.7",
-        "symfony/expression-language": "^2.7",
+        "symfony/dom-crawler": "^2.7|^3.0",
+        "symfony/css-selector": "^2.7|^3.0",
+        "symfony/expression-language": "^2.7|^3.0",
         "psr/log": "^1.0"
     },
     "require-dev": {
         "blackfire/php-sdk": "^1.5.1",
-        "symfony/console": "^2.7",
-        "symfony/yaml": "^2.7",
+        "symfony/console": "^2.7|^3.0",
+        "symfony/yaml": "^2.7|^3.0",
         "mtdowling/jmespath.php": "^2.2"
     },
     "autoload": {
