@@ -1,0 +1,21 @@
+language: php
+
+sudo: false
+
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
+
+before_install:
+  - composer self-update
+
+install:
+  - composer install --prefer-source --no-interaction --no-progress
+
+script:
+  - phpunit
+
+notifications:
+  email: false
