@@ -34,9 +34,9 @@ class Scenario
     /**
      * @return Step
      */
-    public function visit($uri, $method = 'GET')
+    public function visit($uri, $method = 'GET', $values = [])
     {
-        return $this->root->visit($uri, $method);
+        return $this->root->visit($uri, $method, $values);
     }
 
     /**
