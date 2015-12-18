@@ -4,8 +4,7 @@ sudo: false
 
 cache:
   directories:
-    - vendor
-    - $HOME/.composer/cache
+    - $HOME/.composer/cache/files
 
 php:
   - 5.5
@@ -17,7 +16,7 @@ before_install:
   - composer self-update
 
 install:
-  - composer install --prefer-source --no-interaction --no-progress
+  - composer install --no-interaction --no-progress
 
 script:
   - phpunit
