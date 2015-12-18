@@ -5,6 +5,12 @@ Expectations are **expressions** evaluated against the current HTTP response
 and if one of them returns a falsy value, Blackfire Player throws a
 ``Blackfire\Player\Exception\ExpectationFailureException`` exception.
 
+.. note::
+
+    Learn more about `Expressions syntax
+    <http://symfony.com/doc/current/components/expression_language/syntax.html>`_
+    in the Symfony documentation.
+
 Expressions have access to the following functions:
 
 * ``status_code()``: The HTTP status code for the current HTTP response;
@@ -18,18 +24,18 @@ Expressions have access to the following functions:
 * ``xpath()``: Returns nodes matching the XPath selector (for HTML and XML
   responses);
 
-* ``json()``: Returns JSON elements matching the CSS expression (for JSON
-  responses; see `JMESPath <http://jmespath.org/specification.html>`_ for the
-  syntax);
-
-Learn more about the `Expression syntax
-<http://symfony.com/doc/current/components/expression_language/syntax.html>`_.
+* ``json()``: Returns JSON elements matching the CSS expression.
 
 The ``css()`` and ``xpath()`` functions return
 ``Symfony\Component\DomCrawler\Crawler`` instances. Learn more about `methods
 you can call on Crawler instances
 <http://symfony.com/doc/current/components/dom_crawler.html>`_; the ``json()``
 function returns a PHP array.
+
+The ``json()`` function accepts `JMESPath
+<http://jmespath.org/specification.html>`_. This is only supported when
+``mtdowling/jmespath.php": "^2.2"`` is available as a project Composer
+dependency or if you are using the Player phar.
 
 Here are some common expressions:
 
