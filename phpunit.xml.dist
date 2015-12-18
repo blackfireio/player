@@ -12,15 +12,15 @@
 
     <testsuites>
         <testsuite name="Blackfire Player Test Suite">
-            <directory>./Blackfire/Player/Tests/</directory>
+            <directory>./Player/Tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./</directory>
+            <directory>Player</directory>
             <exclude>
-                <directory>./Tests/</directory>
+                <directory>Player/Tests/</directory>
                 <directory>./vendor/</directory>
             </exclude>
         </whitelist>
