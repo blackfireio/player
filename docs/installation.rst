@@ -1,13 +1,22 @@
 Installation
 ============
 
-Blackfire Player Scenarios can be run from PHP or from a YAML file.
+Blackfire Player can be run from PHP or from a YAML file.
 
-YAML files can be run via the Blackfire Player PHAR:
+Scenarios written in YAML can be run via the Blackfire Player PHAR:
+
+.. code-block:: bash
+    :zerocopy:
+
+    curl -OLsS http://get.blackfire.io/blackfire-player.phar
+
+Then, use ``php blackfire-player.phar`` to run the player or make it executable
+and move it to a directory in your ``PATH``:
 
 .. code-block:: bash
 
-    curl -OLsS http://get.blackfire.io/blackfire-player.phar
+    chmod 755 blackfire-player.phar
+    mv blackfire-player.phar .../bin/blackfire-player
 
 To integrate scenarios into your own PHP code, install Blackfire Player via
 Composer:
