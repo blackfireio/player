@@ -26,7 +26,7 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
     {
         $scenario = new Scenario();
         $scenario
-            ->request('/')
+            ->visit('url("/")')
         ;
 
         $mock = new MockHandler([
@@ -38,6 +38,6 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
         $guzzle = new GuzzleClient(['handler' => $handler]);
 
         $player = new Player($guzzle);
-        $player->crawl($scenario);
+        $player->run($scenario);
     }
 }
