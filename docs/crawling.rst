@@ -188,7 +188,7 @@ Clicking on a Link with ``click``
 
         scenario:
             steps:
-                - click: url(link("Add a blog post"))
+                - click: link("Add a blog post")
 
     .. code-block:: php
 
