@@ -17,13 +17,15 @@ use Symfony\Component\Yaml\Parser as YamlParser;
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  */
-class YamlLoader extends ArrayLoader
+class YamlLoader implements LoaderInterface
 {
     private $parser;
+    private $arrayLoader;
 
     public function __construct()
     {
         $this->parser = new YamlParser();
+        $this->arrayLoader = new ArrayLoader();
     }
 
     public function load($yaml)
@@ -38,6 +40,6 @@ class YamlLoader extends ArrayLoader
             throw new LoaderException(sprintf('YAML scenarios must be defined under the "scenario" or "scenario" key.'));
         }
 
-        return parent::load($data);
+        return $this->arrayLoader->load($data);
     }
 }
