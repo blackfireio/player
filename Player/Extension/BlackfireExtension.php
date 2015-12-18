@@ -14,6 +14,7 @@ namespace Blackfire\Player\Extension;
 use Blackfire\Bridge\Guzzle\Middleware as BlackfireMiddleware;
 use Blackfire\Build;
 use Blackfire\Client as BlackfireClient;
+use Blackfire\Exception\ExceptionInterface as BlackfireException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\Step;
