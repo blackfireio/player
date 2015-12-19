@@ -12,6 +12,7 @@
 namespace Blackfire\Player\ExpressionLanguage;
 
 use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\InvalidArgumentException;
 use Faker\Generator as FakerGenerator;
 use Faker\Factory as FakerFactory;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
@@ -95,6 +96,16 @@ class Provider implements ExpressionFunctionProviderInterface
                 $arguments = func_get_args();
 
                 return $this->faker->format($provider, array_splice($arguments, 2));
+            }),
+
+            new ExpressionFunction('regex', $compiler, function ($arguments, $regex) {
+                $ret = @preg_match($regex, (string) $arguments['_response']->getBody(), $matches);
+
+                if (false === $ret) {
+                    throw new InvalidArgumentException(sprintf('Regex "%s" is not valid: %s.', $regex, error_get_last()['message']));
+                }
+
+                return isset($matches[1]) ? $matches[1] : null;
             }),
 
             new ExpressionFunction('css', $compiler, function ($arguments, $selector) {
