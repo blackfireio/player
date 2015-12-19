@@ -35,7 +35,7 @@ final class PlayerCommand extends Command
             ->setName('run')
             ->setDefinition([
                 new InputArgument('files', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'The files defining the scenarios'),
-                new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of client to create', 1),
+                new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('output', 'o', InputOption::VALUE_REQUIRED, 'Saves the extracted values', null),
                 new InputOption('blackfire', '', InputOption::VALUE_REQUIRED, 'Enabled Blackfire and use the specified environment', null),
