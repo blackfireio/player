@@ -67,6 +67,10 @@ class ArrayLoader implements LoaderInterface
                 $scenario->key($data['options']['key']);
             }
 
+            if (isset($data['options']['delay'])) {
+                $scenario->delay($data['options']['delay']);
+            }
+
             if (isset($data['options']['endpoint'])) {
                 $scenario->endpoint($data['options']['endpoint']);
             }
@@ -124,6 +128,10 @@ class ArrayLoader implements LoaderInterface
                 foreach ($config['expect'] as $expectation) {
                     $step->expect($expectation);
                 }
+            }
+
+            if (isset($config['delay'])) {
+                $step->delay($config['delay']);
             }
 
             if (isset($config['assert'])) {

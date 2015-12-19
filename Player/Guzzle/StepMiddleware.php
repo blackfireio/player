@@ -124,6 +124,7 @@ class StepMiddleware
     private function prepareRequest(Step $step, $options)
     {
         $options['allow_redirects'] = false;
+        $options['delay'] = $step->getDelay();
 
         unset($options['expectations']);
         if ($step->getExpectations()) {
