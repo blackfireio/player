@@ -18,6 +18,8 @@ use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError as ExpressionSyntaxError;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -32,19 +34,21 @@ class StepMiddleware
     private $logger;
     private $previousResponse;
     private $previousCrawler;
+    private $language;
 
-    public function __construct(callable $handler, RequestFactory $requestFactory, array $extensions = [], LoggerInterface $logger = null)
+    public function __construct(callable $handler, RequestFactory $requestFactory, ExpressionLanguage $language, array $extensions = [], LoggerInterface $logger = null)
     {
         $this->handler = $handler;
         $this->requestFactory = $requestFactory;
+        $this->language = $language;
         $this->extensions = $extensions;
         $this->logger = $logger;
     }
 
-    public static function create(RequestFactory $requestFactory, array $extensions = [], LoggerInterface $logger = null)
+    public static function create(RequestFactory $requestFactory, ExpressionLanguage $language, array $extensions = [], LoggerInterface $logger = null)
     {
-        return function (callable $handler) use ($requestFactory, $extensions, $logger) {
-            return new self($handler, $requestFactory, $extensions, $logger);
+        return function (callable $handler) use ($requestFactory, $language, $extensions, $logger) {
+            return new self($handler, $requestFactory, $language, $extensions, $logger);
         };
     }
 
@@ -72,9 +76,11 @@ class StepMiddleware
             }
 
             $values = $options['values'];
+        } else {
+            $values = new ValueBag();
         }
 
-        $options = $this->prepareRequest($step, $options);
+        $options = $this->prepareRequest($step, $values, $request, $options);
 
         $msg = sprintf('Step %d: %s %s %s%s', $step->getIndex(), $step->getName(), $request->getMethod(), $request->getUri(), $step->getSamples() > 1 ? sprintf(' (%d samples)', $step->getSamples()) : '');
         $this->logger and $this->logger->info($msg, ['request' => $request->getHeaderLine('X-Request-Id')]);
@@ -92,7 +98,7 @@ class StepMiddleware
      *
      * @return ResponseInterface|PromiseInterface
      */
-    public function processResponse(RequestInterface $request, array $options, ResponseInterface $response, Step $step, ValueBag $values = null)
+    public function processResponse(RequestInterface $request, array $options, ResponseInterface $response, Step $step, ValueBag $values)
     {
         $crawler = $this->createCrawler($request->getUri(), $response);
 
@@ -121,10 +127,23 @@ class StepMiddleware
         return $crawler;
     }
 
-    private function prepareRequest(Step $step, $options)
+    private function prepareRequest(Step $step, ValueBag $values, RequestInterface $request, $options)
     {
         $options['allow_redirects'] = false;
-        $options['delay'] = $step->getDelay();
+
+        if (!$step->getDelay()) {
+            $options['delay'] = 0;
+        } else {
+            try {
+                $options['delay'] = $this->language->evaluate($step->getDelay(), $values->all(true));
+            } catch (ExpressionSyntaxError $e) {
+                $msg = sprintf('Delay syntax error in "%s": %s', $step->getDelay(), $e->getMessage());
+
+                $this->logger and $this->logger->critical($msg, ['request' => $request->getHeaderLine('X-Request-Id')]);
+
+                throw new InvalidArgumentException($msg);
+            }
+        }
 
         unset($options['expectations']);
         if ($step->getExpectations()) {
@@ -137,7 +156,7 @@ class StepMiddleware
         }
 
         foreach ($this->extensions as $extension) {
-            $options = $extension->prepareRequest($step, $options);
+            $options = $extension->prepareRequest($step, $request, $values, $options);
         }
 
         return $options;

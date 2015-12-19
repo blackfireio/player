@@ -385,6 +385,13 @@ Waiting before Sending with ``delay``
             ->delay(10000)
         ;
 
+The ``delay`` value can be any valid expression; get a random delay by using
+``fake()``:
+
+.. code-block:: text
+
+    fake('numberBetween', 1000, 3000)
+
 Sending a JSON Body with ``json``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
