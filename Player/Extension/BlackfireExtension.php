@@ -50,7 +50,7 @@ class BlackfireExtension implements ExtensionInterface
         $extra->set('blackfire_build', $this->registerBlackfire($scenario->getTitle()));
     }
 
-    public function prepareRequest(Step $step, $options)
+    public function prepareRequest(Step $step, $options, ValueBag $values)
     {
         unset($options['blackfire']);
         if ($step->isBlackfireEnabled()) {

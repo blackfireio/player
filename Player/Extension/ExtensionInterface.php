@@ -28,7 +28,7 @@ interface ExtensionInterface
 
     public function preRun(Scenario $scenario, ValueBag $values, ValueBag $extra);
 
-    public function prepareRequest(Step $step, $options);
+    public function prepareRequest(Step $step, ValueBag $values, $options);
 
     public function processResponse(RequestInterface $request, ResponseInterface $response, Step $step, ValueBag $values = null, Crawler $crawler = null);
 

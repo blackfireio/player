@@ -170,7 +170,7 @@ class Player
 
         foreach ($this->clients as $client) {
             $stack = $client->getConfig('handler');
-            $stack->unshift(StepMiddleware::create($this->getRequestFactory(), $this->extensions, $this->logger), 'scenario');
+            $stack->unshift(StepMiddleware::create($this->getRequestFactory(), $this->getLanguage(), $this->extensions, $this->logger), 'scenario');
             $stack->push(ExpectationsMiddleware::create($this->getLanguage(), $this->logger), 'expectations');
 
             foreach ($this->extensions as $extension) {
