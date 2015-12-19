@@ -220,8 +220,32 @@ and an array of values to submit with the form):
             'content' => "'Scraping with Blackfire Player is so easy!'",
         ]);
 
-Note that submitted values are expressions, so you need to quote plain strings
-(or use ``scalar()``).
+Note that we are using ``scalar()`` for submitted values as they must be
+expressions (you can also quote plain strings instead).
+
+Values can also be randomly generated via the ``fake()`` function:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        scenario:
+            steps:
+                - submit: button("Submit")
+                - params:
+                    title: fake('sentence', 5)
+                    content: join(fake('paragraphs', 3), "\n\n")
+
+    .. code-block:: php
+
+        // reference a button via the ``button()`` function
+        $scenario->submit('button("Submit")', [
+            'title' => "fake('sentence', 5)",
+            'content' => "join(fake('paragraphs', 3), "\n\n")",
+        ]);
+
+``fake()`` use the `Faker library <https://github.com/fzaninotto/Faker>`_ under
+the hood.
 
 Following Redirections with ``follow``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
