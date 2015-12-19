@@ -12,6 +12,8 @@
 namespace Blackfire\Player\ExpressionLanguage;
 
 use Blackfire\Player\Exception\LogicException;
+use Faker\Generator as FakerGenerator;
+use Faker\Factory as FakerFactory;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use JmesPath\Env as JmesPath;
@@ -21,6 +23,13 @@ use JmesPath\Env as JmesPath;
  */
 class Provider implements ExpressionFunctionProviderInterface
 {
+    private $faker;
+
+    public function __construct(FakerGenerator $faker = null)
+    {
+        $this->faker = null !== $faker ? $faker : FakerFactory::create();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -70,8 +79,22 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getHeader($name)[0];
             }),
 
-            new ExpressionFunction('scalar', $compiler, function ($arguments, $string) {
-                return $string;
+            new ExpressionFunction('scalar', $compiler, function ($arguments, $scalar) {
+                return $scalar;
+            }),
+
+            new ExpressionFunction('join', $compiler, function ($arguments, $value, $glue) {
+                if ($value instanceof \Traversable) {
+                    $value = iterator_to_array($value, false);
+                }
+
+                return implode($glue, (array) $value);
+            }),
+
+            new ExpressionFunction('fake', $compiler, function ($arguments, $provider) {
+                $arguments = func_get_args();
+
+                return $this->faker->format($provider, array_splice($arguments, 2));
             }),
 
             new ExpressionFunction('css', $compiler, function ($arguments, $selector) {

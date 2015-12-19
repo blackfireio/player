@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
-* 1.0.0 (2016-XX-XX)
+* 0.2.0 (2016-XX-XX)
+
+ * added join function for scenarios in YAML
+ * added support for fake values
+
+* 0.1.0 (2016-12-17)
 
  * Initial release
