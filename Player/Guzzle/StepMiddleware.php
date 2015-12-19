@@ -156,7 +156,7 @@ class StepMiddleware
         }
 
         foreach ($this->extensions as $extension) {
-            $options = $extension->prepareRequest($step, $request, $values, $options);
+            $options = $extension->prepareRequest($step, $values, $request, $options);
         }
 
         return $options;

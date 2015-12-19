@@ -18,6 +18,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
                       latest_posts: [css(".post h2 a"), ['_text', 'href']]
                       age: header("Age")
                       content_type: header("Content-Type")
+                      token: regex('/name="_token" value="([^"]+)"/')
 
     .. code-block:: php
 
@@ -29,6 +30,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
             ->extract('latest_posts', 'css(".post h2 a")', ['_text', 'href'])
             ->extract('age', 'header("Age")')
             ->extract('content_type', 'header("Content-Type")')
+            ->extract('token', 'regex(\'/name="_token" value="([^"]+)"/\')')
         ;
 
 The ``extract()`` method takes three arguments:
@@ -39,6 +41,11 @@ The ``extract()`` method takes three arguments:
 
 * *Optionally*, an attribute to extract or an array of attributes to extract
   (use ``_text`` to extract the node text value, which is the default).
+
+Using ``json()``, ``css()``, and ``xpath()`` on JSON, HTML, and XML responses
+is recommended, but for pure text responses or complex extractions, you can use
+the generic ``regex()`` function. ``regex()`` takes a regex as an argument an
+returns the first match.
 
 The extracted values are also available at the end of a crawling session:
 
