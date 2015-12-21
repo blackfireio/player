@@ -24,7 +24,7 @@ class Scenario
     private $values;
     private $endpoint;
 
-    public function __construct($title = null, array $values = array())
+    public function __construct($title = null, array $values = [])
     {
         $this->root = new Step();
         $this->title = null === $title ? 'Untitled Scenario' : $title;

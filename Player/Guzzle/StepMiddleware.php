@@ -33,7 +33,7 @@ class StepMiddleware
     private $previousResponse;
     private $previousCrawler;
 
-    public function __construct(callable $handler, RequestFactory $requestFactory, array $extensions = array(), LoggerInterface $logger = null)
+    public function __construct(callable $handler, RequestFactory $requestFactory, array $extensions = [], LoggerInterface $logger = null)
     {
         $this->handler = $handler;
         $this->requestFactory = $requestFactory;
@@ -41,7 +41,7 @@ class StepMiddleware
         $this->logger = $logger;
     }
 
-    public static function create(RequestFactory $requestFactory, array $extensions = array(), LoggerInterface $logger = null)
+    public static function create(RequestFactory $requestFactory, array $extensions = [], LoggerInterface $logger = null)
     {
         return function (callable $handler) use ($requestFactory, $extensions, $logger) {
             return new self($handler, $requestFactory, $extensions, $logger);

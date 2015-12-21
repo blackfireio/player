@@ -68,7 +68,7 @@ EOF
             $player->addExtension(new \Blackfire\Player\Extension\BlackfireExtension($blackfire, $logger));
         }
 
-        $variables = array();
+        $variables = [];
         foreach ($input->getOption('variables') as $variable) {
             list($key, $value) = explode('=', $variable, 2);
             $variables[$key] = $value;
