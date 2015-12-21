@@ -38,6 +38,16 @@ name is then used as the build name:
 
         $scenario = new Scenario('Scenario Name');
 
+.. note::
+
+    You can set the ``external_id`` and ``external_parent_id`` settings of the
+    build by passing environment variables:
+
+    .. code-block:: bash
+
+        BLACKFIRE_BUILD_REFERENCE_ID=ref BLACKFIRE_BUILD_REFERENCE_PARENT_ID=parent \
+        blackfire-player run scenario.yml --blackfire=ENV_NAME_OR_UUID
+
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
 are automatically run along side expectations.
 
