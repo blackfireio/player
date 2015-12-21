@@ -3,6 +3,7 @@ Blackfire Player Changelog
 
 * 0.2.0 (2016-XX-XX)
 
+ * added the possibility to configure Blackfire build references
  * added regex function
  * added the join function
  * added support for fake values

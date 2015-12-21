@@ -123,10 +123,20 @@ class BlackfireExtension implements ExtensionInterface
             throw new LogicException('You must set the environment you want to work with on the Blackfire client configuration.');
         }
 
-        return $this->blackfire->createBuild($env, [
+        $options = [
             'title' => $title,
             'trigger_name' => 'Blackfire Player',
-        ]);
+        ];
+
+        if (isset($_SERVER['BLACKFIRE_BUILD_REFERENCE_ID'])) {
+            $options['external_id'] = $_SERVER['BLACKFIRE_BUILD_REFERENCE_ID'];
+        }
+
+        if (isset($_SERVER['BLACKFIRE_BUILD_REFERENCE_PARENT_ID'])) {
+            $options['external_parent_id'] = $_SERVER['BLACKFIRE_BUILD_REFERENCE_PARENT_ID'];
+        }
+
+        return $this->blackfire->createBuild($env, $options);
     }
 
     private function createBlackfireConfig(Step $step, Build $build = null)
