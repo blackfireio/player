@@ -40,17 +40,21 @@ class Player
      */
     public function __construct($client)
     {
+        $clients = [];
+
         if (is_array($client)) {
-            $this->clients = $client;
+            $clients = $client;
         } else {
-            $this->clients[] = $client;
+            $clients[] = $client;
         }
-    
-        foreach ($this->clients as $c) {
+
+        foreach ($clients as $c) {
             if (!$c instanceof GuzzleClient) {
                 throw new LogicException('Blackfire Player accepts a Guzzle client or an array of Guzzle clients.');
             }
         }
+
+        $this->clients = $clients;
     }
 
     public function addExtension(ExtensionInterface $extension)
