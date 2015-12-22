@@ -128,12 +128,12 @@ class BlackfireExtension implements ExtensionInterface
             'trigger_name' => 'Blackfire Player',
         ];
 
-        if (isset($_SERVER['BLACKFIRE_BUILD_REFERENCE_ID'])) {
-            $options['external_id'] = $_SERVER['BLACKFIRE_BUILD_REFERENCE_ID'];
+        if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
+            $options['external_id'] = $_SERVER['BLACKFIRE_EXTERNAL_ID'];
         }
 
-        if (isset($_SERVER['BLACKFIRE_BUILD_REFERENCE_PARENT_ID'])) {
-            $options['external_parent_id'] = $_SERVER['BLACKFIRE_BUILD_REFERENCE_PARENT_ID'];
+        if (isset($_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'])) {
+            $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'];
         }
 
         return $this->blackfire->createBuild($env, $options);

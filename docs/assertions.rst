@@ -45,7 +45,7 @@ name is then used as the build name:
 
     .. code-block:: bash
 
-        BLACKFIRE_BUILD_REFERENCE_ID=ref BLACKFIRE_BUILD_REFERENCE_PARENT_ID=parent \
+        BLACKFIRE_EXTERNAL_ID=ref BLACKFIRE_EXTERNAL_PARENT_ID=parent \
         blackfire-player run scenario.yml --blackfire=ENV_NAME_OR_UUID
 
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
