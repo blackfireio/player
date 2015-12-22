@@ -21,6 +21,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 
@@ -52,9 +53,9 @@ EOF
     {
         $logger = new ConsoleLogger($output);
 
-        $clients = [$this->createClient($output->isDebug())];
+        $clients = [$this->createClient($output)];
         for ($i = 1; $i < $input->getOption('concurrency'); ++$i) {
-            $clients[] = $this->createClient($output->isDebug());
+            $clients[] = $this->createClient($output);
         }
 
         $player = new Player($clients);
@@ -113,11 +114,14 @@ EOF
         }
     }
 
-    private function createClient($isDebug = false)
+    private function createClient(OutputInterface $output)
     {
         return new GuzzleClient([
             'cookies' => true,
-            'debug' => $isDebug,
+            'debug' => $output->isDebug() && $output instanceof ConsoleOutput
+                ? $output->getErrorOutput()->getStream()
+                : false
+            ,
         ]);
     }
 }
