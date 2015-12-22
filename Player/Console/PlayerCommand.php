@@ -55,7 +55,9 @@ EOF
 
         $clients = [];
         for ($i = 0; $i < $input->getOption('concurrency'); ++$i) {
-            $clients[] = $this->createClient();
+            $clients[] = new GuzzleClient([
+                'cookies' => true,
+            ]);
         }
 
         $player = new Player($clients);
@@ -112,12 +114,5 @@ EOF
                 return 1;
             }
         }
-    }
-
-    private function createClient()
-    {
-        return new GuzzleClient([
-            'cookies' => true,
-        ]);
     }
 }
