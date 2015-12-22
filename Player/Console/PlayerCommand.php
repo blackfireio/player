@@ -14,6 +14,7 @@ namespace Blackfire\Player\Console;
 use Blackfire\Client as BlackfireClient;
 use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
 use Blackfire\Player\Player;
+use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Loader\YamlLoader;
 use Blackfire\Player\ScenarioSet;
 use GuzzleHttp\Client as GuzzleClient;
@@ -65,7 +66,7 @@ EOF
             $blackfireConfig->setEnv($env);
             $blackfire = new BlackfireClient($blackfireConfig);
 
-            $player->addExtension(new \Blackfire\Player\Extension\BlackfireExtension($blackfire, $logger));
+            $player->addExtension(new BlackfireExtension($blackfire, $logger));
         }
 
         $variables = [];
