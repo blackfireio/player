@@ -241,7 +241,7 @@ Values can also be randomly generated via the ``fake()`` function:
         // reference a button via the ``button()`` function
         $scenario->submit('button("Submit")', [
             'title' => "fake('sentence', 5)",
-            'content' => "join(fake('paragraphs', 3), "\n\n")",
+            'content' => "join(fake('paragraphs', 3), \"\n\n\")",
         ]);
 
 ``fake()`` use the `Faker library <https://github.com/fzaninotto/Faker>`_ under
