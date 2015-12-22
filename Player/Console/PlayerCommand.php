@@ -53,8 +53,8 @@ EOF
     {
         $logger = new ConsoleLogger($output);
 
-        $clients = [$this->createClient()];
-        for ($i = 1; $i < $input->getOption('concurrency'); ++$i) {
+        $clients = [];
+        for ($i = 0; $i < $input->getOption('concurrency'); ++$i) {
             $clients[] = $this->createClient();
         }
 
