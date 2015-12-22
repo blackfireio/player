@@ -52,9 +52,9 @@ EOF
     {
         $logger = new ConsoleLogger($output);
 
-        $clients = [$this->createClient()];
+        $clients = [$this->createClient($output->isDebug())];
         for ($i = 1; $i < $input->getOption('concurrency'); ++$i) {
-            $clients[] = $this->createClient();
+            $clients[] = $this->createClient($output->isDebug());
         }
 
         $player = new Player($clients);
@@ -113,10 +113,11 @@ EOF
         }
     }
 
-    private function createClient()
+    private function createClient($isDebug = false)
     {
         return new GuzzleClient([
             'cookies' => true,
+            'debug' => $isDebug,
         ]);
     }
 }
