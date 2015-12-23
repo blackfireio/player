@@ -157,6 +157,10 @@ class RequestFactory
 
     private function createBody(ValueBag $values, $parameters, &$headers, $isJson)
     {
+        if (!$parameters) {
+            return;
+        }
+
         if ($isJson) {
             $headers['Content-Type'] = 'application/json';
         } else {
