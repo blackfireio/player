@@ -60,6 +60,10 @@ class RequestFactory
         $uri = $this->language->evaluate($step->getUri(), $values->all(true));
 
         $headers = $step->getHeaders();
+        if (!isset($headers['User-Agent'])) {
+            $headers['User-Agent'] = 'Blackfire PHP Player/1.0';
+        }
+
         $body = $this->createBody($values, $step->getFormValues(), $headers, $step->isJson());
 
         return new Request($step->getMethod(), $this->fixUri($step, $uri), $headers, $body);
