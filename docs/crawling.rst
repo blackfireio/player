@@ -291,7 +291,7 @@ Embedding Scenarios with ``add``
               steps:
                   - add: login
 
-                  - url('/admin')
+                  - visit: url('/admin')
                     expect:
                         - status_code() == 200
 
@@ -574,7 +574,7 @@ login, account creation, or deletion steps, ...):
               steps:
                   - add: login
 
-                  - url('/stats')
+                  - visit: url('/stats')
 
                   # ...
 
@@ -583,7 +583,7 @@ login, account creation, or deletion steps, ...):
               steps:
                   - add: login
 
-                  - url('/admin/')
+                  - visit: url('/admin/')
 
                   # ...
 
