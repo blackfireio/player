@@ -116,12 +116,11 @@ EOF
 
     private function createClient(OutputInterface $output)
     {
+        $debug = $output->isDebug() && $output instanceof ConsoleOutput ? $output->getErrorOutput()->getStream() : false;
+
         return new GuzzleClient([
             'cookies' => true,
-            'debug' => $output->isDebug() && $output instanceof ConsoleOutput
-                ? $output->getErrorOutput()->getStream()
-                : false
-            ,
+            'debug' => $debug,
         ]);
     }
 }
