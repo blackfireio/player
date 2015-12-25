@@ -107,6 +107,8 @@ class ArrayLoader implements LoaderInterface
                 $step = $step->submit($config['submit'], isset($config['params']) ? $config['params'] : []);
             } elseif (isset($config['follow'])) {
                 $step = $step->follow();
+            } elseif (isset($config['reload'])) {
+                $step = $step->reload();
             } elseif (isset($config['add'])) {
                 $key = $config['add'];
                 if (!isset($references[$key])) {
@@ -117,7 +119,7 @@ class ArrayLoader implements LoaderInterface
 
                 continue;
             } else {
-                throw new LogicException(sprintf('Step "%s" must define a "visit", "click", "submit", "follow", or "add" item.', $title));
+                throw new LogicException(sprintf('Step "%s" must define a "visit", "click", "submit", "follow", "reload", or "add" item.', $title));
             }
 
             if (isset($config['title'])) {

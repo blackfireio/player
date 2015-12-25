@@ -135,6 +135,18 @@ class Step
         return $step;
     }
 
+    public function reload()
+    {
+        if ($this->root && !$this->uri) {
+            throw new LogicException(sprintf('%s() cannot be called as a first step.', __METHOD__));
+        }
+
+        $step = clone $this;
+        $this->next = $step;
+
+        return $step;
+    }
+
     public function title($title)
     {
         $this->title = $title;
