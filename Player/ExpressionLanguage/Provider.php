@@ -114,8 +114,12 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $this->faker->format($provider, array_splice($arguments, 2));
             }),
 
-            new ExpressionFunction('regex', $compiler, function ($arguments, $regex) {
-                $ret = @preg_match($regex, (string) $arguments['_response']->getBody(), $matches);
+            new ExpressionFunction('regex', $compiler, function ($arguments, $regex, $str = null) {
+                if (null === $str) {
+                    $str = (string) $arguments['_response']->getBody();
+                }
+
+                $ret = @preg_match($regex, $str, $matches);
 
                 if (false === $ret) {
                     throw new InvalidArgumentException(sprintf('Regex "%s" is not valid: %s.', $regex, error_get_last()['message']));
