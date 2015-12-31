@@ -205,9 +205,9 @@ class Step
         return $this;
     }
 
-    public function extract($name, $expression, $attributes = '_text')
+    public function extract($name, $expression)
     {
-        $this->extractions[$name] = [$expression, $attributes];
+        $this->extractions[$name] = $expression;
 
         return $this;
     }

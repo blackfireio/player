@@ -148,22 +148,12 @@ class ExpectationsMiddleware
 
         $variables = $this->createVariables($response, $crawler);
 
-        foreach ($extractions as $name => $extract) {
-            list($expression, $attributes) = $extract;
-            if (!is_array($attributes)) {
-                $attributes = [$attributes];
-            }
-
+        foreach ($extractions as $name => $expression) {
             try {
                 $data = $this->language->evaluate($expression, $variables + $values->all(true));
                 if ($data instanceof Crawler) {
-                    $value = $data->extract($attributes);
-
-                    if (count($attributes) == 1) {
-                        $data = count($data) > 1 ? $value : $value[0];
-                    } else {
-                        $data = $value;
-                    }
+                    $data = $data->extract('_text');
+                    $data = count($data) > 1 ? $data : $data[0];
                 }
 
                 $values->set($name, $data);

@@ -15,7 +15,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
                   extract:
                       latest_post_title: css(".post h2").first()
                       latest_post_href: css(".post h2 a").first().attr("href")
-                      latest_posts: [css(".post h2 a"), ['_text', 'href']]
+                      latest_posts: css(".post h2 a").extract(["_text", "href"])
                       age: header("Age")
                       content_type: header("Content-Type")
                       token: regex('/name="_token" value="([^"]+)"/')
@@ -27,7 +27,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
             ->expect('status_code() == 200')
             ->extract('latest_post_title', 'css(".post h2").first()')
             ->extract('latest_post_href', 'css(".post h2 a").first().attr("href")')
-            ->extract('latest_posts', 'css(".post h2 a")', ['_text', 'href'])
+            ->extract('latest_posts', 'css(".post h2 a").extract(["_text", "href"])'
             ->extract('age', 'header("Age")')
             ->extract('content_type', 'header("Content-Type")')
             ->extract('token', 'regex(\'/name="_token" value="([^"]+)"/\')')
@@ -37,10 +37,7 @@ The ``extract()`` method takes three arguments:
 
 * The name of the variable you want to store the extracted value in;
 
-* An expression to evaluate (the value of the evaluated expression);
-
-* *Optionally*, an attribute to extract or an array of attributes to extract
-  (use ``_text`` to extract the node text value, which is the default).
+* An expression to evaluate (the value of the evaluated expression).
 
 Using ``json()``, ``css()``, and ``xpath()`` on JSON, HTML, and XML responses
 is recommended, but for pure text responses or complex extractions, you can use
