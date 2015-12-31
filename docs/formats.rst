@@ -47,9 +47,9 @@ Here is an example of a YAML scenario that uses all Blackfire Player features:
                   - status_code() == 200
                   - css('body.releases')
               extract:
-                  latest_release_title: 'css(".post h2 a").first()'
-                  latest_release_href: ['css(".post h2 a").first()', 'href']
-                  latest_releases: ['css(".post h2 a")', ['_text', 'href']]
+                  latest_release_title: css(".post h2 a").first()
+                  latest_release_href: css(".post h2 a").first().extract('href')
+                  latest_releases: css(".post h2 a").extract(['_text', 'href'])
 
             - title: "Latest Release Blog Post"
               click: link(latest_release_title)
