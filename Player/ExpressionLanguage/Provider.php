@@ -93,13 +93,13 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('merge', $compiler, function ($arguments, $arr1, $arr2) {
-                if ($arr1 instanceof Traversable) {
+                if ($arr1 instanceof \Traversable) {
                     $arr1 = iterator_to_array($arr1);
                 } elseif (!is_array($arr1)) {
                     throw new InvalidArgumentException(sprintf('The merge filter only works with arrays or "Traversable", got "%s" as first argument.', gettype($arr1)));
                 }
 
-                if ($arr2 instanceof Traversable) {
+                if ($arr2 instanceof \Traversable) {
                     $arr2 = iterator_to_array($arr2);
                 } elseif (!is_array($arr2)) {
                     throw new InvalidArgumentException(sprintf('The merge filter only works with arrays or "Traversable", got "%s" as second argument.', gettype($arr2)));
