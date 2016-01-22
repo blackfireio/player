@@ -48,7 +48,7 @@ via :doc:`Writing Expectations </player/expectations>` (the response status
 code is 200).
 
 If you are using the YAML representation for scenarios, run them via the
-`Blackfire Player console tool </player/cli>`_:
+`Blackfire Player console tool </docs/player/cli>`_:
 
 .. code-block:: bash
 
