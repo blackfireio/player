@@ -51,7 +51,7 @@ Here are some common expressions:
     - css(".post h2 a").first().attr("href")
 
     # check that "h1" contains "Welcome"
-    - css("h1:contains('Welcome')")
+    - css("h1:contains('Welcome')").count() > 0
 
     # same as above
     - css("h1").first().text() matches "/Welcome/"
