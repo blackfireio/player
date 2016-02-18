@@ -18,11 +18,9 @@ use Blackfire\Player\Exception\LogicException;
  */
 class Scenario
 {
-    private $auth;
     private $root;
     private $key;
     private $values;
-    private $endpoint;
 
     public function __construct($title = null, array $values = [])
     {
