@@ -208,7 +208,7 @@ and an array of values to submit with the form):
         scenario:
             steps:
                 - submit: button("Submit")
-                - params:
+                  params:
                     title: scalar('Happy Scraping')
                     content: scalar('Scraping with Blackfire Player is so easy!')
 
@@ -232,7 +232,7 @@ Values can also be randomly generated via the ``fake()`` function:
         scenario:
             steps:
                 - submit: button("Submit")
-                - params:
+                  params:
                     title: fake('sentence', 5)
                     content: join(fake('paragraphs', 3), "\n\n")
 
