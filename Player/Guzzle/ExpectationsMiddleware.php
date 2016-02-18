@@ -154,6 +154,9 @@ class ExpectationsMiddleware
                     $data = count($data) > 1 ? $data : $data[0];
                 }
 
+                $msg = sprintf('Extracting value form "%s": %s', $name, is_scalar($data) ? $data : '[Non-scalar-data]');
+                $this->logger and $this->logger->debug($msg, ['request' => $request->getHeaderLine('X-Request-Id')]);
+
                 $values->set($name, $data);
             } catch (ExpressionSyntaxError $e) {
                 $msg = sprintf('Syntax Error in "%s": %s', $expression, $e->getMessage());
