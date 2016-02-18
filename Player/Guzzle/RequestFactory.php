@@ -57,7 +57,7 @@ class RequestFactory
 
     private function createRequestFromUri(Step $step, ValueBag $values)
     {
-        $uri = $this->language->evaluate($step->getUri(), $values->all(true));
+        $uri = ltrim($this->language->evaluate($step->getUri(), $values->all(true)), '/');
 
         $headers = $step->getHeaders();
         if (!isset($headers['User-Agent'])) {
