@@ -95,8 +95,6 @@ class ExpectationsMiddleware
             if (!$options['values'] instanceof ValueBag) {
                 throw new InvalidArgumentException('The "values" option must be an instance of Blackfire\Player\ValueBag.');
             }
-
-            $values = $options['values'];
         }
 
         if (isset($options['expectations'])) {
