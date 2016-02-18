@@ -319,6 +319,10 @@ class Step
             return $this->formSelector;
         }
 
+        if ($this->follow) {
+            return 'follow redirect';
+        }
+
         return $this->uri;
     }
 
