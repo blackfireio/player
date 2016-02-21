@@ -50,7 +50,7 @@ class Scenario
         $this->root = clone $scenario->getRoot();
         $this->root->setOptions($options);
 
-        return $this->root;
+        return $this->root->getLast();
     }
 
     public function header($key, $value)
