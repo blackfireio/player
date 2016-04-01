@@ -7,7 +7,7 @@ Blackfire Player is a powerful Web Crawling, Web Testing, and Web Scraper
 library for PHP. It provides a nice API to **crawl HTTP services**, **assert
 responses**, and **extract data** from HTML/XML/JSON responses.
 
-Some Blackfire Player uses cases:
+Some Blackfire Player use cases:
 
 * Crawl your website/API and check expectations -- aka Acceptance Tests;
 

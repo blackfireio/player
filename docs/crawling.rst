@@ -128,7 +128,7 @@ forms, or follow redirections (see `Making requests`_ for more information):
 
 .. tip::
 
-    Running more than one scenarios via ``run()`` is safe as the client
+    Running more than one scenario via ``run()`` is safe as the client
     **cookies are cleared at the end of each scenario**.
 
 .. note::
@@ -140,7 +140,7 @@ forms, or follow redirections (see `Making requests`_ for more information):
 Making Requests
 ---------------
 
-There are several ways you can jump from on HTTP request to the next.
+There are several ways you can jump from one HTTP request to the next.
 
 Visiting a Page with ``visit``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
