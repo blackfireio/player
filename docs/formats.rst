@@ -90,7 +90,7 @@ You can also define multiple scenarios in a single YAML file:
                       foo: scalar('bar')
                   json: true
 
-Note that scenarios defined with a key are abstract and are not be run by
+Note that scenarios defined with a key are abstract and will not be run by
 ``runMulti()``.
 
 .. tip::
