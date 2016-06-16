@@ -412,7 +412,7 @@ Sending a JSON Body with ``json``
     .. code-block:: php
 
         $scenario
-            ->visit("url('/')", 'POST', ['foo': 'bar'])
+            ->visit("url('/')", 'POST', ['foo' => 'bar'])
             ->json()
         ;
 
