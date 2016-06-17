@@ -23,7 +23,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Logger\ConsoleLogger;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -111,6 +110,10 @@ EOF
             if ($result->isErrored()) {
                 return 1;
             }
+        }
+
+        if ($logger->hasErrored()) {
+            return 1;
         }
     }
 
