@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.4.3 (2016-06-20)
+
+ * throw exceptions in case configuration is invalid
+
 * 0.4.2 (2016-06-20)
 
  * made player exit with error when errors are logged
