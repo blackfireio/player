@@ -1,7 +1,30 @@
 Blackfire Player Changelog
 ==========================
 
-* 0.2.0 (2016-XX-XX)
+* 0.4.2 (2016-06-20)
+
+ * made player exit with error when errors are logged
+
+* 0.4.1 (2016-05-24)
+
+ * fixed embedding scenarios bug
+
+* 0.4.0 (2016-05-18)
+
+ * updated deps
+ * added log for extracted values
+ * allowed endpoint to have a non-empty baseurl
+
+* 0.3.0 (2016-01-27)
+
+ * added reload support
+ * added a default User-Agent as it is required by some web servers
+ * fixed request content-type when no parameters are provided
+ * added the possibility to pass any variable to regex()
+ * added the merge function
+ * enable debug mode in guzzle when -vvv
+
+* 0.2.0 (2015-12-22)
 
  * added the possibility to configure Blackfire build references
  * added regex function
