@@ -127,6 +127,7 @@ class ArrayLoader implements LoaderInterface
             }
 
             if (isset($config['expect'])) {
+                $this->ensureConfigurationPropertyIsArray($config, 'expect');
                 foreach ($config['expect'] as $expectation) {
                     $step->expect($expectation);
                 }
@@ -137,12 +138,14 @@ class ArrayLoader implements LoaderInterface
             }
 
             if (isset($config['assert'])) {
+                $this->ensureConfigurationPropertyIsArray($config, 'assert');
                 foreach ($config['assert'] as $assertion) {
                     $step->assert($assertion);
                 }
             }
 
             if (isset($config['extract'])) {
+                $this->ensureConfigurationPropertyIsArray($config, 'extract');
                 foreach ($config['extract'] as $name => $cfg) {
                     if (is_array($cfg)) {
                         $step->extract($name, $cfg[0], $cfg[1]);
@@ -165,6 +168,7 @@ class ArrayLoader implements LoaderInterface
             }
 
             if (isset($config['headers'])) {
+                $this->ensureConfigurationPropertyIsArray($config, 'headers');
                 foreach ($config['headers'] as $key => $value) {
                     $step->header($key, $value);
                 }
@@ -172,5 +176,12 @@ class ArrayLoader implements LoaderInterface
         }
 
         return $scenario;
+    }
+
+    private function ensureConfigurationPropertyIsArray($config, $property)
+    {
+        if (!is_array($config[$property])) {
+            throw new \InvalidArgumentException(sprint("'%s' must be an array", $property));
+        }
     }
 }
