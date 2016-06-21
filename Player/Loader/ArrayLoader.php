@@ -181,7 +181,7 @@ class ArrayLoader implements LoaderInterface
     private function ensureConfigurationPropertyIsArray($config, $property)
     {
         if (!is_array($config[$property])) {
-            throw new \InvalidArgumentException(sprint("'%s' must be an array", $property));
+            throw new \InvalidArgumentException(sprintf("'%s' must be an array", $property));
         }
     }
 }
