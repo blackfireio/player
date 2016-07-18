@@ -243,7 +243,7 @@ class Step
     {
         $headers = $this->options->getHeaders();
         foreach ($this->headers as $key => $values) {
-            $headers[$key] = array_merge($headers[$key], $values);
+            $headers[$key] = isset($headers[$key]) ? array_merge($headers[$key], $values) : $values;
         }
 
         foreach ($headers as $key => $values) {
