@@ -32,4 +32,4 @@ Composer:
 .. note::
 
     Blackfire Player is licensed under the MIT Open-Source license. Its `source
-    code <https://github.com/blackfireio/player>`_ is hosted on Github.
+    code <https://github.com/blackfireio/player>`_ is hosted on GitHub.
