@@ -11,116 +11,142 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Bridge\Guzzle\Middleware as BlackfireMiddleware;
 use Blackfire\Build;
 use Blackfire\Client as BlackfireClient;
+use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
 use Blackfire\Exception\ExceptionInterface as BlackfireException;
-use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\ExpectationErrorException;
+use Blackfire\Player\Exception\ExpectationFailureException;
+use Blackfire\Player\Exception\SyntaxErrorException;
+use Blackfire\Player\Psr7\CrawlerFactory;
+use Blackfire\Player\Result;
 use Blackfire\Player\Scenario;
-use Blackfire\Player\Step;
-use Blackfire\Player\ValueBag;
+use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\Step\ConfigurableStep;
+use Blackfire\Player\Step\ReloadStep;
+use Blackfire\Player\Step\Step;
+use Blackfire\Player\Context;
 use Blackfire\Profile\Configuration as ProfileConfiguration;
-use GuzzleHttp\HandlerStack;
-use Psr\Log\LoggerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
-class BlackfireExtension implements ExtensionInterface
+final class BlackfireExtension extends AbstractExtension
 {
     private $blackfire;
-    private $logger;
+    private $language;
 
-    public function __construct(BlackfireClient $blackfire, LoggerInterface $logger = null)
+    public function __construct(ExpressionLanguage $language, $stream = null)
     {
-        $this->blackfire = $blackfire;
-        $this->logger = $logger;
+        $this->language = $language;
+        $this->stream = $stream ?: STDOUT;
+        $this->blackfire = new BlackfireClient(new BlackfireClientConfiguration());
     }
 
-    public function registerHandlers(HandlerStack $stack)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
     {
-        $stack->push(BlackfireMiddleware::create($this->blackfire), 'blackfire');
-    }
-
-    public function preRun(Scenario $scenario, ValueBag $values, ValueBag $extra)
-    {
-        $extra->set('blackfire_build', $this->registerBlackfire($scenario->getTitle()));
-    }
-
-    public function prepareRequest(Step $step, ValueBag $values, RequestInterface $request, $options)
-    {
-        unset($options['blackfire']);
-        if ($step->isBlackfireEnabled()) {
-            $build = $options['extra']->has('blackfire_build') ? $options['extra']->get('blackfire_build') : null;
-            $options['blackfire'] = $this->createBlackfireConfig($options['step'], $build, $request);
+        if (!$step instanceof ConfigurableStep) {
+            return $request;
         }
 
-        return $options;
-    }
-
-    public function processResponse(RequestInterface $request, ResponseInterface $response, Step $step, ValueBag $values = null, Crawler $crawler = null)
-    {
-        if (!$uuid = $response->getHeaderLine('X-Blackfire-Profile-Uuid')) {
-            return;
+        $env = $context->getStepContext()->getBlackfireEnv();
+        $env = null === $env ? false : $this->language->evaluate($env, $context->getVariableValues(true));
+        if (false === $env) {
+            return $request->withoutHeader('X-Blackfire-Query');
         }
 
-        if (null !== $crawler && !$step->getTitle()) {
+        $this->setEnv($env);
+
+        if ($request->hasHeader('X-Blackfire-Query')) {
+            return $request;
+        }
+
+        if (!$context->getExtraBag()->has('blackfire_build')) {
+            $context->getExtraBag()->set('blackfire_build', $this->createBuild($context->getName()));
+        }
+
+        $build = $context->getExtraBag()->get('blackfire_build');
+        $config = $this->createProfileConfig($step, $context, $build);
+        $profileRequest = $this->blackfire->createRequest($config);
+
+        return $request
+            ->withHeader('X-Blackfire-Query', $profileRequest->getToken())
+            ->withHeader('X-Blackfire-Profile-Uuid', $profileRequest->getUuid())
+        ;
+    }
+
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    {
+        if (!$uuid = $request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
+            return $response;
+        }
+
+        if (!$response->hasHeader('X-Blackfire-Response')) {
+            throw new \LogicException('Unable to profile the current step');
+        }
+
+        $crawler = CrawlerFactory::create($response, $request->getUri());
+        if (null !== $crawler && !$step->getName()) {
             if (count($c = $crawler->filter('title'))) {
                 $this->blackfire->updateProfile($uuid, $c->first()->text());
             }
         }
 
         $this->assertProfile($request, $response);
+
+        return $response;
     }
 
-    public function postRun(Scenario $scenario, ValueBag $values, ValueBag $extra)
+    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
     {
-        if ($extra->has('blackfire_build')) {
-            $build = $extra->get('blackfire_build');
-
-            // did we profiled anything?
-            if (!$build->getJobCount()) {
-                // don't finish the build as it won't work with 0 profiles
-                $this->logger->error(sprintf('Report "%s" aborted as it has no profiles', $scenario->getTitle()));
-
-                $extra->remove('blackfire_build');
-
-                return;
-            }
-
-            $extra->set('blackfire_report', $report = $this->blackfire->endBuild($build));
-            $extra->remove('blackfire_build');
+        // if X-Blackfire-Response is set by someone else, don't do anything
+        if (!$request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
+            return ;
         }
 
-        // avoid getting the report if not needed
-        if (!$this->logger) {
+        if (!$response->hasHeader('X-Blackfire-Response')) {
             return;
         }
 
-        try {
-            if ($report->isErrored()) {
-                $this->logger->critical(sprintf('Report "%s" errored', $scenario->getTitle()));
-            } else {
-                if ($report->isSuccessful()) {
-                    $this->logger->debug(sprintf('Report "%s" pass', $scenario->getTitle()));
-                } else {
-                    $this->logger->error(sprintf('Report "%s" failed', $scenario->getTitle()));
-                }
-            }
-        } catch (BlackfireException $e) {
-            $this->logger->critical(sprintf('Report "%s" is not available (%s)', $scenario->getTitle(), $e->getMessage()));
+        parse_str($response->getHeaderLine('X-Blackfire-Response'), $values);
+        if (!isset($values['continue']) || 'true' !== $values['continue']) {
+            return;
         }
 
-        $this->logger->info(sprintf('Report "%s" URL: %s', $scenario->getTitle(), $report->getUrl()));
+        $step = new ReloadStep();
+        $step->name("'Reloading for Blackfire'");
+
+        return $step;
     }
 
-    private function registerBlackfire($title)
+    public function leaveScenario(Scenario $scenario, Result $result, Context $context)
+    {
+        $extra = $context->getExtraBag();
+        if (!$extra->has('blackfire_build')) {
+            return;
+        }
+
+        $build = $extra->get('blackfire_build');
+        $extra->remove('blackfire_build');
+
+        // did we profile something?
+        // if not, don't finish the build as it won't work with 0 profiles
+        if ($build->getJobCount()) {
+            $extra->set('blackfire_report', $this->blackfire->endBuild($build));
+        }
+
+        fwrite($this->stream, sprintf("\033[44;37m \033[49;39m Blackfire Report at \033[43;30m %s \033[49;39m\n", $build->getUrl()));
+    }
+
+    private function createBuild($title)
     {
         if (!$env = $this->blackfire->getConfiguration()->getEnv()) {
-            throw new LogicException('You must set the environment you want to work with on the Blackfire client configuration.');
+            throw new SyntaxErrorException('You must set the environment you want to work with on the Blackfire client configuration.');
         }
 
         $options = [
@@ -139,22 +165,20 @@ class BlackfireExtension implements ExtensionInterface
         return $this->blackfire->createBuild($env, $options);
     }
 
-    private function createBlackfireConfig(Step $step, Build $build = null, RequestInterface $request = null)
+    private function createProfileConfig(AbstractStep $step, Context $context, Build $build = null)
     {
         $config = new ProfileConfiguration();
         if (null !== $build) {
             $config->setBuild($build);
         }
-        $config->setSamples($step->getSamples());
-        $config->setTitle($step->getTitle());
-        foreach ($step->getAssertions() as $assertion) {
-            $config->assert($assertion);
-        }
-        if ($request) {
-            $config->setRequestInfo([
-                'method' => $request->getMethod(),
-                'path' => $request->getUri()->getPath(),
-            ]);
+
+        $config->setSamples($this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true)));
+        $config->setTitle($step->getName());
+
+        if ($step instanceof Step) {
+            foreach ($step->getAssertions() as $assertion) {
+                $config->assert($assertion);
+            }
         }
 
         return $config;
@@ -162,30 +186,29 @@ class BlackfireExtension implements ExtensionInterface
 
     private function assertProfile(RequestInterface $request, ResponseInterface $response)
     {
-        if (!$this->logger) {
-            return;
-        }
+        $profile = $this->blackfire->getProfile($request->getHeaderLine('X-Blackfire-Profile-Uuid'));
 
-        try {
-            $profile = $this->blackfire->getProfile($response->getHeaderLine('X-Blackfire-Profile-Uuid'));
-
-            if ($profile->isErrored()) {
-                $this->logger->critical('Assertions errored', ['request' => $request->getHeaderLine('X-Request-Id')]);
-            } else {
-                if ($profile->isSuccessful()) {
-                    $this->logger->debug('Assertions pass', ['request' => $request->getHeaderLine('X-Request-Id')]);
-                } else {
-                    foreach ($profile->getTests() as $test) {
-                        foreach ($test->getFailures() as $failure) {
-                            $this->logger->error(sprintf('Assertion "%s" failed', $failure), ['request' => $request->getHeaderLine('X-Request-Id')]);
-                        }
-                    }
-
-                    $this->logger->debug('Assertions fail', ['request' => $request->getHeaderLine('X-Request-Id')]);
+        if ($profile->isErrored()) {
+            throw new ExpectationErrorException('Assertion syntax error');
+        } elseif (!$profile->isSuccessful()) {
+            $failures = [];
+            foreach ($profile->getTests() as $test) {
+                foreach ($test->getFailures() as $failure) {
+                    $failures[] = $failure;
                 }
             }
-        } catch (BlackfireException $e) {
-            $this->logger->critical(sprintf('Profile is not available (%s)', $e->getMessage()), ['request' => $request->getHeaderLine('X-Request-Id')]);
+
+            throw new ExpectationFailureException(sprintf("Assertions failed:\n  %s", implode("\n  ", $failures)));
         }
+    }
+
+    private function setEnv($env)
+    {
+        $current = $this->blackfire->getConfiguration()->getEnv();
+        if ($current && $env !== $current) {
+            throw new SyntaxErrorException(sprintf('Blackfire is already configured for the "%s" environment, cannot change it to "%s".', $current, $env));
+        }
+
+        $this->blackfire->getConfiguration()->setEnv($env);
     }
 }

@@ -7,51 +7,48 @@ When crawling an HTTP application you can extract values from HTTP responses:
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  expect:
-                      - status_code() == 200
-                  extract:
-                      latest_post_title: css(".post h2").first()
-                      latest_post_href: css(".post h2 a").first().attr("href")
-                      latest_posts: css(".post h2 a").extract(["_text", "href"])
-                      age: header("Age")
-                      content_type: header("Content-Type")
-                      token: regex('/name="_token" value="([^"]+)"/')
+        scenario
+            visit url('/')
+                expect status_code() == 200
+                set latest_post_title css(".post h2").first()
+                set latest_post_href css(".post h2 a").first().attr("href")
+                set latest_posts css(".post h2 a").extract('_text', 'href'])
+                set age header("Age")
+                set content_type header("Content-Type")
+                set token regex('/name="_token" value="([^"]+)"/')
 
     .. code-block:: php
 
         $scenario
             ->visit("url('/blog/')")
             ->expect('status_code() == 200')
-            ->extract('latest_post_title', 'css(".post h2").first()')
-            ->extract('latest_post_href', 'css(".post h2 a").first().attr("href")')
-            ->extract('latest_posts', 'css(".post h2 a").extract(["_text", "href"])'
-            ->extract('age', 'header("Age")')
-            ->extract('content_type', 'header("Content-Type")')
-            ->extract('token', 'regex(\'/name="_token" value="([^"]+)"/\')')
+            ->set('latest_post_title', 'css(".post h2").first()')
+            ->set('latest_post_href', 'css(".post h2 a").first().attr("href")')
+            ->set('latest_posts', 'css(".post h2 a").extract(["_text", "href"])'
+            ->set('age', 'header("Age")')
+            ->set('content_type', 'header("Content-Type")')
+            ->set('token', 'regex(\'/name="_token" value="([^"]+)"/\')')
         ;
 
-The ``extract()`` method takes three arguments:
+The ``set()`` method takes three arguments:
 
-* The name of the variable you want to store the extracted value in;
+* The name of the variable you want to store the value in;
 
 * An expression to evaluate (the value of the evaluated expression).
 
 Using ``json()``, ``css()``, and ``xpath()`` on JSON, HTML, and XML responses
-is recommended, but for pure text responses or complex extractions, you can use
-the generic ``regex()`` function. ``regex()`` takes a regex as an argument an
+is recommended, but for pure text responses or complex values, you can use the
+generic ``regex()`` function. ``regex()`` takes a regex as an argument an
 returns the first match.
 
-The extracted values are also available at the end of a crawling session:
+The values are also available at the end of a crawling session:
 
 .. configuration-block::
 
     .. code-block:: bash
 
-        # use --output to store extracted values
-        blackfire-player run scenario.yml --output values.json
+        # use --json to display variable values
+        blackfire-player run scenario.yml --json
 
     .. code-block:: php
 
@@ -66,8 +63,8 @@ The extracted values are also available at the end of a crawling session:
             // ...
         }
 
-Extracted values can be used in expressions for subsequent requests via the
-as regular expression variables:
+Variables can be used in expressions for subsequent requests via the as regular
+expression variables:
 
 .. code-block:: php
 
@@ -75,7 +72,7 @@ as regular expression variables:
         ->visit("url('/blog/')")
         ->expect('status_code() == 200')
         ->expect('css(".posts")')
-        ->extract('latest_post_title', 'css(".post h2 a").first()')
+        ->set('latest_post_title', 'css(".post h2 a").first()')
 
         ->click('link(latest_post_title)')
         ->expect('css("h1:contains(latest_post_title)")')
@@ -91,7 +88,7 @@ Variable values can also be injected before running a scenario (via the
 
 .. code-block:: php
 
-    $scenario = new Scenario('Scenario Title', ['current_year' => 2016]);
+    $scenario = new Scenario('Scenario Name', ['current_year' => 2016]);
     $scenario
         ->value('current_year' => 2016)
         ->visit("url('/blog/')")
@@ -110,7 +107,7 @@ values:
     $scenario
         ->visit("url('/blog/')")
         ->expect('status_code() == 200')
-        ->extract('post_url', 'css(".posts").attr("href")')
+        ->set('post_url', 'css(".posts").attr("href")')
     ;
 
     $result = $player->run($scenario);
@@ -125,30 +122,24 @@ Here is another example for a JSON API:
 
     .. code-block:: yaml
 
-        scenario:
-            options:
-                title: Scenario title
-                auth: [api_username, api_password]
-                variables:
-                    profile_uuid: zzzz
+        scenario
+            name "Scenario name"
+            auth api_username ~ ':' ~ api_password
+            set profile_uuid zzzz
 
-            steps:
-                - visit: url('/profiles' ~ profile_uuid)
-                  expect:
-                      - status_code() == 200
-                  extract:
-                      sql_queries: json('arguments."sql.pdo.queries".keys(@)')
-                      store_url: json("_links.store.href")
+            visit url('/profiles' ~ profile_uuid)
+                expect status_code() == 200
+                set sql_queries json('arguments."sql.pdo.queries".keys(@)')
+                set store_url json("_links.store.href")
 
-                - visit: url(store_url)
-                  method: POST
-                  body: '{ "foo": "batman" }'
-                  expect:
-                      - status_code() == 200
+            visit url(store_url)
+                method POST
+                body '{ "foo": "batman" }'
+                expect status_code() == 200
 
     .. code-block:: php
 
-        $scenario = new Scenario('Scenario title', [
+        $scenario = new Scenario('Scenario name', [
             'profile_uuid' => 'zzzz',
         ]);
 
@@ -157,8 +148,8 @@ Here is another example for a JSON API:
 
             ->visit("url('profiles/' ~ profile_uuid)")
             ->expect('status_code() == 200')
-            ->extract('sql_queries', 'json("arguments.\"sql.pdo.queries\".keys(@)")')
-            ->extract('store_url', 'json("_links.store.href")')
+            ->set('sql_queries', 'json("arguments.\"sql.pdo.queries\".keys(@)")')
+            ->set('store_url', 'json("_links.store.href")')
 
             ->visit('url(store_url)', 'POST', '{ "foo": "batman" }')
             ->expect('status_code() == 202')

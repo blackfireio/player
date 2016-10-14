@@ -12,15 +12,16 @@
 namespace Blackfire\Player;
 
 use Blackfire\Player\Extension\ExtensionInterface;
-use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
-use Blackfire\Player\Guzzle\ExpectationsMiddleware;
-use Blackfire\Player\Guzzle\RequestFactory;
-use Blackfire\Player\Guzzle\StepMiddleware;
-use GuzzleHttp\Client as GuzzleClient;
+use Blackfire\Player\Extension\BlackfireExtension;
+use Blackfire\Player\Extension\FeedbackExtension;
+use Blackfire\Player\Extension\FollowExtension;
+use Blackfire\Player\Extension\TestsExtension;
+use Blackfire\Player\Extension\TracerExtension;
+use Blackfire\Player\Extension\WaitExtension;
+use Blackfire\Player\Guzzle\StepConverter;
 use GuzzleHttp\Promise\EachPromise;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
@@ -28,33 +29,21 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
  */
 class Player
 {
-    private $clients = [];
+    private $runner;
     private $language;
-    private $requestFactory;
-    private $handlersRegistered = false;
-    private $logger;
     private $extensions = [];
 
-    /**
-     * @param GuzzleClient|GuzzleClient[] $client
-     */
-    public function __construct($client)
+    public function __construct(RunnerInterface $runner, $tracer = false)
     {
-        $clients = [];
-
-        if (is_array($client)) {
-            $clients = $client;
-        } else {
-            $clients[] = $client;
+        $this->runner = $runner;
+        $this->addExtension(new FeedbackExtension($this->getLanguage()));
+        if ($tracer) {
+            $this->addExtension(new TracerExtension(sys_get_temp_dir().'/'.sha1(uniqid(mt_rand(), true))));
         }
-
-        foreach ($clients as $c) {
-            if (!$c instanceof GuzzleClient) {
-                throw new LogicException('Blackfire Player accepts a Guzzle client or an array of Guzzle clients.');
-            }
-        }
-
-        $this->clients = $clients;
+        $this->addExtension(new TestsExtension($this->getLanguage()));
+        $this->addExtension(new BlackfireExtension($this->getLanguage()));
+        $this->addExtension(new WaitExtension($this->getLanguage()));
+        $this->addExtension(new FollowExtension($this->getLanguage()));
     }
 
     public function addExtension(ExtensionInterface $extension)
@@ -63,136 +52,73 @@ class Player
     }
 
     /**
-     * @return Result
+     * @return Results
      */
-    public function run(Scenario $scenario)
+    public function run(ScenarioSet $scenarioSet, $concurrency = null)
     {
-        return $this->runMulti(new ScenarioSet([$scenario]))[0];
-    }
+        $runs = [];
+        $requestGenerators = [];
+        $i = 0;
+        foreach ($scenarioSet as $scenario) {
+            $key = null !== $scenario->getKey() ? $scenario->getKey() : ++$i;
 
-    /**
-     * @return array
-     */
-    public function runMulti(ScenarioSet $scenarioSet, $concurrency = null)
-    {
-        $results = [];
-        $this->registerHandlers();
+            $context = new Context($scenario->getName());
+            $stepConverter = new StepConverter($this->getLanguage(), $context);
+            $requestGenerator = new Psr7\RequestGenerator($this->getLanguage(), $stepConverter, $scenario, $context);
+            $requestGenerator = new Psr7\ExtensibleRequestGenerator($requestGenerator->getIterator(), $scenario, $context, $this->extensions);
+            $requestIterator = $requestGenerator->getIterator();
+            $context->setGenerator($requestIterator);
 
-        $requests = [];
-        foreach ($scenarioSet as $key => $scenario) {
-            $valueBag = new ValueBag($scenario->getValues());
-            $extraBag = new ValueBag();
-            $step = $scenario->getRoot();
-            $options = [
-                'step' => $step,
-                'values' => $valueBag,
-                'extra' => $extraBag,
-                'http_errors' => true,
-            ];
-
-            foreach ($this->extensions as $extension) {
-                $extension->preRun($scenario, $valueBag, $extraBag);
-            }
-
-            $requests[$key] = [$this->createRequest($step, $valueBag), $options, $scenario];
+            $requestGenerators[$key] = $requestGenerator;
+            $runs[$key] = new Run($requestIterator, $scenario, $context);
         }
 
         if (!$concurrency) {
-            $concurrency = min(count($requests), count($this->clients));
+            $concurrency = min(count($runs), $this->runner->getMaxConcurrency());
+        } elseif ($concurrency > $this->runner->getMaxConcurrency()) {
+            throw new RuntimeException('Concurrency (%d) must be less than or equal to the number of clients (%s)', $concurrency, $this->runner->getMaxConcurrency());
         }
 
-        $this->logger and $this->logger->debug(sprintf('Concurrency set to "%d"', $concurrency));
-
-        if ($concurrency > count($this->clients)) {
-            throw new RuntimeException('Concurrency (%d) must be less than or equal to the number of Guzzle clients (%s)', $concurrency, count($this->clients));
+        foreach ($this->extensions as $extension) {
+            $extension->enterScenarioSet($scenarioSet, $concurrency);
         }
 
-        $fulfilled = $rejected = function ($response, $key) use (&$results, $requests) {
-            $valueBag = $requests[$key][1]['values'];
-            $extraBag = $requests[$key][1]['extra'];
-            $scenario = $requests[$key][2];
+        $requests = function () use ($runs) {
+            $i = 0;
+            $count = $this->runner->getMaxConcurrency();
+            foreach ($runs as $key => $run) {
+                $client = (++$i) % $count;
+                $run->setClientId($client);
 
-            $exception = null;
-            if ($response instanceof \Exception) {
-                $exception = $response;
+                // empty iterator
+                if (null === $request = $run->getIterator()->current()) {
+                    continue;
+                }
 
-                $this->logger and $this->logger->error(sprintf('Scenario "%s" ended with an error: %s', $scenario->getTitle(), $exception->getMessage()));
+                yield $key => $this->runner->send($client, $request, $run->getContext());
             }
-
-            foreach ($this->extensions as $extension) {
-                $extension->postRun($scenario, $valueBag, $extraBag);
-            }
-
-            $results[$key] = new Result($valueBag, $extraBag, $exception);
         };
 
-        $requests = function () use ($requests) {
-            $i = 0;
-            $count = count($this->clients);
-            foreach ($requests as $key => $data) {
-                $client = (++$i) % $count;
-
-                $this->logger and $this->logger->info(sprintf('Starting scenario "%s" (sent to client %d)', $data[2]->getTitle(), $client));
-
-                yield $key => $this->clients[$client]->sendAsync($data[0], $data[1]);
-
-                // cleanup cookies on the client
-                if ($cookieJar = $this->clients[$client]->getConfig('cookies')) {
-                    $cookieJar->clear();
-                }
-            }
+        $end = function ($response, $key) use ($runs) {
+            $this->runner->end($runs[$key]->getClientId());
         };
 
         (new EachPromise($requests(), [
             'concurrency' => $concurrency,
-            'fulfilled' => $fulfilled,
-            'rejected' => $rejected,
+            'fulfilled' => $end,
+            'rejected' => $end,
         ]))->promise()->wait();
 
+        $results = new Results();
+        foreach ($requestGenerators as $key => $generator) {
+            $results->addResult($key, $generator->getResult());
+        }
+
+        foreach ($this->extensions as $extension) {
+            $extension->leaveScenarioSet($scenarioSet, $results);
+        }
+
         return $results;
-    }
-
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    public function setExpressionLanguage(ExpressionLanguage $language)
-    {
-        $this->language = $language;
-    }
-
-    private function registerHandlers()
-    {
-        if ($this->handlersRegistered) {
-            return;
-        }
-
-        foreach ($this->clients as $client) {
-            $stack = $client->getConfig('handler');
-            $stack->unshift(StepMiddleware::create($this->getRequestFactory(), $this->getLanguage(), $this->extensions, $this->logger), 'scenario');
-            $stack->push(ExpectationsMiddleware::create($this->getLanguage(), $this->logger), 'expectations');
-
-            foreach ($this->extensions as $extension) {
-                $extension->registerHandlers($stack);
-            }
-        }
-
-        $this->handlersRegistered = true;
-    }
-
-    private function createRequest(Step $step, ValueBag $values)
-    {
-        return $this->getRequestFactory()->create($step, $values);
-    }
-
-    private function getRequestFactory()
-    {
-        if (null === $this->requestFactory) {
-            $this->requestFactory = new RequestFactory($this->getLanguage());
-        }
-
-        return $this->requestFactory;
     }
 
     private function getLanguage()

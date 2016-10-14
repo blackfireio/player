@@ -35,7 +35,7 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
             new RequestException('Error Communicating with Server', new Request('GET', 'test')),
         ]);
         $handler = HandlerStack::create($mock);
-        $guzzle = new GuzzleClient(['handler' => $handler]);
+        $guzzle = new GuzzleClient(['handler' => $handler, 'allow_redirects' => false, 'cookies' => true]);
 
         $player = new Player($guzzle);
         $player->run($scenario);

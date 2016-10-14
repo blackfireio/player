@@ -11,28 +11,32 @@
 
 namespace Blackfire\Player;
 
-use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Step\GroupStep;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  */
-class Scenario
+class Scenario extends GroupStep
 {
+    private $name;
     private $root;
     private $key;
     private $values;
+    private $options;
 
-    public function __construct($title = null, array $values = [])
+    public function __construct($name = null, array $values = [])
     {
-        $this->root = new Step();
-        $this->title = null === $title ? 'Untitled Scenario' : $title;
+        $this->name = null === $name ? 'Untitled Scenario' : $name;
         $this->values = $values;
+        $this->options = new StepOptions();
     }
 
-    /**
-     * @return Step
-     */
-    public function visit($uri, $method = 'GET', $values = [])
+    public function __toString()
+    {
+        return (string) $this->root;
+    }
+
+    public function root(AbstractStep $step)
     {
         return $this->root->visit($uri, $method, $values);
     }
@@ -53,30 +57,37 @@ class Scenario
         return $this->root->getLast();
     }
 
-    public function header($key, $value)
+    public function name($name)
     {
-        $this->root->getOptions()->header($key, $value);
+        $this->name = $name;
 
         return $this;
     }
 
-    public function auth($username, $password)
+    public function header($header)
     {
-        $this->root->getOptions()->auth($username, $password);
+        $this->options->header($header);
+
+        return $this;
+    }
+
+    public function auth($data)
+    {
+        $this->options->auth($data);
 
         return $this;
     }
 
     public function delay($delay)
     {
-        $this->root->getOptions()->delay($delay);
+        $this->options->delay($delay);
 
         return $this;
     }
 
     public function endpoint($endpoint)
     {
-        $this->root->getOptions()->endpoint($endpoint);
+        $this->options->endpoint($endpoint);
 
         return $this;
     }
@@ -98,9 +109,9 @@ class Scenario
         return $this->key;
     }
 
-    public function getTitle()
+    public function getName()
     {
-        return $this->title;
+        return $this->name;
     }
 
     public function getValues()

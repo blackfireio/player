@@ -19,16 +19,14 @@ use Blackfire\Player\Exception\LogicException;
  */
 class Result implements \ArrayAccess, \Iterator
 {
-    private $valueBag;
+    private $context;
     private $values;
-    private $extra;
     private $error;
 
-    public function __construct(ValueBag $values, ValueBag $extra, \Exception $error = null)
+    public function __construct(Context $context, \Exception $error = null)
     {
-        $this->values = $values->all();
-        $this->valueBag = $values;
-        $this->extra = $extra;
+        $this->context = $context;
+        $this->values = $context->getValueBag()->all();
         $this->error = $error;
     }
 
@@ -47,12 +45,12 @@ class Result implements \ArrayAccess, \Iterator
 
     public function getValues()
     {
-        return $this->valueBag;
+        return $this->context->getValueBag();
     }
 
     public function getExtra($key = null)
     {
-        return null === $key ? $this->extra : $this->extra->get($key);
+        return null === $key ? $this->context->getExtraBag() : $this->context->getExtraBag()->get($key);
     }
 
     public function offsetSet($offset, $value)

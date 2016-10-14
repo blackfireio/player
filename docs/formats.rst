@@ -22,18 +22,18 @@ Here is an example of a YAML scenario that uses all Blackfire Player features:
 
     scenario:
         options:
-            title: Blackfire Player Scenario
+            name: Blackfire Player Scenario
             auth: [foo, bar]
             variables:
                 foo: bar
 
         steps:
-            - title: "Blog Homepage"
+            - name: "Blog Homepage"
               visit: url('/blog/')
               assert:
                   - main.peak_memory < 10M
               samples: 2
-              title: Blog homepage
+              name: Blog homepage
               headers:
                   'Accept-Language': 'en-US'
               expect:
@@ -41,7 +41,7 @@ Here is an example of a YAML scenario that uses all Blackfire Player features:
                   - header('content_type') matches '/html/'
                   - css('body')
 
-            - title: "Releases"
+            - name: "Releases"
               click: link('Releases')
               expect:
                   - status_code() == 200
@@ -51,7 +51,7 @@ Here is an example of a YAML scenario that uses all Blackfire Player features:
                   latest_release_href: css(".post h2 a").first().extract('href')
                   latest_releases: css(".post h2 a").extract(['_text', 'href'])
 
-            - title: "Latest Release Blog Post"
+            - name: "Latest Release Blog Post"
               click: link(latest_release_title)
               expect:
                   - css("h1:contains(latest_release_title)")
@@ -68,22 +68,22 @@ You can also define multiple scenarios in a single YAML file:
                 key: 'home'
 
             steps:
-                - title: "Homepage"
+                - name: "Homepage"
                   visit: url('/')
 
         -
             options:
-                title: 'Symfony Blog'
+                name: 'Symfony Blog'
                 auth: [foo, bar]
 
             steps:
                 # embed the 'home' scenario
                 - add: home
 
-                - title: "Blog Homepage"
+                - name: "Blog Homepage"
                   visit: url('/blog/')
 
-                - title: "JSON API"
+                - name: "JSON API"
                   visit: url('/api')
                   method: POST
                   params:
@@ -108,7 +108,7 @@ Scenarios can be described via a PHP array:
     $scenario = [
         'steps' => [
             [
-                'title' => 'Blog Homepage',
+                'name' => 'Blog Homepage',
                 'url' => '/blog/',
                 'expect' => [
                     'status_code() == 200',

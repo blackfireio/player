@@ -36,9 +36,7 @@ class Provider implements ExpressionFunctionProviderInterface
      */
     public function getFunctions()
     {
-        $compiler = function () {
-            throw new LogicException('Compilation not supported.');
-        };
+        $compiler = function () {};
 
         return [
             new ExpressionFunction('url', $compiler, function ($arguments, $url) {
@@ -46,10 +44,18 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('link', $compiler, function ($arguments, $selector) {
+                if (null === $arguments['_crawler']) {
+                    throw new LogicException(sprintf('Unable to get link "%s" as the page is not crawlable.', $selector));
+                }
+
                 return $arguments['_crawler']->selectLink($selector);
             }),
 
             new ExpressionFunction('button', $compiler, function ($arguments, $selector) {
+                if (null === $arguments['_crawler']) {
+                    throw new LogicException(sprintf('Unable to submit on selector "%s" as the page is not crawlable.', $selector));
+                }
+
                 return $arguments['_crawler']->selectButton($selector);
             }),
 
@@ -80,8 +86,12 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getHeader($name)[0];
             }),
 
-            new ExpressionFunction('scalar', $compiler, function ($arguments, $scalar) {
-                return $scalar;
+            new ExpressionFunction('trim', $compiler, function ($arguments, $scalar) {
+                return trim($scalar);
+            }),
+
+            new ExpressionFunction('unique', $compiler, function ($arguments, $arr) {
+                return array_unique($arr);
             }),
 
             new ExpressionFunction('join', $compiler, function ($arguments, $value, $glue) {
@@ -130,7 +140,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
             new ExpressionFunction('css', $compiler, function ($arguments, $selector) {
                 if (null === $arguments['_crawler']) {
-                    throw new LogicException(sprintf('Unable to get "%s" CSS selector as the page is not crawlable.', $selector));
+                    throw new LogicException(sprintf('Unable to get the "%s" CSS selector as the page is not crawlable.', $selector));
                 }
 
                 return $arguments['_crawler']->filter($selector);
@@ -149,6 +159,10 @@ class Provider implements ExpressionFunctionProviderInterface
                     throw new LogicException(sprintf(' Unable to get the "%s" JSON path as the Response body does not seem to be JSON.', $selector));
                 }
 
+                return JmesPath::search($selector, $data);
+            }),
+
+            new ExpressionFunction('transform', $compiler, function ($arguments, $selector, $data) {
                 return JmesPath::search($selector, $data);
             }),
         ];

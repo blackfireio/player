@@ -9,19 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Blackfire\Player\Loader;
-
-use Blackfire\Player\Scenario;
+namespace Blackfire\Player\Step;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  */
-interface LoaderInterface
+class FollowStep extends Step
 {
-    /**
-     * @param mixed $data
-     *
-     * @return Scenario
-     */
-    public function load($data);
 }

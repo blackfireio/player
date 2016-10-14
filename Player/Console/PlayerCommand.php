@@ -11,17 +11,16 @@
 
 namespace Blackfire\Player\Console;
 
-use Blackfire\Client as BlackfireClient;
-use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
+use Blackfire\Player\Exception\InvalidArgumentException;
+use Blackfire\Player\Guzzle\Runner;
+use Blackfire\Player\Parser;
 use Blackfire\Player\Player;
-use Blackfire\Player\Loader\YamlLoader;
 use Blackfire\Player\ScenarioSet;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -34,15 +33,16 @@ final class PlayerCommand extends Command
         $this
             ->setName('run')
             ->setDefinition([
-                new InputArgument('files', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'The files defining the scenarios'),
+                new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('output', 'o', InputOption::VALUE_REQUIRED, 'Saves the extracted values', null),
-                new InputOption('blackfire', '', InputOption::VALUE_REQUIRED, 'Enabled Blackfire and use the specified environment', null),
-                new InputOption('variables', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
+                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs variable values as JSON', null),
+                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
+                new InputOption('validate', '', InputOption::VALUE_NONE, 'Validate syntax without running', null),
+                new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
             ])
-            ->setDescription('Runs a scenario YAML file')
-            ->setHelp(<<<'EOF'
+            ->setDescription('Runs scenario files')
+            ->setHelp(<<<EOF
 Read https://blackfire.io/docs/player/cli to learn about all supported options.
 EOF
             );
@@ -50,66 +50,48 @@ EOF
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = new ConsoleLogger($output);
-
         $clients = [$this->createClient($output)];
         for ($i = 1, $concurrency = $input->getOption('concurrency'); $i < $concurrency; ++$i) {
             $clients[] = $this->createClient($output);
         }
 
-        $player = new Player($clients);
-        $player->setLogger($logger);
-
-        if ($env = $input->getOption('blackfire')) {
-            $blackfireConfig = new BlackfireClientConfiguration();
-            $blackfireConfig->setEnv($env);
-            $blackfire = new BlackfireClient($blackfireConfig);
-
-            $player->addExtension(new \Blackfire\Player\Extension\BlackfireExtension($blackfire, $logger));
-        }
+        $runner = new Runner($clients);
+        $player = new Player($runner, $input->getOption('tracer'));
 
         $variables = [];
-        foreach ($input->getOption('variables') as $variable) {
+        foreach ($input->getOption('variable') as $variable) {
             list($key, $value) = explode('=', $variable, 2);
             $variables[$key] = $value;
         }
 
-        $loader = new YamlLoader();
-        $scenarios = new ScenarioSet();
-        foreach ($input->getArgument('files') as $file) {
-            if (!is_file($file)) {
-                throw new \InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
+        $parser = new Parser();
+        $scenarios = $parser->load($input->getArgument('file'));
+
+        // FIXME: should be set on the ScenarioSet directly
+        // but for this, we need an enterStep() for the ScenarioSet, which we don't have yet
+        foreach ($scenarios as $scenario) {
+            if (null !== $input->getOption('endpoint')) {
+                $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
             }
 
-            foreach ($loader->load(file_get_contents($file)) as $reference => $scenario) {
-                if ($input->getOption('endpoint')) {
-                    $scenario->endpoint($input->getOption('endpoint'));
-                }
-
-                foreach ($variables as $key => $value) {
-                    $scenario->value($key, $value);
-                }
-
-                $scenarios->add($scenario, $reference);
+            foreach ($variables as $key => $value) {
+                $scenario->set($key, $this->escapeValue($value));
             }
         }
 
-        $results = $player->runMulti($scenarios);
+        if ($input->getOption('validate')) {
+            return;
+        }
 
-        if ($output = $input->getOption('output')) {
-            $values = [];
-            foreach ($results as $result) {
-                $values[] = $result->getValues()->all();
-            }
+        $results = $player->run($scenarios);
 
-            file_put_contents($output, json_encode($values, JSON_PRETTY_PRINT));
+        if ($input->getOption('json')) {
+            $output->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         // any scenario with an error?
-        foreach ($results as $result) {
-            if ($result->isErrored()) {
-                return 1;
-            }
+        if ($results->isErrored()) {
+            return 1;
         }
 
         if ($logger->hasErrored()) {
@@ -119,11 +101,11 @@ EOF
 
     private function createClient(OutputInterface $output)
     {
-        $debug = $output->isDebug() && $output instanceof ConsoleOutput ? $output->getErrorOutput()->getStream() : false;
+        return new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]);
+    }
 
-        return new GuzzleClient([
-            'cookies' => true,
-            'debug' => $debug,
-        ]);
+    private function escapeValue($value)
+    {
+        return sprintf("'%s'", $value);
     }
 }

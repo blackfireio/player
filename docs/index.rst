@@ -13,6 +13,8 @@ Some Blackfire Player use cases:
 
 * Scrape your website/API and extract values;
 
+* Monitor your website;
+
 * Use Blackfire Player in your tests (PHPUnit, Behat, Codeception, ...);
 
 * Test your code behavior from the outside thanks to the native Blackfire

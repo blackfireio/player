@@ -2,21 +2,18 @@ Crawling an HTTP application
 ============================
 
 Blackfire Player lets you crawl an application thanks to descriptive scenarios
-written with PHP or YAML:
+written in a specific language:
 
 .. configuration-block::
 
-    .. code-block:: yaml
+    .. code-block:: blackfire
 
-        scenario:
-            options:
-                title: Scenario Name
-                endpoint: http://example.com/
+        scenario
+            name "Scenario Name"
+            endpoint "http://example.com/"
 
-            steps:
-                - visit: url('/')
-                  expect:
-                      - status_code() == 200
+            visit url('/')
+                expect status_code() == 200
 
     .. code-block:: php
 
@@ -36,6 +33,10 @@ written with PHP or YAML:
         $client = new GuzzleClient([
             // maintain a session between HTTP requests
             'cookies' => true,
+            // do not follow redirects
+            'allow_redirects' => false,
+            // let scenarios deals with HTTP errors directly
+            'http_errors' => false,
         ]);
 
         // run the scenario
@@ -47,15 +48,14 @@ This simple example shows you how you can make requests on an HTTP application
 via :doc:`Writing Expectations </player/expectations>` (the response status
 code is 200).
 
-If you are using the YAML representation for scenarios, run them via the
-`Blackfire Player console tool </docs/player/cli>`_:
+Run the scenario via the `Blackfire Player console tool </docs/player/cli>`_:
 
 .. code-block:: bash
 
-    blackfire-player run scenario.yml
+    blackfire-player run scenario.blk
 
     # or
-    php blackfire-player.phar run scenario.yml
+    php blackfire-player.phar run scenario.blk
 
 You can chain requests:
 
@@ -63,15 +63,12 @@ You can chain requests:
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  expect:
-                      - status_code() == 200
+        scenario
+            visit url('/')
+                expect status_code() == 200
 
-                - visit: url('/blog/')
-                  expect:
-                      - status_code() == 200
+            visit url('/blog/')
+                expect status_code() == 200
 
     .. code-block:: php
 
@@ -88,7 +85,7 @@ You can chain requests:
 
 A **scenario** is a sequence of HTTP calls (**steps**) that share the HTTP
 session and cookies. Scenario definitions are **declarative**, the order of
-method calls within a "step" does not matter.
+configuration items within a "step" does not matter.
 
 .. tip::
 
@@ -104,14 +101,11 @@ forms, or follow redirections (see `Making requests`_ for more information):
     .. code-block:: yaml
 
         scenario:
-            steps:
-                - visit: url('/')
-                  expect:
-                      - status_code() == 200
+            visit url('/')
+                expect status_code() == 200
 
-                - click: link('Read more')
-                  expect:
-                      - status_code() == 200
+            click link('Read more')
+                expect status_code() == 200
 
     .. code-block:: php
 
@@ -152,10 +146,9 @@ HTTP method unless you pass one explicitly):
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  method: POST
+        scenario
+            visit url('/')
+                method POST
 
     .. code-block:: php
 
@@ -168,10 +161,9 @@ You can also pass the Request body:
     .. code-block:: yaml
 
         scenario:
-            steps:
-                - visit: url('/')
-                  method: PUT
-                  body: '{ "title": "New Title" }'
+            visit url('/')
+                method PUT
+                body '{ "title": "New Title" }'
 
     .. code-block:: php
 
@@ -186,9 +178,8 @@ Clicking on a Link with ``click``
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - click: link("Add a blog post")
+        scenario
+            click link("Add a blog post")
 
     .. code-block:: php
 
@@ -205,12 +196,10 @@ and an array of values to submit with the form):
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - submit: button("Submit")
-                  params:
-                    title: scalar('Happy Scraping')
-                    content: scalar('Scraping with Blackfire Player is so easy!')
+        scenario
+            submit button("Submit")
+                param title 'Happy Scraping'
+                param content 'Scraping with Blackfire Player is so easy!'
 
     .. code-block:: php
 
@@ -229,12 +218,10 @@ Values can also be randomly generated via the ``fake()`` function:
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - submit: button("Submit")
-                  params:
-                    title: fake('sentence', 5)
-                    content: join(fake('paragraphs', 3), "\n\n")
+        scenario
+            submit button("Submit")
+                param title fake('sentence', 5)
+                param content join(fake('paragraphs', 3), "\n\n")
 
     .. code-block:: php
 
@@ -257,9 +244,8 @@ to let you write expectations and assertions on all requests):
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - follow: true
+        scenario
+            follow true
 
     .. code-block:: php
 
@@ -275,25 +261,23 @@ Embedding Scenarios with ``add``
     .. code-block:: yaml
         :emphasize-lines: 1,2,16
 
-        scenarios:
-            - options: { key: login }
-              steps:
-                  - visit: url('/login')
-                    expect:
-                        - status_code() == 200
+        scenario
+            as login
 
-                  - submit: button('Login')
-                    params:
-                        user: scalar('admin')
-                        password: scalar('admin')
+            visit url('/login')
+                expect status_code() == 200
 
-            - options: { title: "Scenario Name" }
-              steps:
-                  - add: login
+            submit button('Login')
+                param user 'admin'
+                param password 'admin'
 
-                  - visit: url('/admin')
-                    expect:
-                        - status_code() == 200
+        scenario
+            name "Scenario Name"
+
+            include login
+
+            visit url('/admin')
+                expect status_code() == 200
 
     .. code-block:: php
 
@@ -330,17 +314,33 @@ Setting a Header with ``header``
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  headers:
-                      Accept-Language: en-US
+        scenario
+            visit url('/')
+            header "Accept-Language: en-US"
 
     .. code-block:: php
 
         $scenario
             ->visit("url('/')")
-            ->header('Accept-Language', 'en-US')
+            ->header('Accept-Language: en-US')
+        ;
+
+If you want to simulate a browser, you can override the default ``User-Agent``
+and use ``fake()``:
+
+.. configuration-block::
+
+    .. code-block:: yaml
+
+        scenario
+            visit url('/')
+            header 'User-Agent: ' ~ fake('firefox')
+
+    .. code-block:: php
+
+        $scenario
+            ->visit("url('/')")
+            ->header("'User-Agent' ~ fake('firefox')")
         ;
 
 Setting a User and Password with ``auth``
@@ -352,40 +352,38 @@ Setting a User and Password with ``auth``
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  auth: [username, password]
+        scenario
+            visit url('/')
+                auth "username:password"
 
     .. code-block:: php
 
         $scenario
             ->visit("url('/')")
-            ->auth('username', 'password')
+            ->auth('username:password')
         ;
 
-Waiting before Sending with ``delay``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Waiting before Sending with ``wait``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``delay`` adds a delay in milliseconds before sending the request:
+``wait`` adds a delay in milliseconds after sending the request:
 
 .. configuration-block::
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  delay: 10000
+        scenario
+            visit url('/')
+                wait 10000
 
     .. code-block:: php
 
         $scenario
             ->visit("url('/')")
-            ->delay(10000)
+            ->wait(10000)
         ;
 
-The ``delay`` value can be any valid expression; get a random delay by using
+The ``wait`` value can be any valid expression; get a random delay by using
 ``fake()``:
 
 .. code-block:: text
@@ -401,13 +399,11 @@ Sending a JSON Body with ``json``
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  method: POST
-                  params:
-                      foo: bar
-                  json: true
+        scenario
+            visit url('/')
+                method POST
+                param foo bar
+                json true
 
     .. code-block:: php
 
@@ -425,17 +421,15 @@ You can also set some of these options for all steps of a scenario:
 
     .. code-block:: yaml
 
-        scenario:
-            options:
-                auth: [username, password]
-                headers:
-                    Accept-Language: en-US
+        scenario
+            auth "username:password"
+            header "Accept-Language: en-US"
 
     .. code-block:: php
 
         $scenario
             ->auth('username', 'password')
-            ->header('Accept-Language', 'en-US')
+            ->header('Accept-Language', "'en-US'")
         ;
 
 ... which can be disabled on any given step by setting the value to ``false``:
@@ -444,12 +438,10 @@ You can also set some of these options for all steps of a scenario:
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/')
-                  headers:
-                      Accept-Language: false
-                  auth: false
+        scenario
+            visit url('/')
+                header "Accept-Language: false"
+                auth: false
 
     .. code-block:: php
 
@@ -468,21 +460,20 @@ store them in a ``ScenarioSet`` instance and run them via ``runMulti()``:
 
     .. code-block:: yaml
 
-        scenarios:
-            - options: { title: Blog }
-              steps:
-                  - visit: url('/blog/')
-                    title: Blog homepage
-                    expect:
-                        - status_code() == 200
+        scenario
+            name "Blog"
 
-                    # ...
+            visit url('/blog/')
+                name "Blog homepage"
+                expect status_code() == 200
 
-            - options: { title: "Homepage" }
-              steps:
-                  - url('/admin')
+                # ...
 
-                  # ...
+        scenario
+            name "Homepage"
+            visit url('/admin')
+
+            # ...
 
     .. code-block:: php
 
@@ -494,7 +485,7 @@ store them in a ``ScenarioSet`` instance and run them via ``runMulti()``:
         $scenarios->add($scenario = new Scenario('Blog'));
         $scenario
             ->visit("url('/blog/')")
-            ->title('Blog homepage')
+            ->name('Blog homepage')
             ->expect('status_code() == 200')
 
             // ...
@@ -502,7 +493,7 @@ store them in a ``ScenarioSet`` instance and run them via ``runMulti()``:
 
         $scenarios->add($scenario = new Scenario('Homepage'));
         $scenario
-            ->visit("url('/')")
+            ->visit("url('/admin')")
 
             // ...
         ;
@@ -531,9 +522,9 @@ when you pass multiple instances of clients to Blackfire Player or use
 
         $baseUri = 'http://example.com';
         $clients = [
-            new GuzzleClient(['cookies' => true]),
-            new GuzzleClient(['cookies' => true]),
-            new GuzzleClient(['cookies' => true]),
+            new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]),
+            new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]),
+            new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]),
         ];
 
         $player = new Player($clients);
@@ -555,37 +546,35 @@ login, account creation, or deletion steps, ...):
 
     .. code-block:: yaml
 
-        scenarios:
+        # create a login scenario
+        scenario
+            as login
 
-            # create a login scenario
-            - options: { key: login }
-              steps:
-                  - visit: url('/login')
-                    expect:
-                        - status_code() == 200
+            visit url('/login')
+                expect status_code() == 200
 
-                  - submit: button('Login')
-                    params:
-                        user: scalar('admin')
-                        password: scalar('admin')
+            submit button('Login')
+                param user 'admin'
+                param password 'admin'
 
-            # add a first scenario that needs to be logged-in
-            - options: { title: "Blog" }
-              steps:
-                  - add: login
+        # add a first scenario that needs to be logged-in
+        scenario
+            name "Blog"
 
-                  - visit: url('/stats')
+            include login
 
-                  # ...
+            visit url('/stats')
 
-            # add a second scenario that needs to be logged-in
-            - options: { title: "Homepage" }
-              steps:
-                  - add: login
+            # ...
 
-                  - visit: url('/admin/')
+        # add a second scenario that needs to be logged-in
+        scenario
+            name "Homepage"
+            include login
 
-                  # ...
+            visit url('/admin/')
+
+            # ...
 
     .. code-block:: php
 

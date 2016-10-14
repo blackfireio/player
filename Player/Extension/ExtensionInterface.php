@@ -12,25 +12,41 @@
 namespace Blackfire\Player\Extension;
 
 use Blackfire\Player\Scenario;
-use Blackfire\Player\Step;
-use Blackfire\Player\ValueBag;
-use GuzzleHttp\HandlerStack;
+use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\Context;
+use Blackfire\Player\Result;
+use Blackfire\Player\Results;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  */
 interface ExtensionInterface
 {
-    public function registerHandlers(HandlerStack $stack);
+    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency);
 
-    public function preRun(Scenario $scenario, ValueBag $values, ValueBag $extra);
+    public function enterScenario(Scenario $scenario, Context $context);
 
-    public function prepareRequest(Step $step, ValueBag $values, RequestInterface $request, $options);
+    /**
+     * @return RequestInterface
+     */
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context);
 
-    public function processResponse(RequestInterface $request, ResponseInterface $response, Step $step, ValueBag $values = null, Crawler $crawler = null);
+    /**
+     * @return ResponseInterface
+     */
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context);
 
-    public function postRun(Scenario $scenario, ValueBag $values, ValueBag $extra);
+    public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context);
+
+    /**
+     * @return AbstractStep|null
+     */
+    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context);
+
+    public function leaveScenario(Scenario $scenario, Result $result, Context $context);
+
+    public function leaveScenarioSet(ScenarioSet $scenarios, Results $result);
 }

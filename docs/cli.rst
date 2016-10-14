@@ -27,11 +27,11 @@ Use the ``--concurrency`` option to run scenarios in parallel:
 
      ./vendor/bin/blackfire-player scenario.yml --concurrency=5
 
-Use the ``--output`` option to save extracted values as a JSON file:
+Use the ``--json`` option to output the variable values as JSON:
 
 .. code-block:: bash
 
-    ./vendor/bin/blackfire-player scenario.yml --output=values.json
+    ./vendor/bin/blackfire-player scenario.yml --json
 
 Use the ``--variables`` option to override variable values:
 

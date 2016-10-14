@@ -16,4 +16,4 @@ To debug your scenarios, use a PSR Logger like Monolog:
     $logger = new Logger('player');
     $logger->pushHandler(new StreamHandler('php://stderr', Logger::DEBUG));
 
-    $player->setLogger($logger);
+    $player = new Player($client, $logger);

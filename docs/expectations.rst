@@ -42,28 +42,28 @@ Here are some common expressions:
 .. code-block:: yaml
 
     # return all HTML nodes matching ".post h2 a"
-    - css(".post h2 a")
+    css(".post h2 a")
 
     # return the text of the first node matching ".post h2 a"
-    - css(".post h2 a").first().text()
+    css(".post h2 a").first().text()
 
     # return the href attribute of the first node matching ".post h2 a"
-    - css(".post h2 a").first().attr("href")
+    css(".post h2 a").first().attr("href")
 
     # check that "h1" contains "Welcome"
     - css("h1:contains('Welcome')").count() > 0
 
     # same as above
-    - css("h1").first().text() matches "/Welcome/"
+    css("h1").first().text() matches "/Welcome/"
 
     # return the Age request HTTP header
-    - header("Age")
+    header("Age")
 
     # check that the HTML body contains "Welcome"
-    - body() matches "/Welcome/"
+    body() matches "/Welcome/"
 
-    # extract a value
-    - json("_links.store.href")
+    # get a value
+    json("_links.store.href")
 
-    # extract keys
-    - json("arguments."sql.pdo.queries".keys(@)")
+    # get keys
+    json("arguments."sql.pdo.queries".keys(@)")

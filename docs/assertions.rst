@@ -30,9 +30,8 @@ name is then used as the build name:
 
     .. code-block:: yaml
 
-        scenario:
-            options:
-                title: Scenario Name
+        scenario
+            name "Scenario Name"
 
     .. code-block:: php
 
@@ -57,21 +56,19 @@ Additional features are also automatically activated:
 
     .. code-block:: yaml
 
-        scenario:
-            steps:
-                - visit: url('/blog/')
-                  title: Blog homepage
-                  assert:
-                      - main.peak_memory < 10M
-                  samples: 2
+        scenario
+            visit url('/blog/')
+                name "Blog homepage"
+                assert main.peak_memory < 10M
+                samples 2
 
     .. code-block:: php
 
         $scenario
             ->visit("url('/blog/')")
 
-            // set a title
-            ->title('Blog homepage')
+            // set a name
+            ->name('Blog homepage')
 
             // add a Blackfire assertion
             ->assert('main.peak_memory < 10M')
@@ -98,17 +95,13 @@ Variables are a great way to make your Blackfire assertions conditional:
 
     .. code-block:: yaml
 
-        scenario:
-            options:
-                variables:
-                    env: prod
+        scenario
+            set env "prod"
 
-            steps:
-                # no Twig template compilation in production
-                # not enforced in other environments
-                - visit: url('/blog/')
-                  assert:
-                      - "prod" == env and metrics.twig.compile.count == 0
+            # no Twig template compilation in production
+            # not enforced in other environments
+            visit url('/blog/')
+                assert "prod" == env and metrics.twig.compile.count == 0
 
     .. code-block:: php
 
