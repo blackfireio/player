@@ -81,8 +81,9 @@ Additional features are also automatically activated:
 
         $result = $player->run($scenario);
 
-By default, all requests are profiled via Blackfire, you can disable it for
-some requests by calling ``blackfire(false)``.
+By default, the last step and all steps with assertions or a samples count
+defined are profiled via Blackfire. You can override this behavior for some
+requests by calling ``blackfire(false)`` or ``blackfire(true)``.
 
 You can easily access the Blackfire Report via the Result returned by
 ``run()``:
