@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.4.6 (2016-12-05)
+
+ * fix usage of parent build
+
 * 0.4.5 (2016-06-21)
 
  * fix usage with headers defined in steps
