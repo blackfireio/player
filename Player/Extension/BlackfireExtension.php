@@ -55,7 +55,7 @@ class BlackfireExtension implements ExtensionInterface
         unset($options['blackfire']);
         if ($step->isBlackfireEnabled()) {
             $build = $options['extra']->has('blackfire_build') ? $options['extra']->get('blackfire_build') : null;
-            $options['blackfire'] = $this->createBlackfireConfig($options['step'], $build);
+            $options['blackfire'] = $this->createBlackfireConfig($options['step'], $build, $request);
         }
 
         return $options;
@@ -139,7 +139,7 @@ class BlackfireExtension implements ExtensionInterface
         return $this->blackfire->createBuild($env, $options);
     }
 
-    private function createBlackfireConfig(Step $step, Build $build = null)
+    private function createBlackfireConfig(Step $step, Build $build = null, RequestInterface $request = null)
     {
         $config = new ProfileConfiguration();
         if (null !== $build) {
@@ -149,6 +149,12 @@ class BlackfireExtension implements ExtensionInterface
         $config->setTitle($step->getTitle());
         foreach ($step->getAssertions() as $assertion) {
             $config->assert($assertion);
+        }
+        if ($request) {
+            $config->setRequestInfo(array(
+                'method' => $request->getMethod(),
+                'path' => $request->getUri()->getPath(),
+            ));
         }
 
         return $config;
