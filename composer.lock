@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8da307388435eeb1df7dfce1d9fc9f71",
-    "content-hash": "ceeeeeceefa91cc75e98f806471bd998",
+    "hash": "a2581b46e34c0c70047b9e7ef5dc12ae",
+    "content-hash": "14bf4d928658ff4f1bd9868971ce01da",
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.5.14",
+            "version": "v1.5.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "efb2a0403a8b9bbbc4499020236af231094d3bc2"
+                "reference": "8e01e13168d23a7aa3aaf13b31c1fd8f155aef19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/efb2a0403a8b9bbbc4499020236af231094d3bc2",
-                "reference": "efb2a0403a8b9bbbc4499020236af231094d3bc2",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/8e01e13168d23a7aa3aaf13b31c1fd8f155aef19",
+                "reference": "8e01e13168d23a7aa3aaf13b31c1fd8f155aef19",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 "uprofiler",
                 "xhprof"
             ],
-            "time": "2016-05-18 16:16:33"
+            "time": "2016-12-05 14:36:18"
         },
         {
             "name": "composer/ca-bundle",
