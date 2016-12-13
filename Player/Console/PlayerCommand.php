@@ -42,7 +42,7 @@ final class PlayerCommand extends Command
                 new InputOption('variables', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
             ])
             ->setDescription('Runs a scenario YAML file')
-            ->setHelp(<<<EOF
+            ->setHelp(<<<'EOF'
 Read https://blackfire.io/docs/player/cli to learn about all supported options.
 EOF
             );

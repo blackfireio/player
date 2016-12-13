@@ -151,10 +151,10 @@ class BlackfireExtension implements ExtensionInterface
             $config->assert($assertion);
         }
         if ($request) {
-            $config->setRequestInfo(array(
+            $config->setRequestInfo([
                 'method' => $request->getMethod(),
                 'path' => $request->getUri()->getPath(),
-            ));
+            ]);
         }
 
         return $config;

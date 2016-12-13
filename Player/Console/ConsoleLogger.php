@@ -18,17 +18,17 @@ final class ConsoleLogger extends BaseConsoleLogger
 {
     private $errored = false;
 
-    private $errorLevels = array(
+    private $errorLevels = [
         LogLevel::EMERGENCY => 1,
         LogLevel::ALERT => 1,
         LogLevel::CRITICAL => 1,
         LogLevel::ERROR => 1,
-    );
+    ];
 
     /**
      * {@inheritdoc}
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         parent::log($level, $message, $context);
 
