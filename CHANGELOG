@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.5.0 (xxxx-xx-xx)
+
+ * Second release. It breaks backwards compatibility. For now on, the player is
+   only distributed as a .phar and can not be  embedded as a PHP project
+
 * 0.4.6 (2016-12-05)
 
  * fix usage of parent build

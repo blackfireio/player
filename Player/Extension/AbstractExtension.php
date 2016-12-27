@@ -47,6 +47,10 @@ abstract class AbstractExtension implements ExtensionInterface
     {
     }
 
+    public function abortScenario(Scenario $scenario, \Exception $exception, Context $context)
+    {
+    }
+
     public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
     {
     }

@@ -11,13 +11,13 @@
 
 namespace Blackfire\Player\ExpressionLanguage;
 
-use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\InvalidArgumentException;
-use Faker\Generator as FakerGenerator;
+use Blackfire\Player\Exception\LogicException;
 use Faker\Factory as FakerFactory;
-use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionFunction;
+use Faker\Generator as FakerGenerator;
 use JmesPath\Env as JmesPath;
+use Symfony\Component\ExpressionLanguage\ExpressionFunction;
+use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -57,6 +57,14 @@ class Provider implements ExpressionFunctionProviderInterface
                 }
 
                 return $arguments['_crawler']->selectButton($selector);
+            }),
+
+            new ExpressionFunction('current_url', $compiler, function ($arguments) {
+                if (null === $arguments['_crawler']) {
+                    throw new LogicException('Unable to get the current URL as the page is not crawlable.');
+                }
+
+                return (string) $arguments['_crawler']->getUri();
             }),
 
             new ExpressionFunction('status_code', $compiler, function ($arguments) {

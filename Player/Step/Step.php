@@ -19,6 +19,7 @@ class Step extends ConfigurableStep
     private $expectations = [];
     private $variables = [];
     private $assertions = [];
+    private $dumpValuesName = [];
 
     public function expect($expression)
     {
@@ -55,5 +56,15 @@ class Step extends ConfigurableStep
     public function getAssertions()
     {
         return $this->assertions;
+    }
+
+    public function setDumpValuesName(array $varName = [])
+    {
+        $this->dumpValuesName = $varName;
+    }
+
+    public function getDumpValuesName()
+    {
+        return $this->dumpValuesName;
     }
 }

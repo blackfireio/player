@@ -1,0 +1,22 @@
+Blackfire Player
+
+Scenario  "Redirect"
+Step 1
+GET http://0:{{ PORT }}/redirect/index.php
+ "Auto-following redirect to /redirect/index.php?i=1"
+GET http://0:{{ PORT }}/redirect/index.php?i=1
+ "Auto-following redirect to /redirect/index.php?i=2"
+GET http://0:{{ PORT }}/redirect/index.php?i=2
+ "Auto-following redirect to /redirect/index.php?i=3"
+GET http://0:{{ PORT }}/redirect/index.php?i=3
+ "Auto-following redirect to /redirect/index.php?i=4"
+GET http://0:{{ PORT }}/redirect/index.php?i=4
+Step 6
+GET http://0:{{ PORT }}/redirect/index.php?i=4
+Step 7
+GET http://0:{{ PORT }}/redirect/index.php
+Step 8
+GET http://0:{{ PORT }}/redirect/index.php?i=1
+  OK
+
+ OK  Scenarios  1  - Steps  8

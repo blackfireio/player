@@ -11,9 +11,6 @@
 
 namespace Blackfire\Player;
 
-use Blackfire\Player\Exception\InvalidArgumentException;
-use Blackfire\Player\Exception\LogicException;
-
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  */

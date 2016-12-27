@@ -31,7 +31,7 @@ class ScenarioSet implements \IteratorAggregate
         $str = '';
         $ind = 0;
         foreach ($this->scenarios as $i => $scenario) {
-            $str .= sprintf(">>> Scenario %d%s <<<\n", ++$ind, !is_int($i) ? sprintf(' (as %s)', $i): '');
+            $str .= sprintf(">>> Scenario %d%s <<<\n", ++$ind, !is_int($i) ? sprintf(' (as %s)', $i) : '');
             $str .= (string) $scenario."\n";
         }
 

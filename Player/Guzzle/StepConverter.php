@@ -11,9 +11,11 @@
 
 namespace Blackfire\Player\Guzzle;
 
+use Blackfire\Player\Context;
 use Blackfire\Player\Exception\CrawlException;
-use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
+use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Psr7\StepConverterInterface;
 use Blackfire\Player\Step\ClickStep;
 use Blackfire\Player\Step\FollowStep;
@@ -22,12 +24,11 @@ use Blackfire\Player\Step\Step;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\SubmitStep;
 use Blackfire\Player\Step\VisitStep;
-use Blackfire\Player\Context;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**
@@ -55,46 +56,62 @@ final class StepConverter implements StepConverterInterface
         $previousRequest = null !== $request && null !== $response;
 
         if ($step instanceof VisitStep) {
-            $request = $this->createRequestFromUri($step, $stepContext);
-        } elseif ($step instanceof ClickStep) {
+            return $this->createRequestFromUri($step, $stepContext);
+        }
+
+        if ($step instanceof ClickStep) {
             if (!$previousRequest) {
                 throw new CrawlException('Cannot click on a link without a previous request.');
             }
 
-            $request = $this->createRequestFromLink($step, $stepContext);
-        } elseif ($step instanceof SubmitStep) {
+            return $this->createRequestFromLink($step, $stepContext);
+        }
+
+        if ($step instanceof SubmitStep) {
             if (!$previousRequest) {
                 throw new CrawlException('Cannot submit a form without a previous request.');
             }
 
-            $request = $this->createRequestFromForm($step, $stepContext);
-        } elseif ($step instanceof FollowStep) {
+            return $this->createRequestFromForm($step, $stepContext);
+        }
+
+        if ($step instanceof FollowStep) {
             if (null === $request || null === $response) {
                 throw new CrawlException('Unable to follow without a previous request.');
             }
 
-            $request = $this->createRequestFromFollow($request, $response);
-        } elseif ($step instanceof ReloadStep) {
+            return $this->createRequestFromFollow($request, $response);
+        }
+
+        if ($step instanceof ReloadStep) {
             if (null === $request || null === $response) {
                 throw new CrawlException('Unable to reload without a previous request.');
             }
 
             // just reload the current request
             Psr7\rewind_body($request);
-        } else {
-            throw new LogicException(sprintf('Unsupported step "%s".', get_class($step)));
+
+            return $request;
         }
 
-        return $request;
+        throw new LogicException(sprintf('Unsupported step "%s".', get_class($step)));
     }
 
     private function createRequestFromUri(VisitStep $step, StepContext $stepContext)
     {
-        $uri = ltrim($this->evaluateExpression($step->getUri()), '/');
+        $uri = $this->evaluateExpression($step->getUri());
+
+        if ($uri instanceof Crawler) {
+            throw new \Exception('It looks like you use "visit" and "link" together. You better should use "click"');
+        }
+
+        $uri = ltrim($uri, '/');
         $method = $step->getMethod() ? $this->evaluateExpression($step->getMethod()) : 'GET';
         $headers = $this->evaluateHeaders($stepContext);
         if (null === $body = $step->getBody()) {
             $body = $this->createBody($this->evaluateValues($step->getParameters()), $headers, $this->evaluateExpression($stepContext->isJson()));
+        } else {
+            $body = $this->evaluateExpression($body);
         }
 
         return new Request($method, $this->fixUri($stepContext, $uri), $headers, $body);

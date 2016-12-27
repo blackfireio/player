@@ -11,12 +11,12 @@
 
 namespace Blackfire\Player\Psr7;
 
-use Blackfire\Player\Exception\VariableErrorException;
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\VariableErrorException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError as ExpressionSyntaxError;
 
 /**

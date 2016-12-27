@@ -13,8 +13,9 @@ namespace Blackfire\Player;
 
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\Exception\InvalidArgumentException;
-use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\SyntaxErrorException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\BlockStep;
@@ -28,7 +29,6 @@ use Blackfire\Player\Step\Step;
 use Blackfire\Player\Step\SubmitStep;
 use Blackfire\Player\Step\VisitStep;
 use Blackfire\Player\Step\WhileStep;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
@@ -42,18 +42,20 @@ class Parser
 
     private $inAGroup;
     private $variables;
+    private $globalVariables;
     private $groups;
-    private $language;
+    private $expressionLanguage;
 
     public function __construct()
     {
-        $this->language = new ExpressionLanguage(null, [new LanguageProvider()]);
+        $this->expressionLanguage = new ExpressionLanguage(null, [new LanguageProvider()]);
+        $this->globalVariables = [];
     }
 
     /**
      * @return ScenarioSet
      */
-    public function load($file, $endpoint = null, $variables = [])
+    public function load($file)
     {
         if (!is_file($file)) {
             throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
@@ -66,8 +68,6 @@ class Parser
     {
         $input = new Input($input, $file);
 
-// FIXME: those are propably different for each "main" block (different file?)
-// vs "regular" blocks
         $this->variables = [];
         $this->groups = [];
 
@@ -85,6 +85,11 @@ class Parser
         }
 
         return $scenarios;
+    }
+
+    public function getGlobalVariables()
+    {
+        return $this->globalVariables;
     }
 
     private function parseSteps(Input $input, $expectedIndent)
@@ -160,6 +165,18 @@ class Parser
             }
 
             return $scenarios;
+        } elseif ('endpoint' === $keyword) {
+            if ($expectedIndent > 0) {
+                throw new SyntaxErrorException(sprintf('An "endpoint" can only be defined at root %s.', $input->getContextString()));
+            }
+
+            if (!$hasArgs) {
+                throw new SyntaxErrorException(sprintf('An "endpoint" takes a required argument %s.', $input->getContextString()));
+            }
+
+            $this->globalVariables['endpoint'] = $arguments;
+
+            $step = new EmptyStep();
         } elseif ('scenario' === $keyword) {
             if ($expectedIndent > 0) {
                 throw new SyntaxErrorException(sprintf('A "scenario" can only be defined at root %s.', $input->getContextString()));
@@ -272,8 +289,8 @@ class Parser
                 throw new SyntaxErrorException(sprintf('An "with" takes a required argument %s.', $input->getContextString()));
             }
 
-            // value in values
-            // key, value in values
+            // valueName in values
+            // keyName, valueName in values
             if (!preg_match('/^(.+)\s+in\s+(.+)$/', $arguments, $matches)) {
                 throw new SyntaxErrorException(sprintf('A "with" step value must be like "url in urls" %s.', $input->getContextString()));
             }
@@ -306,6 +323,14 @@ class Parser
             }
 
             return $step;
+        } elseif ('set' === $keyword) {
+            if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
+                throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
+            }
+
+            $this->globalVariables[$matches[1]] = $matches[2];
+
+            return new EmptyStep($input->getFile(), $input->getLine());
         } else {
             throw new SyntaxErrorException(sprintf('Unknown keyword "%s" %s.', $keyword, $input->getContextString()));
         }
@@ -319,10 +344,13 @@ class Parser
     {
         while (!$input->isEof()) {
             $nextIndent = $input->getNextLineIndent();
+
+            // step is finished
             if ($nextIndent < $expectedIndent) {
-                // step is finished
                 return;
-            } elseif ($nextIndent > $expectedIndent) {
+            }
+
+            if ($nextIndent > $expectedIndent) {
                 throw new SyntaxErrorException(sprintf('Indentation too wide %s.', $input->getContextString()));
             }
 
@@ -368,7 +396,7 @@ class Parser
                 }
 
                 if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
-                    throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
+                    throw new SyntaxErrorException(sprintf('Unable to parse "set" arguments "%s" %s.', $arguments, $input->getContextString()));
                 }
 
                 $this->variables[$matches[1]] = $matches[1];
@@ -412,7 +440,7 @@ class Parser
                     throw new SyntaxErrorException(sprintf('A "body" takes a required argument %s.', $input->getContextString()));
                 }
 
-                $step->body($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
+                $step->body($this->checkExpression($input, $arguments));
             } elseif ('param' === $keyword) {
                 if (!$step instanceof VisitStep && !$step instanceof SubmitStep) {
                     throw new LogicException(sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
@@ -443,6 +471,16 @@ class Parser
                 }
 
                 $step->endpoint($this->checkExpression($input, $arguments));
+            } elseif ('dump' === $keyword) {
+                if (!$step instanceof Step) {
+                    throw new LogicException(sprintf('"dump" is not available for this step %s.', $input->getContextString()));
+                }
+
+                if (!$hasArgs) {
+                    throw new SyntaxErrorException(sprintf('A "dump" takes a required argument %s.', $input->getContextString()));
+                }
+
+                $step->setDumpValuesName(explode(' ', $arguments));
             } elseif ($ignoreInvalid) {
                 // step configuration is finished
                 $input->rewindLine();
@@ -461,8 +499,13 @@ class Parser
             return $expression;
         }
 
+        // We add the "endpoint" variables to be able to use it anywhere. The
+        // value could be injected later, during the parsing or directly in the
+        // scenarios via the CLI
+        $variables = array_replace(['endpoint' => null], $this->globalVariables, $this->variables);
+
         try {
-            $this->language->compile($expression, $this->variables);
+            $this->expressionLanguage->compile($expression, array_keys($variables));
         } catch (SyntaxError $e) {
             $position = strpos($input->getCurrentLine(), $expression);
             $error = preg_replace('/around position (\d+)\./', 'around position '.$position, $e->getMessage());

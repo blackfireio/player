@@ -11,21 +11,21 @@
 
 namespace Blackfire\Player\Psr7;
 
-use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
+use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Step\AbstractStep;
-use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\BlockStep;
 use Blackfire\Player\Step\ConditionStep;
+use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\EmptyStep;
 use Blackfire\Player\Step\LoopStep;
 use Blackfire\Player\Step\Step;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\WhileStep;
-use Blackfire\Player\Context;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**

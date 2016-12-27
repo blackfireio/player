@@ -11,14 +11,14 @@
 
 namespace Blackfire\Player\Extension;
 
+use Blackfire\Player\Context;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Psr7\ResponseChecker;
 use Blackfire\Player\Psr7\ResponseExtractor;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\Step;
-use Blackfire\Player\Context;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>

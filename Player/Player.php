@@ -11,18 +11,18 @@
 
 namespace Blackfire\Player;
 
-use Blackfire\Player\Extension\ExtensionInterface;
 use Blackfire\Player\Exception\RuntimeException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireExtension;
-use Blackfire\Player\Extension\FeedbackExtension;
+use Blackfire\Player\Extension\ExtensionInterface;
 use Blackfire\Player\Extension\FollowExtension;
+use Blackfire\Player\Extension\NameResolverExtension;
 use Blackfire\Player\Extension\TestsExtension;
 use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Extension\WaitExtension;
 use Blackfire\Player\Guzzle\StepConverter;
 use GuzzleHttp\Promise\EachPromise;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -33,17 +33,20 @@ class Player
     private $language;
     private $extensions = [];
 
-    public function __construct(RunnerInterface $runner, $tracer = false)
+    public function __construct(RunnerInterface $runner, $tracer = false, $debug = false, array $terminalDimensions = [])
     {
         $this->runner = $runner;
-        $this->addExtension(new FeedbackExtension($this->getLanguage()));
-        if ($tracer) {
-            $this->addExtension(new TracerExtension(sys_get_temp_dir().'/'.sha1(uniqid(mt_rand(), true))));
-        }
+
+        $this->addExtension(new NameResolverExtension($this->getLanguage()));
         $this->addExtension(new TestsExtension($this->getLanguage()));
         $this->addExtension(new BlackfireExtension($this->getLanguage()));
         $this->addExtension(new WaitExtension($this->getLanguage()));
         $this->addExtension(new FollowExtension($this->getLanguage()));
+        if ($tracer) {
+            $tmpDir = sys_get_temp_dir().'/blackfire-'.mt_rand();
+            @unlink($tmpDir);
+            $this->addExtension(new TracerExtension($tmpDir));
+        }
     }
 
     public function addExtension(ExtensionInterface $extension)
@@ -76,7 +79,7 @@ class Player
         if (!$concurrency) {
             $concurrency = min(count($runs), $this->runner->getMaxConcurrency());
         } elseif ($concurrency > $this->runner->getMaxConcurrency()) {
-            throw new RuntimeException('Concurrency (%d) must be less than or equal to the number of clients (%s)', $concurrency, $this->runner->getMaxConcurrency());
+            throw new RuntimeException('Concurrency (%d) must be less than or equal to the number of clients (%s).', $concurrency, $this->runner->getMaxConcurrency());
         }
 
         foreach ($this->extensions as $extension) {

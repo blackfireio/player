@@ -11,12 +11,12 @@
 
 namespace Blackfire\Player\Psr7;
 
+use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\ExpectationFailureException;
-use Blackfire\Player\Context;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError as ExpressionSyntaxError;
 
 /**
@@ -35,17 +35,19 @@ class ResponseChecker
     {
         $crawler = CrawlerFactory::create($response, $request->getUri());
 
-        $variables = ['_response' => $response, '_crawler' => $crawler];
-
+        $variables = array_replace($context->getVariableValues(true), ['_response' => $response, '_crawler' => $crawler]);
         foreach ($expectations as $expression) {
             try {
-                $result = $this->language->evaluate($expression, $variables + $context->getVariableValues(true));
+                $parsedExpression = $this->language->parse($expression, array_keys($variables));
+                $result = $this->language->evaluate($parsedExpression, $variables);
             } catch (ExpressionSyntaxError $e) {
                 throw new ExpectationErrorException(sprintf('Expectation syntax error in "%s": %s', $expression, $e->getMessage()));
             }
 
             if (null === $result || false === $result || 0 === $result) {
-                throw new ExpectationFailureException(sprintf('Expectation "%s" failed', $expression));
+                $results = $this->language->extractResults($parsedExpression, $variables);
+
+                throw new ExpectationFailureException(sprintf('Expectation "%s" failed.', $expression), $results);
             }
         }
     }

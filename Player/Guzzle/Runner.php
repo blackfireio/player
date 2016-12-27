@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Guzzle;
 
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\RunnerInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\RequestInterface;
@@ -37,8 +38,8 @@ final class Runner implements RunnerInterface
             $clients[] = $client;
         }
 
-        foreach ($clients as $c) {
-            if (!$c instanceof GuzzleClient) {
+        foreach ($clients as $client) {
+            if (!$client instanceof GuzzleClient) {
                 throw new LogicException('The Guzzle runner accepts a Guzzle client or an array of Guzzle clients.');
             }
         }

@@ -86,7 +86,11 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
             $exception = $e;
 
             foreach ($this->extensions as $extension) {
-                $extension->abortStep($step, $request, $exception, $this->context);
+                if (isset($step)) {
+                    $extension->abortStep($step, $request, $exception, $this->context);
+                } else {
+                    $extension->abortScenario($this->scenario, $exception, $this->context);
+                }
             }
         }
 

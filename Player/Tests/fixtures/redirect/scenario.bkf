@@ -1,0 +1,17 @@
+scenario
+    name "Redirect"
+
+    visit "redirect/index.php"
+        follow_redirects
+
+    reload
+        expect status_code() == 200
+        expect current_url() == endpoint ~ "/redirect/index.php?i=4"
+
+    visit "redirect/index.php"
+        expect status_code() == 302
+        expect header('Location') == '/redirect/index.php?i=1'
+
+    follow
+        expect status_code() == 302
+        expect header('Location') == '/redirect/index.php?i=2'

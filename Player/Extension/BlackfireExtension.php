@@ -14,10 +14,11 @@ namespace Blackfire\Player\Extension;
 use Blackfire\Build;
 use Blackfire\Client as BlackfireClient;
 use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
-use Blackfire\Exception\ExceptionInterface as BlackfireException;
+use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\Exception\SyntaxErrorException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Psr7\CrawlerFactory;
 use Blackfire\Player\Result;
 use Blackfire\Player\Scenario;
@@ -25,11 +26,9 @@ use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\Step;
-use Blackfire\Player\Context;
 use Blackfire\Profile\Configuration as ProfileConfiguration;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -87,7 +86,7 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         if (!$response->hasHeader('X-Blackfire-Response')) {
-            throw new \LogicException('Unable to profile the current step');
+            throw new \LogicException('Unable to profile the current step.');
         }
 
         $crawler = CrawlerFactory::create($response, $request->getUri());
@@ -106,7 +105,7 @@ final class BlackfireExtension extends AbstractExtension
     {
         // if X-Blackfire-Response is set by someone else, don't do anything
         if (!$request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
-            return ;
+            return;
         }
 
         if (!$response->hasHeader('X-Blackfire-Response')) {
@@ -189,7 +188,7 @@ final class BlackfireExtension extends AbstractExtension
         $profile = $this->blackfire->getProfile($request->getHeaderLine('X-Blackfire-Profile-Uuid'));
 
         if ($profile->isErrored()) {
-            throw new ExpectationErrorException('Assertion syntax error');
+            throw new ExpectationErrorException('Assertion syntax error.');
         } elseif (!$profile->isSuccessful()) {
             $failures = [];
             foreach ($profile->getTests() as $test) {

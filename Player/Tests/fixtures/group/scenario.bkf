@@ -1,0 +1,9 @@
+load "group.bkf"
+
+scenario
+    name "Group"
+
+    include homepage
+
+    visit url('group/index.php')
+        expect status_code() == 200

@@ -25,7 +25,6 @@ class Context
     private $extraBag;
     private $generator;
     private $contextStack;
-    private $request;
     private $response;
     private $crawler;
 
@@ -53,12 +52,15 @@ class Context
 
     public function getStepContext()
     {
+        if (!$this->contextStack || $this->contextStack->isEmpty()) {
+            throw new \RuntimeException('The context stack is not defined yet.');
+        }
+
         return $this->contextStack->top();
     }
 
     public function setRequestResponse(RequestInterface $request, ResponseInterface $response)
     {
-        $this->request = $request;
         $this->response = $response;
 
         $this->crawler = null;
@@ -98,7 +100,7 @@ class Context
     {
         $values = $this->valueBag->all($trim);
 
-        foreach ($this->contextStack->top()->getVariables() as $key => $value) {
+        foreach ($this->getStepContext()->getVariables() as $key => $value) {
             if (!array_key_exists($key, $values)) {
                 $values[$key] = $trim && is_string($value) ? trim($value) : $value;
             }

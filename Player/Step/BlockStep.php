@@ -41,6 +41,7 @@ class BlockStep extends ConfigurableStep
     public function endpoint($endpoint)
     {
         $this->endpoint = $endpoint;
+        $this->set('endpoint', $endpoint);
 
         return $this;
     }

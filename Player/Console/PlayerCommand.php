@@ -11,13 +11,13 @@
 
 namespace Blackfire\Player\Console;
 
-use Blackfire\Player\Exception\InvalidArgumentException;
+use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Guzzle\Runner;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Player;
-use Blackfire\Player\ScenarioSet;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,21 +42,34 @@ final class PlayerCommand extends Command
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
             ])
             ->setDescription('Runs scenario files')
-            ->setHelp(<<<EOF
+            ->setHelp(<<<'EOF'
 Read https://blackfire.io/docs/player/cli to learn about all supported options.
 EOF
             );
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $output->getFormatter()->setStyle('title', new OutputFormatterStyle('black', 'yellow'));
+        $output->getFormatter()->setStyle('debug', new OutputFormatterStyle('red', 'black'));
+        $output->getFormatter()->setStyle('failure', new OutputFormatterStyle('white', 'red'));
+        $output->getFormatter()->setStyle('success', new OutputFormatterStyle('white', 'green'));
+        $output->getFormatter()->setStyle('detail', new OutputFormatterStyle('white', 'blue'));
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $clients = [$this->createClient($output)];
-        for ($i = 1, $concurrency = $input->getOption('concurrency'); $i < $concurrency; ++$i) {
+        for ($i = 1; $i < $input->getOption('concurrency'); ++$i) {
             $clients[] = $this->createClient($output);
         }
 
         $runner = new Runner($clients);
+
         $player = new Player($runner, $input->getOption('tracer'));
+        if (!$input->getOption('json')) {
+            $player->addExtension(new CliFeedbackExtension($output, $this->getApplication()->getTerminalDimensions()));
+        }
 
         $variables = [];
         foreach ($input->getOption('variable') as $variable) {
@@ -74,12 +87,23 @@ EOF
                 $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
             }
 
+            foreach ($parser->getGlobalVariables() as $key => $value) {
+                // Override only if the endpoint is not already defined in the step
+                if ($key === 'endpoint' && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
+                    $scenario->endpoint($this->escapeValue($value));
+                }
+
+                $scenario->set($key, $this->escapeValue($value));
+            }
+
             foreach ($variables as $key => $value) {
                 $scenario->set($key, $this->escapeValue($value));
             }
         }
 
         if ($input->getOption('validate')) {
+            $output->writeln('<info>The scenarios are valid.</>');
+
             return;
         }
 
@@ -91,10 +115,6 @@ EOF
 
         // any scenario with an error?
         if ($results->isErrored()) {
-            return 1;
-        }
-
-        if ($logger->hasErrored()) {
             return 1;
         }
     }

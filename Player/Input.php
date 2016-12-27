@@ -22,19 +22,18 @@ final class Input
 {
     private $file;
     private $lines;
-    private $max;
     private $lineno;
+    private $max;
 
     public function __construct($input, $file = null)
     {
-        $this->input = $input;
         $this->file = $file;
         $this->lines = $this->splitInput($input);
+        $this->lineno = 0;
 
         if ($this->isEof()) {
             throw new SyntaxErrorException(sprintf('You must define at least one step in file %s.', $file));
         }
-        $this->lineno = 0;
     }
 
     public function isEof()

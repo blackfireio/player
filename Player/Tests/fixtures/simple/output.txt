@@ -1,0 +1,22 @@
+Blackfire Player
+
+Scenario  "Simple"
+Step 1
+GET http://0:{{ PORT }}/simple/index.php
+Step 2
+GET http://0:{{ PORT }}/simple/index.php?header
+Step 3
+GET http://0:{{ PORT }}/simple/index.php?link
+Step 4
+GET http://0:{{ PORT }}/simple/index.php?clicked
+Step 5
+PUT http://0:{{ PORT }}/simple/index.php
+Step 6
+GET http://0:{{ PORT }}/simple/index.php?form
+Step 7
+POST http://0:{{ PORT }}/simple/index.php
+Step 8
+GET http://0:{{ PORT }}/simple/index.php?json
+  OK
+
+ OK  Scenarios  1  - Steps  8

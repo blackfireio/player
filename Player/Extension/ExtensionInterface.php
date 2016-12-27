@@ -41,6 +41,8 @@ interface ExtensionInterface
 
     public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context);
 
+    public function abortScenario(Scenario $scenario, \Exception $exception, Context $context);
+
     /**
      * @return AbstractStep|null
      */
