@@ -5,11 +5,14 @@ Blackfire Player
 
 .. caution::
 
-    You are reading the documentation for the latest Player release (0.5+).
+    You are reading the documentation for the latest Blackfire Player release
+    (0.5+).
 
-    If you are using an older version, please visit the `relative documentation
-    <https://github.com/blackfireio/player/tree/v0.4.6/docs>`_.
-
+    If you are using an older version, please read the `previous documentation
+    <https://github.com/blackfireio/player/tree/v0.4.6/docs>`_. You can still
+    download previous PHARs by explicitly adding the version you want (
+    ``http://get.blackfire.io/blackfire-player-v0.4.6.phar`` for the 0.4.6
+    version for instance).
 
 Blackfire Player is a powerful Web Crawling, Web Testing, and Web Scraper
 application. It provides a nice DSL to **crawl HTTP services**, **assert
@@ -25,7 +28,7 @@ Some Blackfire Player use cases:
 
 * Test code with unit test integration (PHPUnit, Behat, Codeception, ...);
 
-* Test code behavior from the outside thanks to the native Blackfire
+* Test code behavior from the outside thanks to the native Blackfire Profiler
   integration -- aka *Unit Tests from the HTTP layer* (tm).
 
 Blackfire Player executes scenarios written in a special DSL (by convention,
@@ -34,8 +37,7 @@ files end with ``.bkf``).
 Download
 --------
 
-The easiest way to run ``.bkf`` files is by downloading the Blackfire Player
-PHAR executable:
+Running ``.bkf`` files can be done via the Blackfire Player:
 
 .. code-block:: bash
     :zerocopy:
@@ -46,6 +48,7 @@ Use ``php blackfire-player.phar`` to run the player or make it executable and
 move it to a directory under your ``PATH``:
 
 .. code-block:: bash
+    :zerocopy:
 
     chmod +x blackfire-player.phar
     mv blackfire-player.phar /usr/local/bin/blackfire-player
@@ -62,41 +65,41 @@ Use the ``run`` command to execute a scenario:
 
 .. code-block:: bash
 
-    ./vendor/bin/blackfire-player run scenario.bkf
+    blackfire-player run scenario.bkf
 
 The command accepts multiple scenario files as arguments:
 
 .. code-block:: bash
 
-    ./vendor/bin/blackfire-player run scenario1.bkf scenario2.bkf scenario3.bkf
+    blackfire-player run scenario1.bkf scenario2.bkf scenario3.bkf
 
-Use the ``--endpoint`` option to override the endpoint defined in the scenarios:
+Use the ``--endpoint`` option to override the endpoint defined in scenarios:
 
 .. code-block:: bash
 
-    ./vendor/bin/blackfire-player scenario.bkf --endpoint=http://example.com/
+    blackfire-player scenario.bkf --endpoint=http://example.com/
 
 Use the ``--concurrency`` option to run scenarios in parallel:
 
 .. code-block:: bash
 
-     ./vendor/bin/blackfire-player scenario.bkf --concurrency=5
+     blackfire-player scenario.bkf --concurrency=5
 
 Use the ``--json`` option to output the variable values as JSON:
 
 .. code-block:: bash
 
-    ./vendor/bin/blackfire-player scenario.bkf --json
+    blackfire-player scenario.bkf --json
 
 Use the ``--variables`` option to override variable values:
 
 .. code-block:: bash
 
-     ./vendor/bin/blackfire-player scenario.bkf --variables="foo=bar" --variables="bar=foo"
+     blackfire-player scenario.bkf --variables="foo=bar" --variables="bar=foo"
 
 Use ``-v`` to get logs about the progress of the player.
 
-The command returns 1 if at least one scenario fails.
+The command returns 1 if at least one scenario fails, 0 otherwise.
 
 Crawling an HTTP application
 ----------------------------
@@ -113,12 +116,11 @@ written in a domain specific language:
         visit url('/')
             expect status_code() == 200
 
-This simple example shows you how you can make a request on an HTTP application
+This example shows how to make a request on an HTTP application
 (``http://example.com/``) and be sure that it behaves the way you expect it to
-via Writing Expectations (the response status code is 200).
+by Writing Expectations (the status code of the response is 200).
 
-Store the scenario in a ``scenario.bkf``, and run it via the `Blackfire Player
-</docs/player/installation>`_:
+Store the scenario in a ``scenario.bkf``, and run it:
 
 .. code-block:: bash
 
@@ -127,7 +129,7 @@ Store the scenario in a ``scenario.bkf``, and run it via the `Blackfire Player
     # or
     php blackfire-player.phar run scenario.bkf
 
-Add more requests to a scenario by indenting the lines as below:
+Add more requests to a scenario by indenting lines as below:
 
 .. code-block:: blackfire
 
@@ -140,8 +142,8 @@ Add more requests to a scenario by indenting the lines as below:
 
 .. note::
 
-    The indentation of the lines defines the structure like for Python scripts
-    or YAML files.
+    The line indentation defines the structure like for Python scripts or YAML
+    files.
 
 A **scenario** is a sequence of HTTP calls (**steps**) that share the HTTP
 session and cookies. Scenario definitions are **declarative**, the order of
@@ -162,8 +164,20 @@ forms, or follow redirections (see `Making requests`_ for more information):
 
 .. note::
 
-    If your scenario does not work as expected, use ``-v`` to get verbose
-    output.
+    If your scenario does not work as expected, use ``-v`` to get a more
+    verbose output.
+
+.. tip::
+
+    You can add comments in a scenario file by prefixing the line with ``#``:
+
+    .. code-block:: blackfire
+
+        # This is a comment
+        scenario:
+            # Comment are ignored
+            visit url('/')
+                expect status_code() == 200
 
 Making Requests
 ~~~~~~~~~~~~~~~
@@ -174,7 +188,7 @@ Visiting a Page with ``visit``
 ++++++++++++++++++++++++++++++
 
 ``visit`` goes directly to the referenced HTTP URL (defaults to the ``GET``
-HTTP method unless you pass one explicitly):
+HTTP method unless you define one explicitly):
 
 .. code-block:: blackfire
 
@@ -182,7 +196,7 @@ HTTP method unless you pass one explicitly):
         visit url('/')
             method POST
 
-You can also pass the Request body:
+You can also pass a Request body:
 
 .. code-block:: blackfire
 
@@ -204,8 +218,8 @@ Clicking on a Link with ``click``
 Submitting Forms with ``submit``
 ++++++++++++++++++++++++++++++++
 
-``submit`` submits a form in an HTML page (takes an expression as an argument
-and an array of values to submit with the form):
+``submit`` submits a form in an HTML page (takes an expression as an argument);
+parameters to submit with the form are defined via ``param`` entries:
 
 .. code-block:: blackfire
 
@@ -232,7 +246,7 @@ Following Redirections
 ++++++++++++++++++++++
 
 HTTP redirections are never followed automatically to let you write
-expectations and assertions on all requests:
+expectations and assertions on redirect responses:
 
 .. code-block:: blackfire
 
@@ -241,7 +255,7 @@ expectations and assertions on all requests:
             expect status_code() == 302
             expect header('Location') == '/redirected.php'
 
-Use ``follow`` to then follow one redirection:
+Use ``follow`` to follow one redirection:
 
 .. code-block:: blackfire
 
@@ -287,8 +301,8 @@ In a ``login.bkf`` file, write a ``group`` that contains the logic to log in:
             param user 'admin'
             param password 'admin'
 
-Then, in the main scenario file, ``load`` the previous ``group`` and
-``include`` it when you need it:
+Then, in another file, ``load`` the ``group`` and ``include`` it when you need
+it:
 
 .. code-block:: blackfire
 
@@ -370,7 +384,7 @@ Sending a JSON Body with ``json``
     scenario
         visit url('/')
             method POST
-            param foo bar
+            param foo "bar"
             json true
 
 Setting Options for all Steps
@@ -398,13 +412,7 @@ Writing Expectations
 
 Expectations are **expressions** evaluated against the current HTTP response
 and if one of them returns a *falsy* value, Blackfire Player stops the run and
-generate an error.
-
-.. note::
-
-    Learn more about `Expressions syntax
-    <http://symfony.com/doc/current/components/expression_language/syntax.html>`_
-    in the Symfony documentation.
+generates an error.
 
 Expressions have access to the following functions:
 
@@ -444,7 +452,16 @@ function returns a PHP array.
 The ``json()`` function accepts `JMESPath
 <http://jmespath.org/specification.html>`_.
 
-Here are some common expressions:
+The result of calling functions can be checked via `operators
+<http://symfony.com/doc/current/components/expression_language/syntax.html#supported-operators>`_ described.
+
+.. note::
+
+    Learn more about `Expressions syntax
+    <http://symfony.com/doc/current/components/expression_language/syntax.html>`_
+    in the Symfony documentation.
+
+Here are some expression examples:
 
 .. code-block:: blackfire
 
@@ -474,6 +491,43 @@ Here are some common expressions:
 
     # get keys
     json("arguments."sql.pdo.queries".keys(@)")
+
+Using Variables
+---------------
+
+Variables can be defined to make your scenarios dynamic. Use ``set`` to define
+the default value:
+
+.. code-block:: blackfire
+
+    scenario
+        name "HTTP Cache"
+        set env "dev"
+        set urls [ ... ]
+
+        when "prod" == env
+            with url in urls
+                # check HTTP cache, but only on production
+
+And override it with the ``--variable`` option on the CLI:
+
+.. code-block:: bash
+
+    blackfire-player run scenario.bkf --variable env=prod
+
+Organizing Scenario Files
+-------------------------
+
+To run scenarios defined in several files, you can use ``load`` instead of
+listing all the files as arguments to the player:
+
+.. code-block:: blackfire
+
+    # load and execute all scenarios from files in this directory
+    load "*.bkf"
+
+    # load and execute all scenarios from files in all sub-ddirectories
+    load "**/*.bkf"
 
 Writing Blackfire Assertions
 ----------------------------
@@ -534,7 +588,7 @@ Variables are a great way to make your Blackfire assertions conditional:
 
 .. caution::
 
-    The ``assert()`` feature is **not supported yet**.
+    The ``assert`` feature is **not supported yet**.
 
 Scraping Values
 ---------------
@@ -553,7 +607,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
             set content_type header("Content-Type")
             set token regex('/name="_token" value="([^"]+)"/')
 
-The ``set()`` method takes two arguments:
+``set`` takes two arguments:
 
 * The name of the variable you want to store the value in;
 
@@ -561,8 +615,13 @@ The ``set()`` method takes two arguments:
 
 Using ``json()``, ``css()``, and ``xpath()`` on JSON, HTML, and XML responses
 is recommended, but for pure text responses or complex values, you can use the
-generic ``regex()`` function. ``regex()`` takes a regex as an argument an
-returns the first match.
+generic ``regex()`` function.
+
+.. note::
+
+    ``regex()`` takes a regex as an argument and always returns the first
+    match. Note that backslashes must be escaped by doubling them:
+    ``"/\\.git/"``.
 
 The values are also available at the end of a crawling session:
 

@@ -152,7 +152,7 @@ class CliFeedbackExtension extends AbstractExtension
         $this->output->writeln(sprintf('<failure> </> %s', $ctx));
 
         $lines = explode("\n", $exception->getMessage());
-        $this->output->writeln(sprintf('<failure> </> └ %s', array_shift($lines)));
+        $this->output->writeln(sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
         foreach ($lines as $line) {
             $this->output->writeln(sprintf('<failure> </>   %s', $line));
         }
@@ -190,7 +190,7 @@ class CliFeedbackExtension extends AbstractExtension
         $this->output->writeln(sprintf('<failure> </> %s', $ctx));
 
         $lines = explode("\n", $exception->getMessage());
-        $this->output->writeln(sprintf('<failure> </> └ %s', array_shift($lines)));
+        $this->output->writeln(sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
         foreach ($lines as $line) {
             $this->output->writeln(sprintf('<failure> </>   %s', $line));
         }

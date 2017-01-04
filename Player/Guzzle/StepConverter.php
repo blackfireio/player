@@ -102,7 +102,7 @@ final class StepConverter implements StepConverterInterface
         $uri = $this->evaluateExpression($step->getUri());
 
         if ($uri instanceof Crawler) {
-            throw new \Exception('It looks like you use "visit" and "link" together. You better should use "click"');
+            throw new CrawlException('It looks like you used "visit" and "link" together. You should use "click" instead');
         }
 
         $uri = ltrim($uri, '/');
@@ -122,6 +122,9 @@ final class StepConverter implements StepConverterInterface
         $selector = $step->getSelector();
 
         $link = $this->evaluateExpression($selector, $this->context->getVariableValues(true));
+        if (!$link instanceof Crawler) {
+            throw new CrawlException('You can only click on links as returned by the link() function.');
+        }
         if (!count($link)) {
             throw new CrawlException(sprintf('Unable to click as link "%s" does not exist.', $selector));
         }
@@ -203,6 +206,10 @@ final class StepConverter implements StepConverterInterface
         $endpoint = $stepContext->getEndpoint() ? $this->evaluateExpression($stepContext->getEndpoint()) : null;
 
         if (!$endpoint) {
+            if (0 !== strpos($uri, 'http')) {
+                throw new CrawlException(sprintf('Unable to crawl a non-absolute URI (/%s). Did you forget to set an "endpoint"?', $uri));
+            }
+
             return $uri;
         }
 
