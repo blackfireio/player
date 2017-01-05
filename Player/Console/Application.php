@@ -38,7 +38,7 @@ final class Application extends BaseApplication
     public function renderException(\Exception $e, OutputInterface $output)
     {
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
-        $lines = array('[ERROR]');
+        $lines = ['[ERROR]'];
 
         $terminal = new Terminal();
         $width = $terminal->getWidth() ? $terminal->getWidth() - 1 : PHP_INT_MAX;
@@ -71,7 +71,7 @@ final class Application extends BaseApplication
         }
 
         $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
-        $lines = array();
+        $lines = [];
         $line = '';
         foreach (preg_split('//u', $utf8String) as $char) {
             // test if $char could be appended to current line

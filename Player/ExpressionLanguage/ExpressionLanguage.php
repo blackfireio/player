@@ -9,7 +9,7 @@ class ExpressionLanguage extends SymfonyExpressionLanguage
 {
     private $resultsVisitor;
 
-    public function __construct(ParserCacheInterface $cache = null, array $providers = array())
+    public function __construct(ParserCacheInterface $cache = null, array $providers = [])
     {
         parent::__construct($cache, $providers);
 

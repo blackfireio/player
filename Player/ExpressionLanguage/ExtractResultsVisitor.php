@@ -109,6 +109,6 @@ class ExtractResultsVisitor
 
     protected function dumpEscaped($value)
     {
-        return str_replace(array('\\', '"'), array('\\\\', '\"'), $value);
+        return str_replace(['\\', '"'], ['\\\\', '\"'], $value);
     }
 }
