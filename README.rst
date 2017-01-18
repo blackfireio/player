@@ -546,7 +546,7 @@ name is then used as the build name:
 
     scenario
         name "Scenario Name"
-        blackfire true
+        blackfire "Environment name" # Use the environment name (or UUID) you're targeting or false to disable
 
 .. note::
 
