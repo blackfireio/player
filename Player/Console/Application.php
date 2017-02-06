@@ -37,6 +37,10 @@ final class Application extends BaseApplication
 
     public function renderException(\Exception $e, OutputInterface $output)
     {
+        if (!\Phar::running()) {
+            return parent::renderException($e, $output);
+        }
+
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
         $lines = ['[ERROR]'];
 
