@@ -126,8 +126,12 @@ class Provider implements ExpressionFunctionProviderInterface
                 return array_merge($arr1, $arr2);
             }),
 
-            new ExpressionFunction('fake', $compiler, function ($arguments, $provider) {
+            new ExpressionFunction('fake', $compiler, function ($arguments, $provider = null/*, $othersArgs ...*/) {
                 $arguments = func_get_args();
+
+                if (!$provider) {
+                    throw new InvalidArgumentException('Missing first argument (provider) for the fake function.');
+                }
 
                 return $this->faker->format($provider, array_splice($arguments, 2));
             }),
