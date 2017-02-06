@@ -29,7 +29,7 @@ scenario
     submit button("Submit")
         param firstname "Grégoire"
         param lastname "Pineau"
-        param bio file("Player/Tests/fixtures/simple/bio.txt", "my bio")
+        param bio file("bio.txt", "my bio")
         expect status_code() == 200
         expect trim(body()) == "Grégoire-Pineau-my bio-This is my bio"
 

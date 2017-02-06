@@ -230,7 +230,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('A "submit" takes a required argument %s.', $input->getContextString()));
             }
 
-            $step = new SubmitStep($this->checkExpression($input, $arguments));
+            $step = new SubmitStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('include' === $keyword) {
             if (!$hasArgs) {
                 throw new SyntaxErrorException(sprintf('An "include" takes a required argument %s.', $input->getContextString()));

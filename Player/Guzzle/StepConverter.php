@@ -149,15 +149,21 @@ final class StepConverter implements StepConverterInterface
             $headers = $this->evaluateHeaders($stepContext);
 
             if ($files = $form->getFiles()) {
+                $basePath = rtrim(dirname($step->getFile()), '/').'/';
+
                 foreach ($formValues as $name => $contents) {
                     $data = [
                         'name' => $name,
                     ];
                     if (isset($files[$name])) {
                         if (!is_array($contents)) {
-                            throw new LogicException(sprintf('The form field "%s" is of type "file". But you did not use the file() function', $name));
+                            throw new LogicException(sprintf('The form field "%s" is of type "file". But you did not use the file() function.', $name));
                         }
-                        $data['contents'] = fopen($contents[0], 'r');
+                        $filename = $basePath.$contents[0];
+                        if (!file_exists($filename)) {
+                            throw new LogicException(sprintf('The file "%s" does not exist.', $filename));
+                        }
+                        $data['contents'] = fopen($filename, 'r');
                         $data['filename'] = $contents[1];
                     } else {
                         $data['contents'] = $contents;
