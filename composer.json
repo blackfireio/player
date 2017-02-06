@@ -1,6 +1,6 @@
 {
     "name": "blackfire/player",
-    "type": "library",
+    "type": "project",
     "description": "A powerful web crawler and web scraper with Blackfire support",
     "keywords": ["scraper", "crawler", "blackfire"],
     "homepage": "https://blackfire.io/player",
@@ -46,7 +46,6 @@
             "php": "5.5.9"
         }
     },
-    "bin": ["bin/blackfire-player"],
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
