@@ -85,12 +85,35 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
         } catch (\Exception $e) {
             $exception = $e;
 
-            foreach ($this->extensions as $extension) {
-                if (isset($step)) {
-                    $extension->abortStep($step, $request, $exception, $this->context);
-                } else {
-                    $extension->abortScenario($this->scenario, $exception, $this->context);
+            // No exceptions should be throw outside this method, otherwise they
+            // will be caught by guzzle and will become silenced on PHP 7.0+
+            try {
+                foreach ($this->extensions as $extension) {
+                    if (isset($step)) {
+                        $extension->abortStep($step, $request, $exception, $this->context);
+                    } else {
+                        $extension->abortScenario($this->scenario, $exception, $this->context);
+                    }
                 }
+            } catch (\Throwable $e) {
+                echo $e;
+            }
+        } catch (\Error $e) {
+            // BC with PHP < 7.0, because abortStep expect an \Exception
+            $exception = new \ErrorException($e->getMessage(), $e->getCode(), E_ERROR, $e->getFile(), $e->getLine(), $e);
+
+            // No exceptions should be throw outside this method, otherwise they
+            // will be caught by guzzle and will become silenced on PHP 7.0+
+            try {
+                foreach ($this->extensions as $extension) {
+                    if (isset($step)) {
+                        $extension->abortStep($step, $request, $exception, $this->context);
+                    } else {
+                        $extension->abortScenario($this->scenario, $exception, $this->context);
+                    }
+                }
+            } catch (\Throwable $e) {
+                echo $e;
             }
         }
 
