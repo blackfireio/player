@@ -59,6 +59,10 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_crawler']->selectButton($selector);
             }),
 
+            new ExpressionFunction('file', $compiler, function ($arguments, $filename, $name = null) {
+                return [$filename, $name ?: basename($filename)];
+            }),
+
             new ExpressionFunction('current_url', $compiler, function ($arguments) {
                 if (null === $arguments['_crawler']) {
                     throw new LogicException('Unable to get the current URL as the page is not crawlable.');

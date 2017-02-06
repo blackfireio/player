@@ -144,20 +144,34 @@ final class StepConverter implements StepConverterInterface
 
         if (null === $body = $step->getBody()) {
             $formValues = $this->evaluateValues($step->getParameters());
-            $form = $form->form($formValues);
+            $form = $form->form();
 
             $headers = $this->evaluateHeaders($stepContext);
-            $body = $this->createBody($form->getValues(), $headers, $this->evaluateExpression($stepContext->isJson()));
 
-            /*
-            // FIXME: when we have files, we need NOT use form_params
             if ($files = $form->getFiles()) {
-                foreach ($files as $name => $file) {
-                    'name' => $name,
-                    'contents' => $file,
+                foreach ($formValues as $name => $contents) {
+                    $data = [
+                        'name' => $name,
+                    ];
+                    if (isset($files[$name])) {
+                        if (!is_array($contents)) {
+                            throw new LogicException(sprintf('The form field "%s" is of type "file". But you did not use the file() function', $name));
+                        }
+                        $data['contents'] = fopen($contents[0], 'r');
+                        $data['filename'] = $contents[1];
+                    } else {
+                        $data['contents'] = $contents;
+                    }
+                    unset($formValues[$name]);
+                    $formValues[] = $data;
                 }
+
+                $body = new Psr7\MultipartStream($formValues);
+                $headers['Content-Type'] = 'multipart/form-data; boundary='.$body->getBoundary();
+            } else {
+                $form->setValues($formValues);
+                $body = $this->createBody($form->getValues(), $headers, $this->evaluateExpression($stepContext->isJson()));
             }
-            */
         }
 
         return new Request($form->getMethod(), $this->fixUri($stepContext, $form->getUri()), $headers, $body);

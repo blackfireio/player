@@ -227,6 +227,7 @@ parameters to submit with the form are defined via ``param`` entries:
         submit button("Submit")
             param title 'Happy Scraping'
             param content 'Scraping with Blackfire Player is so easy!'
+            param image file('/path/to/image.png', 'blackfire.png') # name parameter is optional
 
 Values can also be randomly generated via the ``fake()`` function:
 
