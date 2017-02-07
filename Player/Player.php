@@ -33,7 +33,7 @@ class Player
     private $language;
     private $extensions = [];
 
-    public function __construct(RunnerInterface $runner, $tracer = false, $debug = false, array $terminalDimensions = [])
+    public function __construct(RunnerInterface $runner, $tracer = false)
     {
         $this->runner = $runner;
 
