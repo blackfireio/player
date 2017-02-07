@@ -97,7 +97,8 @@ Use the ``--variables`` option to override variable values:
 
      blackfire-player scenario.bkf --variables="foo=bar" --variables="bar=foo"
 
-Use ``-v`` to get logs about the progress of the player.
+Use ``-v`` to get logs about the progress of the player or use ``tracer`` option
+to store all requests and responses on disk.
 
 The command returns 1 if at least one scenario fails, 0 otherwise.
 

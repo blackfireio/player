@@ -43,10 +43,8 @@ final class PlayerCommand extends Command
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
             ])
             ->setDescription('Runs scenario files')
-            ->setHelp(<<<'EOF'
-Read https://blackfire.io/docs/player/cli to learn about all supported options.
-EOF
-            );
+            ->setHelp('Read https://blackfire.io/docs/player to learn about all supported options.')
+        ;
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
