@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Console;
 
 use Blackfire\Player\Extension\CliFeedbackExtension;
+use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\Runner;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Player;
@@ -69,6 +70,9 @@ EOF
         $player = new Player($runner, $input->getOption('tracer'));
         if (!$input->getOption('json')) {
             $player->addExtension(new CliFeedbackExtension($output, $this->getApplication()->getTerminalDimensions()));
+        }
+        if ($input->getOption('tracer')) {
+            $player->addExtension(new TracerExtension($output));
         }
 
         $variables = [];

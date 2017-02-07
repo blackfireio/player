@@ -69,6 +69,11 @@ class Context
         }
     }
 
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
     /**
      * @internal
      */

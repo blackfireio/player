@@ -19,7 +19,6 @@ use Blackfire\Player\Extension\ExtensionInterface;
 use Blackfire\Player\Extension\FollowExtension;
 use Blackfire\Player\Extension\NameResolverExtension;
 use Blackfire\Player\Extension\TestsExtension;
-use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Extension\WaitExtension;
 use Blackfire\Player\Guzzle\StepConverter;
 use GuzzleHttp\Promise\EachPromise;
@@ -33,7 +32,7 @@ class Player
     private $language;
     private $extensions = [];
 
-    public function __construct(RunnerInterface $runner, $tracer = false)
+    public function __construct(RunnerInterface $runner)
     {
         $this->runner = $runner;
 
@@ -42,11 +41,6 @@ class Player
         $this->addExtension(new BlackfireExtension($this->getLanguage()));
         $this->addExtension(new WaitExtension($this->getLanguage()));
         $this->addExtension(new FollowExtension($this->getLanguage()));
-        if ($tracer) {
-            $tmpDir = sys_get_temp_dir().'/blackfire-'.mt_rand();
-            @unlink($tmpDir);
-            $this->addExtension(new TracerExtension($tmpDir));
-        }
     }
 
     public function addExtension(ExtensionInterface $extension)

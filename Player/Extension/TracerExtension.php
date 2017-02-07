@@ -12,13 +12,14 @@
 namespace Blackfire\Player\Extension;
 
 use Blackfire\Player\Context;
+use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\AbstractStep;
-use Blackfire\Player\Results;
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -28,16 +29,21 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 final class TracerExtension extends AbstractExtension
 {
+    private $output;
     private $dir;
-    private $stream;
+    private $fs;
     private $currentDir;
     private $scenarioIndex;
     private $stepCount;
 
-    public function __construct($dir, $stream = null)
+    public function __construct(OutputInterface $output)
     {
-        $this->dir = rtrim($dir, '/\\');
-        $this->stream = $stream ?: STDOUT;
+        $this->output = $output;
+        $this->dir = sprintf('%s/blackfire-player-trace/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
+
+        $this->fs = new Filesystem();
+
+        $this->fs->remove($this->dir);
     }
 
     public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
@@ -52,7 +58,7 @@ final class TracerExtension extends AbstractExtension
         }
         $this->currentDir = $this->dir.'/'.$key;
         $target = sprintf('%s/scenario.txt', $this->currentDir);
-        $this->createDir(dirname($target));
+        $this->fs->mkdir(dirname($target));
 
         file_put_contents($target, (string) $scenario);
     }
@@ -62,7 +68,7 @@ final class TracerExtension extends AbstractExtension
         ++$this->stepCount;
 
         $target = sprintf('%s/%d', $this->currentDir, $this->stepCount);
-        $this->createDir($target);
+        $this->fs->mkdir($target);
 
         file_put_contents($target.'/request.txt', Psr7\str($request));
         file_put_contents($target.'/step.txt', (string) $step);
@@ -73,7 +79,7 @@ final class TracerExtension extends AbstractExtension
     public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
     {
         $target = sprintf('%s/%d/response.txt', $this->currentDir, $this->stepCount);
-        $this->createDir(dirname($target));
+        $this->fs->mkdir(dirname($target));
 
         file_put_contents($target, Psr7\str($response));
 
@@ -82,21 +88,19 @@ final class TracerExtension extends AbstractExtension
 
     public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context)
     {
-        fwrite($this->stream, sprintf("\033[44;37m \033[49;39m Traces under \033[43;30m %s/%d \033[49;39m\n", $this->currentDir, $this->stepCount));
+        $response = $context->getResponse();
+        if (!$response) {
+            return;
+        }
+
+        $target = sprintf('%s/%d/response.txt', $this->currentDir, $this->stepCount);
+        $this->fs->mkdir(dirname($target));
+
+        file_put_contents($target, Psr7\str($response));
     }
 
     public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
     {
-        if (!$results->isErrored()) {
-            $fs = new Filesystem();
-            $fs->remove($this->dir);
-        }
-    }
-
-    private function createDir($dir)
-    {
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0777, true);
-        }
+        $this->output->writeln(sprintf('<comment>Traces under %s</>', $this->dir));
     }
 }
