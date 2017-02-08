@@ -23,6 +23,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Terminal;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -67,7 +68,7 @@ final class PlayerCommand extends Command
 
         $player = new Player($runner, $input->getOption('tracer'));
         if (!$input->getOption('json')) {
-            $player->addExtension(new CliFeedbackExtension($output, $this->getApplication()->getTerminalDimensions()));
+            $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         }
         if ($input->getOption('tracer')) {
             $player->addExtension(new TracerExtension($output));

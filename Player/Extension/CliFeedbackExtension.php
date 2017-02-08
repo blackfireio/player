@@ -36,13 +36,13 @@ class CliFeedbackExtension extends AbstractExtension
     private $failureCount;
     private $dumper;
     private $debug;
-    private $terminalDimensions;
+    private $terminalWidth;
 
-    public function __construct(OutputInterface $output, array $terminalDimensions)
+    public function __construct(OutputInterface $output, $terminalWidth)
     {
         $this->output = $output;
         $this->debug = $output->isVerbose();
-        $this->terminalDimensions = $terminalDimensions;
+        $this->terminalWidth = $terminalWidth;
 
         $h = fopen('php://memory', 'r+b');
         $dumper = new CliDumper($h);
@@ -93,8 +93,8 @@ class CliFeedbackExtension extends AbstractExtension
         $this->output->writeln($name);
 
         $line = sprintf('%s %s', $request->getMethod(), $request->getUri());
-        if (!$this->debug && (strlen($line) - 3) > $this->terminalDimensions[0]) {
-            $line = substr($line, 0, $this->terminalDimensions[0] - 3).'...';
+        if (!$this->debug && (strlen($line) - 3) > $this->terminalWidth) {
+            $line = substr($line, 0, $this->terminalWidth - 3).'...';
         }
         $this->output->write($line);
 
