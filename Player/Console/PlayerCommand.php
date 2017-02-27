@@ -60,7 +60,8 @@ final class PlayerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $clients = [$this->createClient($output)];
-        for ($i = 1; $i < $input->getOption('concurrency'); ++$i) {
+        $concurrency = $input->getOption('concurrency');
+        for ($i = 1; $i < $concurrency; ++$i) {
             $clients[] = $this->createClient($output);
         }
 

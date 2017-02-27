@@ -50,7 +50,6 @@ final class Application extends BaseApplication
         if (defined('HHVM_VERSION') && $width > 1 << 31) {
             $width = 1 << 31;
         }
-        $formatter = $output->getFormatter();
         foreach (preg_split('/\r?\n/', $e->getMessage()) as $line) {
             foreach ($this->splitStringByWidth($line, $width - 4) as $line) {
                 $lines[] = $line;
