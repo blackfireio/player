@@ -17,6 +17,7 @@ use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\Step\AbstractStep;
 use Psr\Http\Message\RequestInterface;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**
  * @author Grégoire Pineau <lyrixx@lyrixx.info>
