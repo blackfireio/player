@@ -36,11 +36,13 @@ class Player
     {
         $this->runner = $runner;
 
-        $this->addExtension(new NameResolverExtension($this->getLanguage()));
-        $this->addExtension(new TestsExtension($this->getLanguage()));
-        $this->addExtension(new BlackfireExtension($this->getLanguage()));
-        $this->addExtension(new WaitExtension($this->getLanguage()));
-        $this->addExtension(new FollowExtension($this->getLanguage()));
+        $this->language = new ExpressionLanguage(null, [new LanguageProvider()]);
+
+        $this->addExtension(new NameResolverExtension($this->language));
+        $this->addExtension(new TestsExtension($this->language));
+        $this->addExtension(new BlackfireExtension($this->language));
+        $this->addExtension(new WaitExtension($this->language));
+        $this->addExtension(new FollowExtension($this->language));
     }
 
     public function addExtension(ExtensionInterface $extension)
@@ -60,8 +62,8 @@ class Player
             $key = null !== $scenario->getKey() ? $scenario->getKey() : ++$i;
 
             $context = new Context($scenario->getName());
-            $stepConverter = new StepConverter($this->getLanguage(), $context);
-            $requestGenerator = new Psr7\RequestGenerator($this->getLanguage(), $stepConverter, $scenario, $context);
+            $stepConverter = new StepConverter($this->language, $context);
+            $requestGenerator = new Psr7\RequestGenerator($this->language, $stepConverter, $scenario, $context);
             $requestGenerator = new Psr7\ExtensibleRequestGenerator($requestGenerator->getIterator(), $scenario, $context, $this->extensions);
             $requestIterator = $requestGenerator->getIterator();
             $context->setGenerator($requestIterator);
@@ -116,14 +118,5 @@ class Player
         }
 
         return $results;
-    }
-
-    private function getLanguage()
-    {
-        if (null === $this->language) {
-            $this->language = new ExpressionLanguage(null, [new LanguageProvider()]);
-        }
-
-        return $this->language;
     }
 }
