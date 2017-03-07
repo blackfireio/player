@@ -11,6 +11,8 @@
 
 namespace Blackfire\Player\Console;
 
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\Runner;
@@ -67,7 +69,8 @@ final class PlayerCommand extends Command
 
         $runner = new Runner($clients);
 
-        $player = new Player($runner, $input->getOption('tracer'));
+        $language = new ExpressionLanguage(null, [new LanguageProvider()]);
+        $player = new Player($runner, $language);
         if (!$input->getOption('json')) {
             $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         }

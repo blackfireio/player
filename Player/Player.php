@@ -13,7 +13,6 @@ namespace Blackfire\Player;
 
 use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
-use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\ExtensionInterface;
 use Blackfire\Player\Extension\FollowExtension;
@@ -32,11 +31,10 @@ class Player
     private $language;
     private $extensions = [];
 
-    public function __construct(RunnerInterface $runner)
+    public function __construct(RunnerInterface $runner, ExpressionLanguage $language)
     {
         $this->runner = $runner;
-
-        $this->language = new ExpressionLanguage(null, [new LanguageProvider()]);
+        $this->language = $language;
 
         $this->addExtension(new NameResolverExtension($this->language), 1024);
         $this->addExtension(new TestsExtension($this->language), 512);
