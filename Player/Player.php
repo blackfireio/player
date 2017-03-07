@@ -38,16 +38,16 @@ class Player
 
         $this->language = new ExpressionLanguage(null, [new LanguageProvider()]);
 
-        $this->addExtension(new NameResolverExtension($this->language));
-        $this->addExtension(new TestsExtension($this->language));
+        $this->addExtension(new NameResolverExtension($this->language), 1024);
+        $this->addExtension(new TestsExtension($this->language), 512);
         $this->addExtension(new BlackfireExtension($this->language));
         $this->addExtension(new WaitExtension($this->language));
         $this->addExtension(new FollowExtension($this->language));
     }
 
-    public function addExtension(ExtensionInterface $extension)
+    public function addExtension(ExtensionInterface $extension, $priority = 0)
     {
-        $this->extensions[] = $extension;
+        $this->extensions[$priority][] = $extension;
     }
 
     /**
@@ -55,6 +55,9 @@ class Player
      */
     public function run(ScenarioSet $scenarioSet, $concurrency = null)
     {
+        krsort($this->extensions);
+        $extensions = call_user_func_array('array_merge', $this->extensions);
+
         $runs = [];
         $requestGenerators = [];
         $i = 0;
@@ -64,7 +67,7 @@ class Player
             $context = new Context($scenario->getName());
             $stepConverter = new StepConverter($this->language, $context);
             $requestGenerator = new Psr7\RequestGenerator($this->language, $stepConverter, $scenario, $context);
-            $requestGenerator = new Psr7\ExtensibleRequestGenerator($requestGenerator->getIterator(), $scenario, $context, $this->extensions);
+            $requestGenerator = new Psr7\ExtensibleRequestGenerator($requestGenerator->getIterator(), $scenario, $context, $extensions);
             $requestIterator = $requestGenerator->getIterator();
             $context->setGenerator($requestIterator);
 
@@ -78,7 +81,7 @@ class Player
             throw new RuntimeException('Concurrency (%d) must be less than or equal to the number of clients (%s).', $concurrency, $this->runner->getMaxConcurrency());
         }
 
-        foreach ($this->extensions as $extension) {
+        foreach ($extensions as $extension) {
             $extension->enterScenarioSet($scenarioSet, $concurrency);
         }
 
@@ -113,7 +116,7 @@ class Player
             $results->addResult($key, $generator->getResult());
         }
 
-        foreach ($this->extensions as $extension) {
+        foreach ($extensions as $extension) {
             $extension->leaveScenarioSet($scenarioSet, $results);
         }
 
