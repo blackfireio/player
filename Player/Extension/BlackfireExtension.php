@@ -37,12 +37,15 @@ use Psr\Http\Message\ResponseInterface;
  */
 final class BlackfireExtension extends AbstractExtension
 {
-    private $blackfire;
     private $language;
+    private $defaultEnv;
+    private $stream;
+    private $blackfire;
 
-    public function __construct(ExpressionLanguage $language, $stream = null)
+    public function __construct(ExpressionLanguage $language, $defaultEnv, $stream = null)
     {
         $this->language = $language;
+        $this->defaultEnv = $defaultEnv;
         $this->stream = $stream ?: STDOUT;
         $this->blackfire = new BlackfireClient(new BlackfireClientConfiguration());
     }
@@ -57,6 +60,13 @@ final class BlackfireExtension extends AbstractExtension
         $env = null === $env ? false : $this->language->evaluate($env, $context->getVariableValues(true));
         if (false === $env) {
             return $request->withoutHeader('X-Blackfire-Query');
+        }
+        if (true === $env) {
+            if (null === $this->defaultEnv) {
+                throw new \LogicException('--blackfire-env option should be set to use "blackfire: true".');
+            }
+
+            $env = $this->defaultEnv;
         }
 
         $this->setEnv($env);

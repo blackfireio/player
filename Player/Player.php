@@ -13,7 +13,6 @@ namespace Blackfire\Player;
 
 use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
-use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\ExtensionInterface;
 use Blackfire\Player\Extension\FollowExtension;
 use Blackfire\Player\Extension\NameResolverExtension;
@@ -38,7 +37,6 @@ class Player
 
         $this->addExtension(new NameResolverExtension($this->language), 1024);
         $this->addExtension(new TestsExtension($this->language), 512);
-        $this->addExtension(new BlackfireExtension($this->language));
         $this->addExtension(new WaitExtension($this->language));
         $this->addExtension(new FollowExtension($this->language));
     }
