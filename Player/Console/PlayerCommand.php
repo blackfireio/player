@@ -73,7 +73,7 @@ final class PlayerCommand extends Command
 
         $language = new ExpressionLanguage(null, [new LanguageProvider()]);
         $player = new Player($runner, $language);
-        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env')), 510);
+        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
         if (!$input->getOption('json')) {
             $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         }

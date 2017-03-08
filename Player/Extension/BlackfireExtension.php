@@ -29,6 +29,7 @@ use Blackfire\Player\Step\Step;
 use Blackfire\Profile\Configuration as ProfileConfiguration;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -39,14 +40,14 @@ final class BlackfireExtension extends AbstractExtension
 {
     private $language;
     private $defaultEnv;
-    private $stream;
+    private $output;
     private $blackfire;
 
-    public function __construct(ExpressionLanguage $language, $defaultEnv, $stream = null)
+    public function __construct(ExpressionLanguage $language, $defaultEnv, OutputInterface $output)
     {
         $this->language = $language;
         $this->defaultEnv = $defaultEnv;
-        $this->stream = $stream ?: STDOUT;
+        $this->output = $output;
         $this->blackfire = new BlackfireClient(new BlackfireClientConfiguration());
     }
 
@@ -149,7 +150,7 @@ final class BlackfireExtension extends AbstractExtension
             $extra->set('blackfire_report', $this->blackfire->endBuild($build));
         }
 
-        fwrite($this->stream, sprintf("\033[44;37m \033[49;39m Blackfire Report at \033[43;30m %s \033[49;39m\n", $build->getUrl()));
+        $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $build->getUrl()));
     }
 
     private function createBuild($title)
