@@ -63,7 +63,7 @@ final class BlackfireExtension extends AbstractExtension
         }
         if (true === $env) {
             if (null === $this->defaultEnv) {
-                throw new \LogicException('--blackfire-env option should be set to use "blackfire: true".');
+                throw new \LogicException('--blackfire-env option must be set when using "blackfire: true" in a scenario.');
             }
 
             $env = $this->defaultEnv;

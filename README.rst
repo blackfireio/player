@@ -554,8 +554,8 @@ name is then used as the build name:
         name "Scenario Name"
         blackfire "Environment name" # Use the environment name (or UUID) you're targeting or false to disable
 
-It's possible use ``true`` in place of the environment name. In that case, the
-environment name should be set with the ``--blackfire-env`` CLI option:
+It's possible use ``true`` instead of an environment name. In that case, the
+environment name should be set via the --blackfire-env CLI option:
 
 .. code-block:: blackfire
 
