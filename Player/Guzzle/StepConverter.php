@@ -202,7 +202,7 @@ final class StepConverter implements StepConverterInterface
             $modify['body'] = '';
         }
 
-        $modify['uri'] = Psr7\Uri::resolve($request->getUri(), $response->getHeaderLine('Location'));
+        $modify['uri'] = Psr7\UriResolver::resolve($request->getUri(), new Psr7\Uri($response->getHeaderLine('Location')));
 
         Psr7\rewind_body($request);
 
@@ -233,7 +233,7 @@ final class StepConverter implements StepConverterInterface
             return $uri;
         }
 
-        return Psr7\Uri::resolve(Psr7\uri_for($endpoint), $uri);
+        return Psr7\UriResolver::resolve(Psr7\uri_for($endpoint), new Psr7\Uri($uri));
     }
 
     private function createBody($parameters, &$headers, $isJson)
