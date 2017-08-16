@@ -12,8 +12,6 @@
 namespace Player\Tests;
 
 use Blackfire\Player\Console\Application;
-use Blackfire\Player\Player;
-use Blackfire\Player\Scenario;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -34,7 +32,7 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
             throw new \RuntimeException('Unable to find PHP binary to run server.');
         }
 
-        $server = (new ProcessBuilder(array('exec', $binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures')))->getProcess();
+        $server = (new ProcessBuilder(['exec', $binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures/bkf']))->getProcess();
         $server->start();
 
         usleep(250000);
@@ -51,7 +49,7 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
     public function providePlayerTests()
     {
         $dirs = Finder::create()
-            ->in(__DIR__.'/fixtures')
+            ->in(__DIR__.'/fixtures/bkf')
             ->directories();
 
         foreach ($dirs as $dir) {

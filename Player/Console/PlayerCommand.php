@@ -17,8 +17,11 @@ use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\Runner;
-use Blackfire\Player\Parser;
+use Blackfire\Player\Loader\BlackfireFormatLoader;
+use Blackfire\Player\Loader\ChainLoader;
+use Blackfire\Player\Loader\DotBlackfireYamlLoader;
 use Blackfire\Player\Player;
+use Blackfire\Player\Scenario;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -87,23 +90,18 @@ final class PlayerCommand extends Command
             $variables[$key] = $value;
         }
 
-        $parser = new Parser();
-        $scenarios = $parser->load($input->getArgument('file'));
+        $loader = new ChainLoader([
+            new BlackfireFormatLoader(),
+            new DotBlackfireYamlLoader(),
+        ]);
 
-        // FIXME: should be set on the ScenarioSet directly
-        // but for this, we need an enterStep() for the ScenarioSet, which we don't have yet
+        $scenarios = $loader->load($input->getArgument('file'));
+
+        /** @var Scenario $scenario */
         foreach ($scenarios as $scenario) {
+            // Override the endpoint
             if (null !== $input->getOption('endpoint')) {
                 $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
-            }
-
-            foreach ($parser->getGlobalVariables() as $key => $value) {
-                // Override only if the endpoint is not already defined in the step
-                if ($key === 'endpoint' && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
-                    $scenario->endpoint($this->escapeValue($value));
-                }
-
-                $scenario->set($key, $this->escapeValue($value));
             }
 
             foreach ($variables as $key => $value) {

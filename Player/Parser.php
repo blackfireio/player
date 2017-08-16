@@ -84,12 +84,18 @@ class Parser
             }
         }
 
-        return $scenarios;
-    }
+        foreach ($scenarios as $scenario) {
+            foreach ($this->globalVariables as $key => $value) {
+                // Override only if the endpoint is not already defined in the step
+                if ($key === 'endpoint' && null === $scenario->getEndpoint()) {
+                    $scenario->endpoint($value);
+                }
 
-    public function getGlobalVariables()
-    {
-        return $this->globalVariables;
+                $scenario->set($key, $value);
+            }
+        }
+
+        return $scenarios;
     }
 
     private function parseSteps(Input $input, $expectedIndent)

@@ -1,0 +1,20 @@
+tests:
+    Pages should be fast enough:
+        path: /.*
+        assertions:
+            - main.wall_time < 400ms * var('coef', 1)
+            - main.io < 150ms * var('coef', 1)
+            - main.cpu_time < 300ms * var('coef', 1)
+
+scenarios:
+    Pricing page:
+        - /pricing
+    Integrations page:
+        - /integrations
+    Blackfire.yml Validator:
+        - path: /docs/validator
+          method: POST
+          samples: 10
+          warmup: true
+          headers:
+              accept: "application/json"
