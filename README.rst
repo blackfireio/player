@@ -67,40 +67,43 @@ Use the ``run`` command to execute a scenario:
 
     blackfire-player run scenario.bkf
 
-The command accepts multiple scenario files as arguments:
-
-.. code-block:: bash
-
-    blackfire-player run scenario1.bkf scenario2.bkf scenario3.bkf
-
 Use the ``--endpoint`` option to override the endpoint defined in scenarios:
 
 .. code-block:: bash
 
-    blackfire-player scenario.bkf --endpoint=http://example.com/
+    blackfire-player run scenario.bkf --endpoint=http://example.com/
 
 Use the ``--concurrency`` option to run scenarios in parallel:
 
 .. code-block:: bash
 
-     blackfire-player scenario.bkf --concurrency=5
+     blackfire-player run scenario.bkf --concurrency=5
 
 Use the ``--json`` option to output the variable values as JSON:
 
 .. code-block:: bash
 
-    blackfire-player scenario.bkf --json
+    blackfire-player run scenario.bkf --json
 
 Use the ``--variables`` option to override variable values:
 
 .. code-block:: bash
 
-     blackfire-player scenario.bkf --variables="foo=bar" --variables="bar=foo"
+     blackfire-player run scenario.bkf --variables="foo=bar" --variables="bar=foo"
 
 Use ``-v`` to get logs about the progress of the player or use ``tracer`` option
 to store all requests and responses on disk.
 
 The command returns 1 if at least one scenario fails, 0 otherwise.
+
+.. tip::
+
+    You can add also run the scenarios defined in your :doc:`.blackfire.yml </cookbooks/scenarios>`.
+    In that case, you MUST provide an endpoint:
+
+    .. code-block:: bash
+
+        blackfire-player run .blackfire.yml --endpoint=http://my_host
 
 Crawling an HTTP application
 ----------------------------
@@ -128,7 +131,7 @@ Store the scenario in a ``scenario.bkf``, and run it:
     blackfire-player run scenario.bkf
 
     # or
-    php blackfire-player.phar run scenario.bkf
+    php blackfire-player run scenario.bkf
 
 Add more requests to a scenario by indenting lines as below:
 
@@ -156,7 +159,7 @@ forms, or follow redirections (see `Making requests`_ for more information):
 
 .. code-block:: blackfire
 
-    scenario:
+    scenario
         visit url('/')
             expect status_code() == 200
 
@@ -175,7 +178,7 @@ forms, or follow redirections (see `Making requests`_ for more information):
     .. code-block:: blackfire
 
         # This is a comment
-        scenario:
+        scenario
             # Comment are ignored
             visit url('/')
                 expect status_code() == 200
@@ -195,15 +198,15 @@ HTTP method unless you define one explicitly):
 
     scenario
         visit url('/')
-            method POST
+            method 'POST'
 
 You can also pass a Request body:
 
 .. code-block:: blackfire
 
-    scenario:
+    scenario
         visit url('/')
-            method PUT
+            method 'PUT'
             body '{ "title": "New Title" }'
 
 Clicking on a Link with ``click``
@@ -336,7 +339,7 @@ Setting a Header with ``header``
 
     scenario
         visit url('/')
-        header "Accept-Language: en-US"
+            header "Accept-Language: en-US"
 
 .. tip::
 
@@ -347,7 +350,7 @@ Setting a Header with ``header``
 
         scenario
             visit url('/')
-            header 'User-Agent: ' ~ fake('firefox')
+                header 'User-Agent: ' ~ fake('firefox')
 
 Setting a User and Password with ``auth``
 +++++++++++++++++++++++++++++++++++++++++
@@ -389,7 +392,7 @@ Sending a JSON Body with ``json``
 
     scenario
         visit url('/')
-            method POST
+            method 'POST'
             param foo "bar"
             json true
 
@@ -552,7 +555,8 @@ name is then used as the build name:
 
     scenario
         name "Scenario Name"
-        blackfire "Environment name" # Use the environment name (or UUID) you're targeting or false to disable
+        # Use the environment name (or UUID) you're targeting or false to disable
+        blackfire "Environment name"
 
 It's possible use ``true`` instead of an environment name. In that case, the
 environment name should be set via the ``--blackfire-env`` CLI option:
@@ -561,7 +565,8 @@ environment name should be set via the ``--blackfire-env`` CLI option:
 
     scenario
         name "Scenario Name"
-        blackfire "Environment name" # Use the environment name (or UUID) you're targeting or false to disable
+        # Use the environment name (or UUID) you're targeting or false to disable
+        blackfire true
 
 .. code-block:: bash
 
@@ -575,7 +580,7 @@ environment name should be set via the ``--blackfire-env`` CLI option:
     .. code-block:: bash
 
         BLACKFIRE_EXTERNAL_ID=ref BLACKFIRE_EXTERNAL_PARENT_ID=parent \
-        blackfire-player run scenario.yml --blackfire=ENV_NAME_OR_UUID
+        blackfire-player run scenario.bkf --blackfire=ENV_NAME_OR_UUID
 
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
 are automatically run along side expectations.
@@ -621,7 +626,7 @@ When crawling an HTTP application you can extract values from HTTP responses:
             expect status_code() == 200
             set latest_post_title css(".post h2").first()
             set latest_post_href css(".post h2 a").first().attr("href")
-            set latest_posts css(".post h2 a").extract('_text', 'href'])
+            set latest_posts css(".post h2 a").extract('_text', 'href')
             set age header("Age")
             set content_type header("Content-Type")
             set token regex('/name="_token" value="([^"]+)"/')
@@ -656,7 +661,7 @@ Variable values can also be injected before running another scenario:
     scenario
         name "Scenario name"
         auth api_username ~ ':' ~ api_password
-        set profile_uuid zzzz
+        set profile_uuid 'zzzz'
 
         visit url('/profiles' ~ profile_uuid)
             expect status_code() == 200
@@ -664,6 +669,6 @@ Variable values can also be injected before running another scenario:
             set store_url json("_links.store.href")
 
         visit url(store_url)
-            method POST
+            method 'POST'
             body '{ "foo": "batman" }'
             expect status_code() == 200
