@@ -16,8 +16,6 @@ namespace Blackfire\Player\Step;
  */
 class ConfigurableStep extends AbstractStep
 {
-    protected $isBlackfireConfigured = false;
-
     private $auth;
     private $headers = [];
     private $wait;
@@ -25,6 +23,7 @@ class ConfigurableStep extends AbstractStep
     private $followRedirects;
     private $blackfire;
     private $samples;
+    private $warmup = 'false';
 
     public function followRedirects($follow)
     {
@@ -71,7 +70,13 @@ class ConfigurableStep extends AbstractStep
     public function samples($samples)
     {
         $this->samples = $samples;
-        $this->isBlackfireConfigured = true;
+
+        return $this;
+    }
+
+    public function warmup($warmup)
+    {
+        $this->warmup = $warmup;
 
         return $this;
     }
@@ -109,5 +114,10 @@ class ConfigurableStep extends AbstractStep
     public function getSamples()
     {
         return $this->samples;
+    }
+
+    public function getWarmup()
+    {
+        return $this->warmup;
     }
 }

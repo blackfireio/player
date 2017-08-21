@@ -10,7 +10,8 @@ scenarios:
     Pricing page:
         - /pricing
     Integrations page:
-        - /integrations
+        - path: /integrations
+          warmup: auto
     Blackfire.yml Validator:
         - path: /docs/validator
           method: POST

@@ -58,6 +58,7 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], $scenario->getVariables());
         $this->assertEquals(null, $scenario->getBlockStep()->getMethod());
         $this->assertEquals(0, $scenario->getBlockStep()->getSamples());
+        $this->assertEquals("'auto'", $scenario->getBlockStep()->getWarmup());
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[2];
@@ -66,6 +67,7 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], $scenario->getVariables());
         $this->assertEquals('\'POST\'', $scenario->getBlockStep()->getMethod());
         $this->assertEquals(10, $scenario->getBlockStep()->getSamples());
+        $this->assertEquals('true', $scenario->getBlockStep()->getWarmup());
         $this->assertEquals([
             '\'accept: application/json\'',
         ], $scenario->getBlockStep()->getHeaders());

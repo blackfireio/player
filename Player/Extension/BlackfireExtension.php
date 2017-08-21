@@ -43,12 +43,12 @@ final class BlackfireExtension extends AbstractExtension
     private $output;
     private $blackfire;
 
-    public function __construct(ExpressionLanguage $language, $defaultEnv, OutputInterface $output)
+    public function __construct(ExpressionLanguage $language, $defaultEnv, OutputInterface $output, BlackfireClient $blackfire = null)
     {
         $this->language = $language;
         $this->defaultEnv = $defaultEnv;
         $this->output = $output;
-        $this->blackfire = new BlackfireClient(new BlackfireClientConfiguration());
+        $this->blackfire = $blackfire ?: new BlackfireClient(new BlackfireClientConfiguration());
     }
 
     public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
@@ -71,8 +71,14 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         $this->setEnv($env);
-
         if ($request->hasHeader('X-Blackfire-Query')) {
+            return $request;
+        }
+
+        // Warmup the endpoint before profiling
+        if ($this->shouldBeWarmup($step, $request, $context)) {
+            $step->next($this->createWarmupSteps($step));
+
             return $request;
         }
 
@@ -100,6 +106,12 @@ final class BlackfireExtension extends AbstractExtension
             throw new \LogicException('Unable to profile the current step.');
         }
 
+        // Profile needs more samples
+        if ($this->continueSampling($response)) {
+            return $response;
+        }
+
+        // Request is over. Read the profile
         $crawler = CrawlerFactory::create($response, $request->getUri());
         if (null !== $crawler && !$step->getName()) {
             if (count($c = $crawler->filter('title'))) {
@@ -123,8 +135,7 @@ final class BlackfireExtension extends AbstractExtension
             return;
         }
 
-        parse_str($response->getHeaderLine('X-Blackfire-Response'), $values);
-        if (!isset($values['continue']) || 'true' !== $values['continue']) {
+        if (!$this->continueSampling($response)) {
             return;
         }
 
@@ -220,5 +231,75 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         $this->blackfire->getConfiguration()->setEnv($env);
+    }
+
+    private function continueSampling(ResponseInterface $response)
+    {
+        parse_str($response->getHeaderLine('X-Blackfire-Response'), $values);
+
+        return isset($values['continue']) && 'true' === $values['continue'];
+    }
+
+    private function shouldBeWarmup(ConfigurableStep $step, RequestInterface $request, Context $context)
+    {
+        $value = $this->language->evaluate($context->getStepContext()->getWarmup(), $context->getVariableValues(true));
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if ('auto' !== $value) {
+            return false;
+        }
+
+        $samples = (int) $this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true));
+
+        return in_array($request->getMethod(), ['GET', 'HEAD']) || $samples > 1;
+    }
+
+    private function createWarmupSteps(ConfigurableStep $step)
+    {
+        $name = null;
+        if ($step->getName()) {
+            $name = $this->language->evaluate($step->getName());
+        }
+
+        $nextStep = $step->getNext();
+        for ($i = 0; $i < 3; ++$i) {
+            $reload = (new ReloadStep())
+                ->warmup('false')
+            ;
+
+            if (0 === $i) {
+                // The real request to profile
+                $reload
+                    ->name($name ? sprintf('"%s"', $name) : null)
+                    ->configureFromStep($step)
+                ;
+            } else {
+                // Warmup requests
+                $reload
+                    ->name($name ? sprintf('"[Warmup] %s"', $name) : null)
+                    ->blackfire('false')
+                ;
+            }
+
+            if (null !== $nextStep) {
+                $reload->next($nextStep);
+            }
+
+            $nextStep = $reload;
+        }
+
+        // Update the step for the current request
+        // We don't want assertions or expectations on this step as it is the first warmup request
+        $step->name($name ? sprintf('"[Warmup] %s"', $name) : null);
+        if ($step instanceof Step) {
+            $step
+                ->resetAssertions()
+                ->resetExpectations()
+            ;
+        }
+
+        return $nextStep;
     }
 }

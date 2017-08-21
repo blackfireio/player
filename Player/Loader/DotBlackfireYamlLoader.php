@@ -66,9 +66,15 @@ class DotBlackfireYamlLoader implements LoaderInterface
                         }
                     }
 
-                    // FIXME
-//                    if (isset($definition['warmup'])) {
-//                    }
+                    if (isset($definition['warmup'])) {
+                        if (true === $definition['warmup']) {
+                            $step->warmup('true');
+                        } elseif (false === $definition['warmup']) {
+                            $step->warmup('false');
+                        } elseif ('auto' === $definition['warmup']) {
+                            $step->warmup("'auto'");
+                        }
+                    }
                 }
 
                 $scenario->setBlockStep($step);

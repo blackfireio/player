@@ -96,6 +96,42 @@ EOF
         ], $scenario->getVariables());
     }
 
+    public function testWarmupStepConfig()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+scenario Test 1
+    # A comment
+    visit url('/blog/')
+        warmup true
+
+scenario Test 2
+    # A comment
+    visit url('/blog/')
+        warmup false
+
+scenario Test 3
+    # A comment
+    visit url('/blog/')
+        warmup 'auto'
+EOF
+        );
+
+        $this->assertCount(3, $scenarioSet);
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[0];
+        $this->assertEquals('true', $scenario->getBlockStep()->getWarmup());
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[1];
+        $this->assertEquals('false', $scenario->getBlockStep()->getWarmup());
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[2];
+        $this->assertEquals('\'auto\'', $scenario->getBlockStep()->getWarmup());
+    }
+
     /**
      * @dataProvider provideDocSamples
      */

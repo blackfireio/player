@@ -42,7 +42,7 @@ final class NameResolverExtension extends AbstractExtension
         try {
             $name = $this->language->evaluate($scenario->getName(), $scenario->getVariables());
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $expression, $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $scenario->getName(), $e->getMessage()));
         }
 
         $scenario->name(sprintf('"%s"', $name));
@@ -57,7 +57,7 @@ final class NameResolverExtension extends AbstractExtension
         try {
             $name = $this->language->evaluate($step->getName(), $context->getVariableValues(true));
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $expression, $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $step->getName(), $e->getMessage()));
         }
 
         $step->name(sprintf('"%s"', $name));

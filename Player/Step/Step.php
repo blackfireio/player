@@ -38,7 +38,6 @@ class Step extends ConfigurableStep
     public function assert($assertion)
     {
         $this->assertions[] = $assertion;
-        $this->isBlackfireConfigured = true;
 
         return $this;
     }
@@ -46,6 +45,13 @@ class Step extends ConfigurableStep
     public function getExpectations()
     {
         return $this->expectations;
+    }
+
+    public function resetExpectations()
+    {
+        $this->expectations = [];
+
+        return $this;
     }
 
     public function getVariables()
@@ -56,6 +62,13 @@ class Step extends ConfigurableStep
     public function getAssertions()
     {
         return $this->assertions;
+    }
+
+    public function resetAssertions()
+    {
+        $this->assertions = [];
+
+        return $this;
     }
 
     public function setDumpValuesName(array $varName = [])

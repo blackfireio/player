@@ -587,6 +587,14 @@ are automatically run along side expectations.
 
 Additional features are also automatically activated:
 
+* **assert**: (**not supported yet**)
+
+* **samples**: The number of samples (1 by default);
+
+* **warmup**: Whether to warmup the URL first (Set it to **'auto'** to
+  warmup only safe HTTP requests or when the number of samples is more than
+  one. You can also set it to **false** or **true** explicitly).
+
 .. code-block:: blackfire
 
     scenario
@@ -594,6 +602,7 @@ Additional features are also automatically activated:
             name "Blog homepage"
             assert main.peak_memory < 10M
             samples 2
+            warmup 'auto'
 
 By default, all requests are profiled via Blackfire, you can disable it for
 some requests by calling ``blackfire(false)``.
@@ -609,6 +618,7 @@ Variables are a great way to make your Blackfire assertions conditional:
         # not enforced in other environments
         visit url('/blog/')
             assert "prod" == env and metrics.twig.compile.count == 0
+            warmup true
 
 .. caution::
 

@@ -27,6 +27,7 @@ final class StepContext
     private $variables = [];
     private $blackfire;
     private $samples;
+    private $warmup;
 
     public function update(ConfigurableStep $step, array $variables)
     {
@@ -56,6 +57,10 @@ final class StepContext
 
         if (null !== $step->getSamples()) {
             $this->samples = $step->getSamples();
+        }
+
+        if (null !== $step->getWarmup()) {
+            $this->warmup = $step->getWarmup();
         }
 
         if ($step instanceof BlockStep) {
@@ -138,5 +143,10 @@ final class StepContext
     public function getSamples()
     {
         return null === $this->samples ? 1 : $this->samples;
+    }
+
+    public function getWarmup()
+    {
+        return $this->warmup;
     }
 }

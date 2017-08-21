@@ -437,6 +437,12 @@ class Parser
                 }
 
                 $step->samples($this->checkExpression($input, $arguments));
+            } elseif ('warmup' === $keyword) {
+                if (!$hasArgs) {
+                    throw new SyntaxErrorException(sprintf('A "warmup" takes a required argument %s.', $input->getContextString()));
+                }
+
+                $step->warmup($this->checkExpression($input, $arguments));
             } elseif ('body' === $keyword) {
                 if (!$step instanceof VisitStep && !$step instanceof SubmitStep) {
                     throw new LogicException(sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
