@@ -184,6 +184,27 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testTheProfileShouldNotBeRetrievedBeforeTheProfilingIsComplete()
+    {
+        $step = new ConfigurableStep();
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true');
+
+        $blackfireClient = $this->createBlackfireClient();
+        $blackfireClient->expects($this->never())->method('getProfile');
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $blackfireClient);
+        $extension->enterStep($step, $request, $context);
+        $extension->leaveStep($step, $request, $response, $context);
+        $extension->getNextStep($step, $request, $response, $context);
+    }
+
     public function testTheProbeCanAskANewSample()
     {
         $step = new ConfigurableStep();

@@ -118,7 +118,7 @@ scenario
         warmup
 EOF
             ,
-            'true'
+            'true',
         ];
 
         yield [<<<'EOF'
@@ -127,7 +127,7 @@ scenario
         warmup true
 EOF
             ,
-            'true'
+            'true',
         ];
 
         yield [<<<'EOF'
@@ -136,7 +136,7 @@ scenario
         warmup false
 EOF
             ,
-            'false'
+            'false',
         ];
 
         yield [<<<'EOF'
@@ -145,7 +145,7 @@ scenario
         warmup 8
 EOF
             ,
-            '8'
+            '8',
         ];
 
         yield [<<<'EOF'
@@ -154,7 +154,7 @@ scenario
         warmup 1 + 4
 EOF
             ,
-            '1 + 4'
+            '1 + 4',
         ];
 
         yield [<<<'EOF'
@@ -165,10 +165,9 @@ scenario
 EOF
             ,
             null,
-            'true'
+            'true',
         ];
     }
-
 
     /**
      * @dataProvider provideDocSamples
