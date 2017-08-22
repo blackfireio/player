@@ -41,15 +41,16 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $scenarioSet = $loader->load(__DIR__.'/../fixtures/blackfire.yml/.blackfire.yml');
 
         $this->assertInstanceOf(ScenarioSet::class, $scenarioSet);
-        $this->assertCount(3, $scenarioSet);
+        $this->assertCount(4, $scenarioSet);
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[0];
         $this->assertEquals('Pricing page', $scenario->getKey());
         $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
         $this->assertEquals([], $scenario->getVariables());
-        $this->assertEquals(null, $scenario->getBlockStep()->getMethod());
+        $this->assertEquals("'POST'", $scenario->getBlockStep()->getMethod());
         $this->assertEquals(0, $scenario->getBlockStep()->getSamples());
+        $this->assertEquals('true', $scenario->getBlockStep()->getWarmup());
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[1];
@@ -58,7 +59,7 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([], $scenario->getVariables());
         $this->assertEquals(null, $scenario->getBlockStep()->getMethod());
         $this->assertEquals(0, $scenario->getBlockStep()->getSamples());
-        $this->assertEquals("'auto'", $scenario->getBlockStep()->getWarmup());
+        $this->assertEquals('true', $scenario->getBlockStep()->getWarmup());
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[2];
@@ -71,6 +72,15 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals([
             '\'accept: application/json\'',
         ], $scenario->getBlockStep()->getHeaders());
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[3];
+        $this->assertEquals('Homepage', $scenario->getKey());
+        $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
+        $this->assertEquals([], $scenario->getVariables());
+        $this->assertEquals(null, $scenario->getBlockStep()->getMethod());
+        $this->assertEquals(0, $scenario->getBlockStep()->getSamples());
+        $this->assertEquals(null, $scenario->getBlockStep()->getWarmup());
     }
 
     /**

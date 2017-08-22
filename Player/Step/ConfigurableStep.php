@@ -23,7 +23,7 @@ class ConfigurableStep extends AbstractStep
     private $followRedirects;
     private $blackfire;
     private $samples;
-    private $warmup = 'false';
+    private $warmup;
 
     public function followRedirects($follow)
     {

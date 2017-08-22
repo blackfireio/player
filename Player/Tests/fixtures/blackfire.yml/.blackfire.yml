@@ -8,7 +8,9 @@ tests:
 
 scenarios:
     Pricing page:
-        - /pricing
+        - path: /pricing
+          warmup: auto
+          method: POST
     Integrations page:
         - path: /integrations
           warmup: auto
@@ -19,3 +21,5 @@ scenarios:
           warmup: true
           headers:
               accept: "application/json"
+    Homepage:
+        - /

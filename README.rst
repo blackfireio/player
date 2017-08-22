@@ -589,11 +589,16 @@ Additional features are also automatically activated:
 
 * **assert**: (**not supported yet**)
 
-* **samples**: The number of samples (1 by default);
+* **samples**: The number of samples
 
-* **warmup**: Whether to warmup the URL first (Set it to **'auto'** to
-  warmup only safe HTTP requests or when the number of samples is more than
-  one. You can also set it to **false** or **true** explicitly).
+* **warmup**: Whether to warmup the URL first. Value can be:
+
+    * **true**: Warmup only safe HTTP requests or when the number of samples is more than one.
+      Warmup will be executed 3 times.
+
+    * **A number**: Same behavior than **true**, but allow to change the number of warmup requests.
+
+    * **false**: Disable warmup (default value)
 
 .. code-block:: blackfire
 

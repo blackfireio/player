@@ -71,13 +71,15 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         $this->setEnv($env);
+
         if ($request->hasHeader('X-Blackfire-Query')) {
             return $request;
         }
 
         // Warmup the endpoint before profiling
-        if ($this->shouldBeWarmup($step, $request, $context)) {
-            $step->next($this->createWarmupSteps($step));
+        $count = $this->warmupCount($step, $request, $context);
+        if ($count > 0) {
+            $step->next($this->createWarmupSteps($step, $count));
 
             return $request;
         }
@@ -240,23 +242,24 @@ final class BlackfireExtension extends AbstractExtension
         return isset($values['continue']) && 'true' === $values['continue'];
     }
 
-    private function shouldBeWarmup(ConfigurableStep $step, RequestInterface $request, Context $context)
+    private function warmupCount(ConfigurableStep $step, RequestInterface $request, Context $context)
     {
         $value = $this->language->evaluate($context->getStepContext()->getWarmup(), $context->getVariableValues(true));
-        if (is_bool($value)) {
-            return $value;
-        }
 
-        if ('auto' !== $value) {
-            return false;
+        if (false === $value) {
+            return 0;
         }
 
         $samples = (int) $this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true));
 
-        return in_array($request->getMethod(), ['GET', 'HEAD']) || $samples > 1;
+        if (in_array($request->getMethod(), ['GET', 'HEAD']) || $samples > 1) {
+            return true === $value ? 3 : (int) $value;
+        }
+
+        return 0;
     }
 
-    private function createWarmupSteps(ConfigurableStep $step)
+    private function createWarmupSteps(ConfigurableStep $step, $warmupCount)
     {
         $name = null;
         if ($step->getName()) {
@@ -264,7 +267,7 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         $nextStep = $step->getNext();
-        for ($i = 0; $i < 3; ++$i) {
+        for ($i = 0; $i < $warmupCount; ++$i) {
             $reload = (new ReloadStep())
                 ->warmup('false')
             ;

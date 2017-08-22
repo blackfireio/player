@@ -67,12 +67,10 @@ class DotBlackfireYamlLoader implements LoaderInterface
                     }
 
                     if (isset($definition['warmup'])) {
-                        if (true === $definition['warmup']) {
+                        if (true === $definition['warmup'] || 'auto' === $definition['warmup']) {
                             $step->warmup('true');
                         } elseif (false === $definition['warmup']) {
                             $step->warmup('false');
-                        } elseif ('auto' === $definition['warmup']) {
-                            $step->warmup("'auto'");
                         }
                     }
                 }

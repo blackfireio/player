@@ -96,41 +96,79 @@ EOF
         ], $scenario->getVariables());
     }
 
-    public function testWarmupStepConfig()
+    /**
+     * @dataProvider warmupConfigProvider
+     */
+    public function testWarmupStepConfig($content, $expectedStep, $expectedScenario = null)
     {
         $parser = new Parser();
-        $scenarioSet = $parser->parse(<<<'EOF'
-scenario Test 1
-    # A comment
-    visit url('/blog/')
-        warmup true
-
-scenario Test 2
-    # A comment
-    visit url('/blog/')
-        warmup false
-
-scenario Test 3
-    # A comment
-    visit url('/blog/')
-        warmup 'auto'
-EOF
-        );
-
-        $this->assertCount(3, $scenarioSet);
+        $scenarioSet = $parser->parse($content);
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[0];
-        $this->assertEquals('true', $scenario->getBlockStep()->getWarmup());
-
-        /** @var Scenario $scenario */
-        $scenario = $scenarioSet->getIterator()[1];
-        $this->assertEquals('false', $scenario->getBlockStep()->getWarmup());
-
-        /** @var Scenario $scenario */
-        $scenario = $scenarioSet->getIterator()[2];
-        $this->assertEquals('\'auto\'', $scenario->getBlockStep()->getWarmup());
+        $this->assertEquals($expectedStep, $scenario->getBlockStep()->getWarmup());
+        $this->assertEquals($expectedScenario, $scenario->getWarmup());
     }
+
+    public function warmupConfigProvider()
+    {
+        yield [<<<'EOF'
+scenario
+    visit url('/blog/')
+        warmup
+EOF
+            ,
+            'true'
+        ];
+
+        yield [<<<'EOF'
+scenario
+    visit url('/blog/')
+        warmup true
+EOF
+            ,
+            'true'
+        ];
+
+        yield [<<<'EOF'
+scenario
+    visit url('/blog/')
+        warmup false
+EOF
+            ,
+            'false'
+        ];
+
+        yield [<<<'EOF'
+scenario
+    visit url('/blog/')
+        warmup 8
+EOF
+            ,
+            '8'
+        ];
+
+        yield [<<<'EOF'
+scenario
+    visit url('/blog/')
+        warmup 1 + 4
+EOF
+            ,
+            '1 + 4'
+        ];
+
+        yield [<<<'EOF'
+scenario
+    warmup true
+
+    visit url('/blog/')
+EOF
+            ,
+            null,
+            'true'
+        ];
+    }
+
 
     /**
      * @dataProvider provideDocSamples
