@@ -13,7 +13,7 @@ scenarios:
           method: POST
     Integrations page:
         - path: /integrations
-          warmup: auto
+          warmup: ~
     Blackfire.yml Validator:
         - path: /docs/validator
           method: POST
@@ -23,3 +23,6 @@ scenarios:
               accept: "application/json"
     Homepage:
         - /
+    Documentation:
+        - path: /docs/introduction
+          warmup: false

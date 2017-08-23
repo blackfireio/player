@@ -41,7 +41,7 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $scenarioSet = $loader->load(__DIR__.'/../fixtures/blackfire.yml/.blackfire.yml');
 
         $this->assertInstanceOf(ScenarioSet::class, $scenarioSet);
-        $this->assertCount(4, $scenarioSet);
+        $this->assertCount(5, $scenarioSet);
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[0];
@@ -81,6 +81,15 @@ class DotBlackfireYamlLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, $scenario->getBlockStep()->getMethod());
         $this->assertEquals(0, $scenario->getBlockStep()->getSamples());
         $this->assertEquals(null, $scenario->getBlockStep()->getWarmup());
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[4];
+        $this->assertEquals('Documentation', $scenario->getKey());
+        $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
+        $this->assertEquals([], $scenario->getVariables());
+        $this->assertEquals(null, $scenario->getBlockStep()->getMethod());
+        $this->assertEquals(0, $scenario->getBlockStep()->getSamples());
+        $this->assertEquals('false', $scenario->getBlockStep()->getWarmup());
     }
 
     /**
