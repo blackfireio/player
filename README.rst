@@ -96,15 +96,6 @@ to store all requests and responses on disk.
 
 The command returns 1 if at least one scenario fails, 0 otherwise.
 
-.. tip::
-
-    You can add also run the scenarios defined in your :doc:`.blackfire.yml </cookbooks/scenarios>`.
-    In that case, you MUST provide an endpoint:
-
-    .. code-block:: bash
-
-        blackfire-player run .blackfire.yml --endpoint=http://my_host
-
 Crawling an HTTP application
 ----------------------------
 

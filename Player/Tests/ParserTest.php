@@ -73,14 +73,16 @@ EOF
         );
         $this->assertCount(2, $scenarioSet);
 
+        $this->assertEquals([
+            'env' => '"prod"',
+            'endpoint' => '\'http://toto.com\'',
+        ], $parser->getGlobalVariables());
+
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[0];
         $this->assertEquals('Test 1', $scenario->getKey());
         $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
-        $this->assertEquals([
-            'env' => '"prod"',
-            'endpoint' => '\'http://toto.com\'',
-        ], $scenario->getVariables());
+        $this->assertEquals([], $scenario->getVariables());
         $this->assertEquals([
             '"Accept-Language: en-US"',
         ], $scenario->getBlockStep()->getHeaders());
@@ -90,10 +92,7 @@ EOF
         $scenario = $scenarioSet->getIterator()[1];
         $this->assertEquals('Test2', $scenario->getKey());
         $this->assertInstanceOf(ReloadStep::class, $scenario->getBlockStep());
-        $this->assertEquals([
-            'env' => '"prod"',
-            'endpoint' => '\'http://toto.com\'',
-        ], $scenario->getVariables());
+        $this->assertEquals([], $scenario->getVariables());
     }
 
     /**
@@ -308,7 +307,7 @@ EOF
 
         // Adapted
         yield [<<<'EOF'
-load "Player/Tests/fixtures/bkf/group/group.bkf"
+load "Player/Tests/fixtures/group/group.bkf"
 
 scenario
     name "Scenario Name"

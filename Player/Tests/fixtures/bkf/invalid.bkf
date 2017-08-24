@@ -1,6 +1,0 @@
-scenario
-    name "Simple"
-
-    visit "simple/ind
-        expect status_code() == 200
-        expect trim(body()) == "ok"
