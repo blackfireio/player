@@ -38,7 +38,7 @@ use Webmozart\PathUtil\Path;
  */
 class Parser
 {
-    const REGEX_NAME = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
+    const REGEX_NAME = '[a-zA-Z_\x7f-\xff][\-a-zA-Z0-9_\x7f-\xff]*';
 
     private $inAGroup;
     private $variables;
@@ -57,7 +57,7 @@ class Parser
      */
     public function load($file)
     {
-        if (!is_file($file)) {
+        if (!is_file($file) && 'php://stdin' !== $file) {
             throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
         }
 
@@ -423,6 +423,12 @@ class Parser
                 $step->followRedirects($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('blackfire' === $keyword) {
                 $step->blackfire($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
+            } elseif ('blackfire-request' === $keyword) {
+                if (!$hasArgs) {
+                    throw new SyntaxErrorException(sprintf('A "blackfire-request" takes a required argument %s.', $input->getContextString()));
+                }
+
+                $step->blackfireRequest($this->checkExpression($input, $arguments));
             } elseif ('json' === $keyword) {
                 $step->json($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('samples' === $keyword) {

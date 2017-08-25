@@ -26,6 +26,7 @@ final class StepContext
     private $followRedirects;
     private $variables = [];
     private $blackfire;
+    private $blackfireRequest;
     private $samples;
     private $warmup;
 
@@ -53,6 +54,10 @@ final class StepContext
 
         if (null !== $step->getBlackfire()) {
             $this->blackfire = $step->getBlackfire();
+        }
+
+        if (null !== $step->getBlackfireRequest()) {
+            $this->blackfireRequest = $step->getBlackfireRequest();
         }
 
         if (null !== $step->getSamples()) {
@@ -138,6 +143,11 @@ final class StepContext
     public function getBlackfireEnv()
     {
         return $this->blackfire;
+    }
+
+    public function getBlackfireRequest()
+    {
+        return $this->blackfireRequest;
     }
 
     public function getSamples()

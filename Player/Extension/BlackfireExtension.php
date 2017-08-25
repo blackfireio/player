@@ -84,11 +84,14 @@ final class BlackfireExtension extends AbstractExtension
             return $request;
         }
 
-        if (!$context->getExtraBag()->has('blackfire_build')) {
-            $context->getExtraBag()->set('blackfire_build', $this->createBuild($context->getName()));
+        $build = null;
+        if ($context->getExtraBag()->has('blackfire_build')) {
+            $build = $context->getExtraBag()->get('blackfire_build');
+        } elseif (null === $context->getStepContext()->getBlackfireRequest()) {
+            $build = $this->createBuild($context->getName());
+            $context->getExtraBag()->set('blackfire_build', $build);
         }
 
-        $build = $context->getExtraBag()->get('blackfire_build');
         $config = $this->createProfileConfig($step, $context, $build);
         $profileRequest = $this->blackfire->createRequest($config);
 
@@ -193,6 +196,11 @@ final class BlackfireExtension extends AbstractExtension
         $config = new ProfileConfiguration();
         if (null !== $build) {
             $config->setBuild($build);
+        }
+
+        $request = $context->getStepContext()->getBlackfireRequest();
+        if (null !== $request) {
+            $config->setUuid($this->language->evaluate($request, $context->getVariableValues(true)));
         }
 
         $config->setSamples($this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true)));
