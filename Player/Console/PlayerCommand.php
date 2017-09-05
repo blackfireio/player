@@ -19,6 +19,8 @@ use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\Runner;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Player;
+use Blackfire\Player\Result;
+use Blackfire\Player\Results;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -41,7 +43,7 @@ final class PlayerCommand extends Command
                 new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs variable values as JSON', null),
+                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs report as JSON', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('validate', '', InputOption::VALUE_NONE, 'Validate syntax without running', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
@@ -120,11 +122,16 @@ final class PlayerCommand extends Command
         $results = $player->run($scenarios);
 
         if ($input->getOption('json')) {
-            $output->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $output->writeln($this->createJsonOutput($results));
         }
 
-        // any scenario with an error?
-        if ($results->isErrored()) {
+        // any scenario with an error (expectations excluded)?
+        if ($results->isErrored(false)) {
+            return 3;
+        }
+
+        // any scenario with an expectation failure?
+        if ($results->isErrored(true)) {
             return 1;
         }
     }
@@ -132,6 +139,21 @@ final class PlayerCommand extends Command
     private function createClient(OutputInterface $output)
     {
         return new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]);
+    }
+
+    private function createJsonOutput(Results $results)
+    {
+        $report = [];
+
+        /** @var Result $result */
+        foreach ($results as $key => $result) {
+            $report[$key] = [
+                'values' => $result->getValues()->all(),
+                'error' => $result->getError() ? $result->getError()->getMessage() : null,
+            ];
+        }
+
+        return json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
     private function escapeValue($value)

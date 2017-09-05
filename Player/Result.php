@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player;
 
+use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 
@@ -30,9 +31,11 @@ class Result implements \ArrayAccess, \Iterator
         $this->error = $error;
     }
 
-    public function isErrored()
+    public function isErrored($includeExpectation = true)
     {
-        return null !== $this->error;
+        $expectation = $includeExpectation || !$this->error instanceof ExpectationFailureException;
+
+        return null !== $this->error && $expectation;
     }
 
     /**

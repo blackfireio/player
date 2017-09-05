@@ -108,7 +108,7 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         if (!$response->hasHeader('X-Blackfire-Response')) {
-            throw new \LogicException('Unable to profile the current step.');
+            throw new \LogicException('Unable to profile the current step, "X-Blackfire-Response" header not found.');
         }
 
         // Profile needs more samples

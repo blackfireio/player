@@ -23,10 +23,10 @@ class Results implements \IteratorAggregate
         $this->results[$key] = $result;
     }
 
-    public function isErrored()
+    public function isErrored($includeExpectation = true)
     {
         foreach ($this->results as $result) {
-            if ($result->isErrored()) {
+            if ($result->isErrored($includeExpectation)) {
                 return true;
             }
         }
