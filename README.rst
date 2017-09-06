@@ -79,7 +79,7 @@ Use the ``--concurrency`` option to run scenarios in parallel:
 
      blackfire-player run scenario.bkf --concurrency=5
 
-Use the ``--json`` option to output the report as JSON:
+Use the ``--json`` option to output the variable values as JSON:
 
 .. code-block:: bash
 

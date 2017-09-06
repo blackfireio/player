@@ -35,8 +35,8 @@ use Symfony\Component\Console\Terminal;
  */
 final class PlayerCommand extends Command
 {
-    const EXIT_CODE_EXPECTATION_ERROR = 1;
-    const EXIT_CODE_SCENARIO_ERROR = 3;
+    const EXIT_CODE_EXPECTATION_ERROR = 64;
+    const EXIT_CODE_SCENARIO_ERROR = 65;
 
     protected function configure()
     {
@@ -46,7 +46,8 @@ final class PlayerCommand extends Command
                 new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs report as JSON', null),
+                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs variable values as JSON', null),
+                new InputOption('full-report', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('validate', '', InputOption::VALUE_NONE, 'Validate syntax without running', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
@@ -68,6 +69,10 @@ final class PlayerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if ($input->getOption('json') && $input->getOption('full-report')) {
+            throw new \LogicException('Options "--json" and "--full-report" are mutually exclusives.');
+        }
+
         $clients = [$this->createClient($output)];
         $concurrency = $input->getOption('concurrency');
         for ($i = 1; $i < $concurrency; ++$i) {
@@ -79,7 +84,7 @@ final class PlayerCommand extends Command
         $language = new ExpressionLanguage(null, [new LanguageProvider()]);
         $player = new Player($runner, $language);
         $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
-        if (!$input->getOption('json')) {
+        if (!$input->getOption('json') && !$input->getOption('full-report')) {
             $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         }
         if ($input->getOption('tracer')) {
@@ -125,7 +130,11 @@ final class PlayerCommand extends Command
         $results = $player->run($scenarios);
 
         if ($input->getOption('json')) {
-            $output->writeln($this->createJsonOutput($results));
+            $output->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        }
+
+        if ($input->getOption('full-report')) {
+            $output->writeln($this->createReport($results));
         }
 
         // any scenario with an error (expectations excluded)?
@@ -144,7 +153,7 @@ final class PlayerCommand extends Command
         return new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]);
     }
 
-    private function createJsonOutput(Results $results)
+    private function createReport(Results $results)
     {
         $report = [];
 

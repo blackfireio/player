@@ -63,17 +63,19 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
             }
 
             $jsonFile = sprintf('%s/output.json', $dir->getPathname());
+            $reportFile = sprintf('%s/report.json', $dir->getPathname());
 
             yield $dir->getBasename() => [
                 sprintf('%s/scenario.bkf', $dir->getPathname()),
                 file_get_contents(sprintf('%s/output.txt', $dir->getPathname())),
                 file_exists($jsonFile) ? file_get_contents($jsonFile) : null,
+                file_exists($reportFile) ? file_get_contents($reportFile) : null,
             ];
         }
     }
 
     /** @dataProvider providePlayerTests */
-    public function testPlayer($file, $expectedOutput, $expectedJsonOutput)
+    public function testPlayer($file, $expectedOutput, $expectedJsonOutput, $expectedReportOutput)
     {
         $application = new Application();
         $tester = new CommandTester($application->get('run'));
@@ -96,6 +98,16 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
             ]);
 
             $this->assertSame($expectedJsonOutput, $tester->getDisplay());
+        }
+
+        if ($expectedReportOutput) {
+            $tester->execute([
+                'file' => $file,
+                '--endpoint' => 'http://0:'.static::$port,
+                '--full-report' => true,
+            ]);
+
+            $this->assertSame($expectedReportOutput, $tester->getDisplay());
         }
     }
 }
