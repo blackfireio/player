@@ -35,6 +35,9 @@ use Symfony\Component\Console\Terminal;
  */
 final class PlayerCommand extends Command
 {
+    const EXIT_CODE_EXPECTATION_ERROR = 1;
+    const EXIT_CODE_SCENARIO_ERROR = 3;
+
     protected function configure()
     {
         $this
@@ -127,12 +130,12 @@ final class PlayerCommand extends Command
 
         // any scenario with an error (expectations excluded)?
         if ($results->isErrored(false)) {
-            return 3;
+            return self::EXIT_CODE_SCENARIO_ERROR;
         }
 
         // any scenario with an expectation failure?
         if ($results->isErrored(true)) {
-            return 1;
+            return self::EXIT_CODE_EXPECTATION_ERROR;
         }
     }
 
@@ -147,9 +150,11 @@ final class PlayerCommand extends Command
 
         /** @var Result $result */
         foreach ($results as $key => $result) {
+            $error = $result->getError();
+
             $report[$key] = [
                 'values' => $result->getValues()->all(),
-                'error' => $result->getError() ? $result->getError()->getMessage() : null,
+                'error' => $error ? ['message' => $error->getMessage(), 'code' => $error->getCode()] : null,
             ];
         }
 
