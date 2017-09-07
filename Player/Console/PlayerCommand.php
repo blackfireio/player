@@ -27,6 +27,7 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
 
@@ -73,6 +74,9 @@ final class PlayerCommand extends Command
             throw new \LogicException('Options "--json" and "--full-report" are mutually exclusives.');
         }
 
+        // If we have a JSON output, silence others messages
+        $quiet = $input->getOption('json') || $input->getOption('full-report');
+
         $clients = [$this->createClient($output)];
         $concurrency = $input->getOption('concurrency');
         for ($i = 1; $i < $concurrency; ++$i) {
@@ -83,7 +87,7 @@ final class PlayerCommand extends Command
 
         $language = new ExpressionLanguage(null, [new LanguageProvider()]);
         $player = new Player($runner, $language);
-        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
+        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $quiet ? new NullOutput() : $output), 510);
         if (!$input->getOption('json') && !$input->getOption('full-report')) {
             $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         }

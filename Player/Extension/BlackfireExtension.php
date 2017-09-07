@@ -88,7 +88,12 @@ final class BlackfireExtension extends AbstractExtension
         if ($context->getExtraBag()->has('blackfire_build')) {
             $build = $context->getExtraBag()->get('blackfire_build');
         } elseif (null === $context->getStepContext()->getBlackfireRequest()) {
-            $build = $this->createBuild($context->getName());
+            if (null !== $context->getStepContext()->getBlackfireBuild()) {
+                $buildUuid = $this->language->evaluate($context->getStepContext()->getBlackfireBuild(), $context->getVariableValues(true));
+                $build = new Build($env, ['uuid' => $buildUuid]);
+            } else {
+                $build = $this->createBuild($context->getName());
+            }
             $context->getExtraBag()->set('blackfire_build', $build);
         }
 

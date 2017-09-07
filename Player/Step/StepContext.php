@@ -27,6 +27,7 @@ final class StepContext
     private $variables = [];
     private $blackfire;
     private $blackfireRequest;
+    private $blackfireBuild;
     private $samples;
     private $warmup;
 
@@ -58,6 +59,10 @@ final class StepContext
 
         if (null !== $step->getBlackfireRequest()) {
             $this->blackfireRequest = $step->getBlackfireRequest();
+        }
+
+        if (null !== $step->getBlackfireBuild()) {
+            $this->blackfireBuild = $step->getBlackfireBuild();
         }
 
         if (null !== $step->getSamples()) {
@@ -148,6 +153,11 @@ final class StepContext
     public function getBlackfireRequest()
     {
         return $this->blackfireRequest;
+    }
+
+    public function getBlackfireBuild()
+    {
+        return $this->blackfireBuild;
     }
 
     public function getSamples()

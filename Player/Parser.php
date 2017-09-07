@@ -423,6 +423,12 @@ class Parser
                 $step->followRedirects($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('blackfire' === $keyword) {
                 $step->blackfire($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
+            } elseif ('blackfire-build' === $keyword) {
+                if (!$hasArgs) {
+                    throw new SyntaxErrorException(sprintf('A "blackfire-build" takes a required argument %s.', $input->getContextString()));
+                }
+
+                $step->blackfireBuild($this->checkExpression($input, $arguments));
             } elseif ('blackfire-request' === $keyword) {
                 if (!$hasArgs) {
                     throw new SyntaxErrorException(sprintf('A "blackfire-request" takes a required argument %s.', $input->getContextString()));
