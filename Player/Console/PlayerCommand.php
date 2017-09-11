@@ -27,6 +27,7 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
@@ -74,8 +75,15 @@ final class PlayerCommand extends Command
             throw new \LogicException('Options "--json" and "--full-report" are mutually exclusives.');
         }
 
-        // If we have a JSON output, silence others messages
-        $quiet = $input->getOption('json') || $input->getOption('full-report');
+        // If we have a JSON output, don't write others messages on STDOUT
+        $primaryOutput = $output;
+        if ($input->getOption('json') || $input->getOption('full-report')) {
+            if ($output instanceof ConsoleOutput) {
+                $output = $output->getErrorOutput();
+            } else {
+                $output = new NullOutput();
+            }
+        }
 
         $clients = [$this->createClient($output)];
         $concurrency = $input->getOption('concurrency');
@@ -87,10 +95,8 @@ final class PlayerCommand extends Command
 
         $language = new ExpressionLanguage(null, [new LanguageProvider()]);
         $player = new Player($runner, $language);
-        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $quiet ? new NullOutput() : $output), 510);
-        if (!$input->getOption('json') && !$input->getOption('full-report')) {
-            $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
-        }
+        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
+        $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         if ($input->getOption('tracer')) {
             $player->addExtension(new TracerExtension($output));
         }
@@ -126,7 +132,7 @@ final class PlayerCommand extends Command
         }
 
         if ($input->getOption('validate')) {
-            $output->writeln('<info>The scenarios are valid.</>');
+            $primaryOutput->writeln('<info>The scenarios are valid.</>');
 
             return;
         }
@@ -134,11 +140,11 @@ final class PlayerCommand extends Command
         $results = $player->run($scenarios);
 
         if ($input->getOption('json')) {
-            $output->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $primaryOutput->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         if ($input->getOption('full-report')) {
-            $output->writeln($this->createReport($results));
+            $primaryOutput->writeln($this->createReport($results));
         }
 
         // any scenario with an error (expectations excluded)?
