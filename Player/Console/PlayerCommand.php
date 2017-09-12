@@ -75,14 +75,9 @@ final class PlayerCommand extends Command
             throw new \LogicException('Options "--json" and "--full-report" are mutually exclusives.');
         }
 
-        // If we have a JSON output, don't write others messages on STDOUT
-        $primaryOutput = $output;
-        if ($input->getOption('json') || $input->getOption('full-report')) {
-            if ($output instanceof ConsoleOutput) {
-                $output = $output->getErrorOutput();
-            } else {
-                $output = new NullOutput();
-            }
+        $resultOutput = $output;
+        if ($output instanceof ConsoleOutput) {
+            $output = $output->getErrorOutput();
         }
 
         $clients = [$this->createClient($output)];
@@ -132,7 +127,7 @@ final class PlayerCommand extends Command
         }
 
         if ($input->getOption('validate')) {
-            $primaryOutput->writeln('<info>The scenarios are valid.</>');
+            $resultOutput->writeln('<info>The scenarios are valid.</>');
 
             return;
         }
@@ -140,11 +135,11 @@ final class PlayerCommand extends Command
         $results = $player->run($scenarios);
 
         if ($input->getOption('json')) {
-            $primaryOutput->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $resultOutput->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         if ($input->getOption('full-report')) {
-            $primaryOutput->writeln($this->createReport($results));
+            $resultOutput->writeln($this->createReport($results));
         }
 
         // any scenario with an error (expectations excluded)?
