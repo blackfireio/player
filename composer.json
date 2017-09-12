@@ -15,7 +15,7 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "blackfire/php-sdk": "^1.6.0",
+        "blackfire/php-sdk": "^1.10.1",
         "fzaninotto/faker": "^1.5",
         "guzzlehttp/guzzle": "^6.1",
         "mtdowling/jmespath.php": "^2.2",
