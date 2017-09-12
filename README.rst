@@ -578,7 +578,7 @@ are automatically run along side expectations.
 
 Additional features are also automatically activated:
 
-* **assert**: (**not supported yet**)
+* **assert**: An assertion to check
 
 * **samples**: The number of samples
 
@@ -615,10 +615,6 @@ Variables are a great way to make your Blackfire assertions conditional:
         visit url('/blog/')
             assert "prod" == env and metrics.twig.compile.count == 0
             warmup true
-
-.. caution::
-
-    The ``assert`` feature is **not supported yet**.
 
 Scraping Values
 ---------------

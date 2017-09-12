@@ -396,6 +396,28 @@ EOF
 
         yield [<<<'EOF'
 scenario
+    visit url('/blog/')
+        name "Blog homepage"
+        assert main.peak_memory < 10M
+        samples 2
+        warmup 'auto'
+EOF
+        ];
+
+        yield [<<<'EOF'
+scenario
+    set env "prod"
+
+    # no Twig template compilation in production
+    # not enforced in other environments
+    visit url('/blog/')
+        assert "prod" == env and metrics.twig.compile.count == 0
+        warmup true
+EOF
+        ];
+
+        yield [<<<'EOF'
+scenario
     visit url('/')
         expect status_code() == 200
         set latest_post_title css(".post h2").first()

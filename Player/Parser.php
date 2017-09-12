@@ -386,6 +386,16 @@ class Parser
                 }
 
                 $step->expect($this->checkExpression($input, $arguments));
+            } elseif ('assert' === $keyword) {
+                if (!$step instanceof Step) {
+                    throw new LogicException(sprintf('"assert" is not available for this step %s.', $input->getContextString()));
+                }
+
+                if (!$hasArgs) {
+                    throw new SyntaxErrorException(sprintf('An "assert" takes a required argument %s.', $input->getContextString()));
+                }
+
+                $step->assert($arguments);
             } elseif ('set' === $keyword) {
                 if (!$step instanceof Step && !$step instanceof BlockStep) {
                     throw new LogicException(sprintf('"set" is not available for this step %s.', $input->getContextString()));

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d5fab0aedd3010c82db27f862ad0b8b",
+    "content-hash": "619610920f5532ccafba8e2272aa7b43",
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.10.1",
+            "version": "v1.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "e3885ae7f45068e5609d89ffc08ab624b79115e3"
+                "reference": "a71debd3468c932059e8672b8280342c07eb2c6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/e3885ae7f45068e5609d89ffc08ab624b79115e3",
-                "reference": "e3885ae7f45068e5609d89ffc08ab624b79115e3",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/a71debd3468c932059e8672b8280342c07eb2c6f",
+                "reference": "a71debd3468c932059e8672b8280342c07eb2c6f",
                 "shasum": ""
             },
             "require": {
@@ -59,7 +59,7 @@
                 "uprofiler",
                 "xhprof"
             ],
-            "time": "2017-09-12T08:25:41+00:00"
+            "time": "2017-09-12T15:54:33+00:00"
         },
         {
             "name": "composer/ca-bundle",

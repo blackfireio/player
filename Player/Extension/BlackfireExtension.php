@@ -234,6 +234,14 @@ final class BlackfireExtension extends AbstractExtension
                 }
             }
 
+            if (!$failures) { // It is a recommendation report
+                foreach ($profile->getRecommendations() as $test) {
+                    foreach ($test->getFailures() as $failure) {
+                        $failures[] = $failure;
+                    }
+                }
+            }
+
             throw new ExpectationFailureException(sprintf("Assertions failed:\n  %s", implode("\n  ", $failures)));
         }
     }
