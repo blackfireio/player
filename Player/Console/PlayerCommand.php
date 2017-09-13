@@ -28,7 +28,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
 
@@ -114,7 +113,7 @@ final class PlayerCommand extends Command
 
             foreach ($parser->getGlobalVariables() as $key => $value) {
                 // Override only if the endpoint is not already defined in the step
-                if ($key === 'endpoint' && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
+                if ('endpoint' === $key && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
                     $scenario->endpoint($this->escapeValue($value));
                 }
 

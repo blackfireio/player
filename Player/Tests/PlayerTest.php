@@ -62,8 +62,8 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
                 }
             }
 
-            $jsonFile = sprintf('%s/output.json', $dir->getPathname());
-            $reportFile = sprintf('%s/report.json', $dir->getPathname());
+            $jsonFile = sprintf('%s/output-json.txt', $dir->getPathname());
+            $reportFile = sprintf('%s/output-full-report.txt', $dir->getPathname());
 
             yield $dir->getBasename() => [
                 sprintf('%s/scenario.bkf', $dir->getPathname()),
@@ -89,6 +89,9 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
         $expectedOutput = str_replace('{{ PORT }}', static::$port, $expectedOutput);
 
         $this->assertSame($expectedOutput, $output);
+
+        // For --json and --full-report, the output is composed of STDOUT + STDERR.
+        // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.
 
         if ($expectedJsonOutput) {
             $tester->execute([
