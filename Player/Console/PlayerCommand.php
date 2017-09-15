@@ -64,19 +64,25 @@ final class PlayerCommand extends Command
         $output->getFormatter()->setStyle('title', new OutputFormatterStyle('black', 'yellow'));
         $output->getFormatter()->setStyle('debug', new OutputFormatterStyle('red', 'black'));
         $output->getFormatter()->setStyle('failure', new OutputFormatterStyle('white', 'red'));
+        $output->getFormatter()->setStyle('warning', new OutputFormatterStyle('white', 'yellow', ['bold']));
         $output->getFormatter()->setStyle('success', new OutputFormatterStyle('white', 'green'));
         $output->getFormatter()->setStyle('detail', new OutputFormatterStyle('white', 'blue'));
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $resultOutput = $output;
+        if ($output instanceof ConsoleOutput) {
+            $output = $output->getErrorOutput();
+        }
+
         if ($input->getOption('json') && $input->getOption('full-report')) {
             throw new \LogicException('Options "--json" and "--full-report" are mutually exclusives.');
         }
 
-        $resultOutput = $output;
-        if ($output instanceof ConsoleOutput) {
-            $output = $output->getErrorOutput();
+        if ($input->getOption('json')) {
+            $output->writeln('<warning>The "--json" option is deprecated. Use "--full-report" instead.</warning>');
+            $output->writeln('');
         }
 
         $clients = [$this->createClient($output)];

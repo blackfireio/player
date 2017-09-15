@@ -1,3 +1,5 @@
+The "--json" option is deprecated. Use "--full-report" instead.
+
 Blackfire Player
 
 Scenario  "scraping" 
