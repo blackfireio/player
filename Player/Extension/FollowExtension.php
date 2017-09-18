@@ -14,6 +14,7 @@ namespace Blackfire\Player\Extension;
 use Blackfire\Player\Context;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\FollowStep;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -42,10 +43,14 @@ final class FollowExtension extends AbstractExtension
             return;
         }
 
-        $step = new FollowStep();
-        $step->followRedirects(true);
-        $step->name(sprintf("'Auto-following redirect to %s'", $response->getHeaderLine('Location')));
+        $follow = new FollowStep();
 
-        return $step;
+        if ($step instanceof ConfigurableStep) {
+            $follow->blackfire($step->getBlackfire());
+        }
+        $follow->followRedirects(true);
+        $follow->name(sprintf("'Auto-following redirect to %s'", $response->getHeaderLine('Location')));
+
+        return $follow;
     }
 }
