@@ -102,9 +102,9 @@ final class BlackfireExtension extends AbstractExtension
 
         // Add a random cookie to help crossing caches
         if ($request->hasHeader('Cookie')) {
-            $request = $request->withHeader('Cookie', $request->getHeaderLine('Cookie').'; '.uniqid('__blackfire=', true));
+            $request = $request->withHeader('Cookie', $request->getHeaderLine('Cookie').'; __blackfire=NO_CACHE');
         } else {
-            $request = $request->withHeader('Cookie', uniqid('__blackfire=', true));
+            $request = $request->withHeader('Cookie', '__blackfire=NO_CACHE');
         }
 
         return $request
