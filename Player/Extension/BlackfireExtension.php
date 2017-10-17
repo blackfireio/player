@@ -100,6 +100,13 @@ final class BlackfireExtension extends AbstractExtension
         $config = $this->createProfileConfig($step, $context, $build);
         $profileRequest = $this->blackfire->createRequest($config);
 
+        // Add a random cookie to help crossing caches
+        if ($request->hasHeader('Cookie')) {
+            $request = $request->withHeader('Cookie', $request->getHeaderLine('Cookie').'; __blackfire='.uniqid());
+        } else {
+            $request = $request->withHeader('Cookie', '__blackfire='.uniqid());
+        }
+
         return $request
             ->withHeader('X-Blackfire-Query', $profileRequest->getToken())
             ->withHeader('X-Blackfire-Profile-Uuid', $profileRequest->getUuid())
