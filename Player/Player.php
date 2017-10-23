@@ -18,6 +18,7 @@ use Blackfire\Player\Extension\FollowExtension;
 use Blackfire\Player\Extension\NameResolverExtension;
 use Blackfire\Player\Extension\TestsExtension;
 use Blackfire\Player\Extension\WaitExtension;
+use Blackfire\Player\Extension\WatchdogExtension;
 use Blackfire\Player\Guzzle\StepConverter;
 use GuzzleHttp\Promise\EachPromise;
 
@@ -39,6 +40,7 @@ class Player
         $this->addExtension(new TestsExtension($this->language), 512);
         $this->addExtension(new WaitExtension($this->language));
         $this->addExtension(new FollowExtension($this->language));
+        $this->addExtension(new WatchdogExtension());
     }
 
     public function addExtension(ExtensionInterface $extension, $priority = 0)
