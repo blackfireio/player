@@ -239,7 +239,7 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessageRegExp /Are you using a Load Balancer/
+     * @expectedExceptionMessageRegExp /progress is going backward/
      */
     public function testTheProgressCannotDiminish()
     {
@@ -263,7 +263,7 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessageRegExp /Are you using a Reverse Proxy/
+     * @expectedExceptionMessageRegExp /progress is not increasing/
      */
     public function testTheProgressCannotBeEqual()
     {

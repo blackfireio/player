@@ -275,11 +275,11 @@ final class BlackfireExtension extends AbstractExtension
             $progress = (int) $values['progress'];
 
             if ($progress < $prevProgress) {
-                throw new LogicException('Profiling progress is inconsistent. Are you using a Load Balancer? Please read https://blackfire.io/docs/reference-guide/configuration#load-balancer');
+                throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/reference-guide/configuration#load-balancer');
             }
 
             if ($progress === $prevProgress) {
-                throw new LogicException('Profiling progress is inconsistent. Are you using a Reverse Proxy or behind a cache server such as Varnish? Please read https://blackfire.io/docs/reference-guide/configuration#reverse-proxy');
+                throw new LogicException('Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/reference-guide/configuration#reverse-proxy');
             }
 
             $context->getExtraBag()->set('blackfire_progress', $progress);
