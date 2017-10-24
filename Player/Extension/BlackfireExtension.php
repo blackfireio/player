@@ -270,13 +270,8 @@ final class BlackfireExtension extends AbstractExtension
 
         $continue = isset($values['continue']) && 'true' === $values['continue'];
 
-        if ($continue && $checkProgress) {
+        if ($continue && isset($values['progress']) && $checkProgress) {
             $prevProgress = $context->getExtraBag()->has('blackfire_progress') ? $context->getExtraBag()->get('blackfire_progress') : -1;
-
-            if (!isset($values['progress'])) {
-                throw new LogicException('The probe did not return the progress. Is your probe up to date? Please read https://blackfire.io/docs/up-and-running/upgrade');
-            }
-
             $progress = (int) $values['progress'];
 
             if ($progress < $prevProgress) {
@@ -284,7 +279,7 @@ final class BlackfireExtension extends AbstractExtension
             }
 
             if ($progress === $prevProgress) {
-                throw new LogicException('Profiling progress is inconsistent. Are you using a Reverse Proxy? Please read https://blackfire.io/docs/reference-guide/configuration#reverse-proxy');
+                throw new LogicException('Profiling progress is inconsistent. Are you using a Reverse Proxy or behind a cache server such as Varnish? Please read https://blackfire.io/docs/reference-guide/configuration#reverse-proxy');
             }
 
             $context->getExtraBag()->set('blackfire_progress', $progress);

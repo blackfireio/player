@@ -192,7 +192,7 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
         $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
 
         $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=50');
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true');
 
         $blackfireClient = $this->createBlackfireClient();
         $blackfireClient->expects($this->never())->method('getProfile');
@@ -235,26 +235,6 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
         $nextStep = $extension->getNextStep($step, $request, $response, $this->createContext($step));
 
         $this->assertNull($nextStep);
-    }
-
-    /**
-     * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessageRegExp /The probe did not return the progress/
-     */
-    public function testTheProgressShouldBePresent()
-    {
-        $step = new ConfigurableStep();
-
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
-
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true');
-
-        $context = $this->createContext($step);
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-        $extension->leaveStep($step, $request, $response, $context);
     }
 
     /**
