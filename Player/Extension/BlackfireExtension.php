@@ -17,6 +17,7 @@ use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
 use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\ExpectationFailureException;
+use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Psr7\CrawlerFactory;
@@ -124,7 +125,7 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         // Profile needs more samples
-        if ($this->continueSampling($response)) {
+        if ($this->continueSampling($response, $context)) {
             return $response;
         }
 
@@ -152,7 +153,7 @@ final class BlackfireExtension extends AbstractExtension
             return;
         }
 
-        if (!$this->continueSampling($response)) {
+        if (!$this->continueSampling($response, $context, false)) {
             return;
         }
 
@@ -263,11 +264,33 @@ final class BlackfireExtension extends AbstractExtension
         $this->blackfire->getConfiguration()->setEnv($env);
     }
 
-    private function continueSampling(ResponseInterface $response)
+    private function continueSampling(ResponseInterface $response, Context $context, $checkProgress = true)
     {
         parse_str($response->getHeaderLine('X-Blackfire-Response'), $values);
 
-        return isset($values['continue']) && 'true' === $values['continue'];
+        $continue = isset($values['continue']) && 'true' === $values['continue'];
+
+        if ($continue && $checkProgress) {
+            $prevProgress = $context->getExtraBag()->has('blackfire_progress') ? $context->getExtraBag()->get('blackfire_progress') : -1;
+
+            if (!isset($values['progress'])) {
+                throw new LogicException('The probe did not return the progress. Is your probe up to date? Please read https://blackfire.io/docs/up-and-running/upgrade');
+            }
+
+            $progress = (int) $values['progress'];
+
+            if ($progress < $prevProgress) {
+                throw new LogicException('Profiling progress is inconsistent. Are you using a Load Balancer? Please read https://blackfire.io/docs/reference-guide/configuration#load-balancer');
+            }
+
+            if ($progress === $prevProgress) {
+                throw new LogicException('Profiling progress is inconsistent. Are you using a Reverse Proxy? Please read https://blackfire.io/docs/reference-guide/configuration#reverse-proxy');
+            }
+
+            $context->getExtraBag()->set('blackfire_progress', $progress);
+        }
+
+        return $continue;
     }
 
     private function warmupCount(ConfigurableStep $step, RequestInterface $request, Context $context)
