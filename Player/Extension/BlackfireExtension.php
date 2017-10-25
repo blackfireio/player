@@ -270,7 +270,9 @@ final class BlackfireExtension extends AbstractExtension
 
         $continue = isset($values['continue']) && 'true' === $values['continue'];
 
-        if ($continue && isset($values['progress']) && $checkProgress) {
+        if (!$continue) {
+            $context->getExtraBag()->set('blackfire_progress', -1);
+        } elseif ($continue && isset($values['progress']) && $checkProgress) {
             $prevProgress = $context->getExtraBag()->has('blackfire_progress') ? $context->getExtraBag()->get('blackfire_progress') : -1;
             $progress = (int) $values['progress'];
 
