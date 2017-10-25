@@ -19,6 +19,7 @@ use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\StepContext;
+use Blackfire\Profile;
 use Blackfire\Profile\Request as ProfileRequest;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -237,6 +238,68 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($nextStep);
     }
 
+    /**
+     * @expectedException \Blackfire\Player\Exception\LogicException
+     * @expectedExceptionMessageRegExp /progress is going backward/
+     */
+    public function testTheProgressCannotDiminish()
+    {
+        $step = new ConfigurableStep();
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33');
+
+        $response2 = new Response();
+        $response2 = $response2->withHeader('X-Blackfire-Response', 'continue=true&progress=15');
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
+        $extension->leaveStep($step, $request, $response, $context);
+        $extension->leaveStep($step, $request, $response2, $context);
+    }
+
+    /**
+     * @expectedException \Blackfire\Player\Exception\LogicException
+     * @expectedExceptionMessageRegExp /progress is not increasing/
+     */
+    public function testTheProgressCannotBeEqual()
+    {
+        $step = new ConfigurableStep();
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33');
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
+        $extension->leaveStep($step, $request, $response, $context);
+        $extension->leaveStep($step, $request, $response, $context);
+    }
+
+    public function testTheProgressIsResetAtTheEndOfProfiling()
+    {
+        $step = new ConfigurableStep();
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
+        $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=99'), $context);
+        $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=false'), $context);
+        $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=10'), $context);
+    }
+
     protected function createBlackfireClient()
     {
         $blackfireConfig = new ClientConfiguration();
@@ -245,9 +308,14 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
         $profileRequest->method('getToken')->willReturn('1234');
         $profileRequest->method('getUuid')->willReturn('1111-2222-3333-4444');
 
+        $profile = $this->getMockBuilder(Profile::class)->disableOriginalConstructor()->getMock();
+        $profile->method('isErrored')->willReturn(false);
+        $profile->method('isSuccessful')->willReturn(true);
+
         $blackfire = $this->getMockBuilder(Client::class)->getMock();
         $blackfire->method('getConfiguration')->willReturn($blackfireConfig);
         $blackfire->method('createRequest')->willReturn($profileRequest);
+        $blackfire->method('getProfile')->willReturn($profile);
 
         return $blackfire;
     }
