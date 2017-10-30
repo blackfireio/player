@@ -124,7 +124,7 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
         }
 
         if (null === $exception && $errors) {
-            $exception = new NonFatalException(implode('\n', $errors));
+            $exception = new NonFatalException(implode("\n", $errors));
         }
 
         // Can be converted to just return new Result()
