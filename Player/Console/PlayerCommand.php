@@ -38,6 +38,7 @@ final class PlayerCommand extends Command
 {
     const EXIT_CODE_EXPECTATION_ERROR = 64;
     const EXIT_CODE_SCENARIO_ERROR = 65;
+    const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
 
     protected function configure()
     {
@@ -147,14 +148,16 @@ final class PlayerCommand extends Command
             $resultOutput->writeln($this->createReport($results));
         }
 
-        // any scenario with an error (expectations excluded)?
-        if ($results->isErrored(false)) {
+        if ($results->isFatalError()) {
             return self::EXIT_CODE_SCENARIO_ERROR;
         }
 
-        // any scenario with an expectation failure?
-        if ($results->isErrored(true)) {
+        if ($results->isExpectationError()) {
             return self::EXIT_CODE_EXPECTATION_ERROR;
+        }
+
+        if ($results->isErrored()) {
+            return self::EXIT_CODE_SCENARIO_ERROR_NON_FATAL;
         }
     }
 

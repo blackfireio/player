@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Psr7;
 
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\NonFatalException;
 use Blackfire\Player\Result;
 use Blackfire\Player\Scenario;
 
@@ -123,7 +124,7 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
         }
 
         if (null === $exception && $errors) {
-            $exception = new \Exception(implode('\n', $errors));
+            $exception = new NonFatalException(implode('\n', $errors));
         }
 
         // Can be converted to just return new Result()

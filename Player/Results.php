@@ -23,10 +23,35 @@ class Results implements \IteratorAggregate
         $this->results[$key] = $result;
     }
 
-    public function isErrored($includeExpectation = true)
+    public function isFatalError()
+    {
+        /** @var Result $result */
+        foreach ($this->results as $result) {
+            if ($result->isFatalError()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isExpectationError()
+    {
+        /** @var Result $result */
+        foreach ($this->results as $result) {
+            if ($result->isExpectationError()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @var Result $result */
+    public function isErrored()
     {
         foreach ($this->results as $result) {
-            if ($result->isErrored($includeExpectation)) {
+            if ($result->isErrored()) {
                 return true;
             }
         }

@@ -14,6 +14,7 @@ namespace Blackfire\Player;
 use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\NonFatalException;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -31,11 +32,22 @@ class Result implements \ArrayAccess, \Iterator
         $this->error = $error;
     }
 
-    public function isErrored($includeExpectation = true)
+    public function isFatalError()
     {
-        $expectation = $includeExpectation || !$this->error instanceof ExpectationFailureException;
+        return null !== $this->error
+            && !$this->error instanceof ExpectationFailureException
+            && !$this->error instanceof NonFatalException
+        ;
+    }
 
-        return null !== $this->error && $expectation;
+    public function isExpectationError()
+    {
+        return $this->error instanceof ExpectationFailureException;
+    }
+
+    public function isErrored()
+    {
+        return null !== $this->error;
     }
 
     /**
