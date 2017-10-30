@@ -45,6 +45,7 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
         }
 
         $exception = null;
+        $errors = [];
         try {
             do {
                 $step = $this->generator->key();
@@ -63,6 +64,10 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
 
                 foreach ($this->extensions as $extension) {
                     $response = $extension->leaveStep($step, $request, $response, $this->context);
+                }
+
+                if ($step->hasErrors()) {
+                    $errors = array_merge($errors, $step->getErrors());
                 }
 
                 if (isset($this->originalNexts[$step]) && $this->originalNexts[$step]) {
@@ -115,6 +120,10 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
             } catch (\Throwable $e) {
                 echo $e;
             }
+        }
+
+        if (null === $exception && $errors) {
+            $exception = new \Exception(implode('\n', $errors));
         }
 
         // Can be converted to just return new Result()

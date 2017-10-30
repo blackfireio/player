@@ -16,7 +16,6 @@ use Blackfire\Client as BlackfireClient;
 use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
 use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpectationErrorException;
-use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
@@ -137,7 +136,7 @@ final class BlackfireExtension extends AbstractExtension
             }
         }
 
-        $this->assertProfile($request, $response);
+        $this->assertProfile($step, $request, $response);
 
         return $response;
     }
@@ -228,7 +227,7 @@ final class BlackfireExtension extends AbstractExtension
         return $config;
     }
 
-    private function assertProfile(RequestInterface $request, ResponseInterface $response)
+    private function assertProfile(AbstractStep $step, RequestInterface $request, ResponseInterface $response)
     {
         $profile = $this->blackfire->getProfile($request->getHeaderLine('X-Blackfire-Profile-Uuid'));
 
@@ -250,7 +249,7 @@ final class BlackfireExtension extends AbstractExtension
                 }
             }
 
-            throw new ExpectationFailureException(sprintf("Assertions failed:\n  %s", implode("\n  ", $failures)));
+            $step->addError(sprintf("Assertions failed:\n  %s", implode("\n  ", $failures)));
         }
     }
 

@@ -21,6 +21,7 @@ class AbstractStep
     private $name = '';
     private $file;
     private $line;
+    private $errors = [];
 
     public function __construct($file = null, $line = null)
     {
@@ -72,6 +73,21 @@ class AbstractStep
     public function getLine()
     {
         return $this->line;
+    }
+
+    public function addError($error)
+    {
+        $this->errors[] = $error;
+    }
+
+    public function hasErrors()
+    {
+        return count($this->errors) > 0;
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
     /**

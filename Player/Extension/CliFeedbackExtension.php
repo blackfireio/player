@@ -123,10 +123,32 @@ class CliFeedbackExtension extends AbstractExtension
             }
         }
 
+        if ($step->hasErrors()) {
+            $this->printErrors($step, $step->getErrors());
+        }
+
         return $response;
     }
 
     public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context)
+    {
+        $this->printErrors($step, [$exception->getMessage()]);
+
+        if ($exception instanceof ExpectationFailureException) {
+            $this->printExpectationsFailure($exception);
+        }
+    }
+
+    public function abortScenario(Scenario $scenario, \Exception $exception, Context $context)
+    {
+        $this->printErrors($scenario, [$exception->getMessage()]);
+
+        if ($exception instanceof ExpectationFailureException) {
+            $this->printExpectationsFailure($exception);
+        }
+    }
+
+    private function printErrors(AbstractStep $step, array $errors)
     {
         if ($this->debug || !$this->output->isDecorated()) {
             $this->output->write("\n");
@@ -136,7 +158,7 @@ class CliFeedbackExtension extends AbstractExtension
 
         ++$this->failureCount;
 
-        $ctx = 'Failure on step';
+        $ctx = $step instanceof Scenario ? 'Failure on scenario' : 'Failure on step';
 
         $name = $step->getName();
         if ($name) {
@@ -151,54 +173,20 @@ class CliFeedbackExtension extends AbstractExtension
 
         $this->output->writeln(sprintf('<failure> </> %s', $ctx));
 
-        $lines = explode("\n", $exception->getMessage());
-        $this->output->writeln(sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
-        foreach ($lines as $line) {
-            $this->output->writeln(sprintf('<failure> </>   %s', $line));
-        }
+        foreach ($errors as $error) {
+            $lines = explode("\n", $error);
 
-        if ($exception instanceof ExpectationFailureException) {
-            foreach ($exception->getResults() as $result) {
-                $this->output->writeln(sprintf('<failure> </>   └ %s = %s', $result['expression'], $result['result']));
+            $this->output->writeln(sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
+            foreach ($lines as $line) {
+                $this->output->writeln(sprintf('<failure> </>   %s', $line));
             }
         }
     }
 
-    public function abortScenario(Scenario $scenario, \Exception $exception, Context $context)
+    private function printExpectationsFailure(ExpectationFailureException $exception)
     {
-        if ($this->debug || !$this->output->isDecorated()) {
-            $this->output->write("\n");
-        } else {
-            $this->output->write("\r\033[K\033[1A\033[K");
-        }
-
-        ++$this->failureCount;
-
-        $ctx = 'Failure on scenario';
-
-        $name = $scenario->getName();
-        if ($name) {
-            $ctx .= sprintf(' <title> %s </>', $name);
-        }
-
-        if ($scenario->getFile()) {
-            $ctx .= sprintf(' defined in <title> %s </> at line <title> %d </>', $scenario->getFile(), $scenario->getLine());
-        } elseif ($scenario->getLine()) {
-            $ctx .= sprintf(' defined at line <title> %d </>', $scenario->getLine());
-        }
-
-        $this->output->writeln(sprintf('<failure> </> %s', $ctx));
-
-        $lines = explode("\n", $exception->getMessage());
-        $this->output->writeln(sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
-        foreach ($lines as $line) {
-            $this->output->writeln(sprintf('<failure> </>   %s', $line));
-        }
-
-        if ($exception instanceof ExpectationFailureException) {
-            foreach ($exception->getResults() as $result) {
-                $this->output->writeln(sprintf('<failure> </>   └ %s = %s', $result['expression'], $result['result']));
-            }
+        foreach ($exception->getResults() as $result) {
+            $this->output->writeln(sprintf('<failure> </>   └ %s = %s', $result['expression'], $result['result']));
         }
     }
 
