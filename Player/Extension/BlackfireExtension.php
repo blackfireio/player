@@ -178,7 +178,9 @@ final class BlackfireExtension extends AbstractExtension
             $extra->set('blackfire_report', $this->blackfire->endBuild($build));
         }
 
-        $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $build->getUrl()));
+        if (null !== $build->getUrl()) {
+            $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $build->getUrl()));
+        }
     }
 
     private function createBuild($title)
