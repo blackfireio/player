@@ -153,7 +153,7 @@ final class RequestGenerator implements \IteratorAggregate
         $variables = [];
         if ($step instanceof BlockStep) {
             foreach ($step->getVariables() as $key => $value) {
-                $variables[$key] = $this->language->evaluate($value, []);
+                $variables[$key] = $this->language->evaluate($value, $variables);
             }
         }
 
