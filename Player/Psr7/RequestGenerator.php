@@ -101,7 +101,7 @@ final class RequestGenerator implements \IteratorAggregate
                     $this->contextStack->top()->variable($step->getKeyName(), $key);
                     $this->contextStack->top()->variable($step->getValueName(), $value);
 
-                    $iter = $this->createIterator($step->getLoopStep(), $request, $response);
+                    $iter = $this->createIterator(clone $step->getLoopStep(), $request, $response);
                     $gen = $iter->getIterator();
                     do {
                         list($request, $response) = $this->checkGeneratorResult(yield $gen->key() => $gen->current());
