@@ -28,6 +28,11 @@ class Step extends ConfigurableStep
         return $this;
     }
 
+    public function has($name)
+    {
+        return array_key_exists($name, $this->variables);
+    }
+
     public function set($name, $expression)
     {
         $this->variables[$name] = $expression;

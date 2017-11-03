@@ -46,6 +46,11 @@ class BlockStep extends ConfigurableStep
         return $this;
     }
 
+    public function has($key)
+    {
+        return array_key_exists($key, $this->variables);
+    }
+
     public function set($key, $value)
     {
         $this->variables[$key] = $value;

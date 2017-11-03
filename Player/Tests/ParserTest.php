@@ -11,6 +11,7 @@
 
 namespace Player\Tests;
 
+use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
@@ -448,6 +449,67 @@ scenario
         method 'POST'
         body '{ "foo": "batman" }'
         expect status_code() == 200
+EOF
+        ];
+    }
+
+    /**
+     * @dataProvider variableDeclarationProvider
+     */
+    public function testVariableCannotBeRedeclared($exceptionMessage, $scenario)
+    {
+        if ($exceptionMessage) {
+            $this->expectException(LogicException::class);
+            $this->expectExceptionMessage($exceptionMessage);
+        }
+
+        $parser = new Parser();
+        $parser->parse($scenario);
+    }
+
+    public function variableDeclarationProvider()
+    {
+        // Valid
+
+        yield [false, <<<'EOF'
+set env "prod"
+
+scenario Test
+    set env "dev"
+EOF
+        ];
+
+        yield [false, <<<'EOF'
+set env "-"
+
+scenario Test
+    set env "prod"
+
+    visit url('test')
+        set env "dev"
+EOF
+        ];
+
+        // Invalid
+
+        yield ['You cannot redeclare the global variable "env" at line 2', <<<'EOF'
+set env "prod"
+set env "dev"
+EOF
+        ];
+
+        yield ['You cannot redeclare the variable "env" at line 3', <<<'EOF'
+scenario Test
+    set env "prod"
+    set env "dev"
+EOF
+        ];
+
+        yield ['You cannot redeclare the variable "env" at line 4', <<<'EOF'
+scenario Test
+    visit url('/')
+        set env "prod"
+        set env "dev"
 EOF
         ];
     }

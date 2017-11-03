@@ -328,6 +328,10 @@ class Parser
                 throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
             }
 
+            if (array_key_exists($matches[1], $this->globalVariables)) {
+                throw new LogicException(sprintf('You cannot redeclare the global variable "%s" %s', $matches[1], $input->getContextString()));
+            }
+
             $this->globalVariables[$matches[1]] = $matches[2];
 
             return new EmptyStep($input->getFile(), $input->getLine());
@@ -407,6 +411,10 @@ class Parser
 
                 if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
                     throw new SyntaxErrorException(sprintf('Unable to parse "set" arguments "%s" %s.', $arguments, $input->getContextString()));
+                }
+
+                if ($step->has($matches[1])) {
+                    throw new LogicException(sprintf('You cannot redeclare the variable "%s" %s', $matches[1], $input->getContextString()));
                 }
 
                 $this->variables[$matches[1]] = $matches[1];
