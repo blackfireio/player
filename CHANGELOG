@@ -1,7 +1,7 @@
 Blackfire Player Changelog
 ==========================
 
-* 0.5.0-alpha-5
+* 0.5.0-alpha-5 (2017-11-07)
 
  * add a 'warmup' step option
  * add a new CLI option '--full-report' and deprecate '--json'
