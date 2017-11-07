@@ -1,7 +1,14 @@
 Blackfire Player Changelog
 ==========================
 
-* 0.5.0 (xxxx-xx-xx)
+* 0.5.0-alpha-5
+
+ * add a 'warmup' step option
+ * add a new CLI option '--full-report' and deprecate '--json'
+ * add a cookie to profiled requests to help cross HTTP caches
+ * add an extension to avoid infinite loops
+
+* 0.5.0-alpha-1 (2017-01-05)
 
  * Second major release. It breaks backwards compatibility. For now on, the
    player is only distributed as a .phar file and cannot be embedded in a PHP
