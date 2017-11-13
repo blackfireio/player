@@ -166,9 +166,9 @@ class CliFeedbackExtension extends AbstractExtension
         }
 
         if ($step->getFile()) {
-            $ctx .= sprintf(' defined in <title> %s </> at line <title> %d </>', $step->getFile(), $step->getLine());
+            $ctx .= sprintf(' defined in <title>%s</> at line <title> %d </>', $step->getFile(), $step->getLine());
         } elseif ($step->getLine()) {
-            $ctx .= sprintf(' defined at line <title> %d </>', $step->getLine());
+            $ctx .= sprintf(' defined at line <title>%d</>', $step->getLine());
         }
 
         $this->output->writeln(sprintf('<failure> </> %s', $ctx));

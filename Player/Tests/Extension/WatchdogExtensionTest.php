@@ -23,8 +23,8 @@ class WatchdogExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new WatchdogExtension(1, 10);
 
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
+        $request = $this->getMock(RequestInterface::class);
+        $response = $this->getMock(ResponseInterface::class);
         $context = new Context('Test');
 
         $step = new ConfigurableStep();
@@ -52,8 +52,8 @@ class WatchdogExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new WatchdogExtension(1, 10);
 
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
+        $request = $this->getMock(RequestInterface::class);
+        $response = $this->getMock(ResponseInterface::class);
         $context = new Context('Test');
 
         $step = new ConfigurableStep();
@@ -77,8 +77,8 @@ class WatchdogExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $extension = new WatchdogExtension(1, 1);
 
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
+        $request = $this->getMock(RequestInterface::class);
+        $response = $this->getMock(ResponseInterface::class);
         $context = new Context('Test');
 
         $step = new ConfigurableStep();

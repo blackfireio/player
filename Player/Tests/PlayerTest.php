@@ -23,10 +23,30 @@ use Symfony\Component\Process\ProcessBuilder;
 class PlayerTest extends \PHPUnit_Framework_TestCase
 {
     private static $port;
+    private static $server;
 
     public static function setUpBeforeClass()
     {
         static::$port = getenv('BLACKFIRE_WS_PORT');
+
+        self::bootServer();
+    }
+
+    public static function tearDownAfterClass()
+    {
+        self::$server->stop(0);
+        self::$server = null;
+    }
+
+    private static function bootServer()
+    {
+        if (self::$server && !self::$server->isTerminated() && self::$server->isRunning()) {
+            return;
+        }
+
+        if (self::$server) {
+            self::$server->stop(0);
+        }
 
         $finder = new PhpExecutableFinder();
 
@@ -34,18 +54,19 @@ class PlayerTest extends \PHPUnit_Framework_TestCase
             throw new \RuntimeException('Unable to find PHP binary to run server.');
         }
 
-        $server = (new ProcessBuilder(['exec', $binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures']))->getProcess();
-        $server->start();
+        self::$server = (new ProcessBuilder(['exec', $binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures']))->getProcess();
+        self::$server->start();
 
         usleep(250000);
 
-        if ($server->isTerminated() && !$server->isSuccessful()) {
-            throw new ProcessFailedException($server);
+        if (self::$server->isTerminated() && !self::$server->isSuccessful()) {
+            throw new ProcessFailedException(self::$server);
         }
+    }
 
-        register_shutdown_function(function () use ($server) {
-            $server->stop();
-        });
+    public function setUp()
+    {
+        self::bootServer();
     }
 
     public function providePlayerTests()

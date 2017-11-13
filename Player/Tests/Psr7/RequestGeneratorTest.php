@@ -38,8 +38,8 @@ class RequestGeneratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->context = new Context('Test');
         $this->language = new ExpressionLanguage();
-        $this->stepConverter = $this->createMock(StepConverterInterface::class);
-        $this->stepConverter->method('createRequest')->willReturn($this->createMock(RequestInterface::class));
+        $this->stepConverter = $this->getMock(StepConverterInterface::class);
+        $this->stepConverter->method('createRequest')->willReturn($this->getMock(RequestInterface::class));
     }
 
     /**
@@ -64,7 +64,7 @@ class RequestGeneratorTest extends \PHPUnit_Framework_TestCase
             $this->context->getValueBag()->set('index', $this->context->getValueBag()->get('index') + 1);
 
             $res[] = get_class($step);
-        } while ($generator->send([$request, $this->createMock(ResponseInterface::class)]));
+        } while ($generator->send([$request, $this->getMock(ResponseInterface::class)]));
 
         $this->assertEquals($expected, $res);
     }
@@ -163,13 +163,13 @@ class RequestGeneratorTest extends \PHPUnit_Framework_TestCase
     public function sendToGeneratorProvider()
     {
         // Valid
-        yield [false, [$this->createMock(RequestInterface::class), $this->createMock(ResponseInterface::class)]];
+        yield [false, [$this->getMock(RequestInterface::class), $this->getMock(ResponseInterface::class)]];
 
         // Invalid
         yield [true, null];
-        yield [true, ['zz', $this->createMock(ResponseInterface::class)]];
-        yield [true, [$this->createMock(RequestInterface::class), 'invalid']];
-        yield [true, [$this->createMock(ResponseInterface::class), $this->createMock(RequestInterface::class)]];
+        yield [true, ['zz', $this->getMock(ResponseInterface::class)]];
+        yield [true, [$this->getMock(RequestInterface::class), 'invalid']];
+        yield [true, [$this->getMock(ResponseInterface::class), $this->getMock(RequestInterface::class)]];
     }
 
     public function testBlockStepVariablesEvaluation()
