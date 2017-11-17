@@ -47,17 +47,24 @@ class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
             $this->assertFalse($request->hasHeader('X-Blackfire-Query'));
             $this->assertFalse($request->hasHeader('X-Blackfire-Profile-Uuid'));
 
-            $this->assertContains('Warmup', $step->getName());
+            $this->assertContains('[Warmup]', $step->getName());
 
             $second = $step->getNext();
             $this->assertInstanceOf(ReloadStep::class, $second);
             $this->assertEquals('false', $second->getBlackfire());
+            $this->assertContains('[Warmup]', $second->getName());
 
             $third = $second->getNext();
             $this->assertInstanceOf(ReloadStep::class, $third);
             $this->assertEquals('false', $third->getBlackfire());
+            $this->assertContains('[Warmup]', $third->getName());
 
-            $real = $third->getNext();
+            $ref = $third->getNext();
+            $this->assertInstanceOf(ReloadStep::class, $ref);
+            $this->assertEquals('false', $ref->getBlackfire());
+            $this->assertContains('[Reference]', $ref->getName());
+
+            $real = $ref->getNext();
             $this->assertInstanceOf(ReloadStep::class, $real);
             $this->assertEquals('true', $real->getBlackfire());
             $this->assertNull($real->getNext());
