@@ -27,6 +27,7 @@ class Context
     private $contextStack;
     private $response;
     private $crawler;
+    private $requestStats;
 
     public function __construct($name)
     {
@@ -72,6 +73,16 @@ class Context
     public function getResponse()
     {
         return $this->response;
+    }
+
+    public function setRequestStats($requestStats)
+    {
+        $this->requestStats = $requestStats;
+    }
+
+    public function getRequestStats()
+    {
+        return $this->requestStats;
     }
 
     /**

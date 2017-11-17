@@ -15,6 +15,7 @@ use Blackfire\Player\Context;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\RunnerInterface;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\TransferStats;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -60,6 +61,9 @@ final class Runner implements RunnerInterface
             'player_context' => $context,
             'http_errors' => false,
             'allow_redirects' => false,
+            'on_stats' => function (TransferStats $stats) use ($context) {
+                $context->setRequestStats($stats->getHandlerStats());
+            },
         ]);
     }
 

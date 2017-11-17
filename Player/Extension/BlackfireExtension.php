@@ -79,7 +79,7 @@ final class BlackfireExtension extends AbstractExtension
         // Warmup the endpoint before profiling
         $count = $this->warmupCount($step, $request, $context);
         if ($count > 0) {
-            $step->next($this->createWarmupSteps($step, $count));
+            $step->next($this->createWarmupSteps($step, $count, $context));
 
             return $request;
         }
@@ -115,6 +115,12 @@ final class BlackfireExtension extends AbstractExtension
 
     public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
     {
+        $bag = $context->getExtraBag();
+
+        if ($bag->has('blackfire_reference_step') && $step === $bag->get('blackfire_reference_step')) {
+            $bag->set('blackfire_reference_stats', $context->getRequestStats());
+        }
+
         if (!$uuid = $request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
             return $response;
         }
@@ -135,6 +141,22 @@ final class BlackfireExtension extends AbstractExtension
                 $this->blackfire->updateProfile($uuid, $c->first()->text());
             }
         }
+
+        // Save raw performance stats
+        if ($bag->has('blackfire_reference_stats') && is_array($bag->get('blackfire_reference_stats'))) {
+            $stats = $bag->get('blackfire_reference_stats');
+
+            $this->blackfire->updateProfile($uuid, null, [
+                '_stats_total_time' => $stats['total_time'] ?? null,
+                '_stats_namelookup_time' => $stats['namelookup_time'] ?? null,
+                '_stats_connect_time' => $stats['connect_time'] ?? null,
+                '_stats_pretransfer_time' => $stats['pretransfer_time'] ?? null,
+                '_stats_starttransfer_time' => $stats['starttransfer_time'] ?? null,
+            ]);
+        }
+
+        $bag->remove('blackfire_reference_step');
+        $bag->remove('blackfire_reference_stats');
 
         $this->assertProfile($step, $request, $response);
 
@@ -308,7 +330,7 @@ final class BlackfireExtension extends AbstractExtension
         return 0;
     }
 
-    private function createWarmupSteps(ConfigurableStep $step, $warmupCount)
+    private function createWarmupSteps(ConfigurableStep $step, $warmupCount, Context $context)
     {
         $name = null;
         if ($step->getName()) {
@@ -316,7 +338,7 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         $nextStep = $step->getNext();
-        for ($i = 0; $i < $warmupCount; ++$i) {
+        for ($i = 0; $i <= $warmupCount; ++$i) {
             $reload = (new ReloadStep())
                 ->warmup('false')
             ;
@@ -327,6 +349,14 @@ final class BlackfireExtension extends AbstractExtension
                     ->name($name ? sprintf('"%s"', $name) : null)
                     ->configureFromStep($step)
                 ;
+            } elseif (1 === $i) {
+                // Raw Performance request
+                $reload
+                    ->name($name ? sprintf('"[Reference] %s"', $name) : null)
+                    ->blackfire('false')
+                ;
+
+                $context->getExtraBag()->set('blackfire_reference_step', $reload);
             } else {
                 // Warmup requests
                 $reload
