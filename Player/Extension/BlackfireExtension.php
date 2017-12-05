@@ -84,9 +84,11 @@ final class BlackfireExtension extends AbstractExtension
             return $request;
         }
 
+        $bag = $context->getExtraBag();
+
         $build = null;
-        if ($context->getExtraBag()->has('blackfire_build')) {
-            $build = $context->getExtraBag()->get('blackfire_build');
+        if ($bag->has('blackfire_build')) {
+            $build = $bag->get('blackfire_build');
         } elseif (null === $context->getStepContext()->getBlackfireRequest()) {
             if (null !== $context->getStepContext()->getBlackfireBuild()) {
                 $buildUuid = $this->language->evaluate($context->getStepContext()->getBlackfireBuild(), $context->getVariableValues(true));
@@ -94,7 +96,7 @@ final class BlackfireExtension extends AbstractExtension
             } else {
                 $build = $this->createBuild($context->getName());
             }
-            $context->getExtraBag()->set('blackfire_build', $build);
+            $bag->set('blackfire_build', $build);
         }
 
         $config = $this->createProfileConfig($step, $context, $build);
@@ -107,8 +109,33 @@ final class BlackfireExtension extends AbstractExtension
             $request = $request->withHeader('Cookie', '__blackfire=NO_CACHE');
         }
 
+        $query = $profileRequest->getToken();
+
+        // Send raw (without profiling) performance information
+        if ($bag->has('blackfire_ref_stats') && is_array($bag->get('blackfire_ref_stats'))) {
+            $stats = $bag->get('blackfire_ref_stats');
+
+            $options = [
+                'profile_title' => json_encode([
+                    'blackfire-metadata' => [
+                        'timers' => [
+                            'total' => isset($stats['total_time']) ? $stats['total_time'] : null,
+                            'name_lookup' => isset($stats['namelookup_time']) ? $stats['namelookup_time'] : null,
+                            'connect' => isset($stats['connect_time']) ? $stats['connect_time'] : null,
+                            'pre_transfer' => isset($stats['pretransfer_time']) ? $stats['pretransfer_time'] : null,
+                            'start_transfer' => isset($stats['starttransfer_time']) ? $stats['starttransfer_time'] : null,
+                        ],
+                    ],
+                ]),
+            ];
+            $query .= '&'.http_build_query($options, '', '&', PHP_QUERY_RFC3986);
+
+            $bag->remove('blackfire_ref_step');
+            $bag->remove('blackfire_ref_stats');
+        }
+
         return $request
-            ->withHeader('X-Blackfire-Query', $profileRequest->getToken())
+            ->withHeader('X-Blackfire-Query', $query)
             ->withHeader('X-Blackfire-Profile-Uuid', $profileRequest->getUuid())
         ;
     }
@@ -117,8 +144,8 @@ final class BlackfireExtension extends AbstractExtension
     {
         $bag = $context->getExtraBag();
 
-        if ($bag->has('blackfire_reference_step') && $step === $bag->get('blackfire_reference_step')) {
-            $bag->set('blackfire_reference_stats', $context->getRequestStats());
+        if ($bag->has('blackfire_ref_step') && $step === $bag->get('blackfire_ref_step')) {
+            $bag->set('blackfire_ref_stats', $context->getRequestStats());
         }
 
         if (!$uuid = $request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
@@ -141,22 +168,6 @@ final class BlackfireExtension extends AbstractExtension
                 $this->blackfire->updateProfile($uuid, $c->first()->text());
             }
         }
-
-        // Save raw performance stats
-        if ($bag->has('blackfire_reference_stats') && is_array($bag->get('blackfire_reference_stats'))) {
-            $stats = $bag->get('blackfire_reference_stats');
-
-            $this->blackfire->updateProfile($uuid, null, [
-                '_stats_total_time' => $stats['total_time'] ?? null,
-                '_stats_namelookup_time' => $stats['namelookup_time'] ?? null,
-                '_stats_connect_time' => $stats['connect_time'] ?? null,
-                '_stats_pretransfer_time' => $stats['pretransfer_time'] ?? null,
-                '_stats_starttransfer_time' => $stats['starttransfer_time'] ?? null,
-            ]);
-        }
-
-        $bag->remove('blackfire_reference_step');
-        $bag->remove('blackfire_reference_stats');
 
         $this->assertProfile($step, $request, $response);
 
@@ -356,7 +367,7 @@ final class BlackfireExtension extends AbstractExtension
                     ->blackfire('false')
                 ;
 
-                $context->getExtraBag()->set('blackfire_reference_step', $reload);
+                $context->getExtraBag()->set('blackfire_ref_step', $reload);
             } else {
                 // Warmup requests
                 $reload
