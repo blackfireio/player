@@ -14,10 +14,11 @@ namespace Player\Tests;
 use Blackfire\Player\Context;
 use Blackfire\Player\Extension\WatchdogExtension;
 use Blackfire\Player\Step\ConfigurableStep;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class WatchdogExtensionTest extends \PHPUnit_Framework_TestCase
+class WatchdogExtensionTest extends TestCase
 {
     public function testStepLimitResetWhenStepIsExpectedOne()
     {

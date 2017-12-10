@@ -17,8 +17,9 @@ use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\VisitStep;
+use PHPUnit\Framework\TestCase;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends TestCase
 {
     public function testParsingSeparatedScenario()
     {
