@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Player\Tests;
+namespace Blackfire\Player\Tests\Extension;
 
 use Blackfire\Client;
 use Blackfire\ClientConfiguration;

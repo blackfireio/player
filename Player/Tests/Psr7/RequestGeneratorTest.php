@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Player\Tests\Psr7;
+namespace Blackfire\Player\Tests\Psr7;
 
 use Blackfire\Player\Context;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;

@@ -142,6 +142,8 @@ final class StepConverter implements StepConverterInterface
             throw new CrawlException(sprintf('Unable to submit form as button "%s" does not exist.', $selector));
         }
 
+        $headers = [];
+
         if (null === $body = $step->getBody()) {
             $formValues = $this->evaluateValues($step->getParameters());
             $form = $form->form();

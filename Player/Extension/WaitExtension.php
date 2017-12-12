@@ -12,9 +12,9 @@
 namespace Blackfire\Player\Extension;
 
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
-use Blackfire\Player\Psr7\ExpressionSyntaxError;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Psr\Http\Message\RequestInterface;
@@ -46,7 +46,7 @@ final class WaitExtension extends AbstractExtension
 
         try {
             usleep(1000 * $this->language->evaluate($wait, $context->getVariableValues(true)));
-        } catch (ExpressionSyntaxError $e) {
+        } catch (ExpressionSyntaxErrorException $e) {
             throw new InvalidArgumentException(sprintf('Wait syntax error in "%s": %s', $wait, $e->getMessage()));
         }
 

@@ -196,7 +196,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('A "group" takes a name as a required argument %s.', $input->getContextString()));
             }
 
-            $step = new BlockStep($arguments, $input->getFile(), $input->getLine());
+            $step = new BlockStep($input->getFile(), $input->getLine());
             $this->inAGroup = true;
             $this->groups[$arguments] = $step;
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
