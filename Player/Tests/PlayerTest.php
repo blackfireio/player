@@ -14,13 +14,14 @@ namespace Blackfire\Player\Tests;
 use Blackfire\Player\Console\Application;
 use Blackfire\Player\Player;
 use Blackfire\Player\Scenario;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\ProcessBuilder;
 
-class PlayerTest extends \PHPUnit_Framework_TestCase
+class PlayerTest extends TestCase
 {
     private static $port;
     private static $server;

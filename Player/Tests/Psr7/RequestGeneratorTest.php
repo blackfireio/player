@@ -25,10 +25,11 @@ use Blackfire\Player\Step\LoopStep;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\VisitStep;
 use Blackfire\Player\Step\WhileStep;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class RequestGeneratorTest extends \PHPUnit_Framework_TestCase
+class RequestGeneratorTest extends TestCase
 {
     private $language;
     private $stepConverter;

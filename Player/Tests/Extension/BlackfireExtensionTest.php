@@ -23,9 +23,10 @@ use Blackfire\Profile;
 use Blackfire\Profile\Request as ProfileRequest;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\NullOutput;
 
-class BlackfireExtensionTest extends \PHPUnit_Framework_TestCase
+class BlackfireExtensionTest extends TestCase
 {
     /**
      * @dataProvider stepsProvider
