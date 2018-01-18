@@ -12,14 +12,12 @@
 namespace Blackfire\Player\Tests;
 
 use Blackfire\Player\Console\Application;
-use Blackfire\Player\Player;
-use Blackfire\Player\Scenario;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Process\Process;
 
 class PlayerTest extends TestCase
 {
@@ -55,7 +53,7 @@ class PlayerTest extends TestCase
             throw new \RuntimeException('Unable to find PHP binary to run server.');
         }
 
-        self::$server = (new ProcessBuilder(['exec', $binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures']))->getProcess();
+        self::$server = new Process([$binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures']);
         self::$server->start();
 
         usleep(250000);
