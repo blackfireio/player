@@ -93,7 +93,7 @@ class CliFeedbackExtension extends AbstractExtension
         $this->output->writeln($name);
 
         $line = sprintf('%s %s', $request->getMethod(), $request->getUri());
-        if (!$this->debug && (strlen($line) - 3) > $this->terminalWidth) {
+        if (!$this->debug && (\strlen($line) - 3) > $this->terminalWidth) {
             $line = substr($line, 0, $this->terminalWidth - 3).'...';
         }
         $this->output->write($line);

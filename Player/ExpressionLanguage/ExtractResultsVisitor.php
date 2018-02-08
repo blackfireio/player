@@ -40,7 +40,7 @@ class ExtractResultsVisitor
         if (
             $node instanceof Node\NameNode && (!$parentNode || !$parentNode instanceof Node\GetAttrNode) ||
             $node instanceof Node\GetAttrNode ||
-            $node instanceof Node\FunctionNode && !in_array($node->attributes['name'], self::$ignoredFunctions, true)
+            $node instanceof Node\FunctionNode && !\in_array($node->attributes['name'], self::$ignoredFunctions, true)
         ) {
             $subExpressions[] = [
                 'expression' => $node->dump(),
@@ -66,12 +66,12 @@ class ExtractResultsVisitor
             case is_numeric($value):
                 return $value;
 
-            case is_array($value):
+            case \is_array($value):
                 if ($this->isHash($value)) {
                     $str = '{';
 
                     foreach ($value as $key => $v) {
-                        if (is_int($key)) {
+                        if (\is_int($key)) {
                             $str .= sprintf('%s: %s, ', $key, $this->formatResult($v));
                         } else {
                             $str .= sprintf('"%s": %s, ', $this->dumpEscaped($key), $this->dumpEscaped($v));

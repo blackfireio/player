@@ -119,7 +119,7 @@ final class RequestGenerator implements \IteratorAggregate
 
                 $this->context->setRequestResponse($request, $response);
             } else {
-                throw new LogicException(sprintf('Unsupported step "%s".', get_class($step)));
+                throw new LogicException(sprintf('Unsupported step "%s".', \get_class($step)));
             }
 
             $this->leaveStep($step);

@@ -112,7 +112,7 @@ final class BlackfireExtension extends AbstractExtension
         $query = $profileRequest->getToken();
 
         // Send raw (without profiling) performance information
-        if ($bag->has('blackfire_ref_stats') && is_array($bag->get('blackfire_ref_stats'))) {
+        if ($bag->has('blackfire_ref_stats') && \is_array($bag->get('blackfire_ref_stats'))) {
             $stats = $bag->get('blackfire_ref_stats');
 
             $options = [
@@ -164,7 +164,7 @@ final class BlackfireExtension extends AbstractExtension
         // Request is over. Read the profile
         $crawler = CrawlerFactory::create($response, $request->getUri());
         if (null !== $crawler && !$step->getName()) {
-            if (count($c = $crawler->filter('title'))) {
+            if (\count($c = $crawler->filter('title'))) {
                 $this->blackfire->updateProfile($uuid, $c->first()->text());
             }
         }
@@ -334,7 +334,7 @@ final class BlackfireExtension extends AbstractExtension
 
         $samples = (int) $this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true));
 
-        if (in_array($request->getMethod(), ['GET', 'HEAD']) || $samples > 1) {
+        if (\in_array($request->getMethod(), ['GET', 'HEAD'], true) || $samples > 1) {
             return true === $value ? 3 : (int) $value;
         }
 

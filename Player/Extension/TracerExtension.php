@@ -58,7 +58,7 @@ final class TracerExtension extends AbstractExtension
         }
         $this->currentDir = $this->dir.'/'.$key;
         $target = sprintf('%s/scenario.txt', $this->currentDir);
-        $this->fs->mkdir(dirname($target));
+        $this->fs->mkdir(\dirname($target));
 
         file_put_contents($target, (string) $scenario);
     }
@@ -79,7 +79,7 @@ final class TracerExtension extends AbstractExtension
     public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
     {
         $target = sprintf('%s/%d/response.txt', $this->currentDir, $this->stepCount);
-        $this->fs->mkdir(dirname($target));
+        $this->fs->mkdir(\dirname($target));
 
         file_put_contents($target, Psr7\str($response));
 
@@ -94,7 +94,7 @@ final class TracerExtension extends AbstractExtension
         }
 
         $target = sprintf('%s/%d/response.txt', $this->currentDir, $this->stepCount);
-        $this->fs->mkdir(dirname($target));
+        $this->fs->mkdir(\dirname($target));
 
         file_put_contents($target, Psr7\str($response));
     }

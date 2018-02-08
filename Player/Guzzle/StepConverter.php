@@ -94,7 +94,7 @@ final class StepConverter implements StepConverterInterface
             return $request;
         }
 
-        throw new LogicException(sprintf('Unsupported step "%s".', get_class($step)));
+        throw new LogicException(sprintf('Unsupported step "%s".', \get_class($step)));
     }
 
     private function createRequestFromUri(VisitStep $step, StepContext $stepContext)
@@ -125,7 +125,7 @@ final class StepConverter implements StepConverterInterface
         if (!$link instanceof Crawler) {
             throw new CrawlException('You can only click on links as returned by the link() function.');
         }
-        if (!count($link)) {
+        if (!\count($link)) {
             throw new CrawlException(sprintf('Unable to click as link "%s" does not exist.', $selector));
         }
         $link = $link->link();
@@ -138,7 +138,7 @@ final class StepConverter implements StepConverterInterface
         $selector = $step->getSelector();
         $form = $this->evaluateExpression($selector, $this->context->getVariableValues(true));
 
-        if (!count($form)) {
+        if (!\count($form)) {
             throw new CrawlException(sprintf('Unable to submit form as button "%s" does not exist.', $selector));
         }
 
@@ -151,14 +151,14 @@ final class StepConverter implements StepConverterInterface
             $headers = $this->evaluateHeaders($stepContext);
 
             if ($files = $form->getFiles()) {
-                $basePath = rtrim(dirname($step->getFile()), '/').'/';
+                $basePath = rtrim(\dirname($step->getFile()), '/').'/';
 
                 foreach ($formValues as $name => $contents) {
                     $data = [
                         'name' => $name,
                     ];
                     if (isset($files[$name])) {
-                        if (!is_array($contents)) {
+                        if (!\is_array($contents)) {
                             throw new LogicException(sprintf('The form field "%s" is of type "file". But you did not use the file() function.', $name));
                         }
                         $filename = $basePath.$contents[0];
@@ -199,7 +199,7 @@ final class StepConverter implements StepConverterInterface
         // not forcing RFC compliance, but rather emulating what all browsers
         // would do.
         $statusCode = $response->getStatusCode();
-        if ($statusCode == 303 || ($statusCode <= 302 && $request->getBody())) {
+        if (303 == $statusCode || ($statusCode <= 302 && $request->getBody())) {
             $modify['method'] = 'GET';
             $modify['body'] = '';
         }
@@ -250,7 +250,7 @@ final class StepConverter implements StepConverterInterface
             $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
 
-        if (is_string($parameters)) {
+        if (\is_string($parameters)) {
             return $parameters;
         }
 
@@ -276,7 +276,7 @@ final class StepConverter implements StepConverterInterface
 
     private function evaluateValues($data)
     {
-        if (is_string($data)) {
+        if (\is_string($data)) {
             return $this->evaluateExpression($data, $this->context->getVariableValues(false));
         }
 

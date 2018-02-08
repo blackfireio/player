@@ -153,11 +153,11 @@ final class Input
 
         if (preg_match('/^((?:    )+)(.+)$/', $line, $matches)) {
             // spaces in groups of 4
-            $indent = strlen($matches[1]) / 4;
+            $indent = \strlen($matches[1]) / 4;
             $line = $matches[2];
         } elseif (preg_match('/^(\t)+(.+)$/', $line, $matches)) {
             // tabs
-            $indent = strlen($matches[1]);
+            $indent = \strlen($matches[1]);
             $line = $matches[2];
         }
 

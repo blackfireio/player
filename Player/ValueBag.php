@@ -57,7 +57,7 @@ class ValueBag
 
         $values = [];
         foreach ($this->values as $key => $value) {
-            $values[$key] = is_string($value) ? trim($value) : $value;
+            $values[$key] = \is_string($value) ? trim($value) : $value;
         }
 
         return $values;

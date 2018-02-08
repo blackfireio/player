@@ -148,7 +148,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('"load" takes a quoted string as an argument %s.', $input->getContextString()));
             }
 
-            $glob = Path::makeAbsolute($matches[2], realpath(dirname($input->getFile())));
+            $glob = Path::makeAbsolute($matches[2], realpath(\dirname($input->getFile())));
             $paths = Glob::glob($glob);
 
             if (!$paths) {

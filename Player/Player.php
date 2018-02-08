@@ -54,7 +54,7 @@ class Player
     public function run(ScenarioSet $scenarioSet, $concurrency = null)
     {
         krsort($this->extensions);
-        $extensions = call_user_func_array('array_merge', $this->extensions);
+        $extensions = \call_user_func_array('array_merge', $this->extensions);
 
         $runs = [];
         $requestGenerators = [];
@@ -74,9 +74,9 @@ class Player
         }
 
         if (!$concurrency) {
-            $concurrency = min(count($runs), $this->runner->getMaxConcurrency());
+            $concurrency = min(\count($runs), $this->runner->getMaxConcurrency());
         } elseif ($concurrency > $this->runner->getMaxConcurrency()) {
-            throw new RuntimeException('Concurrency (%d) must be less than or equal to the number of clients (%s).', $concurrency, $this->runner->getMaxConcurrency());
+            throw new RuntimeException(sprintf('Concurrency (%d) must be less than or equal to the number of clients (%s).', $concurrency, $this->runner->getMaxConcurrency()));
         }
 
         foreach ($extensions as $extension) {

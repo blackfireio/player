@@ -31,14 +31,14 @@ class ScenarioSet implements \IteratorAggregate
         $str = '';
         $ind = 0;
         foreach ($this->scenarios as $i => $scenario) {
-            $str .= sprintf(">>> Scenario %d%s <<<\n", ++$ind, !is_int($i) ? sprintf(' (as %s)', $i) : '');
+            $str .= sprintf(">>> Scenario %d%s <<<\n", ++$ind, !\is_int($i) ? sprintf(' (as %s)', $i) : '');
             $str .= (string) $scenario."\n";
         }
 
         return $str;
     }
 
-    public function addScenarioSet(ScenarioSet $scenarioSet)
+    public function addScenarioSet(self $scenarioSet)
     {
         foreach ($scenarioSet as $reference => $scenario) {
             $this->add($scenario, $reference);
@@ -51,7 +51,7 @@ class ScenarioSet implements \IteratorAggregate
             throw new LogicException(sprintf('Scenario key "%s" is already defined.', $scenario->getKey()));
         }
 
-        if (null !== $reference && !is_int($reference)) {
+        if (null !== $reference && !\is_int($reference)) {
             if (isset($this->scenarios[$reference])) {
                 throw new LogicException(sprintf('Reference "%s" is already defined.', $reference));
             }

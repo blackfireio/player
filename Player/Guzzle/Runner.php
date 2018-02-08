@@ -33,7 +33,7 @@ final class Runner implements RunnerInterface
     {
         $clients = [];
 
-        if (is_array($client)) {
+        if (\is_array($client)) {
             $clients = $client;
         } else {
             $clients[] = $client;
@@ -50,7 +50,7 @@ final class Runner implements RunnerInterface
 
     public function getMaxConcurrency()
     {
-        return count($this->clients);
+        return \count($this->clients);
     }
 
     public function send($clientId, RequestInterface $request, Context $context)

@@ -27,7 +27,7 @@ class BlockStep extends ConfigurableStep
 
     public function __toString()
     {
-        $str = sprintf("└ %s%s\n", get_class($this), $this->getName() ? sprintf(' %s', $this->getName()) : '');
+        $str = sprintf("└ %s%s\n", \get_class($this), $this->getName() ? sprintf(' %s', $this->getName()) : '');
         $str .= $this->blockToString($this->blockStep);
 
         return $str;

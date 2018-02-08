@@ -42,7 +42,7 @@ class ResponseExtractor
                 $data = $this->language->evaluate($expression, $variables + $context->getVariableValues(true));
                 if ($data instanceof Crawler) {
                     $data = $data->extract('_text');
-                    $data = count($data) == 1 ? array_pop($data) : $data;
+                    $data = 1 === \count($data) ? array_pop($data) : $data;
                 }
 
                 $context->getValueBag()->set($name, $data);

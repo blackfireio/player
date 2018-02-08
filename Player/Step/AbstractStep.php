@@ -38,7 +38,7 @@ class AbstractStep
 
     public function __toString()
     {
-        return sprintf("└ %s\n", get_class($this));
+        return sprintf("└ %s\n", \get_class($this));
     }
 
     public function name($name)
@@ -48,7 +48,7 @@ class AbstractStep
         return $this;
     }
 
-    public function next(AbstractStep $step)
+    public function next(self $step)
     {
         $this->next = $step;
 
@@ -82,7 +82,7 @@ class AbstractStep
 
     public function hasErrors()
     {
-        return count($this->errors) > 0;
+        return \count($this->errors) > 0;
     }
 
     public function getErrors()
