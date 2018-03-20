@@ -208,7 +208,7 @@ final class StepConverter implements StepConverterInterface
 
         Psr7\rewind_body($request);
 
-        // Add the Referer header only if we are not redirecting from https to http
+        // Add the Referer header only if we are not redirecting from HTTPS to HTTP
         if ($modify['uri']->getScheme() === $request->getUri()->getScheme()) {
             $modify['set_headers']['Referer'] = (string) $request->getUri()->withUserInfo('', '');
         } else {
