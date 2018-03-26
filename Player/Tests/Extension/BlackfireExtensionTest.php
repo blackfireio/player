@@ -304,8 +304,13 @@ class BlackfireExtensionTest extends TestCase
 
         $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
         $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=99'), $context);
+        $this->assertEquals(99, $context->getExtraBag()->get('blackfire_progress'));
+
         $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=false'), $context);
+        $this->assertEquals(-1, $context->getExtraBag()->get('blackfire_progress'));
+
         $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=10'), $context);
+        $this->assertEquals(10, $context->getExtraBag()->get('blackfire_progress'));
     }
 
     protected function createBlackfireClient()

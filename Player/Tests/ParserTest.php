@@ -465,7 +465,7 @@ EOF
         }
 
         $parser = new Parser();
-        $parser->parse($scenario);
+        $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
     public function variableDeclarationProvider()

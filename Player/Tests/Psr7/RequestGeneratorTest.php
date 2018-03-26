@@ -156,7 +156,7 @@ class RequestGeneratorTest extends TestCase
 
         $requestGen = new RequestGenerator($this->language, $this->stepConverter, new VisitStep(''), $this->context);
         $generator = $requestGen->getIterator();
-        $generator->key();
+        $this->assertInstanceOf(VisitStep::class, $generator->key());
 
         $generator->send($sendToGenerator);
     }
