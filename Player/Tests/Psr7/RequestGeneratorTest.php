@@ -192,6 +192,25 @@ class RequestGeneratorTest extends TestCase
         ], $this->context->getStepContext()->getVariables());
     }
 
+    public function testBlockStepVariablesEvaluationOrderIsNotImportant()
+    {
+        $step = new BlockStep();
+        $step->set('hello', '"Hello " ~ name ~ "!"');
+        $step->set('name', '"John"');
+        $step->setBlockStep(new VisitStep(''));
+
+        $requestGen = new RequestGenerator($this->language, $this->stepConverter, $step, $this->context);
+        $generator = $requestGen->getIterator();
+        $step = $generator->key();
+
+        $this->assertInstanceOf(VisitStep::class, $step);
+
+        $this->assertEquals([
+            'name' => 'John',
+            'hello' => 'Hello John!',
+        ], $this->context->getStepContext()->getVariables());
+    }
+
     /**
      * @expectedException \Symfony\Component\ExpressionLanguage\SyntaxError
      */

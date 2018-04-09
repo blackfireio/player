@@ -152,8 +152,22 @@ final class RequestGenerator implements \IteratorAggregate
         // evaluate variables first
         $variables = [];
         if ($step instanceof BlockStep) {
-            foreach ($step->getVariables() as $key => $value) {
-                $variables[$key] = $this->language->evaluate($value, $variables);
+            $toResolve = $step->getVariables();
+            while ($toResolve) {
+                $lastException = null;
+                $succeed = false;
+                foreach ($toResolve as $key => $value) {
+                    try {
+                        $variables[$key] = $this->language->evaluate($value, $variables);
+                        unset($toResolve[$key]);
+                        $succeed = true;
+                    } catch (SyntaxError $lastException) {
+                    }
+                }
+
+                if (false === $succeed && $lastException) {
+                    throw $lastException;
+                }
             }
         }
 
