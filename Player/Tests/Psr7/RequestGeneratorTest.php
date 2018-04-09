@@ -205,4 +205,18 @@ class RequestGeneratorTest extends TestCase
         $generator = $requestGen->getIterator();
         $generator->key();
     }
+
+    /**
+     * @expectedException \Blackfire\Player\Exception\LogicException
+     * @expectedExceptionMessageRegExp /Value is not iterable/
+     */
+    public function testLoopStepNotIterableThrowAnException()
+    {
+        $step = new LoopStep("'test'", 'key', 'val');
+        $step->setLoopStep(new VisitStep(''));
+
+        $requestGen = new RequestGenerator($this->language, $this->stepConverter, $step, $this->context);
+        $generator = $requestGen->getIterator();
+        $generator->key();
+    }
 }
