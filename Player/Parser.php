@@ -324,6 +324,10 @@ class Parser
 
             return $step;
         } elseif ('set' === $keyword) {
+            if ($expectedIndent > 0) {
+                throw new LogicException(sprintf('A "set" can only be defined before steps %s.', $input->getContextString()));
+            }
+
             if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
                 throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
             }

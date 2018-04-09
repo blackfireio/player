@@ -514,4 +514,52 @@ scenario Test
 EOF
         ];
     }
+
+    /**
+     * @dataProvider stepConfigProvider
+     */
+    public function testStepConfig($exceptionMessage, $scenario)
+    {
+        if ($exceptionMessage) {
+            $this->expectExceptionMessage($exceptionMessage);
+        }
+
+        $parser = new Parser();
+        $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
+    }
+
+    public function stepConfigProvider()
+    {
+        // Valid
+
+        yield [false, <<<'EOF'
+scenario Test
+    set env "dev"
+    visit url('/')
+EOF
+        ];
+
+        yield [false, <<<'EOF'
+scenario Test
+    name "Test"
+    visit url('/')
+EOF
+        ];
+
+        // Invalid
+
+        yield ['A "set" can only be defined before steps at line 3', <<<'EOF'
+scenario Test
+    visit url('/')
+    set env "dev"
+EOF
+        ];
+
+        yield ['Unknown keyword "name" at line 3', <<<'EOF'
+scenario Test
+    visit url('/')
+    name "Test"
+EOF
+        ];
+    }
 }
