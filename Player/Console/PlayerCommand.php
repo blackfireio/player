@@ -121,10 +121,10 @@ final class PlayerCommand extends Command
             foreach ($parser->getGlobalVariables() as $key => $value) {
                 // Override only if the endpoint is not already defined in the step
                 if ('endpoint' === $key && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
-                    $scenario->endpoint($this->escapeValue($value));
+                    $scenario->endpoint($value);
                 }
 
-                $scenario->set($key, $this->escapeValue($value));
+                $scenario->set($key, $value);
             }
 
             foreach ($variables as $key => $value) {
