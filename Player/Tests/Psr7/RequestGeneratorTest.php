@@ -208,7 +208,7 @@ class RequestGeneratorTest extends TestCase
 
     /**
      * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessageRegExp /Value is not iterable/
+     * @expectedExceptionMessage Result of expression "'test'" is not iterable in step "Blackfire\Player\Step\LoopStep".
      */
     public function testLoopStepNotIterableThrowAnException()
     {
