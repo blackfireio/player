@@ -97,6 +97,10 @@ final class RequestGenerator implements \IteratorAggregate
                 }
             } elseif ($step instanceof LoopStep) {
                 $iterator = $this->evaluateExpression($step->getIterator(), $request);
+                if (!is_array($iterator) && !$iterator instanceof \Traversable) {
+                    throw new LogicException(sprintf('Result of expression "%s" is not iterable in step "%s".', $step->getIterator(), \get_class($step)));
+                }
+
                 foreach ($iterator as $key => $value) {
                     $this->contextStack->top()->variable($step->getKeyName(), $key);
                     $this->contextStack->top()->variable($step->getValueName(), $value);
