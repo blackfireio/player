@@ -1,18 +1,7 @@
-:status: alpha
+:status: new
 
 Blackfire Player
 ================
-
-.. caution::
-
-    You are reading the documentation for the latest Blackfire Player release
-    (0.5+).
-
-    If you are using an older version, please read the `previous documentation
-    <https://github.com/blackfireio/player/tree/v0.4.6/docs>`_. You can still
-    download previous PHARs by explicitly adding the version you want (
-    ``http://get.blackfire.io/blackfire-player-v0.4.6.phar`` for the 0.4.6
-    version for instance).
 
 Blackfire Player is a powerful Web Crawling, Web Testing, and Web Scraper
 application. It provides a nice DSL to **crawl HTTP services**, **assert
