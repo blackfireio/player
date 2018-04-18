@@ -61,6 +61,11 @@ class Parser
             throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
         }
 
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        if ('bkf' !== $extension && 'php://stdin' !== $file) {
+            throw new InvalidArgumentException(sprintf('Cannot load file "%s" because it does not have the right extension. Expected "bkf", got "%s".', $file, $extension));
+        }
+
         return $this->parse(file_get_contents($file), $file);
     }
 

@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Tests;
 
+use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Scenario;
@@ -561,5 +562,14 @@ scenario Test
     name "Test"
 EOF
         ];
+    }
+
+    public function testCannotLoadFileWithBadExtension()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp('#Cannot load file ".*/Player/Tests/ParserTest.php" because it does not have the right extension. Expected "bkf", got "php".#');
+
+        $parser = new Parser();
+        $parser->load(__FILE__);
     }
 }
