@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Tests\Extension;
 
+use Blackfire\Build\Build;
 use Blackfire\Client;
 use Blackfire\ClientConfiguration;
 use Blackfire\Player\Context;
@@ -19,6 +20,7 @@ use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\StepContext;
+use Blackfire\Player\ValueBag;
 use Blackfire\Profile;
 use Blackfire\Profile\Request as ProfileRequest;
 use GuzzleHttp\Psr7\Request;
@@ -325,10 +327,13 @@ class BlackfireExtensionTest extends TestCase
         $profile->method('isErrored')->willReturn(false);
         $profile->method('isSuccessful')->willReturn(true);
 
+        $build = $this->getMockBuilder(Build::class)->disableOriginalConstructor()->getMock();
+
         $blackfire = $this->getMockBuilder(Client::class)->getMock();
         $blackfire->method('getConfiguration')->willReturn($blackfireConfig);
         $blackfire->method('createRequest')->willReturn($profileRequest);
         $blackfire->method('getProfile')->willReturn($profile);
+        $blackfire->method('startBuild')->willReturn($build);
 
         return $blackfire;
     }
@@ -341,7 +346,7 @@ class BlackfireExtensionTest extends TestCase
         $contextStack = new \SplStack();
         $contextStack->push($stepContext);
 
-        $context = new Context('Context name');
+        $context = new Context('Context name', new ValueBag());
         $context->setContextStack($contextStack);
 
         return $context;

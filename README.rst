@@ -20,8 +20,7 @@ Some Blackfire Player use cases:
 * Test code behavior from the outside thanks to the native Blackfire Profiler
   integration -- aka *Unit Tests from the HTTP layer* (tm).
 
-Blackfire Player executes scenarios written in a special DSL (by convention,
-files end with ``.bkf``).
+Blackfire Player executes scenarios written in a special DSL (files should end with ``.bkf``).
 
 Download
 --------
@@ -527,9 +526,8 @@ Blackfire Player natively supports Blackfire:
 
     blackfire-player run scenario.bkf
 
-When running a scenario, Blackfire creates a build that contains all profiles
-and assertion reports for requests made in the executed scenario; the scenario
-name is then used as the build name:
+The Blackfire Player creates a build to group all scenarios.
+Each scenario in the build contains profiles and assertion reports for requests made in the executed scenario;
 
 .. code-block:: blackfire
 

@@ -450,13 +450,13 @@ class Parser
                 $step->followRedirects($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('blackfire' === $keyword) {
                 $step->blackfire($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
-            } elseif ('blackfire-build' === $keyword) {
+            } elseif ('blackfire-build' === $keyword || 'blackfire-scenario' === $keyword) { // Internal keywords: do not use
                 if (!$hasArgs) {
-                    throw new SyntaxErrorException(sprintf('A "blackfire-build" takes a build uuid as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(sprintf('A "%s" takes a build uuid as a required argument %s.', $keyword, $input->getContextString()));
                 }
 
-                $step->blackfireBuild($this->checkExpression($input, $arguments));
-            } elseif ('blackfire-request' === $keyword) {
+                $step->blackfireScenario($this->checkExpression($input, $arguments));
+            } elseif ('blackfire-request' === $keyword) { // Internal keywords: do not use
                 if (!$hasArgs) {
                     throw new SyntaxErrorException(sprintf('A "blackfire-request" takes a request uuid as a required argument %s.', $input->getContextString()));
                 }

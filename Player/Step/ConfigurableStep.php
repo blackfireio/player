@@ -23,7 +23,7 @@ class ConfigurableStep extends AbstractStep
     private $followRedirects;
     private $blackfire;
     private $blackfireRequest;
-    private $blackfireBuild;
+    private $blackfireScenario;
     private $samples;
     private $warmup;
 
@@ -76,9 +76,9 @@ class ConfigurableStep extends AbstractStep
         return $this;
     }
 
-    public function blackfireBuild($build)
+    public function blackfireScenario($scenario)
     {
-        $this->blackfireBuild = $build;
+        $this->blackfireScenario = $scenario;
 
         return $this;
     }
@@ -132,9 +132,9 @@ class ConfigurableStep extends AbstractStep
         return $this->blackfireRequest;
     }
 
-    public function getBlackfireBuild()
+    public function getBlackfireScenario()
     {
-        return $this->blackfireBuild;
+        return $this->blackfireScenario;
     }
 
     public function getSamples()

@@ -62,7 +62,7 @@ class Player
         foreach ($scenarioSet as $scenario) {
             $key = null !== $scenario->getKey() ? $scenario->getKey() : ++$i;
 
-            $context = new Context($scenario->getName());
+            $context = new Context($scenario->getName(), $scenarioSet->getExtraBag());
             $stepConverter = new StepConverter($this->language, $context);
             $requestGenerator = new Psr7\RequestGenerator($this->language, $stepConverter, $scenario, $context);
             $requestGenerator = new Psr7\ExtensibleRequestGenerator($requestGenerator->getIterator(), $scenario, $context, $extensions);

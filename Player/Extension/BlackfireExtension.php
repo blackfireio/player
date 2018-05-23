@@ -21,7 +21,9 @@ use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Psr7\CrawlerFactory;
 use Blackfire\Player\Result;
+use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
@@ -70,7 +72,7 @@ final class BlackfireExtension extends AbstractExtension
             $env = $this->defaultEnv;
         }
 
-        $this->setEnv($env);
+        $this->blackfire->getConfiguration()->setEnv($env);
 
         if ($request->hasHeader('X-Blackfire-Query')) {
             return $request;
@@ -84,22 +86,9 @@ final class BlackfireExtension extends AbstractExtension
             return $request;
         }
 
-        $bag = $context->getExtraBag();
+        $scenario = $this->getScenario($context, $env);
 
-        $build = null;
-        if ($bag->has('blackfire_build')) {
-            $build = $bag->get('blackfire_build');
-        } elseif (null === $context->getStepContext()->getBlackfireRequest()) {
-            if (null !== $context->getStepContext()->getBlackfireBuild()) {
-                $buildUuid = $this->language->evaluate($context->getStepContext()->getBlackfireBuild(), $context->getVariableValues(true));
-                $build = new Build($env, ['uuid' => $buildUuid]);
-            } else {
-                $build = $this->createBuild($context->getName());
-            }
-            $bag->set('blackfire_build', $build);
-        }
-
-        $config = $this->createProfileConfig($step, $context, $build);
+        $config = $this->createProfileConfig($step, $context, $scenario);
         $profileRequest = $this->blackfire->createRequest($config);
 
         // Add a random cookie to help crossing caches
@@ -112,6 +101,7 @@ final class BlackfireExtension extends AbstractExtension
         $query = $profileRequest->getToken();
 
         // Send raw (without profiling) performance information
+        $bag = $context->getExtraBag();
         if ($bag->has('blackfire_ref_stats') && \is_array($bag->get('blackfire_ref_stats'))) {
             $stats = $bag->get('blackfire_ref_stats');
 
@@ -198,25 +188,78 @@ final class BlackfireExtension extends AbstractExtension
     public function leaveScenario(Scenario $scenario, Result $result, Context $context)
     {
         $extra = $context->getExtraBag();
-        if (!$extra->has('blackfire_build')) {
+        if (!$extra->has('blackfire_scenario')) {
             return;
         }
 
-        $build = $extra->get('blackfire_build');
-        $extra->remove('blackfire_build');
+        $blackfireScenario = $extra->get('blackfire_scenario');
+        $extra->remove('blackfire_scenario');
 
         // did we profile something?
         // if not, don't finish the build as it won't work with 0 profiles
-        if ($build->getJobCount()) {
-            $extra->set('blackfire_report', $this->blackfire->endBuild($build));
+        if ($blackfireScenario->getJobCount()) {
+            $extra->set('blackfire_report', $this->blackfire->closeScenario($blackfireScenario));
         }
 
-        if (null !== $build->getUrl()) {
-            $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $build->getUrl()));
+        if (null !== $blackfireScenario->getUrl()) {
+            $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $blackfireScenario->getUrl()));
         }
     }
 
-    private function createBuild($title)
+    private function getScenario(Context $context, $env)
+    {
+        $bag = $context->getExtraBag();
+
+        if (null !== $context->getStepContext()->getBlackfireRequest()) {
+            return;
+        }
+
+        if ($bag->has('blackfire_scenario')) {
+            return $bag->get('blackfire_scenario');
+        }
+
+        if (null !== $context->getStepContext()->getBlackfireScenario()) {
+            $scenarioUuid = $this->language->evaluate($context->getStepContext()->getBlackfireScenario(), $context->getVariableValues(true));
+            $scenario = new Build\Scenario(new Build\Build($env, []), ['uuid' => $scenarioUuid]);
+            $bag->set('blackfire_scenario', $scenario);
+
+            return $scenario;
+        }
+
+        $scenarioSetBag = $context->getScenarioSetBag();
+        $build = null;
+        $buildKey = 'blackfire_build:'.$env;
+        if ($scenarioSetBag->has($buildKey)) {
+            $build = $scenarioSetBag->get($buildKey);
+        } else {
+            $build = $this->createBuild($env);
+            $scenarioSetBag->set($buildKey, $build);
+        }
+
+        $scenario = $this->createScenario($build, $context->getName());
+        $bag->set('blackfire_scenario', $scenario);
+
+        return $scenario;
+    }
+
+    private function createBuild($env)
+    {
+        $options = [
+            'trigger_name' => 'Blackfire Player',
+        ];
+
+        if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
+            $options['external_id'] = $_SERVER['BLACKFIRE_EXTERNAL_ID'];
+        }
+
+        if (isset($_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'])) {
+            $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'];
+        }
+
+        return $this->blackfire->startBuild($env, $options);
+    }
+
+    private function createScenario(Build\Build $build, $title)
     {
         if (!$env = $this->blackfire->getConfiguration()->getEnv()) {
             throw new SyntaxErrorException('You must set the environment you want to work with on the Blackfire client configuration.');
@@ -235,14 +278,14 @@ final class BlackfireExtension extends AbstractExtension
             $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'];
         }
 
-        return $this->blackfire->createBuild($env, $options);
+        return $this->blackfire->startScenario($build, $options);
     }
 
-    private function createProfileConfig(AbstractStep $step, Context $context, Build $build = null)
+    private function createProfileConfig(AbstractStep $step, Context $context, Build\Scenario $scenario = null)
     {
         $config = new ProfileConfiguration();
-        if (null !== $build) {
-            $config->setBuild($build);
+        if (null !== $scenario) {
+            $config->setScenario($scenario);
         }
 
         $request = $context->getStepContext()->getBlackfireRequest();
@@ -286,16 +329,6 @@ final class BlackfireExtension extends AbstractExtension
 
             $step->addError(sprintf("Assertions failed:\n  %s", implode("\n  ", $failures)));
         }
-    }
-
-    private function setEnv($env)
-    {
-        $current = $this->blackfire->getConfiguration()->getEnv();
-        if ($current && $env !== $current) {
-            throw new SyntaxErrorException(sprintf('Blackfire is already configured for the "%s" environment, cannot change it to "%s".', $current, $env));
-        }
-
-        $this->blackfire->getConfiguration()->setEnv($env);
     }
 
     private function continueSampling(ResponseInterface $response, Context $context, $checkProgress = true)
@@ -394,5 +427,23 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         return $nextStep;
+    }
+
+    public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
+    {
+        $bag = $scenarios->getExtraBag();
+
+        if (!$env = $this->blackfire->getConfiguration()->getEnv()) {
+            return $env;
+        }
+
+        $builds = array_filter($bag->all(), function ($key) {
+            return is_string($key) && 0 === strpos($key, 'blackfire_build:');
+        }, ARRAY_FILTER_USE_KEY);
+
+        foreach ($builds as $key => $build) {
+            $this->blackfire->closeBuild($build);
+            $bag->remove($key);
+        }
     }
 }

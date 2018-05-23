@@ -27,7 +27,7 @@ final class StepContext
     private $variables = [];
     private $blackfire;
     private $blackfireRequest;
-    private $blackfireBuild;
+    private $blackfireScenario;
     private $samples;
     private $warmup;
 
@@ -61,8 +61,8 @@ final class StepContext
             $this->blackfireRequest = $step->getBlackfireRequest();
         }
 
-        if (null !== $step->getBlackfireBuild()) {
-            $this->blackfireBuild = $step->getBlackfireBuild();
+        if (null !== $step->getBlackfireScenario()) {
+            $this->blackfireScenario = $step->getBlackfireScenario();
         }
 
         if (null !== $step->getSamples()) {
@@ -155,9 +155,9 @@ final class StepContext
         return $this->blackfireRequest;
     }
 
-    public function getBlackfireBuild()
+    public function getBlackfireScenario()
     {
-        return $this->blackfireBuild;
+        return $this->blackfireScenario;
     }
 
     public function getSamples()

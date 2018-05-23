@@ -20,10 +20,12 @@ class ScenarioSet implements \IteratorAggregate
 {
     private $scenarios;
     private $keys = [];
+    private $extraBag;
 
     public function __construct(array $scenarios = [])
     {
         $this->scenarios = $scenarios;
+        $this->extraBag = new ValueBag();
     }
 
     public function __toString()
@@ -67,5 +69,10 @@ class ScenarioSet implements \IteratorAggregate
     public function getIterator()
     {
         return new \ArrayIterator($this->scenarios);
+    }
+
+    public function getExtraBag()
+    {
+        return $this->extraBag;
     }
 }

@@ -28,12 +28,14 @@ class Context
     private $response;
     private $crawler;
     private $requestStats;
+    private $scenarioSetBag;
 
-    public function __construct($name)
+    public function __construct($name, ValueBag $scenarioSetBag = null)
     {
         $this->name = $name;
         $this->valueBag = new ValueBag();
         $this->extraBag = new ValueBag();
+        $this->scenarioSetBag = $scenarioSetBag;
     }
 
     public function getName()
@@ -83,6 +85,11 @@ class Context
     public function getRequestStats()
     {
         return $this->requestStats;
+    }
+
+    public function getScenarioSetBag()
+    {
+        return $this->scenarioSetBag;
     }
 
     /**
