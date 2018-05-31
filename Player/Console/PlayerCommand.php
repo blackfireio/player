@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Console;
 
+use Blackfire\Build\Build;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireExtension;
@@ -21,6 +22,7 @@ use Blackfire\Player\Parser;
 use Blackfire\Player\Player;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
+use Blackfire\Player\ScenarioSet;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -109,6 +111,7 @@ final class PlayerCommand extends Command
         }
 
         $parser = new Parser();
+        /** @var ScenarioSet $scenarios */
         $scenarios = $parser->load($input->getArgument('file'));
 
         // FIXME: should be set on the ScenarioSet directly

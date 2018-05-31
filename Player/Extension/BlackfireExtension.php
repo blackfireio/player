@@ -231,6 +231,9 @@ final class BlackfireExtension extends AbstractExtension
         $buildKey = 'blackfire_build:'.$env;
         if ($scenarioSetBag->has($buildKey)) {
             $build = $scenarioSetBag->get($buildKey);
+        } elseif (isset($_SERVER['BLACKFIRE_BUILD_UUID'])) {
+            $build = new Build\Build($env, ['uuid' => $_SERVER['BLACKFIRE_BUILD_UUID']]);
+            $scenarioSetBag->set($buildKey, $build);
         } else {
             $build = $this->createBuild($env);
             $scenarioSetBag->set($buildKey, $build);
