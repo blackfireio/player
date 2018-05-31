@@ -452,7 +452,7 @@ class Parser
                 $step->blackfire($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('blackfire-build' === $keyword || 'blackfire-scenario' === $keyword) { // Internal keywords: do not use
                 if (!$hasArgs) {
-                    throw new SyntaxErrorException(sprintf('A "%s" takes a build uuid as a required argument %s.', $keyword, $input->getContextString()));
+                    throw new SyntaxErrorException(sprintf('A "%s" takes a scenario uuid as a required argument %s.', $keyword, $input->getContextString()));
                 }
 
                 $step->blackfireScenario($this->checkExpression($input, $arguments));
