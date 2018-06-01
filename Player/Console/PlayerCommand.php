@@ -11,7 +11,6 @@
 
 namespace Blackfire\Player\Console;
 
-use Blackfire\Build\Build;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireExtension;
