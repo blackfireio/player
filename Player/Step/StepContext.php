@@ -129,22 +129,6 @@ final class StepContext
         return $this->variables;
     }
 
-    /**
-     * @return bool
-     */
-    public function isBlackfireEnabled()
-    {
-        if (null !== $this->blackfire) {
-            return $this->blackfire;
-        }
-
-        if (null !== $this->samples) {
-            return true;
-        }
-
-        return false;
-    }
-
     public function getBlackfireEnv()
     {
         return $this->blackfire;

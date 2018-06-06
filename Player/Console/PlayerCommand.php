@@ -120,6 +120,10 @@ final class PlayerCommand extends Command
                 $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
             }
 
+            if (null !== $input->getOption('blackfire-env') && null === $scenario->getBlackfire()) {
+                $scenario->blackfire($this->escapeValue($input->getOption('blackfire-env')));
+            }
+
             foreach ($parser->getGlobalVariables() as $key => $value) {
                 // Override only if the endpoint is not already defined in the step
                 if ('endpoint' === $key && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
