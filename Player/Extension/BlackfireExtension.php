@@ -274,14 +274,25 @@ final class BlackfireExtension extends AbstractExtension
         ];
 
         if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
-            $options['external_id'] = $_SERVER['BLACKFIRE_EXTERNAL_ID'];
+            $options['external_id'] = $_SERVER['BLACKFIRE_EXTERNAL_ID'].':'.$this->slugify($title);
         }
 
         if (isset($_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'])) {
-            $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'];
+            $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'].':'.$this->slugify($title);
         }
 
         return $this->blackfire->startScenario($build, $options);
+    }
+
+    private function slugify($title)
+    {
+        static $cnt;
+
+        if (empty($title)) {
+            return (string) ++$cnt;
+        }
+
+        return trim(strtolower(preg_replace('~[^\pL\d]+~u', '-', $title)), '-');
     }
 
     private function createProfileConfig(AbstractStep $step, Context $context, Build\Scenario $scenario = null)
