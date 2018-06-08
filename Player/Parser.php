@@ -46,10 +46,10 @@ class Parser
     private $groups;
     private $expressionLanguage;
 
-    public function __construct()
+    public function __construct(array $globalVariables = [])
     {
         $this->expressionLanguage = new ExpressionLanguage(null, [new LanguageProvider()]);
-        $this->globalVariables = [];
+        $this->globalVariables = $globalVariables;
     }
 
     /**

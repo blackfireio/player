@@ -16,6 +16,7 @@ use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\VariableResolver;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
@@ -27,10 +28,12 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
 final class NameResolverExtension extends AbstractExtension
 {
     private $language;
+    private $variableResolver;
 
-    public function __construct(ExpressionLanguage $language)
+    public function __construct(ExpressionLanguage $language, VariableResolver $variableResolver = null)
     {
         $this->language = $language;
+        $this->variableResolver = $variableResolver ?: new VariableResolver($this->language);
     }
 
     public function enterScenario(Scenario $scenario, Context $context)
@@ -40,7 +43,8 @@ final class NameResolverExtension extends AbstractExtension
         }
 
         try {
-            $name = $this->language->evaluate($scenario->getName(), $scenario->getVariables());
+            $variables = $this->variableResolver->resolve($scenario->getVariables());
+            $name = $this->language->evaluate($scenario->getName(), $variables);
         } catch (SyntaxError $e) {
             throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $scenario->getName(), $e->getMessage()));
         }

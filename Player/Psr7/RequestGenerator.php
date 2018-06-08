@@ -24,6 +24,7 @@ use Blackfire\Player\Step\LoopStep;
 use Blackfire\Player\Step\Step;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\WhileStep;
+use Blackfire\Player\VariableResolver;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
@@ -39,16 +40,18 @@ final class RequestGenerator implements \IteratorAggregate
     private $stepConverter;
     private $step;
     private $context;
+    private $variableResolver;
     private $request;
     private $response;
     private $contextStack;
 
-    public function __construct(ExpressionLanguage $language, StepConverterInterface $stepConterter, AbstractStep $step, Context $context)
+    public function __construct(ExpressionLanguage $language, StepConverterInterface $stepConterter, AbstractStep $step, Context $context, VariableResolver $variableResolver = null)
     {
         $this->language = $language;
         $this->stepConverter = $stepConterter;
         $this->step = $step;
         $this->context = $context;
+        $this->variableResolver = $variableResolver ?: new VariableResolver($language);
         $this->setContextStack(new \SplStack());
     }
 
@@ -156,23 +159,7 @@ final class RequestGenerator implements \IteratorAggregate
         // evaluate variables first
         $variables = [];
         if ($step instanceof BlockStep) {
-            $toResolve = $step->getVariables();
-            while ($toResolve) {
-                $lastException = null;
-                $succeed = false;
-                foreach ($toResolve as $key => $value) {
-                    try {
-                        $variables[$key] = $this->language->evaluate($value, $variables);
-                        unset($toResolve[$key]);
-                        $succeed = true;
-                    } catch (SyntaxError $lastException) {
-                    }
-                }
-
-                if (false === $succeed && $lastException) {
-                    throw $lastException;
-                }
-            }
+            $variables = $this->variableResolver->resolve($step->getVariables());
         }
 
         $context->update($step, $variables);

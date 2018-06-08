@@ -106,10 +106,11 @@ final class PlayerCommand extends Command
         $variables = [];
         foreach ($input->getOption('variable') as $variable) {
             list($key, $value) = explode('=', $variable, 2);
-            $variables[$key] = $value;
+            $variables[$key] = $this->escapeValue($value);
         }
 
-        $parser = new Parser();
+        $parser = new Parser($variables);
+
         /** @var ScenarioSet $scenarios */
         $scenarios = $parser->load($input->getArgument('file'));
 
@@ -131,10 +132,6 @@ final class PlayerCommand extends Command
                 }
 
                 $scenario->set($key, $value);
-            }
-
-            foreach ($variables as $key => $value) {
-                $scenario->set($key, $this->escapeValue($value));
             }
         }
 

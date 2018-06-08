@@ -239,7 +239,12 @@ final class BlackfireExtension extends AbstractExtension
             $scenarioSetBag->set($buildKey, $build);
         }
 
-        $scenario = $this->createScenario($build, $context->getName());
+        $scenarioName = null;
+        if ($context->getName()) {
+            $scenarioName = $this->language->evaluate($context->getName(), $context->getVariableValues(true));
+        }
+
+        $scenario = $this->createScenario($build, $scenarioName);
         $bag->set('blackfire_scenario', $scenario);
 
         return $scenario;

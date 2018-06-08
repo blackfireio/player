@@ -346,7 +346,7 @@ class BlackfireExtensionTest extends TestCase
         $contextStack = new \SplStack();
         $contextStack->push($stepContext);
 
-        $context = new Context('Context name', new ValueBag());
+        $context = new Context('"Context name"', new ValueBag());
         $context->setContextStack($contextStack);
 
         return $context;
