@@ -1,6 +1,13 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.7.0 (2018-06-14)
+
+ * restrict loading to files with the 'bkf' extension
+ * rework build references to have one reference per scenario
+ * enable Blackfire by default when the '--blackfire-env' CLI option is used
+ * fix usage of variables
+
 * 0.6.0 (2018-04-17)
 
  * send Guzzle timers to Blackfire
