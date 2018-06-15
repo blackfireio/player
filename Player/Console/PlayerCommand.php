@@ -49,7 +49,6 @@ final class PlayerCommand extends Command
                 new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs variable values as JSON', null),
                 new InputOption('full-report', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('validate', '', InputOption::VALUE_NONE, 'Validate syntax without running', null),
@@ -78,19 +77,10 @@ final class PlayerCommand extends Command
             $output = $output->getErrorOutput();
         }
 
-        if ($input->getOption('json') && $input->getOption('full-report')) {
-            throw new \LogicException('Options "--json" and "--full-report" are mutually exclusives.');
-        }
-
-        if ($input->getOption('json')) {
-            $output->writeln('<warning>The "--json" option is deprecated. Use "--full-report" instead.</warning>');
-            $output->writeln('');
-        }
-
-        $clients = [$this->createClient($output)];
+        $clients = [$this->createClient()];
         $concurrency = $input->getOption('concurrency');
         for ($i = 1; $i < $concurrency; ++$i) {
-            $clients[] = $this->createClient($output);
+            $clients[] = $this->createClient();
         }
 
         $runner = new Runner($clients);
@@ -143,10 +133,6 @@ final class PlayerCommand extends Command
 
         $results = $player->run($scenarios);
 
-        if ($input->getOption('json')) {
-            $resultOutput->writeln(json_encode($results->getValues(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        }
-
         if ($input->getOption('full-report')) {
             $resultOutput->writeln($this->createReport($results));
         }
@@ -164,7 +150,7 @@ final class PlayerCommand extends Command
         }
     }
 
-    private function createClient(OutputInterface $output)
+    private function createClient()
     {
         return new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]);
     }

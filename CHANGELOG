@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.8.0 (2018-xx-xx)
+
+ * Remove deprecated --json option
+
 * 0.7.0 (2018-06-14)
 
  * restrict loading to files with the 'bkf' extension

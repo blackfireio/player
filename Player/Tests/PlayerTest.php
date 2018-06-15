@@ -82,20 +82,18 @@ class PlayerTest extends TestCase
                 }
             }
 
-            $jsonFile = sprintf('%s/output-json.txt', $dir->getPathname());
             $reportFile = sprintf('%s/output-full-report.txt', $dir->getPathname());
 
             yield $dir->getBasename() => [
                 sprintf('%s/scenario.bkf', $dir->getPathname()),
                 file_get_contents(sprintf('%s/output.txt', $dir->getPathname())),
-                file_exists($jsonFile) ? file_get_contents($jsonFile) : null,
                 file_exists($reportFile) ? file_get_contents($reportFile) : null,
             ];
         }
     }
 
     /** @dataProvider providePlayerTests */
-    public function testPlayer($file, $expectedOutput, $expectedJsonOutput, $expectedReportOutput)
+    public function testPlayer($file, $expectedOutput, $expectedReportOutput)
     {
         $application = new Application();
         $tester = new CommandTester($application->get('run'));
@@ -110,18 +108,8 @@ class PlayerTest extends TestCase
 
         $this->assertSame($expectedOutput, $output);
 
-        // For --json and --full-report, the output is composed of STDOUT + STDERR.
+        // For --full-report, the output is composed of STDOUT + STDERR.
         // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.
-
-        if ($expectedJsonOutput) {
-            $tester->execute([
-                'file' => $file,
-                '--endpoint' => 'http://0:'.static::$port,
-                '--json' => true,
-            ]);
-
-            $this->assertSame($expectedJsonOutput, $tester->getDisplay());
-        }
 
         if ($expectedReportOutput) {
             $tester->execute([
