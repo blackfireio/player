@@ -1,0 +1,6 @@
+{
+    "message": "Unknown keyword \"vit\" in %s/Tests/Console/../fixtures-validate/simple-invalid/scenario.bkf at line 4.",
+    "success": false,
+    "errors": null,
+    "code": 0
+}

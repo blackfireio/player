@@ -1,0 +1,42 @@
+scenario
+    name "Simple"
+
+    visit "simple/index.php"
+        expect status_code() == 200
+        expect trim(body()) == "ok"
+
+    visit url("simple/index.php?header")
+        expect status_code() == 200
+        header 'User-Agent: BLACKFIRE'
+        auth "username:password"
+        expect trim(body()) == "BLACKFIRE-username-password"
+
+    visit url("simple/index.php?link")
+        expect status_code() == 200
+
+    click link("This is a link")
+        expect trim(body()) == "clicked"
+
+    visit "simple/index.php"
+        method "PUT"
+        body "this is the body"
+        expect status_code() == 200
+        expect trim(body()) == "this is the body"
+
+    visit "simple/index.php?form"
+        expect status_code() == 200
+
+    submit button("Submit")
+        param firstname "Grégoire"
+        param lastname "Pineau"
+        param bio file("bio.txt", "my bio")
+        expect status_code() == 200
+        expect trim(body()) == "Grégoire-Pineau-my bio-This is my bio"
+
+    visit "simple/index.php?json"
+        param firstname "Grégoire"
+        param lastname "Pineau"
+        json true
+        expect status_code() == 200
+        expect trim(body()) == "Grégoire-Pineau"
+

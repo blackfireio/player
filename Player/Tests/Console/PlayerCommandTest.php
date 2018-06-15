@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Blackfire\Player\Tests;
+namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\Application;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class PlayerTest extends TestCase
+class PlayerCommandTest extends TestCase
 {
     private static $port;
     private static $server;
@@ -53,7 +53,7 @@ class PlayerTest extends TestCase
             throw new \RuntimeException('Unable to find PHP binary to run server.');
         }
 
-        self::$server = new Process([$binary, '-S', '0:'.static::$port, '-t', __DIR__.'/fixtures']);
+        self::$server = new Process([$binary, '-S', '0:'.static::$port, '-t', __DIR__.'/../fixtures-run']);
         self::$server->start();
 
         usleep(250000);
@@ -71,7 +71,7 @@ class PlayerTest extends TestCase
     public function providePlayerTests()
     {
         $dirs = Finder::create()
-            ->in(__DIR__.'/fixtures')
+            ->in(__DIR__.'/../fixtures-run')
             ->directories();
 
         foreach ($dirs as $dir) {

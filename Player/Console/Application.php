@@ -33,6 +33,7 @@ final class Application extends BaseApplication
         parent::__construct('Blackfire Player', $version);
 
         $this->add(new PlayerCommand());
+        $this->add(new ValidateCommand());
     }
 
     public function renderException(\Exception $e, OutputInterface $output)

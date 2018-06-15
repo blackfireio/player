@@ -3,7 +3,9 @@ Blackfire Player Changelog
 
 * 0.8.0 (2018-xx-xx)
 
+ * Add a validate command
  * Remove deprecated --json option
+ * Deprecate run --validate option
 
 * 0.7.0 (2018-06-14)
 

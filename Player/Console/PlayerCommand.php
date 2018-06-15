@@ -24,7 +24,6 @@ use Blackfire\Player\Results;
 use Blackfire\Player\ScenarioSet;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -62,12 +61,7 @@ final class PlayerCommand extends Command
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $output->getFormatter()->setStyle('title', new OutputFormatterStyle('black', 'yellow'));
-        $output->getFormatter()->setStyle('debug', new OutputFormatterStyle('red', 'black'));
-        $output->getFormatter()->setStyle('failure', new OutputFormatterStyle('white', 'red'));
-        $output->getFormatter()->setStyle('warning', new OutputFormatterStyle('white', 'yellow', ['bold']));
-        $output->getFormatter()->setStyle('success', new OutputFormatterStyle('white', 'green'));
-        $output->getFormatter()->setStyle('detail', new OutputFormatterStyle('white', 'blue'));
+        (new CommandInitializer())($input, $output);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -75,6 +69,11 @@ final class PlayerCommand extends Command
         $resultOutput = $output;
         if ($output instanceof ConsoleOutput) {
             $output = $output->getErrorOutput();
+        }
+
+        if ($input->getOption('validate')) {
+            $output->writeln('<warning>The "--validate" option is deprecated. Use the "validate" command instead.</warning>');
+            $output->writeln('');
         }
 
         $clients = [$this->createClient()];
@@ -169,7 +168,7 @@ final class PlayerCommand extends Command
             ];
         }
 
-        return json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        return JsonOutput::encode($report);
     }
 
     private function escapeValue($value)

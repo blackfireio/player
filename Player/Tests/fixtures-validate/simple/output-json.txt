@@ -1,0 +1,6 @@
+{
+    "message": "The scenarios are valid.",
+    "success": true,
+    "errors": null,
+    "code": 0
+}

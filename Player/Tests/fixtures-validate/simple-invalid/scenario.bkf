@@ -1,0 +1,5 @@
+scenario
+    name "Simple"
+
+    vit "simple/index.php"
+        expect status_code() == 200

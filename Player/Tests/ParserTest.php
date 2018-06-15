@@ -310,7 +310,7 @@ EOF
 
         // Adapted
         yield [<<<'EOF'
-load "Player/Tests/fixtures/group/group.bkf"
+load "Player/Tests/fixtures-run/group/group.bkf"
 
 scenario
     name "Scenario Name"

@@ -1,0 +1,1 @@
+Unknown keyword "vit" in %s/Tests/Console/../fixtures-validate/simple-invalid/scenario.bkf at line 4.
