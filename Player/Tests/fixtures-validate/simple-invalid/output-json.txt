@@ -1,6 +1,8 @@
 {
-    "message": "Unknown keyword \"vit\" in %s/Tests/Console/../fixtures-validate/simple-invalid/scenario.bkf at line 4.",
+    "message": "The scenarios are not valid.",
     "success": false,
-    "errors": null,
+    "errors": [
+        "Unknown keyword \"vit\" in %s/Tests/Console/../fixtures-validate/simple-invalid/scenario.bkf at line 4."
+    ],
     "code": 0
 }

@@ -11,16 +11,12 @@
 
 namespace Blackfire\Player\Console;
 
-use Blackfire\Player\Parser;
+use Blackfire\Player\Validator\BkfValidator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
-use Blackfire\Player\Exception\InvalidArgumentException;
-use Blackfire\Player\Exception\LogicException;
-use Blackfire\Player\Exception\SyntaxErrorException;
 
 final class ValidateCommand extends Command
 {
@@ -44,45 +40,23 @@ final class ValidateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $parser = new Parser();
-
-        try {
-            $parser->load($input->getArgument('file'));
-        } catch (SyntaxErrorException $e) {
-            return $this->handleError($e, $input, $output);
-        } catch (ExpressionSyntaxErrorException $e) {
-            return $this->handleError($e, $input, $output);
-        } catch (InvalidArgumentException $e) {
-            return $this->handleError($e, $input, $output);
-        } catch (LogicException $e) {
-            return $this->handleError($e, $input, $output);
-        }
+        $result = (new BkfValidator())->validateFile($input->getArgument('file'));
 
         if ($input->getOption('json')) {
             $output->writeln(JsonOutput::encode([
-                'message' => 'The scenarios are valid.',
-                'success' => true,
-                'errors' => null,
+                'message' => $result->isSuccess() ? 'The scenarios are valid.' : 'The scenarios are not valid.',
+                'success' => $result->isSuccess(),
+                'errors' => $result->getErrors(),
                 'code' => 0,
             ]));
-        } else {
+        } elseif ($result->isSuccess()) {
             $output->writeln('<info>The scenarios are valid.</>');
-        }
-    }
-
-    private function handleError(\Throwable $e, InputInterface $input, OutputInterface $output)
-    {
-        if ($input->getOption('json')) {
-            $output->writeln(JsonOutput::encode([
-                'message' => $e->getMessage(),
-                'success' => false,
-                'errors' => null,
-                'code' => 0,
-            ]));
         } else {
-            $output->writeln($e->getMessage());
-        }
+            $output->writeln('<info>The scenarios are not valid:</>');
 
-        return 1;
+            foreach ($result->getErrors() as $error) {
+                $output->writeln(" - $error");
+            }
+        }
     }
 }
