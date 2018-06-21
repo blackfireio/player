@@ -126,7 +126,8 @@ Add more requests to a scenario by indenting lines as below:
 .. note::
 
     The line indentation defines the structure like for Python scripts or YAML
-    files.
+    files. Validate ``bkf`` files with the ``validate`` command:
+    ``blackfire-player validate scenario.bkf``.
 
 A **scenario** is a sequence of HTTP calls (**steps**) that share the HTTP
 session and cookies. Scenario definitions are **declarative**, the order of
