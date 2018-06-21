@@ -52,7 +52,7 @@ class BkfValidator
         return new ValidationResult();
     }
 
-    private function handleError(\Throwable $e)
+    private function handleError(\Exception $e)
     {
         return new ValidationResult(false, [$e->getMessage()]);
     }

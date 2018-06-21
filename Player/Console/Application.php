@@ -38,10 +38,6 @@ final class Application extends BaseApplication
 
     public function renderException(\Exception $e, OutputInterface $output)
     {
-        if (!\Phar::running()) {
-            return parent::renderException($e, $output);
-        }
-
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
         $lines = ['[ERROR]'];
 
@@ -62,6 +58,10 @@ final class Application extends BaseApplication
 
         $output->writeln($this->getHelperSet()->get('formatter')->formatBlock($lines, 'error', true), OutputInterface::VERBOSITY_QUIET);
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
+
+        if (!\Phar::running() && $output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
+            parent::renderException($e, $output);
+        }
     }
 
     // from Symfony\Component\Console\Application

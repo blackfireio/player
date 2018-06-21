@@ -23,4 +23,12 @@ final class JsonOutput
 
         return $json;
     }
+
+    public static function error($error, $data = [])
+    {
+        return self::encode(array_replace([
+            'message' => $error instanceof \Exception ? $error->getMessage() : $error,
+            'success' => false,
+        ], $data));
+    }
 }

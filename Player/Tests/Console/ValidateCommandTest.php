@@ -15,6 +15,8 @@ use Blackfire\Player\Console\Application;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\PhpExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class ValidateCommandTest extends TestCase
 {
@@ -67,5 +69,31 @@ class ValidateCommandTest extends TestCase
 
             $this->assertStringMatchesFormat($expectedJsonOutput, $tester->getDisplay());
         }
+    }
+
+    public function testErrorInRealWorld()
+    {
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../composer.json'], __DIR__.'/../../../bin');
+        $process->run();
+
+        $expectedOutput = <<<EOD
+{
+    "message": "Cannot load file \"../composer.json\" because it does not have the right extension. Expected \"bkf\", got \"json\".",
+    "success": false,
+    "errors": []
+}
+
+EOD;
+        $expectedErrorOutput = <<<EOD
+  [ERROR]                                                                      
+  Cannot load file "../composer.json" because it does not have the right exte  
+  nsion. Expected "bkf", got "json".                                           
+                                                                               
+  Player documentation at https://blackfire.io/player                          
+EOD;
+
+        $this->assertSame($expectedOutput, $process->getOutput());
+        $this->assertContains($expectedErrorOutput, $process->getErrorOutput());
     }
 }

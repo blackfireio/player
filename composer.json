@@ -27,7 +27,8 @@
         "symfony/filesystem": "^3.2",
         "symfony/var-dumper": "^3.2",
         "symfony/yaml": "^3.2",
-        "webmozart/glob": "^4.0"
+        "webmozart/glob": "^4.0",
+        "symfony/event-dispatcher": "^3.4"
     },
     "require-dev": {
         "symfony/finder": "^3.2",
