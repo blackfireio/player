@@ -196,9 +196,16 @@ final class BlackfireExtension extends AbstractExtension
         $extra->remove('blackfire_scenario');
 
         // did we profile something?
-        // if not, don't finish the build as it won't work with 0 profiles
+        // if not, don't close the scenario as it won't work with 0 profiles
         if ($blackfireScenario->getJobCount()) {
-            $extra->set('blackfire_report', $this->blackfire->closeScenario($blackfireScenario));
+            $errors = [];
+            if ($result->isFatalError() || $result->isExpectationError()) {
+                $errors = [
+                    ['message' => $result->getError()->getMessage(), 'code' => $result->getError()->getCode()],
+                ];
+            }
+
+            $extra->set('blackfire_report', $this->blackfire->closeScenario($blackfireScenario, $errors));
         }
 
         if (null !== $blackfireScenario->getUrl()) {
