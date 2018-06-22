@@ -143,7 +143,7 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         if (!$response->hasHeader('X-Blackfire-Response')) {
-            throw new \LogicException('Unable to profile the current step, "X-Blackfire-Response" header not found.');
+            throw new \LogicException('Are you authorized to profile this page? Probe not found or invalid signature. Please read https://support.blackfire.io/troubleshooting/are-you-authorized-to-profile-this-page-probe-not-found-or-invalid-signature');
         }
 
         // Profile needs more samples
