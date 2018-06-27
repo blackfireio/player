@@ -552,13 +552,14 @@ class Parser
             $error = preg_replace('/around position (\d+)\./', 'around position '.$position, $e->getMessage());
 
             // Detect an undefined variable to provide a more accurate error
-            if (preg_match('/Variable "([^"]+)" is not valid/', $e->getMessage(), $matches)) {
-                throw new ExpressionSyntaxErrorException(sprintf(<<<"EOE"
-Variable "%s" is not defined %s. Did you forget to declare it ?
+            if (preg_match('/Variable "[^"]+" is not valid/', $e->getMessage())) {
+                throw new ExpressionSyntaxErrorException($e->getMessage().<<<"EOE"
+
+Did you forget to declare it ?
 You can declare it in your file using the "set" option, or with the "--variable" CLI option.
 If the Player is run through a Blackfire server, you can declare it in the "Variables" panel of the "Builds" tab.
 EOE
-                , $matches[1], $input->getContextString()));
+                );
             }
 
             throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error: %s %s.', $error, $input->getContextString()));
