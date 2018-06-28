@@ -555,7 +555,7 @@ class Parser
             if (preg_match('/Variable "[^"]+" is not valid/', $e->getMessage())) {
                 throw new ExpressionSyntaxErrorException($e->getMessage().<<<"EOE"
 
-Did you forget to declare it ?
+Did you forget to declare it?
 You can declare it in your file using the "set" option, or with the "--variable" CLI option.
 If the Player is run through a Blackfire server, you can declare it in the "Variables" panel of the "Builds" tab.
 EOE
