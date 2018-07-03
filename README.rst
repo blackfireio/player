@@ -272,6 +272,11 @@ or:
         visit "redirect.php"
             follow_redirects
 
+Please note that when using ``follow_redirects``, expectations (``expect``)
+and assertions (``assert``) are checked on the redirecting response
+(so, before the redirection).
+Use a ``follow`` step if you need to check them after the redirection.
+
 Embedding Scenarios with ``include``
 ++++++++++++++++++++++++++++++++++++
 
