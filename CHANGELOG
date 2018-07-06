@@ -1,6 +1,14 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.8.1 (2018-07-06)
+
+ * Improve error handling
+ * Add more info to error output
+ * Reword error messages
+ * Update documentation
+ * Update dependencies
+
 * 0.8.0 (2018-06-25)
 
  * Add a validate command
