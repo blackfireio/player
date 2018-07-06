@@ -28,9 +28,16 @@ final class OutputErrorHandler
             if (($event->getInput()->hasOption('json') && $event->getInput()->getOption('json'))
                 || ($event->getInput()->hasOption('full-report') && $event->getInput()->getOption('full-report'))
             ) {
-                $event->getOutput()->writeln(JsonOutput::error($event->getError(), [
-                    'errors' => [],
-                ]));
+                $extra = ['errors' => []];
+
+                if ($event->getInput()->hasArgument('file')) {
+                    $extra['input'] = [
+                        'path' => $event->getInput()->getArgument('file'),
+                        'content' => @file_get_contents($event->getInput()->getArgument('file')),
+                    ];
+                }
+
+                $event->getOutput()->writeln(JsonOutput::error($event->getError(), $extra));
             }
         });
     }
