@@ -121,4 +121,30 @@ class PlayerCommandTest extends TestCase
             $this->assertSame($expectedReportOutput, $tester->getDisplay());
         }
     }
+
+    public function testErrorStdIn()
+    {
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', 'php://stdin', '--full-report'], __DIR__.'/../../../bin');
+        $process->setInput('papilou!');
+        $process->run();
+
+        $expectedOutput = '{
+    "message": "Unable to parse \"papilou!\" at line 1.",
+    "success": false,
+    "errors": [],
+    "input": {
+        "path": "php://stdin",
+        "content": "papilou!"
+    }
+}
+';
+
+        $expectedErrorOutput = <<<EOD
+  Unable to parse "papilou!" at line 1.
+EOD;
+
+        $this->assertSame($expectedOutput, $process->getOutput());
+        $this->assertContains($expectedErrorOutput, $process->getErrorOutput());
+    }
 }

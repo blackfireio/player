@@ -31,10 +31,21 @@ final class OutputErrorHandler
                 $extra = ['errors' => []];
 
                 if ($event->getInput()->hasArgument('file')) {
-                    $extra['input'] = [
-                        'path' => $event->getInput()->getArgument('file'),
-                        'content' => @file_get_contents($event->getInput()->getArgument('file')),
-                    ];
+                    $file = $event->getInput()->getArgument('file');
+
+                    if (is_resource($file)) {
+                        fseek($file, 0);
+
+                        $extra['input'] = [
+                            'path' => 'php://stdin',
+                            'content' => @stream_get_contents($file),
+                        ];
+                    } else {
+                        $extra['input'] = [
+                            'path' => $file,
+                            'content' => @file_get_contents($file),
+                        ];
+                    }
                 }
 
                 $event->getOutput()->writeln(JsonOutput::error($event->getError(), $extra));

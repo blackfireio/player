@@ -100,6 +100,12 @@ final class PlayerCommand extends Command
 
         $parser = new Parser($variables);
 
+        if ('php://stdin' === $input->getArgument('file')) {
+            $copy = fopen('php://memory', 'r+');
+            stream_copy_to_stream(fopen('php://stdin', 'r'), $copy);
+            $input->setArgument('file', $copy);
+        }
+
         /** @var ScenarioSet $scenarios */
         $scenarios = $parser->load($input->getArgument('file'));
 

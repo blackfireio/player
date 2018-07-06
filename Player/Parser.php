@@ -57,6 +57,12 @@ class Parser
      */
     public function load($file)
     {
+        if (is_resource($file)) {
+            fseek($file, 0);
+
+            return $this->parse(stream_get_contents($file));
+        }
+
         if (!is_file($file) && 'php://stdin' !== $file) {
             throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
         }
