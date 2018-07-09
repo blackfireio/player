@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.8.2 (2018-07-09)
+
+ * Fix JSON error handling when reading stdin as input
+
 * 0.8.1 (2018-07-06)
 
  * Improve error handling
