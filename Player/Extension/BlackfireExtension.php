@@ -51,6 +51,14 @@ final class BlackfireExtension extends AbstractExtension
         $this->defaultEnv = $defaultEnv;
         $this->output = $output;
         $this->blackfire = $blackfire ?: new BlackfireClient(new BlackfireClientConfiguration());
+
+        $version = '@git-version@';
+        if ('@'.'git-version@' == $version) {
+            $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
+            $version = $composer['extra']['branch-alias']['dev-master'];
+        }
+
+        $this->blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', $version));
     }
 
     public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
