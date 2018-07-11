@@ -151,6 +151,6 @@ final class StepContext
 
     public function getWarmup()
     {
-        return null === $this->warmup ? 'false' : $this->warmup;
+        return null === $this->warmup ? 'true' : $this->warmup;
     }
 }
