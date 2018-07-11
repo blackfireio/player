@@ -89,7 +89,7 @@ class BlackfireExtensionTest extends TestCase
             false,
         ];
 
-        // Blackfire enabled, Warmup disabled by default
+        // Blackfire enabled, Warmup enabled by default
 
         $step = (new ConfigurableStep())
             ->name('"Step name"')
@@ -99,11 +99,11 @@ class BlackfireExtensionTest extends TestCase
         yield [
             $step,
             new Request('GET', '/'),
-            true,
             false,
+            true,
         ];
 
-        // Blackfire enabled, Warmup disabled by default + samples
+        // Blackfire enabled, Warmup enabled by default + samples
 
         $step = (new ConfigurableStep())
             ->name('"Step name"')
@@ -114,11 +114,11 @@ class BlackfireExtensionTest extends TestCase
         yield [
             $step,
             new Request('POST', '/'),
-            true,
             false,
+            true,
         ];
 
-        // Blackfire enabled, Warmup enabled (GET)
+        // Blackfire enabled, Warmup enabled explicitly (GET)
 
         $step = (new ConfigurableStep())
             ->name('"Step name"')
@@ -133,7 +133,7 @@ class BlackfireExtensionTest extends TestCase
             true,
         ];
 
-        // Blackfire enabled, Warmup enabled (POST)
+        // Blackfire enabled, Warmup enabled explicitly (POST)
 
         $step = (new ConfigurableStep())
             ->name('"Step name"')
@@ -148,7 +148,7 @@ class BlackfireExtensionTest extends TestCase
             false,
         ];
 
-        // Blackfire enabled, Warmup enabled + samples
+        // Blackfire enabled, Warmup enabled explicitly + samples
 
         $step = (new ConfigurableStep())
             ->name('"Step name"')

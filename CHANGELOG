@@ -5,6 +5,7 @@ Blackfire Player Changelog
 
  * Add Blackfire PHP SDK User-Agent header suffix with Player version
  * Allow to set a build name
+ * Change "warmup" default value from "false" to "true"
 
 * 0.8.2 (2018-07-09)
 
