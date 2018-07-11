@@ -591,7 +591,7 @@ Additional features are also automatically activated:
             name "Blog homepage"
             assert main.peak_memory < 10M
             samples 2
-            warmup 'auto'
+            warmup true
 
 By default, all requests are profiled via Blackfire, you can disable it for
 some requests by calling ``blackfire(false)``.
