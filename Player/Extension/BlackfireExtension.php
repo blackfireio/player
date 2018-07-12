@@ -250,7 +250,8 @@ final class BlackfireExtension extends AbstractExtension
             $build = new Build\Build($env, ['uuid' => $_SERVER['BLACKFIRE_BUILD_UUID']]);
             $scenarioSetBag->set($buildKey, $build);
         } else {
-            $build = $this->createBuild($env);
+            $buildName = $scenarioSetBag->has('blackfire_build_name') ? $scenarioSetBag->get('blackfire_build_name') : null;
+            $build = $this->createBuild($env, $buildName);
             $scenarioSetBag->set($buildKey, $build);
         }
 
@@ -265,10 +266,11 @@ final class BlackfireExtension extends AbstractExtension
         return $scenario;
     }
 
-    private function createBuild($env)
+    private function createBuild($env, $buildName)
     {
         $options = [
             'trigger_name' => 'Blackfire Player',
+            'title' => $buildName,
         ];
 
         if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
@@ -461,6 +463,12 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         return $nextStep;
+    }
+
+    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
+    {
+        $bag = $scenarios->getExtraBag();
+        $bag->set('blackfire_build_name', $scenarios->getName());
     }
 
     public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)

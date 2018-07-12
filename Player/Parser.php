@@ -45,6 +45,7 @@ class Parser
     private $globalVariables;
     private $groups;
     private $expressionLanguage;
+    private $name;
 
     public function __construct(array $globalVariables = [])
     {
@@ -94,6 +95,9 @@ class Parser
                 $scenarios->add($step);
             }
         }
+
+        $scenarios->name($this->name);
+        $scenarios->setVariables($this->globalVariables);
 
         return $scenarios;
     }
@@ -186,6 +190,18 @@ class Parser
             }
 
             $this->globalVariables['endpoint'] = $arguments;
+
+            $step = new EmptyStep();
+        } elseif ('name' === $keyword) {
+            if ($expectedIndent > 0) {
+                throw new SyntaxErrorException(sprintf('A "name" can only be defined at root %s.', $input->getContextString()));
+            }
+
+            if (!$hasArgs) {
+                throw new SyntaxErrorException(sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
+            }
+
+            $this->name = $arguments;
 
             $step = new EmptyStep();
         } elseif ('scenario' === $keyword) {

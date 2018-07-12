@@ -21,6 +21,8 @@ class ScenarioSet implements \IteratorAggregate
     private $scenarios;
     private $keys = [];
     private $extraBag;
+    private $name;
+    private $variables = [];
 
     public function __construct(array $scenarios = [])
     {
@@ -66,6 +68,16 @@ class ScenarioSet implements \IteratorAggregate
         $this->keys[$scenario->getKey()] = true;
     }
 
+    public function name($name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
     public function getIterator()
     {
         return new \ArrayIterator($this->scenarios);
@@ -74,5 +86,15 @@ class ScenarioSet implements \IteratorAggregate
     public function getExtraBag()
     {
         return $this->extraBag;
+    }
+
+    public function setVariables(array $variables)
+    {
+        $this->variables = $variables;
+    }
+
+    public function getVariables()
+    {
+        return $this->variables;
     }
 }

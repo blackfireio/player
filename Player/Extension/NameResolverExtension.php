@@ -15,6 +15,7 @@ use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\VariableResolver;
 use Psr\Http\Message\RequestInterface;
@@ -34,6 +35,22 @@ final class NameResolverExtension extends AbstractExtension
     {
         $this->language = $language;
         $this->variableResolver = $variableResolver ?: new VariableResolver($this->language);
+    }
+
+    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
+    {
+        if (!$scenarios->getName()) {
+            return;
+        }
+
+        try {
+            $variables = $this->variableResolver->resolve($scenarios->getVariables());
+            $name = $this->language->evaluate($scenarios->getName(), $variables);
+        } catch (SyntaxError $e) {
+            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $scenarios->getName(), $e->getMessage()));
+        }
+
+        $scenarios->name(sprintf('"%s"', $name));
     }
 
     public function enterScenario(Scenario $scenario, Context $context)
