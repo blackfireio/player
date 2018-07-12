@@ -4,6 +4,7 @@ Blackfire Player Changelog
 * 0.9.0 (2018-xx-xx)
 
  * Add Blackfire PHP SDK User-Agent header suffix with Player version
+ * Allow to set a build name
 
 * 0.8.2 (2018-07-09)
 
