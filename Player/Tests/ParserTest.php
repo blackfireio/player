@@ -556,7 +556,7 @@ scenario Test
 EOF
         ];
 
-        yield ['Unknown keyword "name" at line 3', <<<'EOF'
+        yield ['A "name" can only be defined at root at line 3.', <<<'EOF'
 scenario Test
     visit url('/')
     name "Test"
