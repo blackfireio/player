@@ -7,10 +7,19 @@ GET http://0:8399/scraping/index.php?id=8399
 
  OK  Scenarios  1  - Steps  1 
 {
-    "1": {
-        "values": {
-            "body": "8399"
-        },
-        "error": null
+    "results": {
+        "1": {
+            "values": {
+                "body": "8399"
+            },
+            "error": null
+        }
+    },
+    "message": "Build run successfully",
+    "code": 0,
+    "success": true,
+    "input": {
+        "path": "/Users/neutron/Documents/workspace/blackfire.io/player/Player/Tests/Console/../fixtures-run/scraping/scenario.bkf",
+        "content": "scenario\n    name \"scraping\"\n\n    set id 8399\n\n    visit \"scraping/index.php?id=\"~id\n        expect status_code() == 200\n        expect trim(body()) == 8399\n        set body body()\n"
     }
 }

@@ -138,21 +138,47 @@ final class PlayerCommand extends Command
 
         $results = $player->run($scenarios);
 
-        if ($input->getOption('full-report')) {
-            $resultOutput->writeln($this->createReport($results));
-        }
+        $exitCode = 0;
+        $message = 'Build run successfully';
 
         if ($results->isFatalError()) {
-            return self::EXIT_CODE_SCENARIO_ERROR;
+            $exitCode = self::EXIT_CODE_SCENARIO_ERROR;
+            $message = 'Build encountered a fatal error';
+        } elseif ($results->isExpectationError()) {
+            $exitCode = self::EXIT_CODE_EXPECTATION_ERROR;
+            $message = 'Some expectation failed';
+        } elseif ($results->isErrored()) {
+            $exitCode = self::EXIT_CODE_SCENARIO_ERROR_NON_FATAL;
+            $message = 'An error occured';
         }
 
-        if ($results->isExpectationError()) {
-            return self::EXIT_CODE_EXPECTATION_ERROR;
+        if ($input->getOption('full-report')) {
+            $file = $input->getArgument('file');
+
+            if (is_resource($file)) {
+                fseek($file, 0);
+
+                $extraInput = [
+                    'path' => 'php://stdin',
+                    'content' => @stream_get_contents($file),
+                ];
+            } else {
+                $extraInput = [
+                    'path' => $file,
+                    'content' => @file_get_contents($file),
+                ];
+            }
+
+            $resultOutput->writeln(JsonOutput::encode([
+                'results' => $this->createReport($results),
+                'message' => $message,
+                'code' => $exitCode,
+                'success' => true,
+                'input' => $extraInput,
+            ]));
         }
 
-        if ($results->isErrored()) {
-            return self::EXIT_CODE_SCENARIO_ERROR_NON_FATAL;
-        }
+        return $exitCode;
     }
 
     private function createClient()
@@ -174,7 +200,7 @@ final class PlayerCommand extends Command
             ];
         }
 
-        return JsonOutput::encode($report);
+        return $report;
     }
 
     private function escapeValue($value)
