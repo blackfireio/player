@@ -92,6 +92,8 @@ written in a domain specific language:
 
 .. code-block:: blackfire
 
+    name "A build made of scenario"
+
     scenario
         name "Scenario Name"
         endpoint "http://example.com/"
