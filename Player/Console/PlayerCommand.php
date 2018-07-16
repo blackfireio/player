@@ -149,7 +149,7 @@ final class PlayerCommand extends Command
             $message = 'Some expectation failed';
         } elseif ($results->isErrored()) {
             $exitCode = self::EXIT_CODE_SCENARIO_ERROR_NON_FATAL;
-            $message = 'An error occured';
+            $message = 'An error occurred';
         }
 
         if ($input->getOption('full-report')) {
@@ -194,7 +194,8 @@ final class PlayerCommand extends Command
         foreach ($results as $key => $result) {
             $error = $result->getError();
 
-            $report[$key] = [
+            $report[] = [
+                'scenario' => $result->getScenarioName(),
                 'values' => $result->getValues()->all(),
                 'error' => $error ? ['message' => $error->getMessage(), 'code' => $error->getCode()] : null,
             ];

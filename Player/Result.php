@@ -32,6 +32,11 @@ class Result implements \ArrayAccess, \Iterator
         $this->error = $error;
     }
 
+    public function getScenarioName()
+    {
+        return $this->context->getName();
+    }
+
     public function isFatalError()
     {
         return null !== $this->error

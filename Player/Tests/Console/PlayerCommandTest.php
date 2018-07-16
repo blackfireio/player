@@ -118,7 +118,7 @@ class PlayerCommandTest extends TestCase
                 '--full-report' => true,
             ]);
 
-            $this->assertSame($expectedReportOutput, $tester->getDisplay());
+            $this->assertStringMatchesFormat($expectedReportOutput, $tester->getDisplay());
         }
     }
 
