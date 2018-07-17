@@ -42,15 +42,16 @@ class Parser
 
     private $inAGroup;
     private $variables;
-    private $globalVariables;
+    private $externalVariables;
+    private $globalVariables = [];
     private $groups;
     private $expressionLanguage;
     private $name;
 
-    public function __construct(array $globalVariables = [])
+    public function __construct(array $externalVariables = [])
     {
         $this->expressionLanguage = new ExpressionLanguage(null, [new LanguageProvider()]);
-        $this->globalVariables = $globalVariables;
+        $this->externalVariables = $externalVariables;
     }
 
     /**
@@ -97,14 +98,22 @@ class Parser
         }
 
         $scenarios->name($this->name);
-        $scenarios->setVariables($this->globalVariables);
+        $scenarios->setVariables($this->getGlobalVariables());
+
+        $endpoint = $this->getGlobalVariables()['endpoint'] ?? '';
+
+        foreach ($scenarios as $scenario) {
+            if (!$scenario->getEndpoint()) {
+                $scenario->endpoint($endpoint);
+            }
+        }
 
         return $scenarios;
     }
 
     public function getGlobalVariables()
     {
-        return $this->globalVariables;
+        return array_replace($this->globalVariables, $this->externalVariables);
     }
 
     private function parseSteps(Input $input, $expectedIndent)
@@ -565,7 +574,7 @@ class Parser
         // We add the "endpoint" variables to be able to use it anywhere. The
         // value could be injected later, during the parsing or directly in the
         // scenarios via the CLI
-        $variables = array_replace(['endpoint' => null], $this->globalVariables, $this->variables);
+        $variables = array_replace(['endpoint' => null], $this->globalVariables, $this->externalVariables, $this->variables);
 
         try {
             $this->expressionLanguage->compile($expression, array_keys($variables));

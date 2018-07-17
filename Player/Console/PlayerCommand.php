@@ -17,11 +17,9 @@ use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\Runner;
-use Blackfire\Player\Parser;
 use Blackfire\Player\Player;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
-use Blackfire\Player\ScenarioSet;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -92,43 +90,13 @@ final class PlayerCommand extends Command
             $player->addExtension(new TracerExtension($output));
         }
 
-        $variables = [];
-        foreach ($input->getOption('variable') as $variable) {
-            list($key, $value) = explode('=', $variable, 2);
-            $variables[$key] = $this->escapeValue($value);
-        }
-
-        $parser = new Parser($variables);
-
         if ('php://stdin' === $input->getArgument('file')) {
             $copy = fopen('php://memory', 'r+');
             stream_copy_to_stream(fopen('php://stdin', 'r'), $copy);
             $input->setArgument('file', $copy);
         }
 
-        /** @var ScenarioSet $scenarios */
-        $scenarios = $parser->load($input->getArgument('file'));
-
-        // FIXME: should be set on the ScenarioSet directly
-        // but for this, we need an enterStep() for the ScenarioSet, which we don't have yet
-        foreach ($scenarios as $scenario) {
-            if (null !== $input->getOption('endpoint')) {
-                $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
-            }
-
-            if (null !== $input->getOption('blackfire-env') && null === $scenario->getBlackfire()) {
-                $scenario->blackfire($this->escapeValue($input->getOption('blackfire-env')));
-            }
-
-            foreach ($parser->getGlobalVariables() as $key => $value) {
-                // Override only if the endpoint is not already defined in the step
-                if ('endpoint' === $key && null === $scenario->getEndpoint() && null === $input->getOption('endpoint')) {
-                    $scenario->endpoint($value);
-                }
-
-                $scenario->set($key, $value);
-            }
-        }
+        $scenarios = (new ScenarioHydrator())->hydrate($input);
 
         if ($input->getOption('validate')) {
             $resultOutput->writeln('<info>The scenarios are valid.</>');
@@ -202,10 +170,5 @@ final class PlayerCommand extends Command
         }
 
         return $report;
-    }
-
-    private function escapeValue($value)
-    {
-        return sprintf("'%s'", $value);
     }
 }

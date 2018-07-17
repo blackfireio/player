@@ -53,7 +53,7 @@ EOF
         $scenario = $scenarioSet->getIterator()[1];
         $this->assertEquals('Test2', $scenario->getKey());
         $this->assertInstanceOf(ReloadStep::class, $scenario->getBlockStep());
-        $this->assertEquals([], $scenario->getVariables());
+        $this->assertEquals(['endpoint' => ''], $scenario->getVariables());
     }
 
     public function testParsingGlobalConfiguration()
@@ -85,7 +85,7 @@ EOF
         $scenario = $scenarioSet->getIterator()[0];
         $this->assertEquals('Test 1', $scenario->getKey());
         $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
-        $this->assertEquals([], $scenario->getVariables());
+        $this->assertEquals(['endpoint' => '\'http://toto.com\''], $scenario->getVariables());
         $this->assertEquals([
             '"Accept-Language: en-US"',
         ], $scenario->getBlockStep()->getHeaders());
@@ -95,7 +95,7 @@ EOF
         $scenario = $scenarioSet->getIterator()[1];
         $this->assertEquals('Test2', $scenario->getKey());
         $this->assertInstanceOf(ReloadStep::class, $scenario->getBlockStep());
-        $this->assertEquals([], $scenario->getVariables());
+        $this->assertEquals(['endpoint' => '\'http://toto.com\''], $scenario->getVariables());
     }
 
     /**
