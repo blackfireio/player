@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.10.0 (2018-07-30)
+
+ * Standardize ``run --full-report`` output command (BC break)
+ * Fix variable management
+
 * 0.9.0 (2018-07-16)
 
  * Add Blackfire PHP SDK User-Agent header suffix with Player version
