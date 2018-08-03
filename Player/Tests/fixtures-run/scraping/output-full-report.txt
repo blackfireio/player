@@ -7,6 +7,7 @@ GET http://0:8399/scraping/index.php?id=8399
 
  OK  Scenarios  1  - Steps  1 
 {
+    "name": null,
     "results": [
         {
             "scenario": "\"scraping\"",
