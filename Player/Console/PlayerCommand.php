@@ -138,6 +138,7 @@ final class PlayerCommand extends Command
             }
 
             $resultOutput->writeln(JsonOutput::encode([
+                'name' => $scenarios->getName(),
                 'results' => $this->createReport($results),
                 'message' => $message,
                 'code' => $exitCode,

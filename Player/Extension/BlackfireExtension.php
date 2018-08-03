@@ -270,7 +270,7 @@ final class BlackfireExtension extends AbstractExtension
     {
         $options = [
             'trigger_name' => 'Blackfire Player',
-            'title' => $buildName,
+            'build_name' => $buildName,
         ];
 
         if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
