@@ -468,7 +468,12 @@ final class BlackfireExtension extends AbstractExtension
     public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
     {
         $bag = $scenarios->getExtraBag();
-        $bag->set('blackfire_build_name', $scenarios->getName());
+
+        if (!is_string($scenarios->getName())) {
+            return;
+        }
+
+        $bag->set('blackfire_build_name', trim($scenarios->getName(), '"'));
     }
 
     public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
