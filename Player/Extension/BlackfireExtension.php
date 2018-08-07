@@ -332,7 +332,7 @@ final class BlackfireExtension extends AbstractExtension
         $config->setSamples($this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true)));
 
         $name = $step->getName() ?: sprintf('%s resource', $request->getUri()->getPath() ?: '/');
-        $config->setTitle($name);
+        $config->setTitle(trim($name, '"'));
 
         if ($step instanceof Step) {
             foreach ($step->getAssertions() as $assertion) {
