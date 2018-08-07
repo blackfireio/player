@@ -96,7 +96,7 @@ final class BlackfireExtension extends AbstractExtension
 
         $scenario = $this->getScenario($context, $env);
 
-        $config = $this->createProfileConfig($step, $context, $scenario);
+        $config = $this->createProfileConfig($step, $context, $request, $scenario);
         $profileRequest = $this->blackfire->createRequest($config);
 
         // Add a random cookie to help crossing caches
@@ -317,20 +317,22 @@ final class BlackfireExtension extends AbstractExtension
         return trim(strtolower(preg_replace('~[^\pL\d]+~u', '-', $title)), '-');
     }
 
-    private function createProfileConfig(AbstractStep $step, Context $context, Build\Scenario $scenario = null)
+    private function createProfileConfig(AbstractStep $step, Context $context, RequestInterface $request, Build\Scenario $scenario = null)
     {
         $config = new ProfileConfiguration();
         if (null !== $scenario) {
             $config->setScenario($scenario);
         }
 
-        $request = $context->getStepContext()->getBlackfireRequest();
-        if (null !== $request) {
-            $config->setUuid($this->language->evaluate($request, $context->getVariableValues(true)));
+        $blackfireRequest = $context->getStepContext()->getBlackfireRequest();
+        if (null !== $blackfireRequest) {
+            $config->setUuid($this->language->evaluate($blackfireRequest, $context->getVariableValues(true)));
         }
 
         $config->setSamples($this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true)));
-        $config->setTitle($step->getName());
+
+        $name = $step->getName() ?: sprintf('%s resource', $request->getUri()->getPath() ?: '/');
+        $config->setTitle($name);
 
         if ($step instanceof Step) {
             foreach ($step->getAssertions() as $assertion) {
