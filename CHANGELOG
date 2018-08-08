@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.11.0 (2018-08-08)
+
+ * Use URL as default step name
+ * Remove quotes around step and build names
+
 * 0.10.0 (2018-07-30)
 
  * Standardize ``run --full-report`` output command (BC break)
