@@ -112,10 +112,38 @@ final class Input
         $input = str_replace(["\r\n", "\r"], "\n", $input);
         $input = explode("\n", $input);
 
+        $current = 0;
         $lineno = 0;
         $lines = [];
         while (null !== $line = array_shift($input)) {
             ++$lineno;
+
+            if (preg_match('/^(\s*)"""$/', $line, $matches)) { // Start multi-lines
+                $indent = $matches[1];
+                $val = '';
+                while (null !== $line = array_shift($input)) {
+                    ++$lineno;
+
+                    if (strlen($indent) && 0 !== strpos($line, $indent)) {
+                        throw new SyntaxErrorException(sprintf('Incorrect indentation in multi-lines string at line %d.', $lineno));
+                    }
+
+                    if (preg_match('/^(\s*)"""$/', $line, $matchesEnd)) { // end multi-lines
+                        if ($matchesEnd[1] === $indent) {
+                            if (strlen($val) > 0) {
+                                $val = substr($val, 0, -1);
+                            }
+                            break;
+                        }
+                    }
+
+                    $val .= substr($line, strlen($indent))."\n";
+                }
+
+                $lines[$current] .= ' '.$this->escapeValue($val);
+
+                continue;
+            }
 
             // skip empty lines and comments
             if (preg_match('/^\s*(#|$)/', $line)) {
@@ -170,5 +198,10 @@ final class Input
         }
 
         return $indent;
+    }
+
+    private function escapeValue($val)
+    {
+        return sprintf("'%s'", strtr($val, ["\n" => '\n', "'" => "\\'"]));
     }
 }

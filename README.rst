@@ -165,6 +165,23 @@ forms, or follow redirections (see `Making requests`_ for more information):
             visit url('/')
                 expect status_code() == 200
 
+.. tip::
+
+    An expression can be written on several lines with the following syntax:
+
+    .. code-block:: blackfire
+
+        scenario
+            visit url('/login')
+                method 'POST'
+                body
+                """
+                {
+                    user: "john",
+                    password: "doe"
+                }
+                """
+
 Making Requests
 ~~~~~~~~~~~~~~~
 
