@@ -350,7 +350,7 @@ Setting a User and Password with ``auth``
         visit url('/')
             auth "username:password"
 
-Waiting before Sending with ``wait``
+Waiting after sending the request with ``wait``
 ++++++++++++++++++++++++++++++++++++
 
 ``wait`` adds a delay in milliseconds after sending the request:
