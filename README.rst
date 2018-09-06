@@ -351,7 +351,7 @@ Setting a User and Password with ``auth``
             auth "username:password"
 
 Waiting after sending the request with ``wait``
-++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++
 
 ``wait`` adds a delay in milliseconds after sending the request:
 
