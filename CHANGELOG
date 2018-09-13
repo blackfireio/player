@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 0.12.0 (2018-09-12)
+
+ * Deprecate --full-report in favor of --json option for "run" command
+ * Use an erroneous exit code when "validate" command fails
+ * Remove the deprecated --validate option for "run" command in favor of the "validate" command
+
 * 0.11.0 (2018-08-08)
 
  * Use URL as default step name
