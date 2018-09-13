@@ -48,7 +48,6 @@ final class PlayerCommand extends Command
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('full-report', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
-                new InputOption('validate', '', InputOption::VALUE_NONE, 'Validate syntax without running', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
             ])
@@ -67,11 +66,6 @@ final class PlayerCommand extends Command
         $resultOutput = $output;
         if ($output instanceof ConsoleOutput) {
             $output = $output->getErrorOutput();
-        }
-
-        if ($input->getOption('validate')) {
-            $output->writeln('<warning>The "--validate" option is deprecated. Use the "validate" command instead.</warning>');
-            $output->writeln('');
         }
 
         $clients = [$this->createClient()];
@@ -97,12 +91,6 @@ final class PlayerCommand extends Command
         }
 
         $scenarios = (new ScenarioHydrator())->hydrate($input);
-
-        if ($input->getOption('validate')) {
-            $resultOutput->writeln('<info>The scenarios are valid.</>');
-
-            return;
-        }
 
         $results = $player->run($scenarios);
 
