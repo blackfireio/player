@@ -108,14 +108,14 @@ class PlayerCommandTest extends TestCase
 
         $this->assertSame($expectedOutput, $output);
 
-        // For --full-report, the output is composed of STDOUT + STDERR.
+        // For --json or --full-report, the output is composed of STDOUT + STDERR.
         // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.
 
         if ($expectedReportOutput) {
             $tester->execute([
                 'file' => $file,
                 '--endpoint' => 'http://0:'.static::$port,
-                '--full-report' => true,
+                '--json' => true,
             ]);
 
             $this->assertStringMatchesFormat($expectedReportOutput, $tester->getDisplay());
@@ -125,7 +125,7 @@ class PlayerCommandTest extends TestCase
     public function testErrorStdIn()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', 'php://stdin', '--full-report'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', 'php://stdin', '--json'], __DIR__.'/../../../bin');
         $process->setInput('papilou!');
         $process->run();
 

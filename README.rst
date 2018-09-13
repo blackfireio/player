@@ -67,11 +67,11 @@ Use the ``--concurrency`` option to run scenarios in parallel:
 
      blackfire-player run scenario.bkf --concurrency=5
 
-Use the ``--full-report`` option to output a report as JSON:
+Use the ``--json`` option to output a JSON report:
 
 .. code-block:: bash
 
-    blackfire-player run scenario.bkf --full-report
+    blackfire-player run scenario.bkf --json
 
 Use the ``--variables`` option to override variable values:
 
@@ -648,8 +648,8 @@ The values are also available at the end of a crawling session:
 
 .. code-block:: bash
 
-    # use --full-report to display a report including variable values
-    blackfire-player run scenario.bkf --full-report
+    # use --json to display a report including variable values
+    blackfire-player run scenario.bkf --json
 
 Variable values can also be injected before running another scenario:
 

@@ -74,7 +74,7 @@ class ValidateCommandTest extends TestCase
     public function testErrorInRealWorld()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../composer.json', '--full-report'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../composer.json', '--json'], __DIR__.'/../../../bin');
         $process->run();
 
         $expectedOutput = '{
