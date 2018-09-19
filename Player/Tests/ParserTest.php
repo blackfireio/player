@@ -572,4 +572,89 @@ EOF
         $parser = new Parser();
         $parser->load(__FILE__);
     }
+
+    public function testLineContinuation()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set single 'a\
+b\
+c'
+set multi '\
+a\n\
+b\n\
+c\
+'
+scenario Test 1
+    set single_indented 'x\
+y\
+z\
+'
+    visit url('/')
+        body '{\
+first: "premier",\n\
+second: "deuxieme"\
+}'
+EOF
+        );
+        $this->assertEquals("'a b c'", $scenarioSet->getVariables()['single']);
+        $this->assertEquals("' a\\n b\\n c '", $scenarioSet->getVariables()['multi']);
+        $scenario = iterator_to_array($scenarioSet)[0];
+        $this->assertEquals("'{ first: \"premier\",\\n second: \"deuxieme\" }'", $scenario->getBlockStep()->getBody());
+    }
+
+    public function testMultiLines()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set multi
+"""
+a
+b\r
+'c'
+"d"
+ e
+\tf
+"""
+
+scenario Test 1
+    visit url('/')
+        body
+        """
+        {
+            first: "premier",
+            second: "deuxieme"
+        }
+        """
+EOF
+        );
+
+        $expected = '\'a\nb\r\n\\\'c\\\'\n"d"\n e\n\tf\'';
+        $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
+
+        $expected = '\'{\n    first: "premier",\n    second: "deuxieme"\n}\'';
+        $scenario = iterator_to_array($scenarioSet)[0];
+        $this->assertEquals($expected, $scenario->getBlockStep()->getBody());
+    }
+
+    /**
+     * @expectedException \Blackfire\Player\Exception\SyntaxErrorException
+     * @expectedExceptionMessage Incorrect indentation in multi-lines string at line 8.
+     */
+    public function testMultiLinesInvalidIndentation()
+    {
+        $parser = new Parser();
+        $parser->parse(<<<'EOF'
+scenario Test 1
+    visit url('/')
+        body
+        """
+        {
+            first: "premier",
+            second: "deuxieme"
+       }
+        """
+EOF
+        );
+    }
 }

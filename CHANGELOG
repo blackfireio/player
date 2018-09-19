@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* XXX
+
+ * Add support of multi-line expressions
+
 * 0.12.0 (2018-09-12)
 
  * Deprecate --full-report in favor of --json option for "run" command
