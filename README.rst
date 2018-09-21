@@ -177,8 +177,8 @@ forms, or follow redirections (see `Making requests`_ for more information):
                 body
                 """
                 {
-                    user: "john",
-                    password: "doe"
+                    "user": "john",
+                    "password": "doe"
                 }
                 """
 
