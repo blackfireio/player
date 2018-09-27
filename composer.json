@@ -20,20 +20,20 @@
         "guzzlehttp/guzzle": "^6.1",
         "mtdowling/jmespath.php": "^2.2",
         "psr/log": "^1.0",
-        "symfony/console": "^3.2",
-        "symfony/css-selector": "^3.2",
-        "symfony/dom-crawler": "^3.2",
-        "symfony/expression-language": "^3.2",
-        "symfony/filesystem": "^3.2",
-        "symfony/var-dumper": "^3.2",
-        "symfony/yaml": "^3.2",
+        "symfony/console": "^3.2|^4.0",
+        "symfony/css-selector": "^3.2|^4.0",
+        "symfony/dom-crawler": "^3.2|^4.0",
+        "symfony/expression-language": "^3.2|^4.0",
+        "symfony/filesystem": "^3.2|^4.0",
+        "symfony/var-dumper": "^3.2|^4.0",
+        "symfony/yaml": "^3.2|^4.0",
         "webmozart/glob": "^4.0",
-        "symfony/event-dispatcher": "^3.4"
+        "symfony/event-dispatcher": "^3.4|^4.0"
     },
     "require-dev": {
-        "symfony/finder": "^3.2",
-        "symfony/process": "^3.2",
-        "symfony/phpunit-bridge": "^3.2"
+        "symfony/finder": "^3.2|^4.0",
+        "symfony/process": "^3.2|^4.0",
+        "symfony/phpunit-bridge": "^3.2|^4.0"
     },
     "autoload": {
         "psr-4" : {
