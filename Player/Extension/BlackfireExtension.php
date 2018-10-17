@@ -14,6 +14,7 @@ namespace Blackfire\Player\Extension;
 use Blackfire\Build;
 use Blackfire\Client as BlackfireClient;
 use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
+use Blackfire\Exception\ApiException;
 use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\LogicException;
@@ -97,7 +98,9 @@ final class BlackfireExtension extends AbstractExtension
         $scenario = $this->getScenario($context, $env);
 
         $config = $this->createProfileConfig($step, $context, $request, $scenario);
-        $profileRequest = $this->blackfire->createRequest($config);
+        $profileRequest = $this->callApi(function () use ($config) {
+            return $this->blackfire->createRequest($config);
+        });
 
         // Add a random cookie to help crossing caches
         if ($request->hasHeader('Cookie')) {
@@ -163,7 +166,9 @@ final class BlackfireExtension extends AbstractExtension
         $crawler = CrawlerFactory::create($response, $request->getUri());
         if (null !== $crawler && !$step->getName()) {
             if (\count($c = $crawler->filter('title'))) {
-                $this->blackfire->updateProfile($uuid, $c->first()->text());
+                $this->callApi(function () use ($uuid, $c) {
+                    $this->blackfire->updateProfile($uuid, $c->first()->text());
+                });
             }
         }
 
@@ -208,12 +213,23 @@ final class BlackfireExtension extends AbstractExtension
         if ($blackfireScenario->getJobCount()) {
             $errors = [];
             if ($result->isFatalError() || $result->isExpectationError()) {
+                $error = $result->getError();
+                if ($error instanceof ApiException) { // Replace by a more friendly message on Blackfire
+                    $message = sprintf('Got a "%s" error from Blackfire\'s API. Please consult the Player output for more details.', $error->getCode());
+                } else {
+                    $message = $error->getMessage();
+                }
+
                 $errors = [
-                    ['message' => $result->getError()->getMessage(), 'code' => $result->getError()->getCode()],
+                    ['message' => $message, 'code' => $error->getCode()],
                 ];
             }
 
-            $extra->set('blackfire_report', $this->blackfire->closeScenario($blackfireScenario, $errors));
+            $report = $this->callApi(function () use ($blackfireScenario, $errors) {
+                return $this->blackfire->closeScenario($blackfireScenario, $errors);
+            });
+
+            $extra->set('blackfire_report', $report);
         }
 
         if (null !== $blackfireScenario->getUrl()) {
@@ -281,7 +297,9 @@ final class BlackfireExtension extends AbstractExtension
             $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'];
         }
 
-        return $this->blackfire->startBuild($env, $options);
+        return $this->callApi(function () use ($env, $options) {
+            return $this->blackfire->startBuild($env, $options);
+        });
     }
 
     private function createScenario(Build\Build $build, $title)
@@ -303,7 +321,9 @@ final class BlackfireExtension extends AbstractExtension
             $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'].':'.$this->slugify($title);
         }
 
-        return $this->blackfire->startScenario($build, $options);
+        return $this->callApi(function () use ($build, $options) {
+            return $this->blackfire->startScenario($build, $options);
+        });
     }
 
     private function slugify($title)
@@ -345,7 +365,9 @@ final class BlackfireExtension extends AbstractExtension
 
     private function assertProfile(AbstractStep $step, RequestInterface $request, ResponseInterface $response)
     {
-        $profile = $this->blackfire->getProfile($request->getHeaderLine('X-Blackfire-Profile-Uuid'));
+        $profile = $this->callApi(function () use ($request) {
+            return $this->blackfire->getProfile($request->getHeaderLine('X-Blackfire-Profile-Uuid'));
+        });
 
         if ($profile->isErrored()) {
             throw new ExpectationErrorException('Assertion syntax error.');
@@ -471,7 +493,7 @@ final class BlackfireExtension extends AbstractExtension
     {
         $bag = $scenarios->getExtraBag();
 
-        if (!is_string($scenarios->getName())) {
+        if (!\is_string($scenarios->getName())) {
             return;
         }
 
@@ -487,12 +509,27 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         $builds = array_filter($bag->all(), function ($key) {
-            return is_string($key) && 0 === strpos($key, 'blackfire_build:');
+            return \is_string($key) && 0 === strpos($key, 'blackfire_build:');
         }, ARRAY_FILTER_USE_KEY);
 
         foreach ($builds as $key => $build) {
-            $this->blackfire->closeBuild($build);
+            $this->callApi(function () use ($build) {
+                $this->blackfire->closeBuild($build);
+            });
             $bag->remove($key);
+        }
+    }
+
+    private function callApi($closure)
+    {
+        try {
+            return $closure();
+        } catch (ApiException $e) {
+            // Remove the headers from the exception
+            $message = preg_replace('/ \[headers: [^\]]*\]$/', '', $e->getMessage());
+            $message = preg_replace('/^\d*: /', '', $message);
+
+            throw ApiException::fromStatusCode($message, $e->getCode());
         }
     }
 }
