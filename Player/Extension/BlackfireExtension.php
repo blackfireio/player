@@ -87,6 +87,8 @@ final class BlackfireExtension extends AbstractExtension
             return $request;
         }
 
+        $scenario = $this->getScenario($context, $env);
+
         // Warmup the endpoint before profiling
         $count = $this->warmupCount($step, $request, $context);
         if ($count > 0) {
@@ -94,8 +96,6 @@ final class BlackfireExtension extends AbstractExtension
 
             return $request;
         }
-
-        $scenario = $this->getScenario($context, $env);
 
         $config = $this->createProfileConfig($step, $context, $request, $scenario);
         $profileRequest = $this->callApi(function () use ($config) {
@@ -208,29 +208,25 @@ final class BlackfireExtension extends AbstractExtension
         $blackfireScenario = $extra->get('blackfire_scenario');
         $extra->remove('blackfire_scenario');
 
-        // did we profile something?
-        // if not, don't close the scenario as it won't work with 0 profiles
-        if ($blackfireScenario->getJobCount()) {
-            $errors = [];
-            if ($result->isFatalError() || $result->isExpectationError()) {
-                $error = $result->getError();
-                if ($error instanceof ApiException) { // Replace by a more friendly message on Blackfire
-                    $message = sprintf('Got a "%s" error from Blackfire\'s API. Please consult the Player output for more details.', $error->getCode());
-                } else {
-                    $message = $error->getMessage();
-                }
-
-                $errors = [
-                    ['message' => $message, 'code' => $error->getCode()],
-                ];
+        $errors = [];
+        if ($result->isFatalError() || $result->isExpectationError()) {
+            $error = $result->getError();
+            if ($error instanceof ApiException) { // Replace by a more friendly message on Blackfire
+                $message = sprintf('Got a "%s" error from Blackfire\'s API. Please consult the Player output for more details.', $error->getCode());
+            } else {
+                $message = $error->getMessage();
             }
 
-            $report = $this->callApi(function () use ($blackfireScenario, $errors) {
-                return $this->blackfire->closeScenario($blackfireScenario, $errors);
-            });
-
-            $extra->set('blackfire_report', $report);
+            $errors = [
+                ['message' => $message, 'code' => $error->getCode()],
+            ];
         }
+
+        $report = $this->callApi(function () use ($blackfireScenario, $errors) {
+            return $this->blackfire->closeScenario($blackfireScenario, $errors);
+        });
+
+        $extra->set('blackfire_report', $report);
 
         if (null !== $blackfireScenario->getUrl()) {
             $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $blackfireScenario->getUrl()));
