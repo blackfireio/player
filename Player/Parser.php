@@ -21,6 +21,7 @@ use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\BlockStep;
 use Blackfire\Player\Step\ClickStep;
 use Blackfire\Player\Step\ConditionStep;
+use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\EmptyStep;
 use Blackfire\Player\Step\FollowStep;
 use Blackfire\Player\Step\LoopStep;
@@ -59,7 +60,7 @@ class Parser
      */
     public function load($file)
     {
-        if (is_resource($file)) {
+        if (\is_resource($file)) {
             fseek($file, 0);
 
             return $this->parse(stream_get_contents($file));
@@ -396,6 +397,10 @@ class Parser
 
             if ($nextIndent > $expectedIndent) {
                 throw new SyntaxErrorException(sprintf('Indentation too wide %s.', $input->getContextString()));
+            }
+
+            if (!$step instanceof ConfigurableStep) {
+                throw new SyntaxErrorException('Cannot configure a non configurable step.');
             }
 
             $line = $input->getNextLine();

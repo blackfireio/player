@@ -18,6 +18,7 @@ use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\Step\Step;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -107,6 +108,10 @@ class CliFeedbackExtension extends AbstractExtension
             $this->output->writeln('');
         } else {
             $this->output->write("\r\033[K\033[1A\033[K");
+        }
+
+        if (!$step instanceof Step) {
+            return $response;
         }
 
         foreach ($step->getDumpValuesName() as $varName) {
