@@ -84,6 +84,8 @@ to store all requests and responses on disk.
 
 The command returns 1 if at least one scenario fails, 0 otherwise.
 
+.. _crawling-an-http-application:
+
 Crawling an HTTP application
 ----------------------------
 
@@ -182,10 +184,14 @@ forms, or follow redirections (see `Making requests`_ for more information):
                 }
                 """
 
+.. _making-requests:
+
 Making Requests
 ~~~~~~~~~~~~~~~
 
 There are several ways you can jump from one HTTP request to the next.
+
+.. _visiting-a-page-with-visit:
 
 Visiting a Page with ``visit``
 ++++++++++++++++++++++++++++++
@@ -208,6 +214,8 @@ You can also pass a Request body:
             method 'PUT'
             body '{ "title": "New Title" }'
 
+.. _clicking-on-a-link-with-click:
+
 Clicking on a Link with ``click``
 +++++++++++++++++++++++++++++++++
 
@@ -217,6 +225,8 @@ Clicking on a Link with ``click``
 
     scenario
         click link("Add a blog post")
+
+.. _submitting-forms-with-submit:
 
 Submitting Forms with ``submit``
 ++++++++++++++++++++++++++++++++
@@ -249,6 +259,8 @@ Values can also be randomly generated via the ``fake()`` function:
 
     ``fake()`` use the `Faker library <https://github.com/fzaninotto/Faker>`_
     under the hood.
+
+.. _following-redirections:
 
 Following Redirections
 ++++++++++++++++++++++
@@ -296,6 +308,8 @@ and assertions (``assert``) are checked on the redirecting response
 (so, before the redirection).
 Use a ``follow`` step if you need to check them after the redirection.
 
+.. _embedding-scenarios-with-include:
+
 Embedding Scenarios with ``include``
 ++++++++++++++++++++++++++++++++++++
 
@@ -329,10 +343,14 @@ it:
         visit url('/admin')
             expect status_code() == 200
 
+.. _configuring-the-request:
+
 Configuring the Request
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Each step can be configured via the following options.
+
+.. _setting-a-header-with-header:
 
 Setting a Header with ``header``
 ++++++++++++++++++++++++++++++++
@@ -356,6 +374,8 @@ Setting a Header with ``header``
             visit url('/')
                 header 'User-Agent: ' ~ fake('firefox')
 
+.. _setting-a-user-and-password-with-auth:
+
 Setting a User and Password with ``auth``
 +++++++++++++++++++++++++++++++++++++++++
 
@@ -366,6 +386,8 @@ Setting a User and Password with ``auth``
     scenario
         visit url('/')
             auth "username:password"
+
+.. _waiting-after-sending-the-request-with-wait:
 
 Waiting after sending the request with ``wait``
 +++++++++++++++++++++++++++++++++++++++++++++++
@@ -387,6 +409,8 @@ The ``wait`` value can be any valid expression; get a random delay by using
         visit url('/')
             wait fake('numberBetween', 1000, 3000)
 
+.. _sending-a-json-body-with-json:
+
 Sending a JSON Body with ``json``
 +++++++++++++++++++++++++++++++++
 
@@ -399,6 +423,8 @@ Sending a JSON Body with ``json``
             method 'POST'
             param foo "bar"
             json true
+
+.. _setting-options-for-all-steps:
 
 Setting Options for all Steps
 +++++++++++++++++++++++++++++
@@ -419,6 +445,8 @@ You can also set some of these options for all steps of a scenario:
         visit url('/')
             header "Accept-Language: false"
             auth false
+
+.. _writing-expectations:
 
 Writing Expectations
 --------------------
@@ -505,6 +533,8 @@ Here are some expression examples:
     # get keys
     json("arguments."sql.pdo.queries".keys(@)")
 
+.. _using-variables:
+
 Using Variables
 ---------------
 
@@ -541,6 +571,8 @@ listing all the files as arguments to the player:
 
     # load and execute all scenarios from files in all sub-ddirectories
     load "**/*.bkf"
+
+.. _writing-blackfire-assertions:
 
 Writing Blackfire Assertions
 ----------------------------
@@ -627,6 +659,8 @@ Variables are a great way to make your Blackfire assertions conditional:
         visit url('/blog/')
             assert "prod" == env and metrics.twig.compile.count == 0
             warmup true
+
+.. _scraping-values:
 
 Scraping Values
 ---------------
