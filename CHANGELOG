@@ -1,9 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
-* 0.14.0 (to be defined)
+* 0.14.0 (2018-11-30)
 
  * Improve error reporting
+ * Fix expectations not sent to Blackfire
 
 * 0.13.0 (2018-09-21)
 
