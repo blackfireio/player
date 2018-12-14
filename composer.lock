@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.17.5",
+            "version": "v1.17.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "5f54a27c904e510b40e994927be215cfb882e09a"
+                "reference": "fad1707b03c564baf61573bf8ac1e83ad59703eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/5f54a27c904e510b40e994927be215cfb882e09a",
-                "reference": "5f54a27c904e510b40e994927be215cfb882e09a",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/fad1707b03c564baf61573bf8ac1e83ad59703eb",
+                "reference": "fad1707b03c564baf61573bf8ac1e83ad59703eb",
                 "shasum": ""
             },
             "require": {
@@ -59,7 +59,7 @@
                 "uprofiler",
                 "xhprof"
             ],
-            "time": "2018-12-14T14:20:58+00:00"
+            "time": "2018-12-17T11:03:35+00:00"
         },
         {
             "name": "composer/ca-bundle",
