@@ -46,7 +46,6 @@ final class PlayerCommand extends Command
                 new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('full-report', '', InputOption::VALUE_NONE, '[Deprecated] Outputs execution report as JSON', null),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
@@ -71,12 +70,6 @@ final class PlayerCommand extends Command
 
         $json = $input->getOption('json');
 
-        if ($input->getOption('full-report')) {
-            $output->writeln('<warning>The "--full-report" option is deprecated. Use the "--json" option instead.</warning>');
-            $output->writeln('');
-            $json = true;
-        }
-
         $clients = [$this->createClient()];
         $concurrency = $input->getOption('concurrency');
         for ($i = 1; $i < $concurrency; ++$i) {
@@ -94,8 +87,8 @@ final class PlayerCommand extends Command
         }
 
         if ('php://stdin' === $input->getArgument('file')) {
-            $copy = fopen('php://memory', 'r+');
-            stream_copy_to_stream(fopen('php://stdin', 'r'), $copy);
+            $copy = fopen('php://memory', 'r+b');
+            stream_copy_to_stream(fopen('php://stdin', 'rb'), $copy);
             $input->setArgument('file', $copy);
         }
 
@@ -120,7 +113,7 @@ final class PlayerCommand extends Command
         if ($json) {
             $file = $input->getArgument('file');
 
-            if (is_resource($file)) {
+            if (\is_resource($file)) {
                 fseek($file, 0);
 
                 $extraInput = [
