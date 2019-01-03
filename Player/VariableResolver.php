@@ -22,7 +22,11 @@ class VariableResolver
             $succeed = false;
             foreach ($toResolve as $key => $value) {
                 try {
-                    $resolved[$key] = $this->language->evaluate($value, $resolved);
+                    if (null === $value || '' === $value) {
+                        $resolved[$key] = $value;
+                    } else {
+                        $resolved[$key] = $this->language->evaluate($value, $resolved);
+                    }
                     unset($toResolve[$key]);
                     $succeed = true;
                 } catch (SyntaxError $lastException) {

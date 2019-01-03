@@ -147,4 +147,44 @@ EOD;
         $this->assertSame($expectedOutput, $process->getOutput());
         $this->assertContains($expectedErrorOutput, $process->getErrorOutput());
     }
+
+    public function testNoEndpoint()
+    {
+        $script = <<<EOS
+scenario
+    name "Test"
+    visit "/"
+        expect status_code() == 200
+EOS;
+
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', 'php://stdin', '--json'], __DIR__.'/../../../bin');
+        $process->setInput($script);
+        $process->run();
+
+        $expectedOutput = '{
+    "name": null,
+    "results": [
+        {
+            "scenario": "\"Test\"",
+            "values": [],
+            "error": {
+                "message": "Unable to crawl a non-absolute URI (/). Did you forget to set an \"endpoint\"?",
+                "code": 0
+            }
+        }
+    ],
+    "message": "Build encountered a fatal error",
+    "code": 65,
+    "success": true,
+    "input": {
+        "path": "php://stdin",
+        "content": "scenario\n    name \"Test\"\n    visit \"/\"\n        expect status_code() == 200"
+    }
+}
+';
+
+        $this->assertSame($expectedOutput, $process->getOutput());
+        $this->assertContains('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
+    }
 }
