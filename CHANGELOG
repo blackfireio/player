@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.0.1 (2019-01-04)
+
+ * Fix cryptic message when no-endpoint is defined
+
 * 1.0.0 (2019-01-03)
 
  * Release version 1.0
