@@ -366,7 +366,11 @@ final class BlackfireExtension extends AbstractExtension
         });
 
         if ($profile->isErrored()) {
-            throw new ExpectationErrorException('Assertion syntax error.');
+            if ($profile->getTests()) {
+                throw new ExpectationErrorException('At least one assertion is invalid.');
+            }
+
+            throw new ExpectationErrorException('None of your assertions apply to this scenario.');
         } elseif (!$profile->isSuccessful()) {
             $failures = [];
             foreach ($profile->getTests() as $test) {
