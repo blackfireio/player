@@ -67,8 +67,7 @@ final class TracerExtension extends AbstractExtension
     {
         ++$this->stepCount;
 
-        $target = sprintf('%s/%d', $this->currentDir, $this->stepCount);
-        $this->fs->mkdir($target);
+        $target = $this->getDirectory();
 
         file_put_contents($target.'/request.txt', Psr7\str($request));
         file_put_contents($target.'/step.txt', (string) $step);
@@ -78,29 +77,46 @@ final class TracerExtension extends AbstractExtension
 
     public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
     {
-        $target = sprintf('%s/%d/response.txt', $this->currentDir, $this->stepCount);
-        $this->fs->mkdir(\dirname($target));
+        $target = $this->getDirectory();
 
-        file_put_contents($target, Psr7\str($response));
+        file_put_contents($target.'/response.txt', Psr7\str($response));
+        file_put_contents($target.'/variables.json', json_encode($this->getVariables($context), JSON_PRETTY_PRINT));
 
         return $response;
     }
 
     public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context)
     {
+        $target = $this->getDirectory();
+        file_put_contents($target.'/variables.json', json_encode($this->getVariables($context), JSON_PRETTY_PRINT));
+
         $response = $context->getResponse();
         if (!$response) {
             return;
         }
 
-        $target = sprintf('%s/%d/response.txt', $this->currentDir, $this->stepCount);
-        $this->fs->mkdir(\dirname($target));
-
-        file_put_contents($target, Psr7\str($response));
+        file_put_contents($target.'/response.txt', Psr7\str($response));
     }
 
     public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
     {
         $this->output->writeln(sprintf('<comment>Traces under %s</>', $this->dir));
+    }
+
+    private function getVariables(Context $context)
+    {
+        $variables = $context->getVariableValues();
+        unset($variables['_crawler']);
+        unset($variables['_response']);
+
+        return $variables;
+    }
+
+    private function getDirectory()
+    {
+        $target = sprintf('%s/%d', $this->currentDir, $this->stepCount);
+        $this->fs->mkdir($target);
+
+        return $target;
     }
 }
