@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.1.0 (2019-01-10)
+
+ * Dump variables when the --tracer option is used
+ * Improve error message for invalid assertions configuration
+
 * 1.0.1 (2019-01-04)
 
  * Fix cryptic message when no-endpoint is defined
