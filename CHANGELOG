@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.1.1 (2019-01-11)
+
+ * Fix request info sent when using Blackfire's build
+
 * 1.1.0 (2019-01-10)
 
  * Dump variables when the --tracer option is used
