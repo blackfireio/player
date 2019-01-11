@@ -333,7 +333,7 @@ final class BlackfireExtension extends AbstractExtension
         return trim(strtolower(preg_replace('~[^\pL\d]+~u', '-', $title)), '-');
     }
 
-    private function createProfileConfig(AbstractStep $step, Context $context, RequestInterface $request, Build\Scenario $scenario = null)
+    private function createProfileConfig(ConfigurableStep $step, Context $context, RequestInterface $request, Build\Scenario $scenario = null)
     {
         $config = new ProfileConfiguration();
         if (null !== $scenario) {
@@ -349,6 +349,18 @@ final class BlackfireExtension extends AbstractExtension
 
         $name = $step->getName() ?: sprintf('%s resource', $request->getUri()->getPath() ?: '/');
         $config->setTitle(trim($name, '"'));
+
+        $path = $request->getUri()->getPath() ?: '/';
+        $query = $request->getUri()->getQuery();
+        if ('' !== $query) {
+            $path .= '?'.$query;
+        }
+
+        $config->setRequestInfo([
+            'method' => $request->getMethod(),
+            'path' => $path,
+            'headers' => $step->getHeaders(),
+        ]);
 
         if ($step instanceof Step) {
             foreach ($step->getAssertions() as $assertion) {

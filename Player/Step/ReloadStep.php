@@ -26,6 +26,10 @@ class ReloadStep extends Step
                 ->followRedirects($step->isFollowingRedirects())
             ;
 
+            foreach ($step->getHeaders() as $header) {
+                $this->header($header);
+            }
+
             if ($step->isJson()) {
                 $this->json();
             }
