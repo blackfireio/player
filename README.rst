@@ -591,7 +591,7 @@ Each scenario in the build contains profiles and assertion reports for requests 
         # Use the environment name (or UUID) you're targeting or false to disable
         blackfire "Environment name"
 
-It's possible use ``true`` instead of an environment name. In that case, the
+It's possible to use ``true`` instead of an environment name. In that case, the
 environment name should be set via the ``--blackfire-env`` CLI option:
 
 .. code-block:: blackfire
@@ -613,7 +613,7 @@ environment name should be set via the ``--blackfire-env`` CLI option:
     .. code-block:: bash
 
         BLACKFIRE_EXTERNAL_ID=ref BLACKFIRE_EXTERNAL_PARENT_ID=parent \
-        blackfire-player run scenario.bkf --blackfire=ENV_NAME_OR_UUID
+        blackfire-player run scenario.bkf --blackfire-env=ENV_NAME_OR_UUID
 
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
 are automatically run along side expectations.
