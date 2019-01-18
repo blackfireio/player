@@ -573,6 +573,22 @@ listing all the files as arguments to the player:
 Writing Blackfire Assertions
 ----------------------------
 
+.. note::
+
+    To use Blackfire assertions, you will need your client credentials
+    available at https://blackfire.io/my/settings/credentials
+
+    If you have installed the Blackfire CLI, be sure you have ran
+    the command ``blackfire config`` once to create the ``~/.blackfire.ini``
+    file where your credentials will be stored.
+
+    Alternatively, you can also set the environment variables
+    ``BLACKFIRE_CLIENT_ID`` and ``BLACKFIRE_CLIENT_TOKEN`` before running the
+    Blackfire Player.
+
+    Please note also that Blackfire assertions requires a Premium or Enterprise
+    account purchased on https://blackfire.io.
+
 Blackfire Player natively supports Blackfire:
 
 .. code-block:: bash
@@ -605,13 +621,9 @@ environment name should be set via the ``--blackfire-env`` CLI option:
 
 .. note::
 
-    You can set the ``external_id`` and ``external_parent_id`` settings of the
-    build by passing environment variables:
-
-    .. code-block:: bash
-
-        BLACKFIRE_EXTERNAL_ID=ref BLACKFIRE_EXTERNAL_PARENT_ID=parent \
-        blackfire-player run scenario.bkf --blackfire-env=ENV_NAME_OR_UUID
+    When using the ``--blackfire-env`` option, all requests are profiled by
+    default via Blackfire, you can disable it for some requests by setting
+    ``blackfire false``.
 
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
 are automatically run along side expectations.
@@ -640,9 +652,6 @@ Additional features are also automatically activated:
             samples 2
             warmup true
 
-By default, all requests are profiled via Blackfire, you can disable it for
-some requests by calling ``blackfire(false)``.
-
 Variables are a great way to make your Blackfire assertions conditional:
 
 .. code-block:: blackfire
@@ -655,6 +664,18 @@ Variables are a great way to make your Blackfire assertions conditional:
         visit url('/blog/')
             assert "prod" == env and metrics.twig.compile.count == 0
             warmup true
+
+.. note::
+
+    To make some comparisons with a previous build, you can set the
+    ``external_id`` and ``external_parent_id`` settings of the build by passing
+    environment variables:
+
+    .. code-block:: bash
+
+        BLACKFIRE_EXTERNAL_ID=current_build_reference \
+        BLACKFIRE_EXTERNAL_PARENT_ID=parent_build_reference \
+        blackfire-player run scenario.bkf --blackfire-env=ENV_NAME_OR_UUID
 
 .. _scraping-values:
 
