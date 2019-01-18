@@ -26,7 +26,6 @@ Download
 Running ``.bkf`` files can be done via the Blackfire Player:
 
 .. code-block:: bash
-    :zerocopy:
 
     curl -OLsS http://get.blackfire.io/blackfire-player.phar
 
@@ -34,7 +33,6 @@ Use ``php blackfire-player.phar`` to run the player or make it executable and
 move it to a directory under your ``PATH``:
 
 .. code-block:: bash
-    :zerocopy:
 
     chmod +x blackfire-player.phar
     mv blackfire-player.phar /usr/local/bin/blackfire-player
