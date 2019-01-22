@@ -15,6 +15,8 @@ use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\CliFeedbackExtension;
+use Blackfire\Player\Extension\DisableInternalNetworkExtension;
+use Blackfire\Player\Extension\SecurityExtension;
 use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\Runner;
 use Blackfire\Player\Player;
@@ -49,6 +51,7 @@ final class PlayerCommand extends Command
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
+                new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
             ])
             ->setDescription('Runs scenario files')
@@ -80,10 +83,14 @@ final class PlayerCommand extends Command
 
         $language = new ExpressionLanguage(null, [new LanguageProvider()]);
         $player = new Player($runner, $language);
+        $player->addExtension(new SecurityExtension());
         $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
         $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
         if ($input->getOption('tracer')) {
             $player->addExtension(new TracerExtension($output));
+        }
+        if ($input->getOption('disable-internal-network')) {
+            $player->addExtension(new DisableInternalNetworkExtension());
         }
 
         if ('php://stdin' === $input->getArgument('file')) {
