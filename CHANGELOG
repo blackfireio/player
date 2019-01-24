@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.1.2 (2019-01-24)
+
+ * Update dependencies
+ * Improve documentation
+
 * 1.1.1 (2019-01-11)
 
  * Fix request info sent when using Blackfire's build
