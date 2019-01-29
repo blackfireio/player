@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.2.0 (2019-01-29)
+
+ * Add the Disable Internal Network Extension
+ * Update to latest Composer CA bundle
+
 * 1.1.2 (2019-01-24)
 
  * Update dependencies
