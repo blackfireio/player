@@ -21,6 +21,7 @@ use Psr\Http\Message\RequestInterface;
  * @author Xavier Leune <xavier@ccmbenchmark.com>
  *
  * Courtesy of Xavier Leune work
+ *
  * @see https://github.com/xavierleune/demo-forum-php/blob/master/src/Extractor/UrlCrawler6.php
  *
  * @internal
@@ -55,10 +56,7 @@ final class DisableInternalNetworkExtension extends AbstractExtension
             }
 
             // Force IP
-            $request = $request
-                ->withUri($request->getUri()->withHost($ip))
-                ->withHeader('Host', $host)
-            ;
+            $context->setResolvedIp($ip);
         }
 
         return $request;

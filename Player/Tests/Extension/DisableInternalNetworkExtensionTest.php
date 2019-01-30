@@ -68,24 +68,4 @@ class DisableInternalNetworkExtensionTest extends TestCase
         yield ['http://54.75.240.245'];
         yield ['http://34.232.230.241/index.php'];
     }
-
-    public function testValidateFixedIP()
-    {
-        DnsMock::withMockedHosts([
-            'hack-local.com' => [
-                ['type' => 'A', 'ip' => '54.75.240.245'],
-                ['type' => 'A', 'ip' => '192.168.3.4'],
-            ],
-        ]);
-
-        $extension = new DisableInternalNetworkExtension();
-        $request = new Request('GET', 'https://hack-local.com/index.php');
-
-        $res = $extension->enterStep($this->createMock(AbstractStep::class), $request, $this->createMock(Context::class));
-
-        $this->assertNotSame($request, $res);
-
-        $this->assertEquals('https://54.75.240.245/index.php', (string) $res->getUri());
-        $this->assertEquals('hack-local.com', (string) $res->getHeaderLine('Host'));
-    }
 }

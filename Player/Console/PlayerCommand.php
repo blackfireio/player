@@ -18,11 +18,16 @@ use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
 use Blackfire\Player\Extension\SecurityExtension;
 use Blackfire\Player\Extension\TracerExtension;
+use Blackfire\Player\Guzzle\CurlFactory;
 use Blackfire\Player\Guzzle\Runner;
 use Blackfire\Player\Player;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\Handler\CurlMultiHandler;
+use GuzzleHttp\Handler\Proxy;
+use GuzzleHttp\HandlerStack;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -149,7 +154,39 @@ final class PlayerCommand extends Command
 
     private function createClient()
     {
-        return new GuzzleClient(['cookies' => true, 'allow_redirects' => false, 'http_errors' => false]);
+        $handler = $this->createCurlHandler();
+        $stack = HandlerStack::create($handler);
+
+        return new GuzzleClient([
+            'handler' => $stack,
+            'cookies' => true,
+            'allow_redirects' => false,
+            'http_errors' => false,
+        ]);
+    }
+
+    /**
+     * Adapted from \GuzzleHttp\choose_handler() to allow setting the 'handle_factory" option.
+     */
+    private function createCurlHandler()
+    {
+        $handlerOptions = [
+            'handle_factory' => new CurlFactory(3),
+        ];
+
+        if (\function_exists('curl_multi_exec') && \function_exists('curl_exec')) {
+            return Proxy::wrapSync(new CurlMultiHandler($handlerOptions), new CurlHandler($handlerOptions));
+        }
+
+        if (\function_exists('curl_exec')) {
+            return new CurlHandler($handlerOptions);
+        }
+
+        if (\function_exists('curl_multi_exec')) {
+            return new CurlMultiHandler($handlerOptions);
+        }
+
+        throw new \RuntimeException('Blackfire Player requires cURL.');
     }
 
     private function createReport(Results $results)

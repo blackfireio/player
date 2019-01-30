@@ -29,6 +29,7 @@ class Context
     private $crawler;
     private $requestStats;
     private $scenarioSetBag;
+    private $resolvedIp;
 
     public function __construct($name, ValueBag $scenarioSetBag = null)
     {
@@ -90,6 +91,16 @@ class Context
     public function getScenarioSetBag()
     {
         return $this->scenarioSetBag;
+    }
+
+    public function getResolvedIp()
+    {
+        return $this->resolvedIp;
+    }
+
+    public function setResolvedIp($resolvedIp)
+    {
+        $this->resolvedIp = $resolvedIp;
     }
 
     /**
