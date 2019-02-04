@@ -565,7 +565,7 @@ listing all the files as arguments to the player:
     # load and execute all scenarios from files in this directory
     load "*.bkf"
 
-    # load and execute all scenarios from files in all sub-ddirectories
+    # load and execute all scenarios from files in all sub-directories
     load "**/*.bkf"
 
 .. _writing-blackfire-assertions:
