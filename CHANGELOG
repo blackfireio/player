@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.2.1 (2019-02-04)
+
+ * Fix certificate verification when using DisableInternalNetworkExtension
+ * Update player composer dependencies
+ * Fix typo in doc
+
 * 1.2.0 (2019-01-29)
 
  * Add the Disable Internal Network Extension
