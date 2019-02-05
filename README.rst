@@ -312,7 +312,7 @@ Embedding Scenarios with ``include``
 ``include`` allows to embed some repetitive steps into several scenarios to
 avoid copy/pasting the same code over and over again:
 
-In a ``login.bkf`` file, write a ``group`` that contains the logic to log in:
+In a ``groups.bkf`` file, write a ``group`` that contains the logic to log in:
 
 .. code-block:: blackfire
 
