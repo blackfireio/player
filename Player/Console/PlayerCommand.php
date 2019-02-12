@@ -57,6 +57,7 @@ final class PlayerCommand extends Command
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
                 new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network', null),
+                new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
             ])
             ->setDescription('Runs scenario files')
@@ -77,11 +78,12 @@ final class PlayerCommand extends Command
         }
 
         $json = $input->getOption('json');
+        $sslNoVerify = $input->getOption('ssl-no-verify');
 
-        $clients = [$this->createClient()];
+        $clients = [$this->createClient($sslNoVerify)];
         $concurrency = $input->getOption('concurrency');
         for ($i = 1; $i < $concurrency; ++$i) {
-            $clients[] = $this->createClient();
+            $clients[] = $this->createClient($sslNoVerify);
         }
 
         $runner = new Runner($clients);
@@ -152,7 +154,7 @@ final class PlayerCommand extends Command
         return $exitCode;
     }
 
-    private function createClient()
+    private function createClient($sslNoVerify)
     {
         $handler = $this->createCurlHandler();
         $stack = HandlerStack::create($handler);
@@ -162,6 +164,7 @@ final class PlayerCommand extends Command
             'cookies' => true,
             'allow_redirects' => false,
             'http_errors' => false,
+            'verify' => !$sslNoVerify,
         ]);
     }
 
