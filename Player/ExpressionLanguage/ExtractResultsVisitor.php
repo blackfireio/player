@@ -109,6 +109,10 @@ class ExtractResultsVisitor
 
     protected function dumpEscaped($value)
     {
+        if ($value instanceof \Symfony\Component\DomCrawler\Crawler) {
+            $value = $value->html();
+        }
+
         return str_replace(['\\', '"'], ['\\\\', '\"'], $value);
     }
 }
