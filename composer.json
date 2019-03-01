@@ -43,6 +43,9 @@
             "/Tests/"
         ]
     },
+    "bin": [
+        "bin/blackfire-player"
+    ],
     "config": {
         "platform": {
             "php": "5.5.9"
