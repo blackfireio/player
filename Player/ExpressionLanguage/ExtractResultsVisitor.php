@@ -110,7 +110,7 @@ class ExtractResultsVisitor
             return $value->html();
         }
 
-        return '';
+        return sprintf('(object) "%s"', get_class($value));
     }
 
     protected function isHash(array $value)
