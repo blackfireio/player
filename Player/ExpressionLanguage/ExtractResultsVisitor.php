@@ -89,9 +89,28 @@ class ExtractResultsVisitor
 
                 return rtrim($str, ', ').']';
 
+            case is_object($value):
+                /** @var string $value */
+                $value = $this->convertObjectToString($value);
+
+                return sprintf('"%s"', $this->dumpEscaped($value));
+
             default:
                 return sprintf('"%s"', $this->dumpEscaped($value));
         }
+    }
+
+    protected function convertObjectToString($value)
+    {
+        if (method_exists($value, '__toString')) {
+            return $value->__toString();
+        }
+
+        if ($value instanceof \Symfony\Component\DomCrawler\Crawler) {
+            return $value->html();
+        }
+
+        return '';
     }
 
     protected function isHash(array $value)
@@ -109,10 +128,6 @@ class ExtractResultsVisitor
 
     protected function dumpEscaped($value)
     {
-        if ($value instanceof \Symfony\Component\DomCrawler\Crawler) {
-            $value = $value->html();
-        }
-
         return str_replace(['\\', '"'], ['\\\\', '\"'], $value);
     }
 }
