@@ -45,23 +45,17 @@ move it to a directory under your ``PATH``:
 Usage
 -----
 
-Use the ``run`` command to execute a scenario:
+Use the ``run`` command to execute a scenario file:
 
 .. code-block:: bash
 
     blackfire-player run scenario.bkf
 
-Use the ``--endpoint`` option to override the endpoint defined in scenarios:
+Use the ``--endpoint`` option to override the endpoint defined in the scenario file:
 
 .. code-block:: bash
 
     blackfire-player run scenario.bkf --endpoint=http://example.com/
-
-Use the ``--concurrency`` option to run scenarios in parallel:
-
-.. code-block:: bash
-
-     blackfire-player run scenario.bkf --concurrency=5
 
 Use the ``--json`` option to output a JSON report:
 
@@ -74,6 +68,12 @@ Use the ``--variables`` option to override variable values:
 .. code-block:: bash
 
      blackfire-player run scenario.bkf --variables="foo=bar" --variables="bar=foo"
+
+Use the ``--concurrency`` option to run scenarios in parallel (experimental):
+
+.. code-block:: bash
+
+     blackfire-player run scenario.bkf --concurrency=5
 
 Use ``-v`` to get logs about the progress of the player or use ``tracer`` option
 to store all requests and responses on disk.
@@ -92,9 +92,12 @@ written in a domain specific language:
 
     name "A build made of scenario"
 
+    # Default endpoint
+    # Can be override with option "--endpoint=http://newendpoint.com"
+    endpoint "http://example.com/"
+
     scenario
         name "Scenario Name"
-        endpoint "http://example.com/"
 
         visit url('/')
             expect status_code() == 200
@@ -163,23 +166,6 @@ forms, or follow redirections (see `Making requests`_ for more information):
             visit url('/')
                 expect status_code() == 200
 
-.. tip::
-
-    An expression can be written on several lines with the following syntax:
-
-    .. code-block:: blackfire
-
-        scenario
-            visit url('/login')
-                method 'POST'
-                body
-                """
-                {
-                    "user": "john",
-                    "password": "doe"
-                }
-                """
-
 .. _making-requests:
 
 Making Requests
@@ -209,6 +195,23 @@ You can also pass a Request body:
         visit url('/')
             method 'PUT'
             body '{ "title": "New Title" }'
+
+.. tip::
+
+    An expression can be written on several lines with the following syntax:
+
+    .. code-block:: blackfire
+
+        scenario
+            visit url('/login')
+                method 'POST'
+                body
+                """
+                {
+                    "user": "john",
+                    "password": "doe"
+                }
+                """
 
 .. _clicking-on-a-link-with-click:
 
@@ -593,10 +596,19 @@ Blackfire Player natively supports Blackfire:
 
 .. code-block:: bash
 
-    blackfire-player run scenario.bkf
+    blackfire-player run scenario.bkf --blackfire-env="Environment name" # Use the environment name or environment UUID
 
 The Blackfire Player creates a build to group all scenarios.
-Each scenario in the build contains profiles and assertion reports for requests made in the executed scenario;
+Each scenario in the build contains profiles and assertion reports for requests made in the executed scenario.
+
+.. note::
+
+    When using the ``--blackfire-env`` option, all requests are profiled by
+    default via Blackfire, you can disable it for some requests or scenarios
+    by setting ``blackfire false``.
+
+Instead of using the ``--blackfire-env`` CLI option, you can also set the Blackfire
+environment in the scenario;
 
 .. code-block:: blackfire
 
@@ -611,19 +623,16 @@ environment name should be set via the ``--blackfire-env`` CLI option:
 .. code-block:: blackfire
 
     scenario
-        name "Scenario Name"
+        name "Scenario with Blackfire"
         # Use the environment name (or UUID) you're targeting or false to disable
         blackfire true
+        # ...
 
-.. code-block:: bash
-
-    blackfire-player run scenario.bkf --blackfire-env="Environment name" # Use the environment name or environment UUID
-
-.. note::
-
-    When using the ``--blackfire-env`` option, all requests are profiled by
-    default via Blackfire, you can disable it for some requests by setting
-    ``blackfire false``.
+    scenario
+        name "Scenario without Blackfire"
+        # You can disable Blackfire support on the scenario, or only on some steps
+        blackfire false
+        # ...
 
 When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
 are automatically run along side expectations.
