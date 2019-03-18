@@ -4,6 +4,7 @@ namespace Blackfire\Player\ExpressionLanguage;
 
 use Symfony\Component\ExpressionLanguage\Node;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
+use Symfony\Component\DomCrawler\Crawler;
 
 class ExtractResultsVisitor
 {
@@ -89,9 +90,28 @@ class ExtractResultsVisitor
 
                 return rtrim($str, ', ').']';
 
+            case \is_object($value):
+                /** @var string $value */
+                $value = $this->convertObjectToString($value);
+
+                return sprintf('"%s"', $this->dumpEscaped($value));
+
             default:
                 return sprintf('"%s"', $this->dumpEscaped($value));
         }
+    }
+
+    protected function convertObjectToString($value)
+    {
+        if (method_exists($value, '__toString')) {
+            return $value->__toString();
+        }
+
+        if ($value instanceof Crawler) {
+            return $value->html();
+        }
+
+        return sprintf('(object) "%s"', \get_class($value));
     }
 
     protected function isHash(array $value)
