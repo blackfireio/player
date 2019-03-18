@@ -237,7 +237,11 @@ class Parser
             $this->inAGroup = true;
             $this->groups[$arguments] = $step;
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
-            $step->setBlockStep($this->parseSteps($input, $expectedIndent + 1));
+            $groupSteps = $this->parseSteps($input, $expectedIndent + 1);
+            if ($groupSteps instanceof EmptyStep) {
+                throw new LogicException(sprintf('A "group" must contains at least 1 step %s.', $input->getContextString()));
+            }
+            $step->setBlockStep($groupSteps);
 
             return $step;
         } elseif ('block' === $keyword) {
@@ -369,7 +373,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
             }
 
-            if (array_key_exists($matches[1], $this->globalVariables)) {
+            if (\array_key_exists($matches[1], $this->globalVariables)) {
                 throw new LogicException(sprintf('You cannot redeclare the global variable "%s" %s', $matches[1], $input->getContextString()));
             }
 
