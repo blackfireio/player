@@ -27,7 +27,7 @@ Running ``.bkf`` files can be done via the Blackfire Player:
 
 .. code-block:: bash
 
-    curl -OLsS http://get.blackfire.io/blackfire-player.phar
+    curl -OLsS https://get.blackfire.io/blackfire-player.phar
 
 Use ``php blackfire-player.phar`` to run the player or make it executable and
 move it to a directory under your ``PATH``:
