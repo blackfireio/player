@@ -1,0 +1,25 @@
+Blackfire Player
+
+Scenario  "Check"
+ "Loading /"
+GET http://0:8399/with-include/
+ "Checking /"
+GET http://0:8399/with-include/
+ "Loading /"
+GET http://0:8399/with-include/about
+ "Checking /"
+GET http://0:8399/with-include/about
+ "Loading /"
+GET http://0:8399/with-include/community
+ "Checking /"
+GET http://0:8399/with-include/community
+  OK
+
+Scenario  "Pages"
+ "Checking /about"
+GET http://0:8399/with-include/about
+ "Checking /community"
+GET http://0:8399/with-include/community
+  OK
+
+ OK  Scenarios  2  - Steps  8

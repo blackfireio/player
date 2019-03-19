@@ -1,0 +1,39 @@
+group slugs
+    set slugs \
+        [ \
+            '/about', '/community', \
+        ]
+
+group http_check
+    visit url('/with-include' ~ url)
+        name "Loading " ~ url
+        blackfire false
+        expect status_code() == 200
+        wait 1000
+
+    reload
+        name "Checking " ~ url
+        blackfire false
+        expect status_code() == 200
+
+scenario
+    name "Check"
+    set env "prod"
+    set urls ['/']
+
+    when "prod" == env
+        with url in urls
+            include http_check
+
+        include slugs
+            with url in slugs
+                include http_check
+
+scenario
+    name "Pages"
+
+    include slugs
+        with slug in slugs
+            visit url('/with-include' ~ slug)
+                name "Checking " ~ slug
+                expect status_code() == 200
