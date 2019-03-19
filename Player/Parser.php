@@ -369,7 +369,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
             }
 
-            if (array_key_exists($matches[1], $this->globalVariables)) {
+            if (\array_key_exists($matches[1], $this->globalVariables)) {
                 throw new LogicException(sprintf('You cannot redeclare the global variable "%s" %s', $matches[1], $input->getContextString()));
             }
 

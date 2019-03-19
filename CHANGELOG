@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.4.1 (2019-03-19)
+
+ * Revert empty group latest change, allow for declaring variables
+
 * 1.4.0 (2019-03-18)
 
  * Forbid to declare empty groups
