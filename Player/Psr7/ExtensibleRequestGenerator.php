@@ -45,7 +45,7 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
             $extension->enterScenario($this->scenario, $this->context);
         }
 
-        $exception = null;
+        $exception = $request = null;
         $errors = [];
         try {
             do {
