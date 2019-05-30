@@ -50,7 +50,7 @@ final class PlayerCommand extends Command
         $this
             ->setName('run')
             ->setDefinition([
-                new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
+                new InputArgument('file', InputArgument::OPTIONAL, 'The file defining the scenarios'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
@@ -100,7 +100,7 @@ final class PlayerCommand extends Command
             $player->addExtension(new DisableInternalNetworkExtension());
         }
 
-        if ('php://stdin' === $input->getArgument('file')) {
+        if (!$input->getArgument('file')) {
             $copy = fopen('php://memory', 'r+b');
             stream_copy_to_stream(fopen('php://stdin', 'rb'), $copy);
             $input->setArgument('file', $copy);

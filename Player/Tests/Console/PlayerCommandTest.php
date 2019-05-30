@@ -125,7 +125,7 @@ class PlayerCommandTest extends TestCase
     public function testErrorStdIn()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', 'php://stdin', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '--json'], __DIR__.'/../../../bin');
         $process->setInput('papilou!');
         $process->run();
 
@@ -158,7 +158,7 @@ scenario
 EOS;
 
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', 'php://stdin', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '--json'], __DIR__.'/../../../bin');
         $process->setInput($script);
         $process->run();
 
