@@ -100,7 +100,7 @@ final class PlayerCommand extends Command
             $player->addExtension(new DisableInternalNetworkExtension());
         }
 
-        if (!$input->getArgument('file')) {
+        if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
             if ($input->isInteractive()) {
                 throw new \LogicException("The 'run' command requires a file as first argument or a scenario in STDIN. It cannot be used in interactive mode.");
             }
