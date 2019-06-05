@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.5.0 (2019-06-05)
+
+ * Fixed stdin support for the player
+ * Update dependencies
+
 * 1.4.1 (2019-03-19)
 
  * Revert empty group latest change, allow for declaring variables
