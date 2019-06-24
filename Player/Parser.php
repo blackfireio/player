@@ -177,7 +177,7 @@ class Parser
             $paths = Glob::glob($glob);
 
             if (!$paths) {
-                throw new \InvalidArgumentException(sprintf('File "%s" does not exist.', $glob));
+                throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $glob));
             }
 
             $scenarios = new ScenarioSet();

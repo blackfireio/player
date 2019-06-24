@@ -11,10 +11,6 @@
 
 namespace Blackfire\Player\Validator;
 
-use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
-use Blackfire\Player\Exception\InvalidArgumentException;
-use Blackfire\Player\Exception\LogicException;
-use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\Parser;
 
 class BkfValidator
@@ -39,13 +35,7 @@ class BkfValidator
             } else {
                 $parser->parse($input);
             }
-        } catch (SyntaxErrorException $e) {
-            return $this->handleError($e);
-        } catch (ExpressionSyntaxErrorException $e) {
-            return $this->handleError($e);
-        } catch (InvalidArgumentException $e) {
-            return $this->handleError($e);
-        } catch (LogicException $e) {
+        } catch (\Exception $e) {
             return $this->handleError($e);
         }
 
