@@ -135,7 +135,7 @@ class Context
         $values = $this->valueBag->all($trim);
 
         foreach ($this->getStepContext()->getVariables() as $key => $value) {
-            if (!array_key_exists($key, $values)) {
+            if (!\array_key_exists($key, $values)) {
                 $values[$key] = $trim && \is_string($value) ? trim($value) : $value;
             }
         }

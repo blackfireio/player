@@ -34,7 +34,7 @@ scenario
 
 EOF;
 
-        $stream = fopen('php://memory', 'r+');
+        $stream = fopen('php://memory', 'r+b');
         fwrite($stream, $bkf);
         fseek($stream, 0);
 
@@ -194,7 +194,7 @@ EOEXPECTED;
 
     private function getVarDumperDump($data)
     {
-        $h = fopen('php://memory', 'r+b');
+        $h = fopen('php://memory', 'r+');
         $cloner = new VarCloner();
         $cloner->setMaxItems(-1);
         $dumper = new VarDumper($h);

@@ -27,12 +27,12 @@ class ValueBag
 
     public function has($name)
     {
-        return array_key_exists($name, $this->values);
+        return \array_key_exists($name, $this->values);
     }
 
     public function get($name)
     {
-        if (!array_key_exists($name, $this->values)) {
+        if (!\array_key_exists($name, $this->values)) {
             throw new ValueException(sprintf('Variable "%s" is not defined.', $name));
         }
 

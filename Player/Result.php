@@ -80,7 +80,7 @@ class Result implements \ArrayAccess, \Iterator
 
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->values);
+        return \array_key_exists($offset, $this->values);
     }
 
     public function offsetUnset($offset)
@@ -90,7 +90,7 @@ class Result implements \ArrayAccess, \Iterator
 
     public function offsetGet($offset)
     {
-        if (!array_key_exists($offset, $this->values)) {
+        if (!\array_key_exists($offset, $this->values)) {
             throw new InvalidArgumentException(sprintf('The "%s" variable does not exist.', $offset));
         }
 

@@ -119,7 +119,7 @@ class CliFeedbackExtension extends AbstractExtension
                 $this->output->write(sprintf("<debug>request:</>\n%s\n", \GuzzleHttp\Psr7\str($request)));
             } elseif ('response' === $varName) {
                 $this->output->write(sprintf("<debug>response:</>\n%s\n", \GuzzleHttp\Psr7\str($response)));
-            } elseif (array_key_exists($varName, $context->getVariableValues())) {
+            } elseif (\array_key_exists($varName, $context->getVariableValues())) {
                 $this->output->write(sprintf('<debug>%s:</> ', $varName));
                 $dump = $this->dumper;
                 $dump($context->getVariableValues()[$varName]);

@@ -33,7 +33,7 @@ final class OutputErrorHandler
                 if ($event->getInput()->hasArgument('file')) {
                     $file = $event->getInput()->getArgument('file');
 
-                    if (is_resource($file)) {
+                    if (\is_resource($file)) {
                         fseek($file, 0);
 
                         $extra['input'] = [

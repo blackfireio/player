@@ -124,20 +124,20 @@ final class Input
                 while (null !== $line = array_shift($input)) {
                     ++$lineno;
 
-                    if (strlen($indent) && 0 !== strpos($line, $indent)) {
+                    if (\strlen($indent) && 0 !== strpos($line, $indent)) {
                         throw new SyntaxErrorException(sprintf('Incorrect indentation in multi-lines string at line %d.', $lineno));
                     }
 
                     if (preg_match('/^(\s*)"""$/', $line, $matchesEnd)) { // end multi-lines
                         if ($matchesEnd[1] === $indent) {
-                            if (strlen($val) > 0) {
+                            if (\strlen($val) > 0) {
                                 $val = substr($val, 0, -1);
                             }
                             break;
                         }
                     }
 
-                    $val .= substr($line, strlen($indent))."\n";
+                    $val .= substr($line, \strlen($indent))."\n";
                 }
 
                 $lines[$current] .= ' '.$this->escapeValue($val);
