@@ -634,7 +634,7 @@ environment name should be set via the ``--blackfire-env`` CLI option:
         blackfire false
         # ...
 
-When Blackfire support is enabled, the assertions defined in ``.blackfire.yml``
+When Blackfire support is enabled, the assertions defined in ``.blackfire.yaml``
 are automatically run along side expectations.
 
 Additional features are also automatically activated:
