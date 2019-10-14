@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.19.1",
+            "version": "v1.19.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "638dce007b7f7690aef5586d4e1dd1217586bd31"
+                "reference": "ca4281881d6b5250f3e883596105abb15c3b6f31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/638dce007b7f7690aef5586d4e1dd1217586bd31",
-                "reference": "638dce007b7f7690aef5586d4e1dd1217586bd31",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/ca4281881d6b5250f3e883596105abb15c3b6f31",
+                "reference": "ca4281881d6b5250f3e883596105abb15c3b6f31",
                 "shasum": ""
             },
             "require": {
@@ -62,7 +62,7 @@
                 "uprofiler",
                 "xhprof"
             ],
-            "time": "2019-08-14T09:24:23+00:00"
+            "time": "2019-10-09T13:29:21+00:00"
         },
         {
             "name": "composer/ca-bundle",
@@ -1611,16 +1611,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v4.3.4",
+            "version": "v4.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "3b1ab2e027d7c5af0e693c4a5b4ba5d407f1814d"
+                "reference": "a7fd9e742c31ac2b607b166c9016bab51a36c574"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/3b1ab2e027d7c5af0e693c4a5b4ba5d407f1814d",
-                "reference": "3b1ab2e027d7c5af0e693c4a5b4ba5d407f1814d",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/a7fd9e742c31ac2b607b166c9016bab51a36c574",
+                "reference": "a7fd9e742c31ac2b607b166c9016bab51a36c574",
                 "shasum": ""
             },
             "require": {
@@ -1672,7 +1672,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-08-20T14:27:59+00:00"
+            "time": "2019-10-02T08:36:26+00:00"
         },
         {
             "name": "symfony/process",
