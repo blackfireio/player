@@ -645,12 +645,12 @@ Additional features are also automatically activated:
 
 * **warmup**: Whether to warmup the URL first. Value can be:
 
-    * **true**: Warmup only safe HTTP requests or when the number of samples is more than one.
-      Warmup will be executed 3 times. (default value)
+  * **true**: Warmup only safe HTTP requests or when the number of samples is more than one.
+    Warmup will be executed 3 times. (default value)
 
-    * **A number**: Same behavior than **true**, but allow to change the number of warmup requests.
+  * **A number**: Same behavior than **true**, but allow to change the number of warmup requests.
 
-    * **false**: Disable warmup
+  * **false**: Disable warmup
 
 .. code-block:: blackfire
 
