@@ -153,6 +153,10 @@ final class StepConverter implements StepConverterInterface
             if ($files = $form->getFiles()) {
                 $basePath = rtrim(\dirname($step->getFile()), '/').'/';
 
+                $values = [];
+                foreach ($form->getValues() as $name => $contents) {
+                    $values[] = ['name' => $name, 'contents' => $contents];
+                }
                 foreach ($formValues as $name => $contents) {
                     $data = [
                         'name' => $name,
@@ -170,11 +174,10 @@ final class StepConverter implements StepConverterInterface
                     } else {
                         $data['contents'] = $contents;
                     }
-                    unset($formValues[$name]);
-                    $formValues[] = $data;
+                    $values[] = $data;
                 }
 
-                $body = new Psr7\MultipartStream($formValues);
+                $body = new Psr7\MultipartStream($values);
                 $headers['Content-Type'] = 'multipart/form-data; boundary='.$body->getBoundary();
             } else {
                 $form->setValues($formValues);

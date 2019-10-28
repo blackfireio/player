@@ -11,10 +11,11 @@
         <input type="text" name="firstname">
         <input type="text" name="lastname">
         <input type="file" name="bio">
+        <input type="hidden" name="token" value="foo">
         <button type="submit">Submit</button>
     </form>
 <?php elseif ('POST' === $_SERVER['REQUEST_METHOD']) : ?>
-    <?php echo $_POST['firstname'].'-'.$_POST['lastname'].'-'.$_FILES['bio']['name'].'-'.file_get_contents($_FILES['bio']['tmp_name']); ?>
+    <?php echo $_POST['firstname'].'-'.$_POST['lastname'].'-'.$_FILES['bio']['name'].'-'.$_POST['token'].'-'.file_get_contents($_FILES['bio']['tmp_name']); ?>
 <?php elseif (isset($_GET['json'])) : ?>
     <?php $json = json_decode(file_get_contents('php://input'), true); ?>
     <?php echo $json['firstname'].'-'.$json['lastname']; ?>
