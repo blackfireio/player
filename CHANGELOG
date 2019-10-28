@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.5.1 (2019-10-28)
+
+ * Avoid the BKF validator to throw exceptions
+ * Fix Player when submitting a form with some file upload fields and some hidden fields
+ * Update dependencies
+
 * 1.5.0 (2019-06-05)
 
  * Fixed stdin support for the player
