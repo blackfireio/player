@@ -63,11 +63,11 @@ Use the ``--json`` option to output a JSON report:
 
     blackfire-player run scenario.bkf --json
 
-Use the ``--variables`` option to override variable values:
+Use the ``--variable`` option to override variable values:
 
 .. code-block:: bash
 
-     blackfire-player run scenario.bkf --variables="foo=bar" --variables="bar=foo"
+     blackfire-player run scenario.bkf --variable "foo=bar" --variable "bar=foo"
 
 Use the ``--concurrency`` option to run scenarios in parallel (experimental):
 
