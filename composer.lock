@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3333b58782b5abe1e9e0e519160c4c3f",
+    "content-hash": "3a43366c854e7df0127b7bd2289f4980",
     "packages": [
         {
             "name": "blackfire/php-sdk",
@@ -646,7 +646,7 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
@@ -716,7 +716,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
@@ -788,7 +788,7 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
@@ -841,7 +841,7 @@
         },
         {
             "name": "symfony/debug",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
@@ -897,7 +897,7 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
@@ -954,7 +954,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -1017,7 +1017,7 @@
         },
         {
             "name": "symfony/expression-language",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/expression-language.git",
@@ -1067,7 +1067,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -1290,7 +1290,7 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
@@ -1359,7 +1359,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
@@ -1563,7 +1563,7 @@
     "packages-dev": [
         {
             "name": "symfony/finder",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
@@ -1612,23 +1612,23 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "dev-master",
+            "version": "4.4.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "aaf7fa72c904fff447158c1fa817abbfee7c3920"
+                "reference": "7daa9d4a2f457f9cae32f1c2406de1921dc86a79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/aaf7fa72c904fff447158c1fa817abbfee7c3920",
-                "reference": "aaf7fa72c904fff447158c1fa817abbfee7c3920",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/7daa9d4a2f457f9cae32f1c2406de1921dc86a79",
+                "reference": "7daa9d4a2f457f9cae32f1c2406de1921dc86a79",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.5.9"
             },
             "conflict": {
-                "phpunit/phpunit": "<5.4.3"
+                "phpunit/phpunit": "<4.8.35|<5.4.3,>=5.0"
             },
             "suggest": {
                 "symfony/error-handler": "For tracking deprecated interfaces usages at runtime with DebugClassLoader"
@@ -1639,7 +1639,7 @@
             "type": "symfony-bridge",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0-dev"
+                    "dev-master": "4.4-dev"
                 },
                 "thanks": {
                     "name": "phpunit/phpunit",
@@ -1673,11 +1673,11 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-11-05T17:15:52+00:00"
+            "time": "2019-11-08T15:59:14+00:00"
         },
         {
             "name": "symfony/process",
-            "version": "v3.4.33",
+            "version": "v3.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
