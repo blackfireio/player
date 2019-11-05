@@ -691,7 +691,7 @@ Variables are a great way to make your Blackfire assertions conditional:
 Scraping Values
 ---------------
 
-When crawling an HTTP application you can extract values from HTTP responses:
+When crawling an HTTP application, you can extract values from HTTP responses:
 
 .. code-block:: blackfire
 
