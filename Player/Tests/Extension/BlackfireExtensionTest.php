@@ -15,6 +15,7 @@ use Blackfire\Build\Build;
 use Blackfire\Client;
 use Blackfire\ClientConfiguration;
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Step\ConfigurableStep;
@@ -50,29 +51,29 @@ class BlackfireExtensionTest extends TestCase
             $this->assertFalse($request->hasHeader('X-Blackfire-Query'));
             $this->assertFalse($request->hasHeader('X-Blackfire-Profile-Uuid'));
 
-            $this->assertContains('[Warmup]', $step->getName());
+            $this->assertStringContainsString('[Warmup]', $step->getName());
 
             $second = $step->getNext();
             $this->assertInstanceOf(ReloadStep::class, $second);
             $this->assertEquals('false', $second->getBlackfire());
-            $this->assertContains('[Warmup]', $second->getName());
+            $this->assertStringContainsString('[Warmup]', $second->getName());
 
             $third = $second->getNext();
             $this->assertInstanceOf(ReloadStep::class, $third);
             $this->assertEquals('false', $third->getBlackfire());
-            $this->assertContains('[Warmup]', $third->getName());
+            $this->assertStringContainsString('[Warmup]', $third->getName());
 
             $ref = $third->getNext();
             $this->assertInstanceOf(ReloadStep::class, $ref);
             $this->assertEquals('false', $ref->getBlackfire());
-            $this->assertContains('[Reference]', $ref->getName());
+            $this->assertStringContainsString('[Reference]', $ref->getName());
 
             $real = $ref->getNext();
             $this->assertInstanceOf(ReloadStep::class, $real);
             $this->assertEquals('true', $real->getBlackfire());
             $this->assertNull($real->getNext());
         } else {
-            $this->assertNotContains('Warmup', $step->getName());
+            $this->assertStringNotContainsString('Warmup', $step->getName());
 
             $this->assertNull($step->getNext());
         }
@@ -248,12 +249,11 @@ class BlackfireExtensionTest extends TestCase
         $this->assertNull($nextStep);
     }
 
-    /**
-     * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessageRegExp /progress is going backward/
-     */
     public function testTheProgressCannotDiminish()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessageRegExp('/progress is going backward/');
+
         $step = new ConfigurableStep();
 
         $request = new Request('GET', '/');
@@ -272,12 +272,11 @@ class BlackfireExtensionTest extends TestCase
         $extension->leaveStep($step, $request, $response2, $context);
     }
 
-    /**
-     * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessageRegExp /progress is not increasing/
-     */
     public function testTheProgressCannotBeEqual()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessageRegExp('/progress is not increasing/');
+
         $step = new ConfigurableStep();
 
         $request = new Request('GET', '/');

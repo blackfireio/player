@@ -11,14 +11,14 @@
 
 namespace Blackfire\Player\Console;
 
-use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Console\ConsoleEvents;
 
 final class OutputErrorHandler
 {
-    public function install(Application $application)
+    public function install(SymfonyApplication $application)
     {
         $dispatcher = new EventDispatcher();
 

@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Tests\Extension;
 
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\SecurityException;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
 use Blackfire\Player\Step\AbstractStep;
 use GuzzleHttp\Psr7\Request;
@@ -25,11 +26,10 @@ class DisableInternalNetworkExtensionTest extends TestCase
 {
     /**
      * @dataProvider provideInvalidUri
-     *
-     * @expectedException \Blackfire\Player\Exception\SecurityException
      */
     public function testInvalidUri($uri, $exceptionMessage)
     {
+        $this->expectException(SecurityException::class);
         $this->expectExceptionMessage($exceptionMessage);
 
         DnsMock::withMockedHosts([

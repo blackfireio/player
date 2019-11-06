@@ -13,6 +13,7 @@ namespace Blackfire\Player\Tests;
 
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
@@ -522,6 +523,7 @@ EOF
     public function testStepConfig($exceptionMessage, $scenario)
     {
         if ($exceptionMessage) {
+            $this->expectException(\Exception::class);
             $this->expectExceptionMessage($exceptionMessage);
         }
 
@@ -637,12 +639,11 @@ EOF
         $this->assertEquals($expected, $scenario->getBlockStep()->getBody());
     }
 
-    /**
-     * @expectedException \Blackfire\Player\Exception\SyntaxErrorException
-     * @expectedExceptionMessage Incorrect indentation in multi-lines string at line 8.
-     */
     public function testMultiLinesInvalidIndentation()
     {
+        $this->expectException(SyntaxErrorException::class);
+        $this->expectExceptionMessage('Incorrect indentation in multi-lines string at line 8.');
+
         $parser = new Parser();
         $parser->parse(<<<'EOF'
 scenario Test 1

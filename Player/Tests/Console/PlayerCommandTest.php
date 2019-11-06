@@ -13,6 +13,7 @@ namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\Application;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -21,17 +22,19 @@ use Symfony\Component\Process\Process;
 
 class PlayerCommandTest extends TestCase
 {
+    use SetUpTearDownTrait;
+
     private static $port;
     private static $server;
 
-    public static function setUpBeforeClass()
+    public static function doSetUpBeforeClass()
     {
         static::$port = getenv('BLACKFIRE_WS_PORT');
 
         self::bootServer();
     }
 
-    public static function tearDownAfterClass()
+    public static function doTearDownAfterClass()
     {
         self::$server->stop(0);
         self::$server = null;
@@ -63,7 +66,7 @@ class PlayerCommandTest extends TestCase
         }
     }
 
-    public function setUp()
+    public function doSetUp()
     {
         self::bootServer();
     }
@@ -145,7 +148,7 @@ class PlayerCommandTest extends TestCase
 EOD;
 
         $this->assertSame($expectedOutput, $process->getOutput());
-        $this->assertContains($expectedErrorOutput, $process->getErrorOutput());
+        $this->assertStringContainsString($expectedErrorOutput, $process->getErrorOutput());
     }
 
     public function testNoEndpoint()
@@ -185,6 +188,6 @@ EOS;
 ';
 
         $this->assertSame($expectedOutput, $process->getOutput());
-        $this->assertContains('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
+        $this->assertStringContainsString('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
     }
 }

@@ -18,6 +18,7 @@ use Blackfire\Player\Console\Application;
 use Blackfire\Player\Console\OutputErrorHandler;
 
 $application = new Application();
-(new OutputErrorHandler())->install($application);
+$outputErrorHandler = new OutputErrorHandler();
+$outputErrorHandler->install($application);
 
 $application->run();

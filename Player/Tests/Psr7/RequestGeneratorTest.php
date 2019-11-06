@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Tests\Psr7;
 
 use Blackfire\Player\Context;
+use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Psr7\RequestGenerator;
 use Blackfire\Player\Psr7\StepConverterInterface;
@@ -28,14 +29,18 @@ use Blackfire\Player\Step\WhileStep;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class RequestGeneratorTest extends TestCase
 {
+    use SetUpTearDownTrait;
+
     private $language;
     private $stepConverter;
     private $context;
 
-    public function setUp()
+    public function doSetUp()
     {
         $this->context = new Context('Test');
         $this->language = new ExpressionLanguage();
@@ -211,11 +216,10 @@ class RequestGeneratorTest extends TestCase
         ], $this->context->getStepContext()->getVariables());
     }
 
-    /**
-     * @expectedException \Symfony\Component\ExpressionLanguage\SyntaxError
-     */
     public function testBlockStepInvalidVariableThrowAnException()
     {
+        $this->expectException(SyntaxError::class);
+
         $step = new BlockStep();
         $step->set('hello', '"Hello " ~ name ~ "!"');
         $step->setBlockStep(new VisitStep(''));
@@ -225,12 +229,11 @@ class RequestGeneratorTest extends TestCase
         $generator->key();
     }
 
-    /**
-     * @expectedException \Blackfire\Player\Exception\LogicException
-     * @expectedExceptionMessage Result of expression "'test'" is not iterable in step "Blackfire\Player\Step\LoopStep".
-     */
     public function testLoopStepNotIterableThrowAnException()
     {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Result of expression "\'test\'" is not iterable in step "Blackfire\Player\Step\LoopStep".');
+
         $step = new LoopStep("'test'", 'key', 'val');
         $step->setLoopStep(new VisitStep(''));
 

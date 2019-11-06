@@ -45,12 +45,11 @@ class WatchdogExtensionTest extends TestCase
         $this->assertEquals(2, $context->getExtraBag()->get('_watchdog_total_counter'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Number of requests per step exceeded ("1")
-     */
     public function testStepLimitExceededThrowsException()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Number of requests per step exceeded ("1")');
+
         $extension = new WatchdogExtension(1, 10);
 
         $request = $this->createMock(RequestInterface::class);
@@ -70,12 +69,11 @@ class WatchdogExtensionTest extends TestCase
         $extension->enterStep($next, $request, $context);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Number of requests per scenario exceeded ("1")
-     */
     public function testTotalLimitExceededThrowsException()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Number of requests per scenario exceeded ("1")');
+
         $extension = new WatchdogExtension(1, 1);
 
         $request = $this->createMock(RequestInterface::class);
