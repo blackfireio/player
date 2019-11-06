@@ -9,6 +9,7 @@
     <php>
         <ini name="error_reporting" value="-1" />
         <env name="BLACKFIRE_WS_PORT" value="8399"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="1" />
     </php>
 
     <testsuites>

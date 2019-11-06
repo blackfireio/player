@@ -18,7 +18,7 @@ build-docker-image:
 .PHONY: build-docker-image
 
 install:
-	$(PHP) composer install --no-interaction
+	$(PHP) composer install --no-interaction --prefer-dist
 .PHONY: install
 
 test: build-docker-image install ## Run the Player testsuite
