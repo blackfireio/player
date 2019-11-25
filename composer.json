@@ -33,7 +33,7 @@
     "require-dev": {
         "symfony/finder": "^3.2|^4.0",
         "symfony/process": "^3.2|^4.0",
-        "symfony/phpunit-bridge": "^4.4@dev"
+        "symfony/phpunit-bridge": "^4.4"
     },
     "autoload": {
         "psr-4" : {
