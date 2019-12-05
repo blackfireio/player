@@ -13,6 +13,7 @@ namespace Blackfire\Player\ExpressionLanguage;
 
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\SecurityException;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use JmesPath\Env as JmesPath;
@@ -25,10 +26,12 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 class Provider implements ExpressionFunctionProviderInterface
 {
     private $faker;
+    private $disabledFunctions;
 
-    public function __construct(FakerGenerator $faker = null)
+    public function __construct(FakerGenerator $faker = null, $disabledFunctions = [])
     {
         $this->faker = null !== $faker ? $faker : FakerFactory::create();
+        $this->disabledFunctions = $disabledFunctions;
     }
 
     /**
@@ -38,7 +41,7 @@ class Provider implements ExpressionFunctionProviderInterface
     {
         $compiler = function () {};
 
-        return [
+        $functions = [
             new ExpressionFunction('url', $compiler, function ($arguments, $url) {
                 return $url;
             }),
@@ -60,7 +63,7 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('file', $compiler, function ($arguments, $filename, $name = null) {
-                return [$filename, $name ?: basename($filename)];
+                return new UploadFile($filename, $name ?: basename($filename));
             }),
 
             new ExpressionFunction('current_url', $compiler, function ($arguments) {
@@ -182,5 +185,16 @@ class Provider implements ExpressionFunctionProviderInterface
                 return JmesPath::search($selector, $data);
             }),
         ];
+
+        foreach ($functions as $index => $func) {
+            if (\in_array($func->getName(), $this->disabledFunctions)) {
+                $name = $func->getName();
+                $functions[$index] = new ExpressionFunction($name, $compiler, function () use ($name) {
+                    throw new SecurityException(sprintf('Function "%s is not authorized.', $name));
+                });
+            }
+        }
+
+        return $functions;
     }
 }

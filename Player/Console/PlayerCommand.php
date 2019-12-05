@@ -89,7 +89,12 @@ final class PlayerCommand extends Command
 
         $runner = new Runner($clients);
 
-        $language = new ExpressionLanguage(null, [new LanguageProvider()]);
+        $disabledFunctions = [];
+        if (isset($_SERVER['PLAYER_DISABLED_FUNCTIONS']) && \is_string($_SERVER['PLAYER_DISABLED_FUNCTIONS'])) {
+            $disabledFunctions = explode(',', $_SERVER['PLAYER_DISABLED_FUNCTIONS']);
+        }
+
+        $language = new ExpressionLanguage(null, [new LanguageProvider(null, $disabledFunctions)]);
         $player = new Player($runner, $language);
         $player->addExtension(new SecurityExtension());
         $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);

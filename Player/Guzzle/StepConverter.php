@@ -16,6 +16,7 @@ use Blackfire\Player\Exception\CrawlException;
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ExpressionLanguage\UploadFile;
 use Blackfire\Player\Psr7\StepConverterInterface;
 use Blackfire\Player\Step\ClickStep;
 use Blackfire\Player\Step\FollowStep;
@@ -162,15 +163,15 @@ final class StepConverter implements StepConverterInterface
                         'name' => $name,
                     ];
                     if (isset($files[$name])) {
-                        if (!\is_array($contents)) {
+                        if (!$contents instanceof UploadFile) {
                             throw new LogicException(sprintf('The form field "%s" is of type "file". But you did not use the file() function.', $name));
                         }
-                        $filename = $basePath.$contents[0];
+                        $filename = $basePath.$contents->getFilename();
                         if (!file_exists($filename)) {
                             throw new LogicException(sprintf('The file "%s" does not exist.', $filename));
                         }
                         $data['contents'] = fopen($filename, 'r');
-                        $data['filename'] = $contents[1];
+                        $data['filename'] = $contents->getName();
                     } else {
                         $data['contents'] = $contents;
                     }
