@@ -51,6 +51,12 @@ Use the ``run`` command to execute a scenario file:
 
     blackfire-player run scenario.bkf
 
+You can also run scenarios contained in a ``.blackfire.yaml`` file:
+
+.. code-block:: bash
+
+    blackfire-player run .blackfire.yaml
+
 Use the ``--endpoint`` option to override the endpoint defined in the scenario file:
 
 .. code-block:: bash

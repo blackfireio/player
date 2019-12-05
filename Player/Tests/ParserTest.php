@@ -575,6 +575,30 @@ EOF
         $parser->load(__FILE__);
     }
 
+    public function testLoadBlackfireBkfViaStdin()
+    {
+        $s = fopen(__DIR__.'/fixtures-run/simple/scenario.bkf', 'r');
+        $copy = fopen('php://memory', 'r+b');
+        stream_copy_to_stream($s, $copy);
+        $parser = new Parser();
+        $scenarios = $parser->load($copy);
+        $this->assertCount(1, $scenarios->getIterator());
+    }
+
+    public function testLoadBlackfireBkfViaFile()
+    {
+        $parser = new Parser();
+        $scenarios = $parser->load(__DIR__.'/fixtures-run/simple/scenario.bkf');
+        $this->assertCount(1, $scenarios->getIterator());
+    }
+
+    public function testLoadBlackfireYamlViaFile()
+    {
+        $parser = new Parser();
+        $scenarios = $parser->load(__DIR__.'/fixtures/yaml/.blackfire.yaml');
+        $this->assertCount(1, $scenarios->getIterator());
+    }
+
     public function testLineContinuation()
     {
         $parser = new Parser();

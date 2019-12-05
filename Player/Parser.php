@@ -31,6 +31,7 @@ use Blackfire\Player\Step\SubmitStep;
 use Blackfire\Player\Step\VisitStep;
 use Blackfire\Player\Step\WhileStep;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
+use Symfony\Component\Yaml\Parser as YamlParser;
 use Webmozart\Glob\Glob;
 use Webmozart\PathUtil\Path;
 
@@ -66,16 +67,24 @@ class Parser
             return $this->parse(stream_get_contents($file));
         }
 
-        if (!is_file($file) && 'php://stdin' !== $file) {
+        if (!is_file($file)) {
             throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
         }
 
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        if ('bkf' !== $extension && 'php://stdin' !== $file) {
+        $extension = pathinfo($file, \PATHINFO_EXTENSION);
+        if ('yml' === $extension || 'yaml' === $extension) {
+            $input = (new YamlParser())->parseFile($file);
+            if (!isset($input['scenarios'])) {
+                throw new InvalidArgumentException(sprintf('File "%s" should have a "scenarios" entry but none was found.', $file));
+            }
+            $input = $input['scenarios'];
+        } elseif ('bkf' !== $extension) {
             throw new InvalidArgumentException(sprintf('Cannot load file "%s" because it does not have the right extension. Expected "bkf", got "%s".', $file, $extension));
+        } else {
+            $input = file_get_contents($file);
         }
 
-        return $this->parse(file_get_contents($file), $file);
+        return $this->parse($input, $file);
     }
 
     public function parse($input, $file = null)

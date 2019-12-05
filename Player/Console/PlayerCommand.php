@@ -89,18 +89,7 @@ final class PlayerCommand extends Command
         }
 
         $runner = new Runner($clients);
-
-        $language = new ExpressionLanguage(null, [new LanguageProvider(null, $input->getOption('sandbox'))]);
-        $player = new Player($runner, $language);
-        $player->addExtension(new SecurityExtension());
-        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
-        $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
-        if ($input->getOption('tracer')) {
-            $player->addExtension(new TracerExtension($output));
-        }
-        if ($input->getOption('disable-internal-network')) {
-            $player->addExtension(new DisableInternalNetworkExtension());
-        }
+        $sandbox = $input->getOption('sandbox');
 
         if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
             if ($input->isInteractive()) {
@@ -110,6 +99,23 @@ final class PlayerCommand extends Command
             $copy = fopen('php://memory', 'r+b');
             stream_copy_to_stream($stdin, $copy);
             $input->setArgument('file', $copy);
+        } else {
+            $extension = pathinfo($input->getArgument('file'), \PATHINFO_EXTENSION);
+            if ('yml' === $extension || 'yaml' === $extension) {
+                $sandbox = true;
+            }
+        }
+
+        $language = new ExpressionLanguage(null, [new LanguageProvider(null, $sandbox)]);
+        $player = new Player($runner, $language);
+        $player->addExtension(new SecurityExtension());
+        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
+        $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
+        if ($input->getOption('tracer')) {
+            $player->addExtension(new TracerExtension($output));
+        }
+        if ($input->getOption('disable-internal-network')) {
+            $player->addExtension(new DisableInternalNetworkExtension());
         }
 
         $scenarios = (new ScenarioHydrator())->hydrate($input);

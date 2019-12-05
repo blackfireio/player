@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.6.2 (2019-XX-XX)
+
+ * Add support for running scenarios stored in a .blackfire.yaml file
+
 * 1.6.1 (2019-12-06)
 
  * Fix typo

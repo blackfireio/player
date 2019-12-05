@@ -1,0 +1,14 @@
+tests:
+    "Database Test":
+        path: "/.*"
+        assertions:
+            - "metrics.sql.queries.count <= 10"
+            - "diff(metrics.sql.queries.count) < 2"
+
+scenarios: |
+    #!blackfire-player
+
+    scenario
+        name "Blog"
+        visit "/blog/"
+            expect status_code() == 200
