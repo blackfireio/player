@@ -190,7 +190,7 @@ class Provider implements ExpressionFunctionProviderInterface
             if (\in_array($func->getName(), $this->disabledFunctions)) {
                 $name = $func->getName();
                 $functions[$index] = new ExpressionFunction($name, $compiler, function () use ($name) {
-                    throw new SecurityException(sprintf('Function "%s is not authorized.', $name));
+                    throw new SecurityException(sprintf('Function "%s" is not available in builds.', $name));
                 });
             }
         }

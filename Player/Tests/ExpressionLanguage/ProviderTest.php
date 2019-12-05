@@ -42,7 +42,7 @@ class ProviderTest extends TestCase
         $this->assertEquals('hello', $res);
 
         $this->expectException(SecurityException::class);
-        $this->expectExceptionMessage('Function "file is not authorized.');
+        $this->expectExceptionMessage('Function "file" is not available in builds.');
         $res = $language->evaluate('file("file", "name")');
     }
 }

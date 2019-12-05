@@ -1,0 +1,12 @@
+scenario
+    name "Simple"
+
+    visit "simple/index.php?form"
+        expect status_code() == 200
+
+    submit button("Submit")
+        param firstname "Grégoire"
+        param lastname "Pineau"
+        param bio file("bio.txt", "my bio")
+        expect status_code() == 200
+        expect trim(body()) == "Grégoire-Pineau-my bio-foo-This is my bio"

@@ -86,28 +86,31 @@ class PlayerCommandTest extends TestCase
             }
 
             $reportFile = sprintf('%s/output-full-report.txt', $dir->getPathname());
+            $cliOptions = sprintf('%s/cli-options.php', $dir->getPathname());
 
             yield $dir->getBasename() => [
                 sprintf('%s/scenario.bkf', $dir->getPathname()),
                 file_get_contents(sprintf('%s/output.txt', $dir->getPathname())),
                 file_exists($reportFile) ? file_get_contents($reportFile) : null,
+                file_exists($cliOptions) ? require $cliOptions : [],
             ];
         }
     }
 
     /** @dataProvider providePlayerTests */
-    public function testPlayer($file, $expectedOutput, $expectedReportOutput)
+    public function testPlayer($file, $expectedOutput, $expectedReportOutput, $cliOptions)
     {
         $application = new Application();
         $tester = new CommandTester($application->get('run'));
-        $tester->execute([
+        $tester->execute(array_merge([
             'file' => $file,
             '--endpoint' => 'http://0:'.static::$port,
-        ]);
+        ], $cliOptions));
 
         $output = $tester->getDisplay();
         $output = implode("\n", array_map('rtrim', explode("\n", $output)));
         $expectedOutput = str_replace('{{ PORT }}', static::$port, $expectedOutput);
+        $expectedOutput = str_replace('{{ SCENARIO_FILE }}', $file, $expectedOutput);
 
         $this->assertSame($expectedOutput, $output);
 
