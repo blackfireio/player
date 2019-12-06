@@ -57,7 +57,7 @@ final class PlayerCommand extends Command
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
                 new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network', null),
-                new InputOption('disable-function', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Disable function', null),
+                new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode', null),
                 new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
             ])
@@ -90,13 +90,7 @@ final class PlayerCommand extends Command
 
         $runner = new Runner($clients);
 
-        $disabledFunctions = $input->getOption('disable-function');
-        // BC
-        if (!$disabledFunctions && isset($_SERVER['PLAYER_DISABLED_FUNCTIONS']) && \is_string($_SERVER['PLAYER_DISABLED_FUNCTIONS'])) {
-            $disabledFunctions = explode(',', $_SERVER['PLAYER_DISABLED_FUNCTIONS']);
-        }
-
-        $language = new ExpressionLanguage(null, [new LanguageProvider(null, $disabledFunctions)]);
+        $language = new ExpressionLanguage(null, [new LanguageProvider(null, $input->getOption('sandbox'))]);
         $player = new Player($runner, $language);
         $player->addExtension(new SecurityExtension());
         $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);

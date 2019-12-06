@@ -17,6 +17,7 @@ use Blackfire\Player\Extension\ExtensionInterface;
 use Blackfire\Player\Extension\FollowExtension;
 use Blackfire\Player\Extension\NameResolverExtension;
 use Blackfire\Player\Extension\TestsExtension;
+use Blackfire\Player\Extension\TmpDirExtension;
 use Blackfire\Player\Extension\WaitExtension;
 use Blackfire\Player\Extension\WatchdogExtension;
 use Blackfire\Player\Guzzle\StepConverter;
@@ -36,6 +37,7 @@ class Player
         $this->runner = $runner;
         $this->language = $language;
 
+        $this->addExtension(new TmpDirExtension());
         $this->addExtension(new NameResolverExtension($this->language), 1024);
         $this->addExtension(new TestsExtension($this->language), 512);
         $this->addExtension(new WaitExtension($this->language));

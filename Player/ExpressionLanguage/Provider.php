@@ -26,12 +26,12 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 class Provider implements ExpressionFunctionProviderInterface
 {
     private $faker;
-    private $disabledFunctions;
+    private $sandbox;
 
-    public function __construct(FakerGenerator $faker = null, $disabledFunctions = [])
+    public function __construct(FakerGenerator $faker = null, $sandbox = false)
     {
         $this->faker = null !== $faker ? $faker : FakerFactory::create();
-        $this->disabledFunctions = $disabledFunctions;
+        $this->sandbox = $sandbox;
     }
 
     /**
@@ -63,6 +63,20 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('file', $compiler, function ($arguments, $filename, $name = null) {
+                if ($this->sandbox) {
+                    if (UploadFile::isAbsolutePath($filename)) {
+                        $extra = $arguments[0]['_extra'];
+                        if (!$extra->has('tmp_dir')) {
+                            throw new LogicException('The "file" provider is not supported when the "TmpDirExtension" is disabled in the sandbox mode.');
+                        }
+                        if (0 !== strpos($filename, $extra->get('tmp_dir'))) {
+                            throw new SecurityException('The "file" provider does not support absolute file paths in the sandbox mode (use the "fake()" function instead).');
+                        }
+                    } else {
+                        throw new SecurityException('The "file" provider does not support relative file paths in the sandbox mode (use the "fake()" function instead).');
+                    }
+                }
+
                 return new UploadFile($filename, $name ?: basename($filename));
             }),
 
@@ -140,7 +154,22 @@ class Provider implements ExpressionFunctionProviderInterface
                     throw new InvalidArgumentException('Missing first argument (provider) for the fake function.');
                 }
 
-                return $this->faker->format($provider, array_splice($arguments, 2));
+                if ($this->sandbox && 'file' === $provider) {
+                    throw new SecurityException('The "file" faker provider is not supported in sandbox mode.');
+                }
+
+                $args = array_splice($arguments, 2);
+
+                if ('image' === $provider) {
+                    // always store the file in a pre-determined directory
+                    $extra = $arguments[0]['_extra'];
+                    if (!$extra->has('tmp_dir')) {
+                        throw new LogicException('The "image" faker provider is not supported when the "TmpDirExtension" is disabled.');
+                    }
+                    $args[0] = $extra->get('tmp_dir');
+                }
+
+                return $this->faker->format($provider, $args);
             }),
 
             new ExpressionFunction('regex', $compiler, function ($arguments, $regex, $str = null) {
@@ -185,15 +214,6 @@ class Provider implements ExpressionFunctionProviderInterface
                 return JmesPath::search($selector, $data);
             }),
         ];
-
-        foreach ($functions as $index => $func) {
-            if (\in_array($func->getName(), $this->disabledFunctions)) {
-                $name = $func->getName();
-                $functions[$index] = new ExpressionFunction($name, $compiler, function () use ($name) {
-                    throw new SecurityException(sprintf('Function "%s" is not available in builds.', $name));
-                });
-            }
-        }
 
         return $functions;
     }

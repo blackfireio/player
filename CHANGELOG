@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.6.0 (2019-XX-XX)
+
+ * Add support for a sandox mode
+ * Fix compat with PHP 5
+
 * 1.5.1 (2019-10-28)
 
  * Avoid the BKF validator to throw exceptions

@@ -142,6 +142,7 @@ class Context
 
         $values['_crawler'] = $this->crawler;
         $values['_response'] = $this->response;
+        $values['_extra'] = $this->getExtraBag();
 
         return $values;
     }

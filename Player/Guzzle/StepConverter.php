@@ -164,9 +164,12 @@ final class StepConverter implements StepConverterInterface
                     ];
                     if (isset($files[$name])) {
                         if (!$contents instanceof UploadFile) {
-                            throw new LogicException(sprintf('The form field "%s" is of type "file". But you did not use the file() function.', $name));
+                            throw new LogicException(sprintf('The form field "%s" is of type "file" but you did not use the "file()" function.', $name));
                         }
-                        $filename = $basePath.$contents->getFilename();
+                        $filename = $contents->getFilename();
+                        if (!UploadFile::isAbsolutePath($filename)) {
+                            $filename = $basePath.$filename;
+                        }
                         if (!file_exists($filename)) {
                             throw new LogicException(sprintf('The file "%s" does not exist.', $filename));
                         }
