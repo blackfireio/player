@@ -1,9 +1,9 @@
 Blackfire Player Changelog
 ==========================
 
-* 1.6.0 (2019-XX-XX)
+* 1.6.0 (2019-12-06)
 
- * Add support for a sandox mode
+ * Add support for a sandbox mode
  * Fix compat with PHP 5
 
 * 1.5.1 (2019-10-28)
