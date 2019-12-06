@@ -35,7 +35,7 @@ class ProviderTest extends TestCase
         $this->assertInstanceOf(UploadFile::class, $res);
     }
 
-    public function testSandboxModeFileAbsoluteFile()
+    public function testSandboxModeFileRelativeFile()
     {
         $provider = new Provider(null, true);
         $language = new ExpressionLanguage(null, [$provider]);
@@ -43,6 +43,25 @@ class ProviderTest extends TestCase
         $this->expectException(SecurityException::class);
         $this->expectExceptionMessage('The "file" provider does not support relative file paths in the sandbox mode (use the "fake()" function instead).');
         $language->evaluate('file("file", "name")');
+    }
+
+    public function testSandboxModeFileAbsoluteFile()
+    {
+        $provider = new Provider(null, true);
+        $language = new ExpressionLanguage(null, [$provider]);
+        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
+        $extra = new ValueBag();
+        $extra->set('tmp_dir', $tmpDir);
+        $fs = new Filesystem();
+        $fs->mkdir($tmpDir);
+
+        $this->expectException(SecurityException::class);
+        $this->expectExceptionMessage('The "file" provider does not support absolute file paths in the sandbox mode (use the "fake()" function instead).');
+        try {
+            $language->evaluate('file("/file", "name")', ['_extra' => $extra]);
+        } finally {
+            $fs->remove($tmpDir);
+        }
     }
 
     public function testSandboxModeFakerImageProvider()
@@ -55,8 +74,12 @@ class ProviderTest extends TestCase
         $fs = new Filesystem();
         $fs->mkdir($tmpDir);
 
-        $res = $language->evaluate('fake("image")', ['_extra' => $extra]);
-        $this->assertStringStartsWith($tmpDir, $res);
+        try {
+            $res = $language->evaluate('fake("image")', ['_extra' => $extra]);
+            $this->assertStringStartsWith($tmpDir, $res);
+        } finally {
+            $fs->remove($tmpDir);
+        }
     }
 
     public function testSandboxModeFakerFileProvider()

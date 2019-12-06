@@ -65,7 +65,7 @@ class Provider implements ExpressionFunctionProviderInterface
             new ExpressionFunction('file', $compiler, function ($arguments, $filename, $name = null) {
                 if ($this->sandbox) {
                     if (UploadFile::isAbsolutePath($filename)) {
-                        $extra = $arguments[0]['_extra'];
+                        $extra = $arguments['_extra'];
                         if (!$extra->has('tmp_dir')) {
                             throw new LogicException('The "file" provider is not supported when the "TmpDirExtension" is disabled in the sandbox mode.');
                         }
