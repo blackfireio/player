@@ -682,9 +682,11 @@ Variables are a great way to make your Blackfire assertions conditional:
 
 .. note::
 
-    To make some comparisons with a previous build, you can set the
-    ``external_id`` and ``external_parent_id`` settings of the build by passing
-    environment variables:
+    In order to :ref:`make some comparisons with a previous build
+    <assertions-comparisons>`, you can set the ``external_id`` and
+    ``external_parent_id`` settings of the build by passing
+    ``BLACKFIRE_EXTERNAL_ID`` and ``BLACKFIRE_EXTERNAL_PARENT_ID`` environment
+    variables:
 
     .. code-block:: bash
 
