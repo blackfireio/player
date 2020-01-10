@@ -25,6 +25,11 @@ class UploadFile
         $this->name = $name;
     }
 
+    public function __toString()
+    {
+        return file_get_contents($this->filename);
+    }
+
     public function getFilename()
     {
         return $this->filename;
