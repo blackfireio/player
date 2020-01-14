@@ -30,9 +30,12 @@ final class StepContext
     private $blackfireScenario;
     private $samples;
     private $warmup;
+    private $workingDir;
 
     public function update(ConfigurableStep $step, array $variables)
     {
+        $this->workingDir = rtrim(\dirname($step->getFile()), '/').'/';
+
         if (null !== $step->getWait()) {
             $this->wait = $step->getWait();
         }
@@ -152,5 +155,10 @@ final class StepContext
     public function getWarmup()
     {
         return null === $this->warmup ? 'true' : $this->warmup;
+    }
+
+    public function getWorkingDir()
+    {
+        return $this->workingDir;
     }
 }

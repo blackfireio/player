@@ -11,6 +11,8 @@
 
 namespace Blackfire\Player\ExpressionLanguage;
 
+use Blackfire\Player\Exception\InvalidArgumentException;
+
 /**
  * @author Luc Vieillescazes <luc.vieillescazes@blackfire.io>
  */
@@ -21,6 +23,10 @@ class UploadFile
 
     public function __construct($filename, $name)
     {
+        if (!is_readable($filename)) {
+            throw new InvalidArgumentException(sprintf('File "%s" does not exist or is not readable.', $filename));
+        }
+
         $this->filename = $filename;
         $this->name = $name;
     }

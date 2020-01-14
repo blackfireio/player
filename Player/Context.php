@@ -12,6 +12,7 @@
 namespace Blackfire\Player;
 
 use Blackfire\Player\Psr7\CrawlerFactory;
+use Blackfire\Player\Step\StepContext;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -54,6 +55,9 @@ class Context
         return $this->extraBag;
     }
 
+    /**
+     * @return StepContext
+     */
     public function getStepContext()
     {
         if (!$this->contextStack || $this->contextStack->isEmpty()) {
@@ -143,6 +147,7 @@ class Context
         $values['_crawler'] = $this->crawler;
         $values['_response'] = $this->response;
         $values['_extra'] = $this->getExtraBag();
+        $values['_working_dir'] = $this->getStepContext()->getWorkingDir();
 
         return $values;
     }

@@ -32,6 +32,7 @@ scenario
         param bio file("bio.txt", "my bio")
         expect status_code() == 200
         expect trim(body()) == "Grégoire-Pineau-my bio-foo-This is my bio"
+        expect body() == file("expected-response.txt")
 
     visit "simple/index.php?json"
         param firstname "Grégoire"

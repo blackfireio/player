@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Tests\ExpressionLanguage;
 
+use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\SecurityException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;
@@ -31,7 +32,7 @@ class ProviderTest extends TestCase
         $res = $language->evaluate('trim("   hello  ")');
         $this->assertEquals('hello', $res);
 
-        $res = $language->evaluate('file("file", "name")');
+        $res = $language->evaluate('file("../fixtures/yaml/.blackfire.yaml", "name")', ['_working_dir' => __DIR__.'/']);
         $this->assertInstanceOf(UploadFile::class, $res);
     }
 
@@ -42,7 +43,7 @@ class ProviderTest extends TestCase
 
         $this->expectException(SecurityException::class);
         $this->expectExceptionMessage('The "file" provider does not support relative file paths in the sandbox mode (use the "fake()" function instead).');
-        $language->evaluate('file("file", "name")');
+        $language->evaluate('file("file", "name")', ['_working_dir' => __DIR__.'/']);
     }
 
     public function testSandboxModeFileAbsoluteFile()
@@ -58,7 +59,7 @@ class ProviderTest extends TestCase
         $this->expectException(SecurityException::class);
         $this->expectExceptionMessage('The "file" provider does not support absolute file paths in the sandbox mode (use the "fake()" function instead).');
         try {
-            $language->evaluate('file("/file", "name")', ['_extra' => $extra]);
+            $language->evaluate('file("/file", "name")', ['_extra' => $extra, '_working_dir' => __DIR__.'/']);
         } finally {
             $fs->remove($tmpDir);
         }
@@ -78,7 +79,7 @@ class ProviderTest extends TestCase
         $fs->mkdir($tmpDir);
 
         try {
-            $res = $language->evaluate('fake("image")', ['_extra' => $extra]);
+            $res = $language->evaluate('fake("image")', ['_extra' => $extra, '_working_dir' => __DIR__.'/']);
             $this->assertStringStartsWith($tmpDir, $res);
         } finally {
             $fs->remove($tmpDir);
@@ -93,5 +94,16 @@ class ProviderTest extends TestCase
         $this->expectException(SecurityException::class);
         $this->expectExceptionMessage('The "file" faker provider is not supported in sandbox mode.');
         $language->evaluate('fake("file", "a")');
+    }
+
+    public function testNonExistentFileThrowsAnException()
+    {
+        $provider = new Provider(null, false);
+        $language = new ExpressionLanguage(null, [$provider]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $file = __DIR__.'/file';
+        $this->expectExceptionMessage(sprintf('File "%s" does not exist or is not readable.', $file));
+        $language->evaluate('file("file")', ['_working_dir' => __DIR__.'/']);
     }
 }

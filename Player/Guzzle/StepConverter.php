@@ -152,8 +152,6 @@ final class StepConverter implements StepConverterInterface
             $headers = $this->evaluateHeaders($stepContext);
 
             if ($files = $form->getFiles()) {
-                $basePath = rtrim(\dirname($step->getFile()), '/').'/';
-
                 $values = [];
                 foreach ($form->getValues() as $name => $contents) {
                     $values[] = ['name' => $name, 'contents' => $contents];
@@ -166,14 +164,7 @@ final class StepConverter implements StepConverterInterface
                         if (!$contents instanceof UploadFile) {
                             throw new LogicException(sprintf('The form field "%s" is of type "file" but you did not use the "file()" function.', $name));
                         }
-                        $filename = $contents->getFilename();
-                        if (!UploadFile::isAbsolutePath($filename)) {
-                            $filename = $basePath.$filename;
-                        }
-                        if (!file_exists($filename)) {
-                            throw new LogicException(sprintf('The file "%s" does not exist.', $filename));
-                        }
-                        $data['contents'] = fopen($filename, 'r');
+                        $data['contents'] = fopen($contents->getFilename(), 'r');
                         $data['filename'] = $contents->getName();
                     } else {
                         $data['contents'] = $contents;
