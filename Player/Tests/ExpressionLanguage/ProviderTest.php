@@ -16,6 +16,7 @@ use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;
 use Blackfire\Player\ExpressionLanguage\UploadFile;
 use Blackfire\Player\ValueBag;
+use Faker\Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -65,7 +66,10 @@ class ProviderTest extends TestCase
 
     public function testSandboxModeFakerImageProvider()
     {
-        $provider = new Provider(null, true);
+        $faker = new Generator();
+        $faker->addProvider(new SafeFakerImageProvider($faker));
+
+        $provider = new Provider($faker, true);
         $language = new ExpressionLanguage(null, [$provider]);
         $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
         $extra = new ValueBag();
