@@ -11,7 +11,6 @@
 
 namespace Blackfire\Player\Tests\ExpressionLanguage;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Exception\SecurityException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;

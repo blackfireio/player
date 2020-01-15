@@ -186,7 +186,7 @@ final class RequestGenerator implements \IteratorAggregate
 
     private function checkGeneratorResult($result)
     {
-        if (!is_array($result)) {
+        if (!\is_array($result)) {
             throw new \LogicException('An array containing a PSR-7 RequestInterface instance and a PSR-7 ResponseInterface instance must be returned to the request generator.');
         }
 
@@ -194,7 +194,7 @@ final class RequestGenerator implements \IteratorAggregate
             throw new \LogicException('A PSR-7 RequestInterface instance must be returned to the request generator.');
         }
 
-        if (!isset($result[1]) ||!$result[1] instanceof ResponseInterface) {
+        if (!isset($result[1]) || !$result[1] instanceof ResponseInterface) {
             throw new \LogicException('A PSR-7 ResponseInterface instance must be returned to the request generator.');
         }
 

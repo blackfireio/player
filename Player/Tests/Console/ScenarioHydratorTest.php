@@ -3,10 +3,10 @@
 namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\PlayerCommand;
-use Blackfire\Player\Tests\VarDumper;
-use Symfony\Component\Console\Input\ArrayInput;
 use Blackfire\Player\Console\ScenarioHydrator;
+use Blackfire\Player\Tests\VarDumper;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 class ScenarioHydratorTest extends TestCase

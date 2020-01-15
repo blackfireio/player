@@ -11,9 +11,9 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Scenario;
 use Blackfire\Player\Context;
 use Blackfire\Player\Result;
+use Blackfire\Player\Scenario;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**

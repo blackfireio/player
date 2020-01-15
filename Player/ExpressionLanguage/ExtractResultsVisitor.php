@@ -2,9 +2,9 @@
 
 namespace Blackfire\Player\ExpressionLanguage;
 
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\ExpressionLanguage\Node;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
-use Symfony\Component\DomCrawler\Crawler;
 
 class ExtractResultsVisitor
 {

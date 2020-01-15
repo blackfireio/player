@@ -11,12 +11,12 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Scenario;
-use Blackfire\Player\ScenarioSet;
-use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Context;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
+use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\Step\AbstractStep;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
