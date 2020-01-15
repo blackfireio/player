@@ -63,10 +63,6 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('file', $compiler, function ($arguments, $filename, $name = null) {
-                if (!isset($arguments['_working_dir'])) {
-                    throw new LogicException(sprintf('Unable to handle file "%s" as the working directory is unknown.', $filename));
-                }
-
                 if ($this->sandbox) {
                     if (UploadFile::isAbsolutePath($filename)) {
                         $extra = $arguments['_extra'];
@@ -82,6 +78,10 @@ class Provider implements ExpressionFunctionProviderInterface
                 }
 
                 if (!UploadFile::isAbsolutePath($filename)) {
+                    if (!isset($arguments['_working_dir'])) {
+                        throw new LogicException(sprintf('Unable to handle relative file "%s" as the working directory is unknown.', $filename));
+                    }
+
                     $filename = $arguments['_working_dir'].$filename;
                 }
 
