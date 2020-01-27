@@ -598,14 +598,18 @@ Writing Blackfire Assertions
     Please note also that Blackfire assertions requires a Premium or Enterprise
     account purchased on https://blackfire.io.
 
-Blackfire Player natively supports Blackfire:
+Blackfire Player natively integrates Blackfire profiler.
+In order to use Blackfire Player with Blackfire profiler, add
+``--blackfire-env`` option to your ``blackfire-player`` command.
+You may use either the environment UUID or its name:
 
 .. code-block:: bash
 
-    blackfire-player run scenario.bkf --blackfire-env="Environment name" # Use the environment name or environment UUID
+    blackfire-player run scenario.bkf --blackfire-env="Environment name"
 
-The Blackfire Player creates a build to group all scenarios.
-Each scenario in the build contains profiles and assertion reports for requests made in the executed scenario.
+The Blackfire Player creates a build to group all the scenarios.
+Each scenario in the build contains profiles and assertion reports for
+requests made in the executed scenario.
 
 .. note::
 
@@ -613,8 +617,8 @@ Each scenario in the build contains profiles and assertion reports for requests 
     default via Blackfire, you can disable it for some requests or scenarios
     by setting ``blackfire false``.
 
-Instead of using the ``--blackfire-env`` CLI option, you can also set the Blackfire
-environment in the scenario;
+Instead of using the ``--blackfire-env`` CLI option, you may set the
+Blackfire environment in the scenario;
 
 .. code-block:: blackfire
 
