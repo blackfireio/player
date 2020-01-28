@@ -8,6 +8,20 @@ php_image = blackfire/player-test:$(php_version)-$(image_hash)
 
 PHP=@docker run --rm -it -u `id -u`:`id -g` -v $(HOME)/.composer:/.composer -v $(PWD):/app -e HOME=/ $(php_image)
 
+##
+#### General
+##
+
+test: build-docker-image install ## Run the Player testsuite
+	$(eval args ?= )
+	@$(PHP) php -v
+	@$(PHP) ./vendor/bin/simple-phpunit $(args)
+.PHONY: test
+
+##
+## Not Listed
+##
+
 clean:
 	rm -rf vendor bin/blackfire-player.phar
 .PHONY: clean
@@ -21,17 +35,11 @@ install:
 	$(PHP) composer install --no-interaction --prefer-dist
 .PHONY: install
 
-test: build-docker-image install ## Run the Player testsuite
-	$(eval args ?= )
-	@$(PHP) php -v
-	@$(PHP) ./vendor/bin/simple-phpunit $(args)
-.PHONY: test
-
 phpunit:
 	$(eval args ?= )
 	@$(PHP) ./vendor/bin/simple-phpunit $(args)
 .PHONY: phpunit
 
 help:
-	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -hE '(^[a-zA-Z_-]+:.*?##.*$$)|(^###)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
 .PHONY: help
