@@ -581,8 +581,8 @@ Blackfire Profiler integration
 ------------------------------
 
 Blackfire Player integrates seamlessly with Blackfire Profiler.
-Read out :doc:`the dedicated documentation to learn more about Blackfire
-Profiler integration </integrations/blackfire-player>`.
+Read out `the dedicated documentation to learn more about Blackfire
+Profiler integration <https://blackfire.io/docs/integrations/integrations/blackfire-player>`.
 
 .. _scraping-values:
 
