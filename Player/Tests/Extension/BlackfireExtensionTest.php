@@ -314,6 +314,27 @@ class BlackfireExtensionTest extends TestCase
         $this->assertEquals(10, $context->getExtraBag()->get('blackfire_progress'));
     }
 
+    public function testBlackfireEnvIsNotLostOnReload()
+    {
+        $step = new ConfigurableStep();
+        $step->blackfire('"My env"');
+        $step->samples(2);
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=10');
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), null, new NullOutput(), $this->createBlackfireClient());
+        $nextStep = $extension->getNextStep($step, $request, $response, $context);
+
+        $this->assertInstanceOf(ReloadStep::class, $nextStep);
+        $this->assertEquals('"My env"', $nextStep->getBlackfire());
+    }
+
     protected function createBlackfireClient()
     {
         $blackfireConfig = new ClientConfiguration();

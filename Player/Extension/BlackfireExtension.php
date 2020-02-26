@@ -192,10 +192,13 @@ final class BlackfireExtension extends AbstractExtension
             return;
         }
 
-        $step = new ReloadStep();
-        $step->name("'Reloading for Blackfire'");
+        $reload = new ReloadStep();
+        $reload->name("'Reloading for Blackfire'");
+        if ($step instanceof ConfigurableStep) {
+            $reload->blackfire($step->getBlackfire());
+        }
 
-        return $step;
+        return $reload;
     }
 
     public function leaveScenario(Scenario $scenario, Result $result, Context $context)
