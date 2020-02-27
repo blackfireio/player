@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.8.1 (2020-02-27)
+
+ * Update documentation
+ * Update dependencies
+ * Fix X-Blackfire-Query header not sent when "blackfire" option is used within an env name in a step
+
 * 1.8.0 (2020-01-15)
 
  * Add support for loading the content of a file in a test (like `expect body() == file('expected.html')`)
