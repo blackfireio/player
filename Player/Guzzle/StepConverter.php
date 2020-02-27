@@ -218,6 +218,10 @@ final class StepConverter implements StepConverterInterface
             $modify['remove_headers'][] = 'Authorization';
         }
 
+        // Remove the Blackfire Query
+        $modify['remove_headers'][] = 'X-Blackfire-Query';
+        $modify['remove_headers'][] = 'X-Blackfire-Profile-Uuid';
+
         return Psr7\modify_request($request, $modify);
     }
 
