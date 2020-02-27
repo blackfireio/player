@@ -15,19 +15,19 @@ use Blackfire\Player\Parser;
 
 class BkfValidator
 {
-    public function validate($input)
+    public function validate($input, array $variables = [])
     {
-        return $this->doValidate($input, false);
+        return $this->doValidate($input, false, $variables);
     }
 
-    public function validateFile($path)
+    public function validateFile($path, array $variables = [])
     {
-        return $this->doValidate($path, true);
+        return $this->doValidate($path, true, $variables);
     }
 
-    private function doValidate($input, $isFilePath)
+    private function doValidate($input, $isFilePath, array $variables = [])
     {
-        $parser = new Parser();
+        $parser = new Parser($variables);
 
         try {
             if ($isFilePath) {

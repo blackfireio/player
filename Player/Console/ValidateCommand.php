@@ -29,6 +29,8 @@ final class ValidateCommand extends Command
             ->setDefinition([
                 new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs result as JSON', null),
+                new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
+                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
             ])
             ->setDescription('Validate scenario files')
             ->setHelp('Read https://blackfire.io/docs/player to learn about all supported options.')
@@ -43,7 +45,8 @@ final class ValidateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $result = (new BkfValidator())->validateFile($input->getArgument('file'));
+        $variables = (new ScenarioHydrator())->getVariables($input);
+        $result = (new BkfValidator())->validateFile($input->getArgument('file'), $variables);
 
         if ($input->getOption('json')) {
             $output->writeln(JsonOutput::encode([

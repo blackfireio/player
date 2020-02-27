@@ -54,7 +54,7 @@ final class PlayerCommand extends Command
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
-                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Override a variable value', null),
+                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
                 new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
                 new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network', null),
                 new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode', null),

@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class ScenarioHydrator
 {
-    public function hydrate(InputInterface $input)
+    public function getVariables(InputInterface $input)
     {
         $variables = [];
 
@@ -21,7 +21,12 @@ class ScenarioHydrator
             $variables[$key] = $this->escapeValue($value);
         }
 
-        $parser = new Parser($variables);
+        return $variables;
+    }
+
+    public function hydrate(InputInterface $input)
+    {
+        $parser = new Parser($this->getVariables($input));
 
         /** @var ScenarioSet $scenarios */
         $scenarios = $parser->load($input->getArgument('file'));
