@@ -15,6 +15,7 @@ final class ValidationResult
 {
     private $success;
     private $errors;
+    private $missingVariables;
 
     public function __construct($success = true, array $errors = null)
     {
@@ -30,5 +31,15 @@ final class ValidationResult
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    public function setMissingVariables(array $missingVariables)
+    {
+        $this->missingVariables = $missingVariables;
+    }
+
+    public function getMissingVariables()
+    {
+        return $this->missingVariables;
     }
 }

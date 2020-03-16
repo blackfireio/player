@@ -3,6 +3,7 @@
 namespace Blackfire\Player\ExpressionLanguage;
 
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage as SymfonyExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\Lexer;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
 use Symfony\Component\ExpressionLanguage\ParserCache\ParserCacheInterface;
 
@@ -20,5 +21,32 @@ class ExpressionLanguage extends SymfonyExpressionLanguage
     public function extractResults(ParsedExpression $expression, array $variables)
     {
         return $this->resultsVisitor->extractResults($expression, $variables);
+    }
+
+    public function checkExpression($expression, $names, $allowMissingNames = false)
+    {
+        $missingNames = [];
+        if ($allowMissingNames) {
+            list($expression, $missingNames) = $this->parseAllowMissingNames($expression, $names);
+        }
+
+        $this->compile($expression, $names);
+
+        return $missingNames;
+    }
+
+    private function parseAllowMissingNames($expression, $names)
+    {
+        if ($expression instanceof ParsedExpression) {
+            return $expression;
+        }
+
+        $parser = new ValidatorParser($this->functions);
+        $lexer = new Lexer();
+
+        $nodes = $parser->parse($lexer->tokenize((string) $expression), $names);
+        $parsedExpression = new ParsedExpression((string) $expression, $nodes);
+
+        return [$parsedExpression, $parser->getMissingNames()];
     }
 }

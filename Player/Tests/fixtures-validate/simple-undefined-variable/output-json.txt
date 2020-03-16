@@ -2,6 +2,8 @@
     "message": "The scenarios are valid.",
     "success": true,
     "errors": null,
-    "missing_variables": [],
+    "missing_variables": [
+        "expected_status"
+    ],
     "code": 0
 }

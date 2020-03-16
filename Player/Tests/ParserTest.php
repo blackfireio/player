@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Tests;
 
+use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
@@ -681,5 +682,42 @@ scenario Test 1
         """
 EOF
         );
+    }
+
+    public function testUndefinedVariableThrowsAnException()
+    {
+        $this->expectException(ExpressionSyntaxErrorException::class);
+        $this->expectExceptionMessage(<<<'EOF'
+Variable "env" is not valid around position 1 for expression `env != "prod"`.
+
+Did you forget to declare it?
+You can declare it in your file using the "set" option, or with the "--variable" CLI option.
+If the Player is run through a Blackfire server, you can declare it in the "Variables" panel of the "Builds" tab.
+
+EOF
+);
+
+        $parser = new Parser();
+        $parser->parse(<<<'EOF'
+scenario Test 1
+    when env != "prod"
+        visit url('/customers')
+            expect status_code() == 200
+EOF
+        );
+    }
+
+    public function testDetectMissingVariables()
+    {
+        $parser = new Parser([], true);
+        $parser->parse(<<<'EOF'
+scenario Test 1
+    when env != "prod"
+        visit url('/customers')
+            expect status_code() == 200
+EOF
+        );
+
+        $this->assertEquals(['env'], $parser->getMissingVariables());
     }
 }

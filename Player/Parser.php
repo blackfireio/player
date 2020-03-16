@@ -46,14 +46,17 @@ class Parser
     private $variables;
     private $externalVariables;
     private $globalVariables = [];
+    private $missingVariables = [];
     private $groups;
     private $expressionLanguage;
     private $name;
+    private $allowMissingVariables;
 
-    public function __construct(array $externalVariables = [])
+    public function __construct(array $externalVariables = [], $allowMissingVariables = false)
     {
         $this->expressionLanguage = new ExpressionLanguage(null, [new LanguageProvider()]);
         $this->externalVariables = $externalVariables;
+        $this->allowMissingVariables = $allowMissingVariables;
     }
 
     /**
@@ -124,6 +127,11 @@ class Parser
     public function getGlobalVariables()
     {
         return array_replace($this->globalVariables, $this->externalVariables);
+    }
+
+    public function getMissingVariables()
+    {
+        return $this->missingVariables;
     }
 
     private function parseSteps(Input $input, $expectedIndent)
@@ -591,7 +599,8 @@ class Parser
         $variables = array_replace(['endpoint' => null], $this->globalVariables, $this->externalVariables, $this->variables);
 
         try {
-            $this->expressionLanguage->compile($expression, array_keys($variables));
+            $missingVariables = $this->expressionLanguage->checkExpression($expression, array_keys($variables), $this->allowMissingVariables);
+            $this->missingVariables = array_unique(array_merge($this->missingVariables, $missingVariables));
         } catch (SyntaxError $e) {
             $position = strpos($input->getCurrentLine(), $expression);
             $error = preg_replace('/around position (\d+)\./', 'around position '.$position, $e->getMessage());

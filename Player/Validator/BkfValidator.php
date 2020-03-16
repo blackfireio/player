@@ -15,19 +15,19 @@ use Blackfire\Player\Parser;
 
 class BkfValidator
 {
-    public function validate($input, array $variables = [])
+    public function validate($input, array $variables = [], $allowMisingVariables = false)
     {
-        return $this->doValidate($input, false, $variables);
+        return $this->doValidate($input, false, $variables, $allowMisingVariables);
     }
 
-    public function validateFile($path, array $variables = [])
+    public function validateFile($path, array $variables = [], $allowMisingVariables = false)
     {
-        return $this->doValidate($path, true, $variables);
+        return $this->doValidate($path, true, $variables, $allowMisingVariables);
     }
 
-    private function doValidate($input, $isFilePath, array $variables = [])
+    private function doValidate($input, $isFilePath, array $variables = [], $allowMisingVariables = false)
     {
-        $parser = new Parser($variables);
+        $parser = new Parser($variables, $allowMisingVariables);
 
         try {
             if ($isFilePath) {
@@ -39,7 +39,10 @@ class BkfValidator
             return $this->handleError($e);
         }
 
-        return new ValidationResult();
+        $result = new ValidationResult();
+        $result->setMissingVariables($parser->getMissingVariables());
+
+        return $result;
     }
 
     private function handleError(\Exception $e)

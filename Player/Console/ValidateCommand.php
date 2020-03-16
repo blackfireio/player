@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ValidateCommand extends Command
 {
@@ -46,17 +47,22 @@ final class ValidateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $variables = (new ScenarioHydrator())->getVariables($input);
-        $result = (new BkfValidator())->validateFile($input->getArgument('file'), $variables);
+        $result = (new BkfValidator())->validateFile($input->getArgument('file'), $variables, true);
 
         if ($input->getOption('json')) {
             $output->writeln(JsonOutput::encode([
                 'message' => $result->isSuccess() ? 'The scenarios are valid.' : 'The scenarios are not valid.',
                 'success' => $result->isSuccess(),
                 'errors' => $result->getErrors(),
+                'missing_variables' => $result->getMissingVariables(),
                 'code' => $result->isSuccess() ? 0 : self::EXIT_CODE_FAILURE,
             ]));
         } elseif ($result->isSuccess()) {
             $output->writeln('<info>The scenarios are valid.</>');
+            if ($missingVariables = $result->getMissingVariables()) {
+                $io = new SymfonyStyle($input, $output);
+                $io->note(array_merge(['You need to define the following variables using the `--variable` option:'], $missingVariables));
+            }
         } else {
             $output->writeln('<info>The scenarios are not valid:</>');
 
