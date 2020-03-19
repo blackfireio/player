@@ -15,7 +15,7 @@ final class ValidationResult
 {
     private $success;
     private $errors;
-    private $missingVariables;
+    private $missingVariables = [];
 
     public function __construct($success = true, array $errors = null)
     {
