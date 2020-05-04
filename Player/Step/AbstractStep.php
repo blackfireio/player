@@ -38,7 +38,7 @@ class AbstractStep
 
     public function __toString()
     {
-        return sprintf("└ %s\n", \get_class($this));
+        return sprintf("└ %s\n", static::class);
     }
 
     public function name($name)

@@ -37,7 +37,7 @@ class LoopStep extends BlockStep
 
     public function __toString()
     {
-        $str = sprintf("└ %s: %s, %s in %s\n", \get_class($this), $this->keyName, $this->valueName, $this->iterator);
+        $str = sprintf("└ %s: %s, %s in %s\n", static::class, $this->keyName, $this->valueName, $this->iterator);
         $str .= $this->blockToString($this->loopStep);
 
         return $str;

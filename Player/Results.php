@@ -47,7 +47,7 @@ class Results implements \IteratorAggregate
         return false;
     }
 
-    /** @var Result $result */
+    /** @var Result */
     public function isErrored()
     {
         foreach ($this->results as $result) {

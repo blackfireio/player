@@ -27,7 +27,7 @@ class ClickStep extends Step
 
     public function __toString()
     {
-        return sprintf("└ %s: %s\n", \get_class($this), $this->selector);
+        return sprintf("└ %s: %s\n", static::class, $this->selector);
     }
 
     public function getSelector()
