@@ -1,0 +1,5 @@
+parameters:
+  tmpDir: var/cache/phpstan
+
+  autoload_files:
+    - vendor/bin/.phpunit/phpunit-4.8-0/vendor/autoload.php

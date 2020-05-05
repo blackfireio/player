@@ -29,6 +29,13 @@ php-cs-fix: build-docker-image bin/tools/php-cs-fixer ## Analyze and fix PHP cod
 	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php_cs.dist
 .PHONY: php-cs-fix
 
+phpstan: build-docker-image install bin/tools/phpstan ## Analyze PHP code with phpstan
+ifdef CI
+	@echo -e "+++ [make phpstan] \033[33mRunning PHPStan\033[0m :phpstan:"
+endif
+	@$(PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse Player -c phpstan.neon -l 1
+.PHONY: phpstan
+
 ##
 ## Not Listed
 ##
@@ -51,11 +58,11 @@ phpunit:
 	@$(PHP) ./vendor/bin/simple-phpunit $(args)
 .PHONY: phpunit
 
-bin/tools/php-cs-fixer phive:
+bin/tools/php-cs-fixer bin/tools/phpstan phive:
 ifdef CI
 	@echo -e "--- [make phive] \033[33mInstalling phive dependencies\033[0m"
 endif
-	@$(PHP) phive --home ./.phive install --trust-gpg-keys E82B2FB314E9906E
+	@$(PHP) phive --home ./.phive install --trust-gpg-keys E82B2FB314E9906E,CF1A108D0E7AE720
 
 phive-update:
 	@$(PHP) phive --home ./.phive update
