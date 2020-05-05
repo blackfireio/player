@@ -33,7 +33,7 @@ class WhileStep extends BlockStep
 
     public function __toString()
     {
-        $str = sprintf("└ %s: %s\n", \get_class($this), $this->condition);
+        $str = sprintf("└ %s: %s\n", static::class, $this->condition);
         $str .= $this->blockToString($this->whileStep);
 
         return $str;
