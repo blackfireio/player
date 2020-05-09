@@ -49,14 +49,24 @@ build-docker-image:
 		|| { echo "Building docker image $(php_image)" ; docker build --build-arg PHP_VERSION=$(php_version) -t $(php_image) . ;}
 .PHONY: build-docker-image
 
-install:
+vendor/autoload.php install:
 	$(PHP) composer install --no-interaction --prefer-dist
 .PHONY: install
 
 phpunit:
 	$(eval args ?= )
+ifdef CI
+	@echo -e "+++ [make phpunit] \033[33mRunning PHPUnit\033[0m :phpunit:"
+endif
 	@$(PHP) ./vendor/bin/simple-phpunit $(args)
 .PHONY: phpunit
+
+phpunit-setup: vendor/autoload.php ## Setup phpunit
+ifdef CI
+	@echo -e "--- [make phpunit-setup] \033[33mInstalling PHPUnit\033[0m :phpunit:"
+endif
+	@$(PHP) vendor/bin/simple-phpunit --version 2>&1>/dev/null
+.PHONY: phpunit-setup
 
 bin/tools/php-cs-fixer bin/tools/phpstan phive:
 ifdef CI
