@@ -68,13 +68,13 @@ endif
 	@$(PHP) vendor/bin/simple-phpunit --version 2>&1>/dev/null
 .PHONY: phpunit-setup
 
-bin/tools/php-cs-fixer bin/tools/phpstan phive:
+bin/tools/php-cs-fixer bin/tools/phpstan phive: build-docker-image
 ifdef CI
 	@echo -e "--- [make phive] \033[33mInstalling phive dependencies\033[0m"
 endif
 	@$(PHP) phive --home ./.phive install --copy --trust-gpg-keys E82B2FB314E9906E,CF1A108D0E7AE720
 
-phive-update:
+phive-update: build-docker-image
 	@$(PHP) phive --home ./.phive update
 
 help:
