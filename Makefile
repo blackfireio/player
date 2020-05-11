@@ -61,7 +61,7 @@ endif
 	@$(PHP) ./vendor/bin/simple-phpunit $(args)
 .PHONY: phpunit
 
-phpunit-setup: vendor/autoload.php ## Setup phpunit
+phpunit-setup: build-docker-image vendor/autoload.php ## Setup phpunit
 ifdef CI
 	@echo -e "--- [make phpunit-setup] \033[33mInstalling PHPUnit\033[0m :phpunit:"
 endif
