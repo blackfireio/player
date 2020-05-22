@@ -12,8 +12,8 @@ RUN echo 'date.timezone = UTC' > /usr/local/etc/php/conf.d/timezone.ini
 RUN mkdir ~/.gnupg
 RUN echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
 
-RUN wget -O phive.phar "https://phar.io/releases/phive.phar" && \
-    wget -O phive.phar.asc "https://phar.io/releases/phive.phar.asc" && \
+RUN wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.14.2/phive-0.14.2.phar" && \
+    wget -O phive.phar.asc "https://github.com/phar-io/phive/releases/download/0.14.2/phive-0.14.2.phar.asc" && \
     gpg --no-tty --keyserver pool.sks-keyservers.net --recv-keys 0x9D8A98B29B2D5D79 && \
     gpg --no-tty --verify phive.phar.asc phive.phar && \
     rm phive.phar.asc && \

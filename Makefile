@@ -6,7 +6,7 @@ php_version ?= 7.3
 image_hash = $(shell sha256sum Dockerfile | cut -c -8)
 php_image = blackfire/player-test:$(php_version)-$(image_hash)
 
-PHP=@docker run --rm -it -u `id -u`:`id -g` -v $(HOME)/.composer:/.composer -v $(PWD):/app -e HOME=/ $(php_image)
+PHP=@docker run --rm -it -u `id -u`:`id -g` -v $(HOME)/.composer:/.composer -v $(HOME)/.phive:/.phive -v $(PWD):/app -e HOME=/ $(php_image)
 
 ##
 #### General
