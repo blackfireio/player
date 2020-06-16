@@ -28,7 +28,7 @@ final class ValidateCommand extends Command
         $this
             ->setName('validate')
             ->setDefinition([
-                new InputArgument('file', InputArgument::REQUIRED, 'The file defining the scenarios'),
+                new InputArgument('file', InputArgument::OPTIONAL, 'The file defining the scenarios'),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs result as JSON', null),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
@@ -47,7 +47,16 @@ final class ValidateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $variables = (new ScenarioHydrator())->getVariables($input);
-        $result = (new BkfValidator())->validateFile($input->getArgument('file'), $variables, true);
+        $validator = new BkfValidator();
+        if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
+            if ($input->isInteractive()) {
+                throw new \LogicException("The 'validate' command requires a file as first argument or a scenario in STDIN. It cannot be used in interactive mode.");
+            }
+
+            $result = $validator->validate(file_get_contents('php://stdin'), $variables, true);
+        } else {
+            $result = $validator->validateFile($input->getArgument('file'), $variables, true);
+        }
 
         if ($input->getOption('json')) {
             $output->writeln(JsonOutput::encode([
