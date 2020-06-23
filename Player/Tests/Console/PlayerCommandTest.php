@@ -193,4 +193,33 @@ EOS;
         $this->assertSame($expectedOutput, $process->getOutput());
         $this->assertStringContainsString('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
     }
+
+    public function testErrorInRealWorld()
+    {
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
+        $process->run();
+
+        $expectedOutput = '{
+    "message": "Cannot load file \"../Player/Tests/fixtures-validate/scenario.json\" because it does not have the right extension. Expected \"bkf\", got \"json\".",
+    "success": false,
+    "errors": [],
+    "input": {
+        "path": "../Player/Tests/fixtures-validate/scenario.json",
+        "content": "{\n  \"message\": \"I\'m not a validate scenario file!\"\n}\n"
+    }
+}
+';
+
+        $expectedErrorOutput = <<<EOD
+  [ERROR]                                                                      
+  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because   
+  it does not have the right extension. Expected "bkf", got "json".            
+                                                                               
+  Player documentation at https://blackfire.io/player                         
+EOD;
+
+        $this->assertSame($expectedOutput, $process->getOutput());
+        $this->assertStringContainsString($expectedErrorOutput, $process->getErrorOutput());
+    }
 }

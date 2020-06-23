@@ -1,6 +1,6 @@
 The scenarios are valid.
 
- ! [NOTE] You need to define the following variables using the `--variable`
- !        option:
- !
- !        expected_status
+ ! [NOTE] You need to define the following variables using the `--variable`%A
+ !        option:%A
+ !%A
+ !        expected_status%A

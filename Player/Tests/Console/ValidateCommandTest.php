@@ -74,29 +74,61 @@ class ValidateCommandTest extends TestCase
     public function testErrorInRealWorld()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
         $process->run();
 
         $expectedOutput = '{
-    "message": "Cannot load file \"../Player/Tests/fixtures-validate/scenario.json\" because it does not have the right extension. Expected \"bkf\", got \"json\".",
+    "message": "The scenarios are not valid.",
     "success": false,
-    "errors": [],
-    "input": {
-        "path": "../Player/Tests/fixtures-validate/scenario.json",
-        "content": "{\n  \"message\": \"I\'m not a validate scenario file!\"\n}\n"
-    }
+    "errors": [
+        "Cannot load file \"../Player/Tests/fixtures-validate/scenario.json\" because it does not have the right extension. Expected \"bkf\", got \"json\"."
+    ],
+    "missing_variables": [],
+    "code": 64
 }
 ';
 
-        $expectedErrorOutput = <<<EOD
-  [ERROR]                                                                      
-  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because   
-  it does not have the right extension. Expected "bkf", got "json".            
-                                                                               
-  Player documentation at https://blackfire.io/player                         
-EOD;
+        $this->assertSame($expectedOutput, $process->getOutput());
+    }
+
+    /** @dataProvider providePlayerTests */
+    public function testValidateStdIn($file, $expectedOutput, $expectedJsonOutput)
+    {
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--json'], __DIR__.'/../../../bin');
+        $process->setInput(file_get_contents($file));
+        $process->run();
+
+        $this->assertTrue($process->isSuccessful());
+        $this->assertStringMatchesFormat($expectedJsonOutput, $process->getOutput());
+
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate'], __DIR__.'/../../../bin');
+        $process->setInput(file_get_contents($file));
+        $process->run();
+
+        $expectedOutput = implode("\n", array_map(function ($line) { return rtrim($line); }, explode("\n", $expectedOutput)));
+
+        $this->assertStringMatchesFormat($expectedOutput, $process->getOutput());
+    }
+
+    public function testErrorStdIn()
+    {
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--json'], __DIR__.'/../../../bin');
+        $process->setInput('papilou!');
+        $process->run();
+
+        $expectedOutput = '{
+    "message": "The scenarios are not valid.",
+    "success": false,
+    "errors": [
+        "Unable to parse \"papilou!\" at line 1."
+    ],
+    "missing_variables": [],
+    "code": 64
+}
+';
 
         $this->assertSame($expectedOutput, $process->getOutput());
-        $this->assertStringContainsString($expectedErrorOutput, $process->getErrorOutput());
     }
 }

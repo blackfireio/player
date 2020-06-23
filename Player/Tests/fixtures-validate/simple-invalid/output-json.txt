@@ -2,7 +2,7 @@
     "message": "The scenarios are not valid.",
     "success": false,
     "errors": [
-        "Unknown keyword \"vit\" in %s/Tests/Console/../fixtures-validate/simple-invalid/scenario.bkf at line 4."
+        "Unknown keyword \"vit\" %s line 4."
     ],
     "missing_variables": [],
     "code": 64
