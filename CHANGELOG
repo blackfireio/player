@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.9.0 (2020-06-23)
+
+ * Add support for scenarios validation using stdin
+ * Add support for scenarios validation with variables defined in the environment
+ * Update dependencies
+
 * 1.8.2 (2020-02-27)
 
  * Fix : Remove the Blackfire Query before following a redirection
