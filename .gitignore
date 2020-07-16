@@ -1,5 +1,6 @@
 /phpunit.xml
 /.phpunit.result.cache
+/var/*
 /vendor
 bin/tools
 .phive
