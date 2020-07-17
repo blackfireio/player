@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.9.1 (2020-07-17)
+
+ * Properly dump nested arrays in output
+ * Update dependencies
+
 * 1.9.0 (2020-06-23)
 
  * Add support for scenarios validation using stdin
