@@ -1,0 +1,20 @@
+{
+    "output": "blackfire-player.phar",
+    "chmod": "0755",
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Php"
+    ],
+    "extract": false,
+    "files": [
+        "LICENSE"
+    ],
+    "finder": [
+        {
+            "exclude": ["Tests", "tests"],
+            "in": ["bin", "Player", "vendor"]
+        }
+    ],
+    "main": "bin/blackfire-player.php",
+    "stub": true,
+    "web": false
+}

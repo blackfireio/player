@@ -36,6 +36,18 @@ endif
 	@$(PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse Player -c phpstan.neon -l 1
 .PHONY: phpstan
 
+shell: ## Starts a shell in container
+	@$(PHP) bash
+
+package-test: ## Tests the phar release
+	@test -f bin/tools/box-2.7.4.phar || curl --location -o bin/tools/box-2.7.4.phar https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar
+	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging
+	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.no-git.json
+
+package: ## Generates the phar release
+	@test -f bin/tools/box-2.7.4.phar || curl --location -o bin/tools/box-2.7.4.phar https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar
+	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.json
+
 ##
 ## Not Listed
 ##
