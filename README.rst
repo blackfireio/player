@@ -45,11 +45,22 @@ move it to a directory under your ``PATH``:
 Usage
 -----
 
+The "run" Command
+~~~~~~~~~~~~~~~~~
+
 Use the ``run`` command to execute a scenario file:
 
 .. code-block:: bash
 
     blackfire-player run scenario.bkf
+
+.. note::
+
+    The *file* argument may be omitted when using the standard input:
+
+    .. code-block:: bash
+
+        cat scenario.bkf | blackfire-player run
 
 You can also run scenarios contained in a ``.blackfire.yaml`` file:
 
@@ -84,7 +95,35 @@ Use the ``--concurrency`` option to run scenarios in parallel (experimental):
 Use ``-v`` to get logs about the progress of the player or use ``tracer`` option
 to store all requests and responses on disk.
 
-The command returns 1 if at least one scenario fails, 0 otherwise.
+The command returns ``1`` if at least one scenario fails, ``0`` otherwise.
+
+The "validate" Command
+~~~~~~~~~~~~~~~~~~~~~~
+
+The ``validate`` command checks if passed scenario file is valid:
+
+.. code-block:: bash
+
+    blackfire-player validate scenario.bkf
+
+The *file* argument may be omitted when using the standard input:
+
+.. code-block:: bash
+
+    cat scenario.bkf | blackfire-player validate
+
+.. note::
+
+    It is not possible to validate a scenario contained in a ``.blackfire.yaml``
+    file.
+
+Use the ``--json`` option to output a JSON report:
+
+.. code-block:: bash
+
+    blackfire-player validate scenario.bkf --json
+
+The command returns ``1`` the file is invalid, ``0`` otherwise.
 
 .. _crawling-an-http-application:
 
