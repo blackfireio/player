@@ -95,7 +95,7 @@ Use the ``--concurrency`` option to run scenarios in parallel (experimental):
 Use ``-v`` to get logs about the progress of the player or use ``tracer`` option
 to store all requests and responses on disk.
 
-**The command uses the following exit values in case of failure:**
+**The command uses the following exit codes in case of failure:**
 
 * ``64`` if at least one scenario fails;
 * ``65`` if a fatal error occurs, preventing the build to play correctly;
@@ -127,10 +127,9 @@ Use the ``--json`` option to output a JSON report:
 
     blackfire-player validate scenario.bkf --json
 
-**The command uses the following exit values in case of failure:**
+**The command uses the following exit codes in case of failure:**
 
 * ``64`` if the file is invalid;
-* ``0`` otherwise.
 
 .. _crawling-an-http-application:
 
