@@ -33,6 +33,8 @@ phpstan: build-docker-image install bin/tools/phpstan ## Analyze PHP code with p
 ifdef CI
 	@echo -e "+++ [make phpstan] \033[33mRunning PHPStan\033[0m :phpstan:"
 endif
+	@# We list tests to force phpunit dependencies installation
+	@$(PHP) vendor/bin/simple-phpunit --list-tests 2>&1 > /dev/null
 	@$(PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse Player -c phpstan.neon -l 1
 .PHONY: phpstan
 
