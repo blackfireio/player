@@ -41,13 +41,11 @@ endif
 shell: ## Starts a shell in container
 	@$(PHP) bash
 
-package-test: ## Tests the phar release
-	@test -f bin/tools/box-2.7.4.phar || curl --location -o bin/tools/box-2.7.4.phar https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar
+package-test: bin/tools/box-2.7.4.phar ## Tests the phar release
 	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging
 	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.no-git.json
 
-package: ## Generates the phar release
-	@test -f bin/tools/box-2.7.4.phar || curl --location -o bin/tools/box-2.7.4.phar https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar
+package: bin/tools/box-2.7.4.phar ## Generates the phar release
 	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.json
 
 ##
@@ -94,3 +92,7 @@ phive-update: build-docker-image
 help:
 	@grep -hE '(^[a-zA-Z_-]+:.*?##.*$$)|(^###)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
 .PHONY: help
+
+bin/tools/box-2.7.4.phar:
+	@mkdir -p bin/tools
+	@test -f bin/tools/box-2.7.4.phar || curl --fail --location -o bin/tools/box-2.7.4.phar https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar
