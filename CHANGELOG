@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.9.2 (2020-09-09)
+
+ * Update dependencies
+
 * 1.9.1 (2020-07-17)
 
  * Properly dump nested arrays in output
