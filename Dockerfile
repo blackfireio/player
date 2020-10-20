@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y git unzip wget 
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN echo 'date.timezone = UTC' > /usr/local/etc/php/conf.d/timezone.ini
+RUN echo 'memory_limit = 1G' > /usr/local/etc/php/conf.d/memory_limit.ini
 
 RUN mkdir ~/.gnupg
 RUN echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
