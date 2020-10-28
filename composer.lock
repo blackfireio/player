@@ -153,23 +153,22 @@
         },
         {
             "name": "fakerphp/faker",
-            "version": "v1.10.0",
+            "version": "v1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FakerPHP/Faker.git",
-                "reference": "7ef0c9fda7b576e8d01d6cb1c7b28f12286bb217"
+                "reference": "f2713a5016faaf6ffc60e9d456dedb5ebf0efcae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/7ef0c9fda7b576e8d01d6cb1c7b28f12286bb217",
-                "reference": "7ef0c9fda7b576e8d01d6cb1c7b28f12286bb217",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/f2713a5016faaf6ffc60e9d456dedb5ebf0efcae",
+                "reference": "f2713a5016faaf6ffc60e9d456dedb5ebf0efcae",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1 || ^8.0"
             },
             "conflict": {
-                "ergebnis/faker": "*",
                 "fzaninotto/faker": "*"
             },
             "require-dev": {
@@ -199,9 +198,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FakerPHP/Faker/issues",
-                "source": "https://github.com/FakerPHP/Faker/tree/v1.10.0"
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.10.1"
             },
-            "time": "2020-10-27T13:44:20+00:00"
+            "time": "2020-10-28T09:32:46+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
