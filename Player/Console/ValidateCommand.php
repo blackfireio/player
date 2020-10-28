@@ -49,10 +49,6 @@ final class ValidateCommand extends Command
         $variables = (new ScenarioHydrator())->getVariables($input);
         $validator = new BkfValidator();
         if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
-            if ($input->isInteractive()) {
-                throw new \LogicException("The 'validate' command requires a file as first argument or a scenario in STDIN. It cannot be used in interactive mode.");
-            }
-
             $result = $validator->validate(file_get_contents('php://stdin'), $variables, true);
         } else {
             $result = $validator->validateFile($input->getArgument('file'), $variables, true);
@@ -81,5 +77,7 @@ final class ValidateCommand extends Command
 
             return self::EXIT_CODE_FAILURE;
         }
+
+        return 0;
     }
 }

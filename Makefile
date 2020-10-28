@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
 
-php_version ?= 7.3
+php_version ?= 7.4
 
 image_hash = $(shell sha256sum Dockerfile | cut -c -8)
 php_image = blackfire/player-test:$(php_version)-$(image_hash)

@@ -2,16 +2,16 @@
 
 namespace Blackfire\Player\ExpressionLanguage;
 
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage as SymfonyExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\Lexer;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
-use Symfony\Component\ExpressionLanguage\ParserCache\ParserCacheInterface;
 
 class ExpressionLanguage extends SymfonyExpressionLanguage
 {
     private $resultsVisitor;
 
-    public function __construct(ParserCacheInterface $cache = null, array $providers = [])
+    public function __construct(CacheItemPoolInterface $cache = null, array $providers = [])
     {
         parent::__construct($cache, $providers);
 

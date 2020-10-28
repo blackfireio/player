@@ -92,9 +92,6 @@ final class PlayerCommand extends Command
         $sandbox = $input->getOption('sandbox');
 
         if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
-            if ($input->isInteractive()) {
-                throw new \LogicException("The 'run' command requires a file as first argument or a scenario in STDIN. It cannot be used in interactive mode.");
-            }
             $stdin = fopen('php://stdin', 'rb');
             $copy = fopen('php://memory', 'r+b');
             stream_copy_to_stream($stdin, $copy);
