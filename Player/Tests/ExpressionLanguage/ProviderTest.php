@@ -50,7 +50,7 @@ class ProviderTest extends TestCase
     {
         $provider = new Provider(null, true);
         $language = new ExpressionLanguage(null, [$provider]);
-        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
+        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $extra = new ValueBag();
         $extra->set('tmp_dir', $tmpDir);
         $fs = new Filesystem();
@@ -72,7 +72,7 @@ class ProviderTest extends TestCase
 
         $provider = new Provider($faker, true);
         $language = new ExpressionLanguage(null, [$provider]);
-        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
+        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $extra = new ValueBag();
         $extra->set('tmp_dir', $tmpDir);
         $fs = new Filesystem();

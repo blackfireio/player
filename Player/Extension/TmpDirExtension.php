@@ -32,7 +32,7 @@ final class TmpDirExtension extends AbstractExtension
 
     public function enterScenario(Scenario $scenario, Context $context)
     {
-        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
+        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $this->fs->mkdir($tmpDir);
         $context->getExtraBag()->set('tmp_dir', $tmpDir);
     }

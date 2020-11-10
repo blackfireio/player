@@ -39,7 +39,7 @@ final class TracerExtension extends AbstractExtension
     public function __construct(OutputInterface $output)
     {
         $this->output = $output;
-        $this->dir = sprintf('%s/blackfire-player-trace/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), mt_rand());
+        $this->dir = sprintf('%s/blackfire-player-trace/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
 
         $this->fs = new Filesystem();
 
