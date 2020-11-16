@@ -21,6 +21,7 @@ class SafeFakerImageProvider extends Image
 {
     public static function imageUrl($width = 640, $height = 480, $category = null, $randomize = true, $word = null, $gray = false)
     {
-        return 'https://blackfire.io/blackfire.png';
+        // Should be an image, but whatever...
+        return 'https://blackfire.io/';
     }
 }
