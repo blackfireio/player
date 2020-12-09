@@ -62,7 +62,7 @@ final class PlayerCommand extends Command
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
             ])
             ->setDescription('Runs scenario files')
-            ->setHelp('Read https://blackfire.io/docs/player to learn about all supported options.')
+            ->setHelp('Read https://blackfire.io/docs/builds-cookbooks/player/index to learn about all supported options.')
         ;
     }
 
