@@ -212,14 +212,17 @@ EOS;
 ';
 
         $expectedErrorOutput = <<<EOD
-  [ERROR]                                                                      
-  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because   
-  it does not have the right extension. Expected "bkf", got "json".            
-                                                                               
-  Player documentation at https://blackfire.io/player                         
+  [ERROR]
+  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because
+  it does not have the right extension. Expected "bkf", got "json".
+
+  Player documentation at https://blackfire.io/player
 EOD;
 
+        $oneLineExpected = implode(' ', array_filter(array_map('trim', explode("\n", $expectedErrorOutput))));
+        $oneLineOutput = implode(' ', array_filter(array_map('trim', explode("\n", $process->getErrorOutput()))));
+
         $this->assertSame($expectedOutput, $process->getOutput());
-        $this->assertStringContainsString($expectedErrorOutput, $process->getErrorOutput());
+        $this->assertStringContainsString($oneLineExpected, $oneLineOutput);
     }
 }

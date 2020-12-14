@@ -74,7 +74,7 @@ class Parser
             throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
         }
 
-        $extension = pathinfo($file, \PATHINFO_EXTENSION);
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
         if ('yml' === $extension || 'yaml' === $extension) {
             $input = (new YamlParser())->parseFile($file);
             if (!isset($input['scenarios'])) {

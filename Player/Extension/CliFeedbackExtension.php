@@ -198,7 +198,7 @@ class CliFeedbackExtension extends AbstractExtension
     public function leaveScenario(Scenario $scenario, Result $result, Context $context)
     {
         if (!$result->isErrored()) {
-            $this->output->writeln(sprintf('<success> </> OK'));
+            $this->output->writeln('<success> </> OK');
         }
     }
 
