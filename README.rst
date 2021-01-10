@@ -307,7 +307,7 @@ Values can also be randomly generated via the ``fake()`` function:
 
 .. note::
 
-    ``fake()`` use the `Faker library <https://github.com/fzaninotto/Faker>`_
+    ``fake()`` use the `Faker library <https://github.com/FakerPHP/Faker>`_
     under the hood.
 
 .. _following-redirections:
