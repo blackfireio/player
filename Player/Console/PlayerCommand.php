@@ -97,7 +97,7 @@ final class PlayerCommand extends Command
             stream_copy_to_stream($stdin, $copy);
             $input->setArgument('file', $copy);
         } else {
-            $extension = pathinfo($input->getArgument('file'), PATHINFO_EXTENSION);
+            $extension = pathinfo($input->getArgument('file'), \PATHINFO_EXTENSION);
             if ('yml' === $extension || 'yaml' === $extension) {
                 $sandbox = true;
             }

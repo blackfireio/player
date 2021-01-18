@@ -35,7 +35,7 @@ class ExtractResultsVisitor
     {
         $results = $this->visit($expression->getNodes(), $variables);
 
-        return array_unique($results, SORT_REGULAR);
+        return array_unique($results, \SORT_REGULAR);
     }
 
     private function visit(Node\Node $node, array $variables, Node\Node $parentNode = null)

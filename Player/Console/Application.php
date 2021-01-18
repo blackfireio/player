@@ -42,7 +42,7 @@ final class Application extends BaseApplication
         $lines = ['[ERROR]'];
 
         $terminal = new Terminal();
-        $width = $terminal->getWidth() ? $terminal->getWidth() - 1 : PHP_INT_MAX;
+        $width = $terminal->getWidth() ? $terminal->getWidth() - 1 : \PHP_INT_MAX;
 
         foreach (preg_split('/\r?\n/', $e->getMessage()) as $line) {
             foreach ($this->splitStringByWidth($line, $width - 4) as $line) {

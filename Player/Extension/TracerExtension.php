@@ -80,7 +80,7 @@ final class TracerExtension extends AbstractExtension
         $target = $this->getDirectory();
 
         file_put_contents($target.'/response.txt', Psr7\str($response));
-        file_put_contents($target.'/variables.json', json_encode($this->getVariables($context), JSON_PRETTY_PRINT));
+        file_put_contents($target.'/variables.json', json_encode($this->getVariables($context), \JSON_PRETTY_PRINT));
 
         return $response;
     }
@@ -88,7 +88,7 @@ final class TracerExtension extends AbstractExtension
     public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context)
     {
         $target = $this->getDirectory();
-        file_put_contents($target.'/variables.json', json_encode($this->getVariables($context), JSON_PRETTY_PRINT));
+        file_put_contents($target.'/variables.json', json_encode($this->getVariables($context), \JSON_PRETTY_PRINT));
 
         $response = $context->getResponse();
         if (!$response) {

@@ -129,7 +129,7 @@ final class BlackfireExtension extends AbstractExtension
                     ],
                 ]),
             ];
-            $query .= '&'.http_build_query($options, '', '&', PHP_QUERY_RFC3986);
+            $query .= '&'.http_build_query($options, '', '&', \PHP_QUERY_RFC3986);
 
             $bag->remove('blackfire_ref_step');
             $bag->remove('blackfire_ref_stats');
@@ -525,7 +525,7 @@ final class BlackfireExtension extends AbstractExtension
 
         $builds = array_filter($bag->all(), function ($key) {
             return \is_string($key) && 0 === strpos($key, 'blackfire_build:');
-        }, ARRAY_FILTER_USE_KEY);
+        }, \ARRAY_FILTER_USE_KEY);
 
         foreach ($builds as $key => $build) {
             $this->callApi(function () use ($build) {

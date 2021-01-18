@@ -37,13 +37,13 @@ final class DisableInternalNetworkExtension extends AbstractExtension
             preg_match('/^((2[0-4]|1\d|[1-9])?\d|25[0-5])(\.(?1)){3}\z/', $host)
             || preg_match('/^(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:(?!$)|$)|\2))(?4){5}((?4){2}|((2[0-4]|1\d|[1-9])?\d|25[0-5])(\.(?7)){3})\z/i', $host)
         ) {
-            if (false === filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            if (false === filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
                 throw new SecurityException('Forbidden host IP.');
             }
         } else {
             // Looks like a hostname
             if (\PHP_VERSION_ID >= 70000) {
-                if (false === filter_var($host, FILTER_VALIDATE_DOMAIN)) {
+                if (false === filter_var($host, \FILTER_VALIDATE_DOMAIN)) {
                     throw new SecurityException('Invalid host name.');
                 }
             }
@@ -53,7 +53,7 @@ final class DisableInternalNetworkExtension extends AbstractExtension
                 throw new SecurityException(sprintf('Could not resolve host: %s.', $host));
             }
 
-            if (false === filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            if (false === filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
                 throw new SecurityException(sprintf('The host "%s" resolves to a forbidden IP.', $host));
             }
 

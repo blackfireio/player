@@ -106,7 +106,7 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
             }
         } catch (\Error $e) {
             // BC with PHP < 7.0, because abortStep expect an \Exception
-            $exception = new \ErrorException($e->getMessage(), $e->getCode(), E_ERROR, $e->getFile(), $e->getLine(), $e);
+            $exception = new \ErrorException($e->getMessage(), $e->getCode(), \E_ERROR, $e->getFile(), $e->getLine(), $e);
 
             // No exceptions should be throw outside this method, otherwise they
             // will be caught by guzzle and will become silenced on PHP 7.0+

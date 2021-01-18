@@ -19,7 +19,7 @@ class CurlFactory extends BaseCurlFactory
             $port = $uri->getPort() ?: $port;
 
             $resolveString = sprintf('%s:%d:%s', $uri->getHost(), $port, $resolvedIp);
-            curl_setopt($easy->handle, CURLOPT_RESOLVE, [$resolveString]);
+            curl_setopt($easy->handle, \CURLOPT_RESOLVE, [$resolveString]);
         }
 
         return $easy;
