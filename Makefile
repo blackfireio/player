@@ -12,7 +12,8 @@ PHP=@docker run --rm -it -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v
 #### General
 ##
 
-test: build-docker-image install ## Run the Player testsuite
+# clean vendors is required to install the vendor attached to the PHP version used
+test: build-docker-image clean install ## Run the Player testsuite
 	$(eval args ?= )
 	@$(PHP) php -v
 	@$(PHP) ./vendor/bin/simple-phpunit $(args)
