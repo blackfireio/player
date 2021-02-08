@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.23.0",
+            "version": "v1.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "c11e9546182fcd8c2f3b1d5a4b867da062264355"
+                "reference": "dab3bdaab8d5701ab4f7b60e86178c57cce3dff9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/c11e9546182fcd8c2f3b1d5a4b867da062264355",
-                "reference": "c11e9546182fcd8c2f3b1d5a4b867da062264355",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/dab3bdaab8d5701ab4f7b60e86178c57cce3dff9",
+                "reference": "dab3bdaab8d5701ab4f7b60e86178c57cce3dff9",
                 "shasum": ""
             },
             "require": {
@@ -26,17 +26,23 @@
             },
             "require-dev": {
                 "guzzlehttp/psr7": "^1.6",
+                "phpunit/phpunit": "^9.5",
                 "psr/http-message": "^1.0",
-                "symfony/http-client": "^4.3"
+                "symfony/browser-kit": "^5.1",
+                "symfony/framework-bundle": "^5.1",
+                "symfony/http-client": "^5.1",
+                "symfony/panther": "^0.9",
+                "symfony/phpunit-bridge": "^5.2"
             },
             "suggest": {
                 "ext-blackfire": "The C version of the Blackfire probe",
-                "ext-zlib": "To push config to remote profiling targets"
+                "ext-zlib": "To push config to remote profiling targets",
+                "symfony/panther": "To use Symfony web test cases with Blackfire"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.5.x-dev"
+                    "dev-master": "1.24.x-dev"
                 }
             },
             "autoload": {
@@ -66,15 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/blackfireio/php-sdk/issues",
-                "source": "https://github.com/blackfireio/php-sdk/tree/v1.23.0"
+                "source": "https://github.com/blackfireio/php-sdk/tree/v1.24.0"
             },
-            "funding": [
-                {
-                    "url": "https://blackfire.io/",
-                    "type": "custom"
-                }
-            ],
-            "time": "2020-05-29T11:19:11+00:00"
+            "time": "2021-02-05T10:16:05+00:00"
         },
         {
             "name": "composer/ca-bundle",
