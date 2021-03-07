@@ -661,8 +661,8 @@ generic ``regex()`` function.
 .. note::
 
     ``regex()`` takes a regex as an argument and always returns the first
-    match. Note that backslashes must be escaped by doubling them:
-    ``"/\\.git/"``.
+    captured parenthesized subpattern. Note that backslashes must be escaped by
+    doubling them: ``"/\\.git/"``.
 
 The values are also available at the end of a crawling session:
 
