@@ -191,7 +191,7 @@ class Provider implements ExpressionFunctionProviderInterface
                     throw new InvalidArgumentException(sprintf('Regex "%s" is not valid: %s.', $regex, error_get_last()['message']));
                 }
 
-                return isset($matches[1]) ? $matches[1] : null;
+                return isset($matches[0]) ? $matches[0] : null;
             }),
 
             new ExpressionFunction('css', $compiler, function ($arguments, $selector) {
