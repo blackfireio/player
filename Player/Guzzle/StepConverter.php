@@ -295,7 +295,7 @@ final class StepConverter implements StepConverterInterface
         $headers = [];
         foreach ($stepContext->getHeaders() as $header) {
             $header = $this->evaluateExpression($header);
-            list($name, $value) = explode(':', $header);
+            list($name, $value) = explode(':', $header, 2);
             $value = ltrim($value);
 
             if ('false' === $value || empty($value) || isset($removedHeaders[$name])) {

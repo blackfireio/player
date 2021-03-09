@@ -14,6 +14,7 @@ namespace Blackfire\Player\Tests\Guzzle;
 use Blackfire\Player\Context;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Guzzle\StepConverter;
+use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\FollowStep;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\VisitStep;
@@ -42,6 +43,21 @@ class StepConverterTest extends TestCase
 
         $this->assertEquals('', $nextRequest->getHeaderLine('X-Blackfire-Query'));
         $this->assertEquals('', $nextRequest->getHeaderLine('X-Blackfire-Profile-Uuid'));
+    }
+
+    public function testVisitStepPreserveHeaders()
+    {
+        $stepConverter = new StepConverter(new ExpressionLanguage(), $this->createContext((new ConfigurableStep())->header('"Authorization: Bearer foo:bar"')));
+
+        $step = new VisitStep('"https://blackfire.io"');
+
+        $request = new Request('GET', '/admin');
+
+        $response = new Response(301, ['location' => '/login']);
+
+        $nextRequest = $stepConverter->createRequest($step, $request, $response);
+
+        $this->assertEquals('Bearer foo:bar', $nextRequest->getHeaderLine('Authorization'));
     }
 
     protected function createContext($step)
