@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.10.1 (2021-03-09)
+
+ * Fix handling headers containing ":"
+ * Update dependencies
+
 * 1.10.0 (2020-10-28)
 
  * Bump minimum PHP version to 7.1.3
