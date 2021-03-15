@@ -664,6 +664,60 @@ EOF
         $this->assertEquals($expected, $scenario->getBlockStep()->getBody());
     }
 
+    public function testMultiLinesInterpolationNotEnabled()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set multi
+"""
+${ variable }
+${variable}
+${ 1 + sum }
+${ 2 ~ 2 }
+${ (2 ~ 2) }
+${ (2 ~ 2) }
+${ test.property }
+${ array["key"] }
+"""
+EOF
+        );
+
+        $expected = '\'${ variable }\n${variable}\n${ 1 + sum }\n${ 2 ~ 2 }\n${ (2 ~ 2) }\n${ (2 ~ 2) }\n${ test.property }\n${ array["key"] }\'';
+        $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
+    }
+
+    public function testMultiLinesInterpolation()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set multi
+"""i
+${ variable }
+${variable}
+${ someCamelCase }
+"""
+EOF
+        );
+
+        $expected = '\'\' ~ variable ~ \'\n\' ~ variable ~ \'\n\' ~ someCamelCase ~ \'\'';
+        $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
+    }
+
+    public function testMultiLinesEscapingInterpolation()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set multi
+"""i
+\${ variable }
+"""
+EOF
+        );
+
+        $expected = '\'\${ variable }\'';
+        $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
+    }
+
     public function testMultiLinesInvalidIndentation()
     {
         $this->expectException(SyntaxErrorException::class);
@@ -719,5 +773,93 @@ EOF
         );
 
         $this->assertEquals(['env'], $parser->getMissingVariables());
+    }
+
+
+    public function testMultiLinesWithoutInterpolatedVariables()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set login admin
+set password qwerty
+
+scenario Test 1
+    visit url('/')
+        body
+        """
+        {
+            login: "${login}",
+            password: "${password}"
+        }
+        """
+EOF
+        );
+
+        $expected = '\'{\n    login: "${login}",\n    password: "${password}"\n}\'';
+        $scenario = iterator_to_array($scenarioSet)[0];
+        $this->assertEquals($expected, $scenario->getBlockStep()->getBody());
+        $this->assertEmpty($parser->getMissingVariables());
+    }
+
+    public function testMultiLinesWithInterpolatedVariables()
+    {
+        $parser = new Parser();
+        $scenarioSet = $parser->parse(<<<'EOF'
+set login admin
+set password qwerty
+
+scenario Test 1
+    visit url('/')
+        body
+        """i
+        {
+            login: "${login}",
+            password: "${ password }"
+        }
+        """
+EOF
+        );
+
+        $expected = '\'{\n    login: "\' ~ login ~ \'",\n    password: "\' ~ password ~ \'"\n}\'';
+        $scenario = iterator_to_array($scenarioSet)[0];
+        $this->assertEquals($expected, $scenario->getBlockStep()->getBody());
+        $this->assertEmpty($parser->getMissingVariables());
+    }
+
+    public function testMissingInterpolatedVariables()
+    {
+        $parser = new Parser([], true);
+        $parser->parse(<<<'EOF'
+scenario Test 1
+    visit url('/')
+        body
+        """i
+        {
+            login: "${login}",
+            password: "${password}"
+        }
+        """
+EOF
+        );
+
+        $this->assertEquals(['login', 'password'], $parser->getMissingVariables());
+    }
+
+    public function testMissingNotinterpolatedVariables()
+    {
+        $parser = new Parser([], true);
+        $parser->parse(<<<'EOF'
+scenario Test 1
+    visit url('/')
+        body
+        """
+        {
+            login: "${login}",
+            password: "${password}"
+        }
+        """
+EOF
+        );
+        $this->assertEquals([], $parser->getMissingVariables());
     }
 }
