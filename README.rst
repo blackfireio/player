@@ -264,6 +264,23 @@ You can also pass a Request body:
                 }
                 """
 
+    Starting from version v1.11.0 you can also use variables by adding ``i`` option to multiline string.
+
+    .. code-block:: blackfire
+
+        scenario
+            visit url('/login')
+                method 'POST'
+                set username "john"
+                set password "doe"
+                body
+                """i
+                {
+                    "user": "${username}",
+                    "password": "${password}"
+                }
+                """
+
 .. _clicking-on-a-link-with-click:
 
 Clicking on a Link with ``click``
