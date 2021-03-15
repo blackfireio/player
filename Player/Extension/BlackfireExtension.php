@@ -440,7 +440,7 @@ final class BlackfireExtension extends AbstractExtension
 
         $wait = isset($values['wait']) ? (int) $values['wait'] : 0;
         if ($wait) {
-            usleep($wait * 1000);
+            usleep(min($wait, 10000) * 1000);
         }
 
         return $continue;
