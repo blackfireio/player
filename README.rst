@@ -264,7 +264,8 @@ You can also pass a Request body:
                 }
                 """
 
-    Starting from version v1.11.0 you can also use variables by adding `i` option to multiline string.
+    Starting from version v1.11.0 you can also use variables by adding ``i`` option to multiline string.
+
     .. code-block:: blackfire
 
         scenario
