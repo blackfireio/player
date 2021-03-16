@@ -41,6 +41,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class BlackfireExtension extends AbstractExtension
 {
+    const MAX_RETRY = 10;
+
     private $language;
     private $defaultEnv;
     private $output;
@@ -412,21 +414,33 @@ final class BlackfireExtension extends AbstractExtension
 
         $continue = isset($values['continue']) && 'true' === $values['continue'];
 
+        $extraBag = $context->getExtraBag();
         if (!$continue) {
-            $context->getExtraBag()->set('blackfire_progress', -1);
+            $extraBag->set('blackfire_progress', -1);
+            $extraBag->set('blackfire_retry', 0);
         } elseif ($continue && isset($values['progress']) && $checkProgress) {
-            $prevProgress = $context->getExtraBag()->has('blackfire_progress') ? $context->getExtraBag()->get('blackfire_progress') : -1;
+            $prevProgress = $extraBag->has('blackfire_progress') ? $extraBag->get('blackfire_progress') : -1;
             $progress = (int) $values['progress'];
 
             if ($progress < $prevProgress) {
                 throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#configuration-load-balancer');
+            } elseif ($progress === $prevProgress) {
+                $retry = $extraBag->has('blackfire_retry') ? $extraBag->get('blackfire_retry') : 0;
+                ++$retry;
+                if ($retry >= self::MAX_RETRY) {
+                    throw new LogicException('Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#reverse-proxies-and-cdns');
+                }
+                $extraBag->set('blackfire_retry', $retry);
+            } else {
+                $extraBag->set('blackfire_retry', 0);
             }
 
-            if ($progress === $prevProgress) {
-                throw new LogicException('Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#reverse-proxies-and-cdns');
-            }
+            $extraBag->set('blackfire_progress', $progress);
+        }
 
-            $context->getExtraBag()->set('blackfire_progress', $progress);
+        $wait = isset($values['wait']) ? (int) $values['wait'] : 0;
+        if ($wait) {
+            usleep(min($wait, 10000) * 1000);
         }
 
         return $continue;

@@ -272,7 +272,7 @@ class BlackfireExtensionTest extends TestCase
         $extension->leaveStep($step, $request, $response2, $context);
     }
 
-    public function testTheProgressCannotBeEqual()
+    public function testTheProgressCannotBeEqualMoreThanTheMaxRetryCount()
     {
         $this->expectException(LogicException::class);
         $this->expectExceptionMessageRegExp('/progress is not increasing/');
@@ -288,8 +288,66 @@ class BlackfireExtensionTest extends TestCase
         $context = $this->createContext($step);
 
         $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
+
+        for ($i = 0; $i < BlackfireExtension::MAX_RETRY + 1; ++$i) {
+            $extension->leaveStep($step, $request, $response, $context);
+
+            $this->assertEquals(33, $context->getExtraBag()->get('blackfire_progress'));
+            $this->assertEquals($i, $context->getExtraBag()->get('blackfire_retry'));
+        }
+    }
+
+    public function testTheProgressCanBeEqualLessThanTheMaxRetryCount()
+    {
+        $step = new ConfigurableStep();
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33');
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
+
+        for ($i = 0; $i < BlackfireExtension::MAX_RETRY; ++$i) {
+            $extension->leaveStep($step, $request, $response, $context);
+        }
+
+        $this->assertEquals(33, $context->getExtraBag()->get('blackfire_progress'));
+        $this->assertEquals(9, $context->getExtraBag()->get('blackfire_retry'));
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=66');
+
         $extension->leaveStep($step, $request, $response, $context);
-        $extension->leaveStep($step, $request, $response, $context);
+
+        $this->assertEquals(66, $context->getExtraBag()->get('blackfire_progress'));
+        $this->assertEquals(0, $context->getExtraBag()->get('blackfire_retry'));
+    }
+
+    public function testItWaits()
+    {
+        $step = new ConfigurableStep();
+
+        $request = new Request('GET', '/');
+        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+
+        $response = new Response();
+        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33&wait=100');
+
+        $context = $this->createContext($step);
+
+        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
+
+        $start = microtime(true);
+        for ($i = 0; $i < 3; ++$i) {
+            $extension->leaveStep($step, $request, $response, $context);
+        }
+        $end = microtime(true);
+
+        $this->assertGreaterThanOrEqual(300, ($end - $start) * 1000);
     }
 
     public function testTheProgressIsResetAtTheEndOfProfiling()
@@ -309,6 +367,7 @@ class BlackfireExtensionTest extends TestCase
 
         $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=false'), $context);
         $this->assertEquals(-1, $context->getExtraBag()->get('blackfire_progress'));
+        $this->assertEquals(0, $context->getExtraBag()->get('blackfire_retry'));
 
         $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=10'), $context);
         $this->assertEquals(10, $context->getExtraBag()->get('blackfire_progress'));
