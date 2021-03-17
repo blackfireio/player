@@ -118,7 +118,7 @@ final class Input
         while (null !== $line = array_shift($input)) {
             ++$lineno;
 
-            if (preg_match('/^(\s*)"""([i]*)$/', $line, $matches)) { // Start multi-lines
+            if (preg_match('/^(\s*)"""(i)?$/', $line, $matches)) { // Start multi-lines
                 $modifiers = str_split(\ltrim($line, ' "'), 1);
                 $indent = $matches[1];
                 $val = '';
