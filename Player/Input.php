@@ -143,7 +143,7 @@ final class Input
 
                 $escaped = ' ' . $this->escapeValue($val);
                 if (\in_array('i', $modifiers, true)){
-                    $lines[$current] .= preg_replace('/(?<!\\\\)\\$\{\s*(\w+)\s*\}/', "' ~ $1 ~ '", $escaped);
+                    $lines[$current] .= preg_replace('/(?<!\\\\)\\$\{\s*(' . Parser::REGEX_NAME . ')\s*\}/', "' ~ $1 ~ '", $escaped);
                 } else {
                     $lines[$current] .= $escaped;
                 }

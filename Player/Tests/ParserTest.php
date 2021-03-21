@@ -695,11 +695,12 @@ set multi
 ${ variable }
 ${variable}
 ${ someCamelCase }
+${ some_snake_123 }
 """
 EOF
         );
 
-        $expected = '\'\' ~ variable ~ \'\n\' ~ variable ~ \'\n\' ~ someCamelCase ~ \'\'';
+        $expected = '\'\' ~ variable ~ \'\n\' ~ variable ~ \'\n\' ~ someCamelCase ~ \'\n\' ~ some_snake_123 ~ \'\'';
         $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
     }
 
