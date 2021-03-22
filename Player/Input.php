@@ -118,7 +118,8 @@ final class Input
         while (null !== $line = array_shift($input)) {
             ++$lineno;
 
-            if (preg_match('/^(\s*)"""$/', $line, $matches)) { // Start multi-lines
+            if (preg_match('/^(\s*)"""(i)?$/', $line, $matches)) { // Start multi-lines
+                $modifiers = str_split(ltrim($line, ' "'), 1);
                 $indent = $matches[1];
                 $val = '';
                 while (null !== $line = array_shift($input)) {
@@ -140,7 +141,12 @@ final class Input
                     $val .= substr($line, \strlen($indent))."\n";
                 }
 
-                $lines[$current] .= ' '.$this->escapeValue($val);
+                $escaped = ' '.$this->escapeValue($val);
+                if (\in_array('i', $modifiers, true)) {
+                    $lines[$current] .= preg_replace('/(?<!\\\\)\\$\{\s*('.Parser::REGEX_NAME.')\s*\}/', "' ~ $1 ~ '", $escaped);
+                } else {
+                    $lines[$current] .= $escaped;
+                }
 
                 continue;
             }
