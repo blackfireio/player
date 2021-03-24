@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.11.0 (2021-03-24)
+
+ * Implement variable interpolation in multiline strings (Thanks @scyzoryck)
+ * Allow 'X-Blackfire-Response' progress value to stay constant
+ * Add support for the 'wait' instruction of the 'X-Blackfire-Response' header
+
 * 1.10.1 (2021-03-09)
 
  * Fix handling headers containing ":"
