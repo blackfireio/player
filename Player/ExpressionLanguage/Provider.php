@@ -39,7 +39,7 @@ class Provider implements ExpressionFunctionProviderInterface
      */
     public function getFunctions()
     {
-        $compiler = function () {};
+        $compiler = function () { return ''; };
 
         $functions = [
             new ExpressionFunction('url', $compiler, function ($arguments, $url) {
