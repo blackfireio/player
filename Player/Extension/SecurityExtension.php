@@ -28,7 +28,7 @@ final class SecurityExtension extends AbstractExtension
         $scheme = $request->getUri()->getScheme();
 
         // Other protocols are disabled by Guzzle anyway if cURL is recent enough
-        if (!\in_array($scheme, ['http', 'https'])) {
+        if (!\in_array($scheme, ['http', 'https'], true)) {
             throw new SecurityException(sprintf('Invalid protocol ("%s").', $scheme));
         }
 

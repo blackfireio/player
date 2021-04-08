@@ -64,7 +64,7 @@ class ValidatorParser extends SymfonyParser
                             } else {
                                 // is the name used in the compiled code different
                                 // from the name used in the expression?
-                                if (\is_int($name = array_search($token->value, $this->names))) {
+                                if (\is_int($name = array_search($token->value, $this->names, true))) {
                                     $name = $token->value;
                                 }
                             }
