@@ -733,16 +733,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v4.4.24",
+            "version": "v4.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "9084b7312c3de1e6d621d60e00c5d42a4b77cfee"
+                "reference": "e2486bd59ac996afff25cdbfb823e982a0550c3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/9084b7312c3de1e6d621d60e00c5d42a4b77cfee",
-                "reference": "9084b7312c3de1e6d621d60e00c5d42a4b77cfee",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/e2486bd59ac996afff25cdbfb823e982a0550c3e",
+                "reference": "e2486bd59ac996afff25cdbfb823e982a0550c3e",
                 "shasum": ""
             },
             "require": {
@@ -806,7 +806,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v4.4.24"
+                "source": "https://github.com/symfony/cache/tree/v4.4.25"
             },
             "funding": [
                 {
@@ -822,7 +822,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-16T21:41:25+00:00"
+            "time": "2021-05-26T17:39:37+00:00"
         },
         {
             "name": "symfony/cache-contracts",
@@ -2222,16 +2222,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v4.4.23",
+            "version": "v4.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "11439b8e3264502293bd5e5ecd6957f70319f526"
+                "reference": "723c038aac53280c8ad4209add93e679a33bbe3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/11439b8e3264502293bd5e5ecd6957f70319f526",
-                "reference": "11439b8e3264502293bd5e5ecd6957f70319f526",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/723c038aac53280c8ad4209add93e679a33bbe3f",
+                "reference": "723c038aac53280c8ad4209add93e679a33bbe3f",
                 "shasum": ""
             },
             "require": {
@@ -2274,7 +2274,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v4.4.23"
+                "source": "https://github.com/symfony/var-exporter/tree/v4.4.25"
             },
             "funding": [
                 {
@@ -2290,7 +2290,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-06T19:16:33+00:00"
+            "time": "2021-05-26T17:39:37+00:00"
         },
         {
             "name": "symfony/yaml",
