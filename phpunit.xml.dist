@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
-         backupGlobals="false"
-         colors="true"
-         bootstrap="vendor/autoload.php"
->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" colors="true" bootstrap="vendor/autoload.php">
     <php>
-        <ini name="error_reporting" value="-1" />
+        <ini name="error_reporting" value="-1"/>
         <env name="BLACKFIRE_WS_PORT" value="8399"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="1" />
-        <env name="COLUMNS" value="80" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="1"/>
+        <env name="COLUMNS" value="80"/>
     </php>
 
     <testsuites>
@@ -19,13 +13,13 @@
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist>
+    <coverage>
+        <include>
             <directory>Player</directory>
-            <exclude>
-                <directory>Player/Tests/</directory>
-                <directory>./vendor/</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+        </include>
+        <exclude>
+            <directory>Player/Tests/</directory>
+            <directory>./vendor/</directory>
+        </exclude>
+    </coverage>
 </phpunit>

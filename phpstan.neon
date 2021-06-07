@@ -2,4 +2,4 @@ parameters:
   tmpDir: var/cache/phpstan
 
   bootstrapFiles:
-    - vendor/bin/.phpunit/phpunit-8.3-0/vendor/autoload.php
+    - vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php

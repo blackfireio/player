@@ -570,7 +570,7 @@ EOF
     public function testCannotLoadFileWithBadExtension()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('#Cannot load file ".*/Player/Tests/ParserTest.php" because it does not have the right extension. Expected "bkf", got "php".#');
+        $this->expectExceptionMessageMatches('#Cannot load file ".*/Player/Tests/ParserTest.php" because it does not have the right extension. Expected "bkf", got "php".#');
 
         $parser = new Parser();
         $parser->load(__FILE__);

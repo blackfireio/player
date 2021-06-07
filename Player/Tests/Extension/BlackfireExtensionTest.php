@@ -252,7 +252,7 @@ class BlackfireExtensionTest extends TestCase
     public function testTheProgressCannotDiminish()
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessageRegExp('/progress is going backward/');
+        $this->expectExceptionMessageMatches('/progress is going backward/');
 
         $step = new ConfigurableStep();
 
@@ -275,7 +275,7 @@ class BlackfireExtensionTest extends TestCase
     public function testTheProgressCannotBeEqualMoreThanTheMaxRetryCount()
     {
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessageRegExp('/progress is not increasing/');
+        $this->expectExceptionMessageMatches('/progress is not increasing/');
 
         $step = new ConfigurableStep();
 
