@@ -42,7 +42,7 @@ endif
 shell: ## Starts a shell in container
 	@$(PHP) bash
 
-package-test: install bin/tools/box-2.7.4.phar ## Tests the phar release
+package-test: build-docker-image install bin/tools/box-2.7.4.phar ## Tests the phar release
 	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging
 	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.no-git.json
 

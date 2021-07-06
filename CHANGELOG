@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.12.0 (2021-07-06)
+
+ * Update dependencies
+
 * 1.11.0 (2021-03-24)
 
  * Implement variable interpolation in multiline strings (Thanks @scyzoryck)
