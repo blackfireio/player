@@ -41,9 +41,9 @@ use Symfony\Component\Console\Terminal;
  */
 final class PlayerCommand extends Command
 {
-    const EXIT_CODE_EXPECTATION_ERROR = 64;
-    const EXIT_CODE_SCENARIO_ERROR = 65;
-    const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
+    public const EXIT_CODE_EXPECTATION_ERROR = 64;
+    public const EXIT_CODE_SCENARIO_ERROR = 65;
+    public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
 
     protected function configure()
     {

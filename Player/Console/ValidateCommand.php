@@ -21,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ValidateCommand extends Command
 {
-    const EXIT_CODE_FAILURE = 64;
+    public const EXIT_CODE_FAILURE = 64;
 
     protected function configure()
     {

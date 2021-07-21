@@ -41,7 +41,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class BlackfireExtension extends AbstractExtension
 {
-    const MAX_RETRY = 10;
+    public const MAX_RETRY = 10;
 
     private $language;
     private $defaultEnv;
@@ -424,7 +424,8 @@ final class BlackfireExtension extends AbstractExtension
 
             if ($progress < $prevProgress) {
                 throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#configuration-load-balancer');
-            } elseif ($progress === $prevProgress) {
+            }
+            if ($progress === $prevProgress) {
                 $retry = $extraBag->has('blackfire_retry') ? $extraBag->get('blackfire_retry') : 0;
                 ++$retry;
                 if ($retry >= self::MAX_RETRY) {

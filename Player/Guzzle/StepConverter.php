@@ -258,9 +258,9 @@ final class StepConverter implements StepConverterInterface
 
         if ($isJson) {
             return Psr7\stream_for(json_encode($parameters));
-        } else {
-            return Psr7\stream_for(http_build_query($parameters, null, '&'));
         }
+
+        return Psr7\stream_for(http_build_query($parameters, null, '&'));
     }
 
     private function evaluateExpression($expression, $variables = null)

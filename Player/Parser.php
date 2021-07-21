@@ -40,7 +40,7 @@ use Webmozart\PathUtil\Path;
  */
 class Parser
 {
-    const REGEX_NAME = '[a-zA-Z_\x7f-\xff][\-a-zA-Z0-9_\x7f-\xff]*';
+    public const REGEX_NAME = '[a-zA-Z_\x7f-\xff][\-a-zA-Z0-9_\x7f-\xff]*';
 
     private $inAGroup;
     private $variables;
@@ -143,7 +143,8 @@ class Parser
             if ($nextIndent < $expectedIndent) {
                 // finished
                 return $root;
-            } elseif ($nextIndent > $expectedIndent) {
+            }
+            if ($nextIndent > $expectedIndent) {
                 throw new SyntaxErrorException(sprintf('Indentation too wide %s.', $input->getContextString()));
             }
 
@@ -207,7 +208,8 @@ class Parser
             }
 
             return $scenarios;
-        } elseif ('endpoint' === $keyword) {
+        }
+        if ('endpoint' === $keyword) {
             if ($expectedIndent > 0) {
                 throw new SyntaxErrorException(sprintf('An "endpoint" can only be defined at root %s.', $input->getContextString()));
             }
