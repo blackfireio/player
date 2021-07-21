@@ -4,7 +4,7 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__.'/Player')
 ;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setFinder($finder)
     ->setRiskyAllowed(true)
     ->setRules(array(

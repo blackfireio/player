@@ -23,11 +23,11 @@ php-cs: build-docker-image bin/tools/php-cs-fixer ## Just analyze PHP code with 
 ifdef CI
 	@echo -e "+++ [make php-cs] \033[33mRunning PHP-CS-Fixer\033[0m"
 endif
-	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php_cs.dist --dry-run
+	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run
 .PHONY: php-cs
 
 php-cs-fix: build-docker-image bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
-	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php_cs.dist
+	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php
 .PHONY: php-cs-fix
 
 phpstan: build-docker-image install bin/tools/phpstan ## Analyze PHP code with phpstan
