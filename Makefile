@@ -3,7 +3,7 @@ SHELL=/bin/bash
 
 php_version ?= 7.4
 
-image_hash = $(shell sha256sum Dockerfile | cut -c -8)
+image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
 php_image = blackfire/player-test:$(php_version)-$(image_hash)
 
 PHP=@docker run --rm -it -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ $(php_image)
@@ -59,7 +59,7 @@ clean:
 
 build-docker-image:
 	@docker inspect $(php_image) &> /dev/null \
-		|| { echo "Building docker image $(php_image)" ; docker build --build-arg PHP_VERSION=$(php_version) -t $(php_image) . ;}
+		|| { echo "Building docker image $(php_image)" ; docker build -f Dockerfile-dev --build-arg PHP_VERSION=$(php_version) -t $(php_image) . ;}
 .PHONY: build-docker-image
 
 vendor/autoload.php install:
