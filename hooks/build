@@ -1,2 +1,0 @@
-#!/bin/sh
-docker build --build-arg VERSION_SUFFIX="-$DOCKER_TAG" -t $IMAGE_NAME .
