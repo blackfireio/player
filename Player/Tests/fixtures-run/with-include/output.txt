@@ -5,13 +5,13 @@ Scenario  "Check"
 GET http://0:8399/with-include/
  "Checking /"
 GET http://0:8399/with-include/
- "Loading /"
+ "Loading /about"
 GET http://0:8399/with-include/about
- "Checking /"
+ "Checking /about"
 GET http://0:8399/with-include/about
- "Loading /"
+ "Loading /community"
 GET http://0:8399/with-include/community
- "Checking /"
+ "Checking /community"
 GET http://0:8399/with-include/community
   OK
 

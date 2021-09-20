@@ -25,6 +25,13 @@ class BlockStep extends ConfigurableStep
         $this->blockStep = $blockStep;
     }
 
+    public function __clone()
+    {
+        if ($this->blockStep) {
+            $this->blockStep = clone $this->blockStep;
+        }
+    }
+
     public function __toString()
     {
         $str = sprintf("└ %s%s\n", static::class, $this->getName() ? sprintf(' %s', $this->getName()) : '');
