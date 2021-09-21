@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.14.0 (2021-09-21)
+
+ * Make Docker support multi-arch
+ * Update dependencies
+ * Fix re-use of groups with profiled step
+
 * 1.13.0 (2021-08-16)
 
  * Add a docker image (Thanks @scyzoryck)
