@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "64715350c0bd39ab01892eec976ddc32",
+    "content-hash": "c329ee846af14ba84aa11d602a7a98da",
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.26.0",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "4901b67f73af5e4e3e056ebfd42cf0f1e5d490c6"
+                "reference": "ef112f9b49c9936523f997555548513e3a223f5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/4901b67f73af5e4e3e056ebfd42cf0f1e5d490c6",
-                "reference": "4901b67f73af5e4e3e056ebfd42cf0f1e5d490c6",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/ef112f9b49c9936523f997555548513e3a223f5a",
+                "reference": "ef112f9b49c9936523f997555548513e3a223f5a",
                 "shasum": ""
             },
             "require": {
@@ -29,11 +29,15 @@
                 "friends-of-behat/mink-browserkit-driver": "^1.4",
                 "friends-of-behat/mink-extension": "^2.5",
                 "guzzlehttp/psr7": "^1.6",
+                "illuminate/console": "^8.61",
+                "illuminate/queue": "^8.61",
+                "illuminate/support": "^8.61",
                 "phpunit/phpunit": "^9.5",
                 "psr/http-message": "^1.0",
                 "symfony/browser-kit": "^5.1",
                 "symfony/framework-bundle": "^5.1",
                 "symfony/http-client": "^5.1",
+                "symfony/messenger": "^5.1",
                 "symfony/panther": "^1.0",
                 "symfony/phpunit-bridge": "^5.2"
             },
@@ -45,7 +49,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.26.x-dev"
+                    "dev-master": "1.27.x-dev"
                 }
             },
             "autoload": {
@@ -75,9 +79,9 @@
             ],
             "support": {
                 "issues": "https://github.com/blackfireio/php-sdk/issues",
-                "source": "https://github.com/blackfireio/php-sdk/tree/v1.26.0"
+                "source": "https://github.com/blackfireio/php-sdk/tree/v1.27.0"
             },
-            "time": "2021-07-06T15:44:19+00:00"
+            "time": "2021-09-23T14:57:25+00:00"
         },
         {
             "name": "composer/ca-bundle",
