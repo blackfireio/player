@@ -131,7 +131,7 @@ final class Input
 
                     if (preg_match('/^(\s*)"""$/', $line, $matchesEnd)) { // end multi-lines
                         if ($matchesEnd[1] === $indent) {
-                            if (\strlen($val) > 0) {
+                            if ('' !== $val) {
                                 $val = substr($val, 0, -1);
                             }
                             break;
