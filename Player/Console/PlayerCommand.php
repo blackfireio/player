@@ -61,7 +61,7 @@ final class PlayerCommand extends Command
                 new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode', null),
                 new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
-                new InputOption('junit', '', InputOption::VALUE_REQUIRED, 'Save output execution report as JUnit into file - in path provided as value'),
+                new InputOption('junit', '', InputOption::VALUE_REQUIRED, 'Saves the report in JUnit format into passed file path'),
             ])
             ->setDescription('Runs scenario files')
             ->setHelp('Read https://blackfire.io/docs/builds-cookbooks/player to learn about all supported options.')
