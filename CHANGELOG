@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.15.0 (2021-11-17)
+
+ * Update dependencies
+
 * 1.14.0 (2021-09-21)
 
  * Make Docker support multi-arch
