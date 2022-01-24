@@ -39,7 +39,7 @@ final class ExtensibleRequestGenerator implements \IteratorAggregate
         $this->originalNexts = new \SplObjectStorage();
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         foreach ($this->extensions as $extension) {
             $extension->enterScenario($this->scenario, $this->context);

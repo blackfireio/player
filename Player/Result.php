@@ -73,21 +73,25 @@ class Result implements \ArrayAccess, \Iterator
         return null === $key ? $this->context->getExtraBag() : $this->context->getExtraBag()->get($key);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new LogicException('The Result is immutable.');
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return \array_key_exists($offset, $this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new LogicException('The Result is immutable.');
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (!\array_key_exists($offset, $this->values)) {
@@ -97,26 +101,31 @@ class Result implements \ArrayAccess, \Iterator
         return $this->values[$offset];
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         return reset($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         return next($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return null !== key($this->values);

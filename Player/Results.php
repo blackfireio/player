@@ -69,6 +69,7 @@ class Results implements \IteratorAggregate
         return $values;
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->results);

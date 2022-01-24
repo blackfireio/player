@@ -78,6 +78,7 @@ class ScenarioSet implements \IteratorAggregate
         return $this->name;
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->scenarios);

@@ -62,7 +62,7 @@ final class RequestGenerator implements \IteratorAggregate
         $this->response = $response;
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $request = $this->request;
         $response = $this->response;
