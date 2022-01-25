@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.16.0 (2022-01-25)
+
+ * Update dependencies
+ * Fix deprecation with PHP 8.1
+
 * 1.15.0 (2021-11-17)
 
  * Update dependencies
