@@ -78,6 +78,9 @@ class ScenarioSet implements \IteratorAggregate
         return $this->name;
     }
 
+    /**
+     * @return \Traversable
+     */
     #[\ReturnTypeWillChange]
     public function getIterator()
     {

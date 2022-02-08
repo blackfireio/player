@@ -36,12 +36,15 @@ class Provider implements ExpressionFunctionProviderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return array
      */
+    #[\ReturnTypeWillChange]
     public function getFunctions()
     {
         $compiler = function () { return ''; };
 
-        $functions = [
+        return [
             new ExpressionFunction('url', $compiler, function ($arguments, $url) {
                 return $url;
             }),
@@ -222,7 +225,5 @@ class Provider implements ExpressionFunctionProviderInterface
                 return JmesPath::search($selector, $data);
             }),
         ];
-
-        return $functions;
     }
 }
