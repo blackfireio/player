@@ -41,4 +41,13 @@ GET http://0:8399/with/index.php?component=Debug
 GET http://0:8399/with/doc.php?component=doc_Debug
   OK
 
- OK  Scenarios  1  - Steps  19
+Scenario  "Checks on key pages"
+ "Checking performance on path: components"
+GET http://0:8399/with/components.php
+ "Checking performance on path: doc"
+GET http://0:8399/with/doc.php
+ "Checking performance on path: index"
+GET http://0:8399/with/index.php
+  OK
+
+ OK  Scenarios  2  - Steps  22
