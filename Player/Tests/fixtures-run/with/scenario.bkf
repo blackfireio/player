@@ -26,3 +26,17 @@ scenario
             visit code_url
                 name "Checking Github Code URL"
                 expect status_code() == 200
+
+scenario
+    name "Checks on key pages"
+
+    with name, data in \
+        { \
+            components: { path: "/with/components.php", expectedStatusCode: 200 }, \
+            doc: { path: "/with/doc.php", expectedStatusCode: 200 }, \
+            index: { path: "/with/index.php", expectedStatusCode: 200 } \
+        }
+
+        visit url(data["path"])
+            name "Checking performance on path: " ~ name
+            expect status_code() == data["expectedStatusCode"]
