@@ -158,7 +158,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return array_merge($arr1, $arr2);
             }),
 
-            new ExpressionFunction('fake', $compiler, function ($arguments, $provider = null/*, $othersArgs ...*/) {
+            new ExpressionFunction('fake', $compiler, function ($arguments, $provider = null/* , $othersArgs ... */) {
                 $arguments = \func_get_args();
 
                 if (!$provider) {
