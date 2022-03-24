@@ -38,6 +38,11 @@ final class Application extends BaseApplication
 
     public function renderException(\Exception $e, OutputInterface $output)
     {
+        $this->renderThrowable($e, $output);
+    }
+
+    public function renderThrowable(\Throwable $e, OutputInterface $output): void
+    {
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
         $lines = ['[ERROR]'];
 

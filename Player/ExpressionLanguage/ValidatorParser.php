@@ -22,11 +22,7 @@ class ValidatorParser extends SymfonyParser
         parent::__construct($functions);
     }
 
-    /**
-     * @return Node\Node
-     */
-    #[\ReturnTypeWillChange]
-    public function parse(TokenStream $stream, $names = [])
+    public function parse(TokenStream $stream, $names = []): Node\Node
     {
         $this->stream = $stream;
         $this->names = $names;

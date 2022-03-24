@@ -13,7 +13,6 @@ namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\Application;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -22,19 +21,17 @@ use Symfony\Component\Process\Process;
 
 class PlayerCommandTest extends TestCase
 {
-    use SetUpTearDownTrait;
-
     private static $port;
     private static $server;
 
-    public static function doSetUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$port = getenv('BLACKFIRE_WS_PORT');
 
         self::bootServer();
     }
 
-    public static function doTearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         self::$server->stop(0);
         self::$server = null;

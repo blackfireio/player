@@ -29,18 +29,15 @@ use Blackfire\Player\Step\WhileStep;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Bridge\PhpUnit\SetUpTearDownTrait;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class RequestGeneratorTest extends TestCase
 {
-    use SetUpTearDownTrait;
-
     private $language;
     private $stepConverter;
     private $context;
 
-    public function doSetUp()
+    protected function setUp(): void
     {
         $this->context = new Context('Test');
         $this->language = new ExpressionLanguage();
