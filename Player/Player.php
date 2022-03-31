@@ -25,6 +25,8 @@ use GuzzleHttp\Promise\EachPromise;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class Player
 {

@@ -22,6 +22,8 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 abstract class AbstractExtension implements ExtensionInterface
 {

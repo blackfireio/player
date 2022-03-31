@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Exception;
 
+/**
+ * @internal
+ */
 class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
 {
 }

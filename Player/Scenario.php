@@ -15,6 +15,8 @@ use Blackfire\Player\Step\GroupStep;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class Scenario extends GroupStep
 {

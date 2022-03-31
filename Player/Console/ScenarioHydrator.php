@@ -6,6 +6,9 @@ use Blackfire\Player\Parser;
 use Blackfire\Player\ScenarioSet;
 use Symfony\Component\Console\Input\InputInterface;
 
+/**
+ * @internal
+ */
 class ScenarioHydrator
 {
     public function getVariables(InputInterface $input)

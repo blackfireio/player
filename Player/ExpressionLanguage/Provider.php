@@ -22,6 +22,8 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class Provider implements ExpressionFunctionProviderInterface
 {

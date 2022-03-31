@@ -15,6 +15,8 @@ use Blackfire\Player\Exception\InvalidArgumentException;
 
 /**
  * @author Luc Vieillescazes <luc.vieillescazes@blackfire.io>
+ *
+ * @internal
  */
 class UploadFile
 {

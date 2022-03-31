@@ -13,6 +13,8 @@ namespace Blackfire\Player\Step;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class AbstractStep
 {

@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Exception;
 
+/**
+ * @internal
+ */
 interface ExceptionInterface
 {
 }

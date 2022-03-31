@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Exception;
 
+/**
+ * @internal
+ */
 class SyntaxErrorException extends \RuntimeException implements ExceptionInterface
 {
 }

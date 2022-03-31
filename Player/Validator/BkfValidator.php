@@ -13,6 +13,9 @@ namespace Blackfire\Player\Validator;
 
 use Blackfire\Player\Parser;
 
+/**
+ * @internal
+ */
 class BkfValidator
 {
     public function validate($input, array $variables = [], $allowMisingVariables = false)

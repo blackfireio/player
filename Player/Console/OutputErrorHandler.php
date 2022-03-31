@@ -16,6 +16,9 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+/**
+ * @internal
+ */
 final class OutputErrorHandler
 {
     public function install(SymfonyApplication $application)

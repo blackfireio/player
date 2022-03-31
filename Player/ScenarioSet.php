@@ -15,6 +15,8 @@ use Blackfire\Player\Exception\LogicException;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class ScenarioSet implements \IteratorAggregate
 {

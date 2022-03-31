@@ -13,6 +13,9 @@ namespace Blackfire\Player\ExpressionLanguage;
 
 use Symfony\Component\DomCrawler\Crawler;
 
+/**
+ * @internal
+ */
 class VariableFormatter
 {
     public function formatResult($value)

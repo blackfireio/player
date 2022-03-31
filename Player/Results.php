@@ -13,6 +13,8 @@ namespace Blackfire\Player;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class Results implements \IteratorAggregate
 {

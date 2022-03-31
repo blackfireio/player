@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Validator;
 
+/**
+ * @internal
+ */
 final class ValidationResult
 {
     private $success;

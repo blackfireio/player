@@ -7,6 +7,9 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage as SymfonyExpression
 use Symfony\Component\ExpressionLanguage\Lexer;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
 
+/**
+ * @internal
+ */
 class ExpressionLanguage extends SymfonyExpressionLanguage
 {
     private $resultsVisitor;

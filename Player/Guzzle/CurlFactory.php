@@ -5,6 +5,9 @@ namespace Blackfire\Player\Guzzle;
 use GuzzleHttp\Handler\CurlFactory as BaseCurlFactory;
 use Psr\Http\Message\RequestInterface;
 
+/**
+ * @internal
+ */
 class CurlFactory extends BaseCurlFactory
 {
     public function create(RequestInterface $request, array $options)

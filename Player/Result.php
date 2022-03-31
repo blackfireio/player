@@ -18,6 +18,8 @@ use Blackfire\Player\Exception\NonFatalException;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class Result implements \ArrayAccess, \Iterator
 {

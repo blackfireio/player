@@ -14,6 +14,9 @@ namespace Blackfire\Player\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\Node;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
 
+/**
+ * @internal
+ */
 class ExtractResultsVisitor
 {
     private static $ignoredFunctions = [

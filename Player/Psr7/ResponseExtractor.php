@@ -21,6 +21,8 @@ use Symfony\Component\ExpressionLanguage\SyntaxError as ExpressionSyntaxError;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class ResponseExtractor
 {

@@ -15,6 +15,8 @@ use Blackfire\Player\Exception\ValueException;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class ValueBag
 {

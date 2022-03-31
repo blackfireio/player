@@ -16,6 +16,8 @@ use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class CrawlerFactory
 {

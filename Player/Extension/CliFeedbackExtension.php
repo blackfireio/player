@@ -27,6 +27,8 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class CliFeedbackExtension extends AbstractExtension
 {

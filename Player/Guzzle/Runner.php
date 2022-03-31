@@ -20,6 +20,8 @@ use Psr\Http\Message\RequestInterface;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 final class Runner implements RunnerInterface
 {

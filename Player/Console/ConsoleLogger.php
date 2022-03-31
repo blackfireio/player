@@ -14,6 +14,9 @@ namespace Blackfire\Player\Console;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Logger\ConsoleLogger as BaseConsoleLogger;
 
+/**
+ * @internal
+ */
 final class ConsoleLogger extends BaseConsoleLogger
 {
     private $errored = false;

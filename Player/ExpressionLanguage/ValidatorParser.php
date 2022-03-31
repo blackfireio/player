@@ -8,6 +8,9 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Symfony\Component\ExpressionLanguage\Token;
 use Symfony\Component\ExpressionLanguage\TokenStream;
 
+/**
+ * @internal
+ */
 class ValidatorParser extends SymfonyParser
 {
     private $functions;

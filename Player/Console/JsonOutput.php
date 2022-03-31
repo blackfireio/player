@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Console;
 
+/**
+ * @internal
+ */
 final class JsonOutput
 {
     public static function encode($data)

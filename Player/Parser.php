@@ -37,6 +37,8 @@ use Webmozart\PathUtil\Path;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
+ *
+ * @internal
  */
 class Parser
 {

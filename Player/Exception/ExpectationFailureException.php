@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Exception;
 
+/**
+ * @internal
+ */
 class ExpectationFailureException extends LogicException
 {
     private $results;

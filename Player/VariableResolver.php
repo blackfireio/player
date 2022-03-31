@@ -5,6 +5,9 @@ namespace Blackfire\Player;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
+/**
+ * @internal
+ */
 class VariableResolver
 {
     private $language;

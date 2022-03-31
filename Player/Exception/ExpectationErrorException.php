@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Exception;
 
+/**
+ * @internal
+ */
 class ExpectationErrorException extends RuntimeException
 {
 }

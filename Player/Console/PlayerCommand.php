@@ -38,6 +38,8 @@ use Symfony\Component\Console\Terminal;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @internal
  */
 final class PlayerCommand extends Command
 {

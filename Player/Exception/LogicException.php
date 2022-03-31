@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Exception;
 
+/**
+ * @internal
+ */
 class LogicException extends \LogicException implements ExceptionInterface
 {
 }
