@@ -79,6 +79,7 @@ final class PlayerCommand extends Command
         $resultOutput = $output;
         if ($output instanceof ConsoleOutput) {
             $output = $output->getErrorOutput();
+            $output->setFormatter($resultOutput->getFormatter());
         }
 
         $json = $input->getOption('json');
