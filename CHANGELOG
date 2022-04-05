@@ -1,6 +1,13 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.17.0 (2022-04-01)
+
+ * Mark all classes internal
+ * Update dependencies
+ * Fix output formatting
+ * Fix deprecations
+
 * 1.16.0 (2022-01-25)
 
  * Update dependencies
