@@ -34,7 +34,7 @@ final class StepContext
 
     public function update(ConfigurableStep $step, array $variables)
     {
-        $this->workingDir = $step->getFile() ? rtrim(\dirname($step->getFile()), '/').'/' : '';
+        $this->workingDir = $step->getFile() ? rtrim(\dirname($step->getFile()), '/').'/' : null;
 
         if (null !== $step->getWait()) {
             $this->wait = $step->getWait();
