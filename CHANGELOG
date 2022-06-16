@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.18.0 (2022-06-16)
+
+ * Provide a better error message when the faker image server is down/slow
+ * Fix deprecation notice
+ * Update dependencies
+
 * 1.17.0 (2022-04-01)
 
  * Mark all classes internal
