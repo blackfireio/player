@@ -28,7 +28,8 @@
         "symfony/var-dumper": "^4.4|^5.1|^6.0",
         "symfony/yaml": "^4.4|^5.1|^6.0",
         "webmozart/glob": "^4.0",
-        "symfony/event-dispatcher": "^4.4|^5.1|^6.0"
+        "symfony/event-dispatcher": "^4.4|^5.1|^6.0",
+        "maltyxx/images-generator": "^1.0"
     },
     "require-dev": {
         "symfony/finder": "^4.4|^5.1|^6.0",

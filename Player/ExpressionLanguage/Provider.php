@@ -18,6 +18,7 @@ use Blackfire\Player\Exception\SecurityException;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use JmesPath\Env as JmesPath;
+use Maltyxx\ImagesGenerator\ImagesGeneratorProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 
@@ -34,6 +35,7 @@ class Provider implements ExpressionFunctionProviderInterface
     public function __construct(FakerGenerator $faker = null, $sandbox = false)
     {
         $this->faker = null !== $faker ? $faker : FakerFactory::create();
+        $this->faker->addProvider(new ImagesGeneratorProvider($this->faker));
         $this->sandbox = $sandbox;
     }
 
@@ -174,7 +176,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
                 $args = array_splice($arguments, 2);
 
-                if ('image' === $provider) {
+                if ('image' === $provider || 'simple_image' === $provider) {
                     // always store the file in a pre-determined directory
                     $extra = $arguments[0]['_extra'];
                     if (!$extra->has('tmp_dir')) {
@@ -183,7 +185,12 @@ class Provider implements ExpressionFunctionProviderInterface
                     $args[0] = $extra->get('tmp_dir');
                 }
 
+                if ('simple_image' === $provider) {
+                    $provider = 'imageGenerator';
+                }
+
                 $ret = $this->faker->format($provider, $args);
+
                 if ('image' === $provider && false === $ret) {
                     // the server was not reachable and the image has not been generated
                     throw new RuntimeException('The "image" faker provider failed as the server generating the images is not available.');
