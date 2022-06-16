@@ -13,6 +13,7 @@ namespace Blackfire\Player\ExpressionLanguage;
 
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
+use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\Exception\SecurityException;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
@@ -182,7 +183,13 @@ class Provider implements ExpressionFunctionProviderInterface
                     $args[0] = $extra->get('tmp_dir');
                 }
 
-                return $this->faker->format($provider, $args);
+                $ret = $this->faker->format($provider, $args);
+                if ('image' === $provider && false === $ret) {
+                    // the server was not reachable and the image has not been generated
+                    throw new RuntimeException('The "image" faker provider failed as the server generating the images is not available.');
+                }
+
+                return $ret;
             }),
 
             new ExpressionFunction('regex', $compiler, function ($arguments, $regex, $str = null) {
