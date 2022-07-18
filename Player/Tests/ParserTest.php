@@ -39,7 +39,7 @@ scenario Test 1
 scenario Test2
     reload
 EOF
-);
+        );
         $this->assertCount(2, $scenarioSet);
 
         /** @var Scenario $scenario */
@@ -750,7 +750,7 @@ You can declare it in your file using the "set" option, or with the "--variable"
 If the Player is run through a Blackfire server, you can declare it in the "Variables" panel of the "Builds" tab.
 
 EOF
-);
+        );
 
         $parser = new Parser();
         $parser->parse(<<<'EOF'
