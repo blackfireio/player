@@ -1,6 +1,13 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.19.0 (2022-07-29)
+
+ * Provide an alternative image generator that does not rely on a third-party website
+ * Fix BC break in Faker
+ * Update to Symfony 6.1
+ * Update dependencies
+
 * 1.18.0 (2022-06-16)
 
  * Provide a better error message when the faker image server is down/slow
