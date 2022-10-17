@@ -27,6 +27,7 @@ final class Application extends BaseApplication
         error_reporting(-1);
 
         // This is variable is used to replace the version
+        // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
         $version = '@git-version@';
         $testPart1 = '@';
 
