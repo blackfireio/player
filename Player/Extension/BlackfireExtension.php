@@ -56,7 +56,9 @@ final class BlackfireExtension extends AbstractExtension
         $this->blackfire = $blackfire ?: new BlackfireClient(new BlackfireClientConfiguration());
 
         $version = '@git-version@';
-        if ('@'.'git-version@' == $version) {
+        $testPart1 = '@';
+
+        if ($testPart1.'git-version@' === $version) {
             $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
             $version = $composer['extra']['branch-alias']['dev-master'];
         }
