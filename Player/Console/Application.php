@@ -26,8 +26,12 @@ final class Application extends BaseApplication
     {
         error_reporting(-1);
 
+        // This is variable is used to replace the version
         $version = '@git-version@';
-        if ('@'.'git-version@' == $version) {
+        $testPart1 = '@';
+
+        // let's not write the same string, otherwise it would be replaced !
+        if ($testPart1.'git-version@' === $version) {
             $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
             $version = $composer['extra']['branch-alias']['dev-master'];
         }
