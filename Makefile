@@ -1,19 +1,25 @@
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
 
-box_version=4.1.0
-php_version ?= 8.1
+php_version ?= 7.4
 
 image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
 php_image = blackfire/player-test:$(php_version)-$(image_hash)
 
+box_version = 4.1.0
+box_image = blackfire/php-internal:8.1-v0.1.80
+
+BOX_BIN=bin/tools/box-$(box_version).phar
+PHAR_DIST=bin/blackfire-player.phar
+
 PHP=@docker run --rm -it -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ $(php_image)
+BOX=@docker run --rm -v $(PWD):/app -w /app $(box_image)
 
 ##
 #### General
 ##
 
-setup: build-docker-image ## Create and initialize containers
+setup: build-docker-image $(BOX_BIN) install ## Create and initialize containers
 .PHONY: setup
 
 # clean vendors is required to install the vendor attached to the PHP version used
@@ -46,19 +52,19 @@ endif
 shell: ## Starts a shell in container
 	@$(PHP) bash
 
-package-test: build-docker-image install bin/tools/box-$(box_version).phar ## Tests the phar release
+package-test: build-docker-image $(BOX_BIN) install ## Tests the phar release
 	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging
-	@$(PHP) php bin/tools/box-$(box_version).phar compile -c box.no-git.json
+	@$(BOX) $(BOX_BIN) compile -c box.no-git.json
 
-package: build-docker-image install bin/tools/box-$(box_version).phar ## Generates the phar release
-	@$(PHP) php bin/tools/box-$(box_version).phar compile -c box.json
+package: build-docker-image $(BOX_BIN) install ## Generates the phar release
+	@$(BOX) $(BOX_BIN) compile -c box.json
 
 ##
 ## Not Listed
 ##
 
 clean:
-	rm -rf vendor bin/blackfire-player.phar
+	rm -rf vendor $(PHAR_DIST)
 .PHONY: clean
 
 build-docker-image:
@@ -98,6 +104,6 @@ help:
 	@grep -hE '(^[a-zA-Z_-]+:.*?##.*$$)|(^###)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
 .PHONY: help
 
-bin/tools/box-$(box_version).phar:
+$(BOX_BIN):
 	@mkdir -p bin/tools
-	@test -f bin/tools/box-$(box_version).phar || curl --fail --location -o bin/tools/box-$(box_version).phar https://github.com/box-project/box/releases/download/$(box_version)/box.phar
+	@test -f $(BOX_BIN) || curl --fail --location -o $(BOX_BIN) https://github.com/box-project/box/releases/download/$(box_version)/box.phar && chmod +x $(BOX_BIN)
