@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
 
-php_version ?= 7.4
+box_version=4.1.0
+php_version ?= 8.1
 
 image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
 php_image = blackfire/player-test:$(php_version)-$(image_hash)
@@ -11,6 +12,9 @@ PHP=@docker run --rm -it -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v
 ##
 #### General
 ##
+
+setup: build-docker-image ## Create and initialize containers
+.PHONY: setup
 
 # clean vendors is required to install the vendor attached to the PHP version used
 test: build-docker-image clean install ## Run the Player testsuite
@@ -42,12 +46,12 @@ endif
 shell: ## Starts a shell in container
 	@$(PHP) bash
 
-package-test: build-docker-image install bin/tools/box-2.7.4.phar ## Tests the phar release
+package-test: build-docker-image install bin/tools/box-$(box_version).phar ## Tests the phar release
 	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging
-	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.no-git.json
+	@$(PHP) php bin/tools/box-$(box_version).phar compile -c box.no-git.json
 
-package: build-docker-image install bin/tools/box-2.7.4.phar ## Generates the phar release
-	@$(PHP) php -d phar.readonly=0 bin/tools/box-2.7.4.phar build -c box.json
+package: build-docker-image install bin/tools/box-$(box_version).phar ## Generates the phar release
+	@$(PHP) php bin/tools/box-$(box_version).phar compile -c box.json
 
 ##
 ## Not Listed
@@ -94,6 +98,6 @@ help:
 	@grep -hE '(^[a-zA-Z_-]+:.*?##.*$$)|(^###)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
 .PHONY: help
 
-bin/tools/box-2.7.4.phar:
+bin/tools/box-$(box_version).phar:
 	@mkdir -p bin/tools
-	@test -f bin/tools/box-2.7.4.phar || curl --fail --location -o bin/tools/box-2.7.4.phar https://github.com/box-project/box2/releases/download/2.7.4/box-2.7.4.phar
+	@test -f bin/tools/box-$(box_version).phar || curl --fail --location -o bin/tools/box-$(box_version).phar https://github.com/box-project/box/releases/download/$(box_version)/box.phar
