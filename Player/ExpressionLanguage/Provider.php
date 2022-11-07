@@ -58,6 +58,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 if (null === $arguments['_crawler']) {
                     throw new LogicException(sprintf('Unable to get link "%s" as the page is not crawlable.', $selector));
                 }
+                $this->expectScalarForFunction('link', $selector);
 
                 return $arguments['_crawler']->selectLink($selector);
             }),
@@ -66,6 +67,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 if (null === $arguments['_crawler']) {
                     throw new LogicException(sprintf('Unable to submit on selector "%s" as the page is not crawlable.', $selector));
                 }
+                $this->expectScalarForFunction('button', $selector);
 
                 return $arguments['_crawler']->selectButton($selector);
             }),
@@ -127,6 +129,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 if (!$arguments['_response']->hasHeader($name)) {
                     return;
                 }
+                $this->expectScalarForFunction('header', $name);
 
                 return $arguments['_response']->getHeader($name)[0];
             }),
@@ -217,6 +220,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 if (null === $arguments['_crawler']) {
                     throw new LogicException(sprintf('Unable to get the "%s" CSS selector as the page is not crawlable.', $selector));
                 }
+                $this->expectScalarForFunction('css', $selector);
 
                 return $arguments['_crawler']->filter($selector);
             }),
@@ -225,6 +229,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 if (null === $arguments['_crawler']) {
                     throw new LogicException(sprintf('Unable to get "%s" XPATH selector as the page is not crawlable.', $selector));
                 }
+                $this->expectScalarForFunction('xpath', $selector);
 
                 return $arguments['_crawler']->filterXPath($selector);
             }),
@@ -241,5 +246,12 @@ class Provider implements ExpressionFunctionProviderInterface
                 return JmesPath::search($selector, $data);
             }),
         ];
+    }
+
+    private function expectScalarForFunction($function, $value)
+    {
+        if (!\is_scalar($value)) {
+            throw new LogicException(sprintf('Unable evaluate %s, expecting a string as argument to "%s()"', $function, $function));
+        }
     }
 }
