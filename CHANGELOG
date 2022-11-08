@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.20.0 (2022-11-08)
+
+ * Migrate to Box 4.1
+ * Prevent passing non-scalar values to DSL functions
+ * Update dependencies
+
 * 1.19.0 (2022-07-29)
 
  * Provide an alternative image generator that does not rely on a third-party website
