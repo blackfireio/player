@@ -1,8 +1,15 @@
-ARG PHP_VERSION=7.3
+ARG PHP_VERSION=7.3           # https://hub.docker.com/_/php/tags?page=1&name=7.3
+ARG COMPOSER_VERSION=2.2.18   # https://hub.docker.com/_/composer/tags?page=1&name=2.2
+ARG PHIVE_VERSION=0.15.2      # https://github.com/phar-io/phive/releases
+
+FROM composer:${COMPOSER_VERSION} as build_composer
 
 FROM php:${PHP_VERSION}-cli
 
-COPY --from=composer:2.2.7 /usr/bin/composer /usr/local/bin/composer
+ARG COMPOSER_VERSION
+ARG PHIVE_VERSION
+
+COPY --from=build_composer /usr/bin/composer /usr/local/bin/composer
 
 RUN apt-get update && apt-get install --no-install-recommends -y git unzip wget gnupg dirmngr \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -14,12 +21,13 @@ RUN mkdir ~/.gnupg
 RUN echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
 
 RUN if [ "$PHP_VERSION" != "7.1.33" ]; then \
-    wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.15.0/phive-0.15.0.phar" && \
-    wget -O phive.phar.asc "https://github.com/phar-io/phive/releases/download/0.15.0/phive-0.15.0.phar.asc" && \
+    curl -fsLo phive.phar "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar" && \
+    curl -fsLo phive.phar.asc "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar.asc" && \
     gpg --no-tty --keyserver hkps://keys.openpgp.org --recv-keys 0x9D8A98B29B2D5D79 && \
     gpg --no-tty --verify phive.phar.asc phive.phar && \
     rm phive.phar.asc && \
     chmod +x phive.phar && \
-    mv phive.phar /usr/local/bin/phive ; fi
+    mv phive.phar /usr/local/bin/phive ; \
+    fi
 
 WORKDIR /app
