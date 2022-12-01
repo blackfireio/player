@@ -66,6 +66,14 @@ class Parser
      */
     public function load($file)
     {
+        // Groups are global to all files
+        $this->groups = [];
+
+        return $this->doLoad($file);
+    }
+
+    protected function doLoad($file)
+    {
         if (\is_resource($file)) {
             fseek($file, 0);
 
@@ -96,8 +104,8 @@ class Parser
     {
         $input = new Input($input, $file);
 
+        // Variables are scoped to the current file
         $this->variables = [];
-        $this->groups = [];
 
         $scenarios = new ScenarioSet();
         while (!$input->isEof()) {
@@ -206,7 +214,7 @@ class Parser
                     continue;
                 }
 
-                $scenarios->addScenarioSet($this->load($path));
+                $scenarios->addScenarioSet($this->doLoad($path));
             }
 
             return $scenarios;
