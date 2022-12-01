@@ -1,0 +1,4 @@
+group A
+    visit url('group-multiple/index.php?q=alice')
+        expect status_code() == 200
+        expect body() == "alice 1"

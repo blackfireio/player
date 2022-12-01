@@ -1,0 +1,12 @@
+Blackfire Player
+
+Scenario  "Group - Multiple"
+Step 1
+GET http://0:{{ PORT }}/group-multiple/index.php?q=alice
+Step 2
+GET http://0:{{ PORT }}/group-multiple/index.php?q=bob
+Step 3
+GET http://0:{{ PORT }}/group-multiple/index.php?q=charlie
+  OK
+
+ OK  Scenarios  1  - Steps  3
