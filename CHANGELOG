@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.21.0 (2022-12-01)
+
+ * Support multiple group files
+ * Update dependencies
+
 * 1.20.0 (2022-11-08)
 
  * Migrate to Box 4.1
