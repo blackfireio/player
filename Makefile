@@ -7,7 +7,7 @@ image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
 php_image = blackfire/player-test:$(php_version)-$(image_hash)
 
 box_version = 4.1.0
-box_image = blackfire/php-internal:8.1-v0.1.86
+box_image = blackfire/php-internal:8.1-v0.1.87
 
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
