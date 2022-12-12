@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.22.0 (2022-12-12)
+
+ * Disable Docker image error reporting
+ * Update dependencies
+
 * 1.21.0 (2022-12-01)
 
  * Support multiple group files
