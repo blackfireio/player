@@ -32,7 +32,7 @@ final class WatchdogExtension extends AbstractExtension
         $this->totalLimit = $totalLimit;
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         $extra = $context->getExtraBag();
         $nextStep = $extra->has('_watchdog_next_step') ? $extra->get('_watchdog_next_step') : null;
@@ -59,7 +59,7 @@ final class WatchdogExtension extends AbstractExtension
         return $request;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         $extra = $context->getExtraBag();
         $extra->set('_watchdog_next_step', $step->getNext());

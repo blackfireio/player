@@ -18,17 +18,17 @@ use Blackfire\Player\Parser;
  */
 class BkfValidator
 {
-    public function validate($input, array $variables = [], $allowMisingVariables = false)
+    public function validate($input, array $variables = [], $allowMisingVariables = false): ValidationResult
     {
         return $this->doValidate($input, false, $variables, $allowMisingVariables);
     }
 
-    public function validateFile($path, array $variables = [], $allowMisingVariables = false)
+    public function validateFile($path, array $variables = [], $allowMisingVariables = false): ValidationResult
     {
         return $this->doValidate($path, true, $variables, $allowMisingVariables);
     }
 
-    private function doValidate($input, $isFilePath, array $variables = [], $allowMisingVariables = false)
+    private function doValidate($input, $isFilePath, array $variables = [], $allowMisingVariables = false): ValidationResult
     {
         $parser = new Parser($variables, $allowMisingVariables);
 
@@ -48,7 +48,7 @@ class BkfValidator
         return $result;
     }
 
-    private function handleError(\Exception $e)
+    private function handleError(\Exception $e): ValidationResult
     {
         return new ValidationResult(false, [$e->getMessage()]);
     }

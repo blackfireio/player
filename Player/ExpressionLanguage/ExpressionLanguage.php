@@ -12,7 +12,7 @@ use Symfony\Component\ExpressionLanguage\ParsedExpression;
  */
 class ExpressionLanguage extends SymfonyExpressionLanguage
 {
-    private $resultsVisitor;
+    private readonly ExtractResultsVisitor $resultsVisitor;
 
     public function __construct(CacheItemPoolInterface $cache = null, array $providers = [])
     {
@@ -21,12 +21,12 @@ class ExpressionLanguage extends SymfonyExpressionLanguage
         $this->resultsVisitor = new ExtractResultsVisitor($this->functions);
     }
 
-    public function extractResults(ParsedExpression $expression, array $variables)
+    public function extractResults(ParsedExpression $expression, array $variables): array
     {
         return $this->resultsVisitor->extractResults($expression, $variables);
     }
 
-    public function checkExpression($expression, $names, $allowMissingNames = false)
+    public function checkExpression($expression, $names, $allowMissingNames = false): array
     {
         $missingNames = [];
         if ($allowMissingNames) {
@@ -38,7 +38,7 @@ class ExpressionLanguage extends SymfonyExpressionLanguage
         return $missingNames;
     }
 
-    private function parseAllowMissingNames($expression, $names)
+    private function parseAllowMissingNames($expression, $names): array
     {
         if ($expression instanceof ParsedExpression) {
             return $expression;

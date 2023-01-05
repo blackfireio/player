@@ -18,10 +18,10 @@ namespace Blackfire\Player\Step;
  */
 class Step extends ConfigurableStep
 {
-    private $expectations = [];
-    private $variables = [];
-    private $assertions = [];
-    private $dumpValuesName = [];
+    private array $expectations = [];
+    private array $variables = [];
+    private array $assertions = [];
+    private array $dumpValuesName = [];
 
     public function expect($expression)
     {
@@ -30,60 +30,60 @@ class Step extends ConfigurableStep
         return $this;
     }
 
-    public function has($name)
+    public function has($name): bool
     {
         return \array_key_exists($name, $this->variables);
     }
 
-    public function set($name, $expression)
+    public function set($name, $expression): self
     {
         $this->variables[$name] = $expression;
 
         return $this;
     }
 
-    public function assert($assertion)
+    public function assert($assertion): self
     {
         $this->assertions[] = $assertion;
 
         return $this;
     }
 
-    public function getExpectations()
+    public function getExpectations(): array
     {
         return $this->expectations;
     }
 
-    public function resetExpectations()
+    public function resetExpectations(): self
     {
         $this->expectations = [];
 
         return $this;
     }
 
-    public function getVariables()
+    public function getVariables(): array
     {
         return $this->variables;
     }
 
-    public function getAssertions()
+    public function getAssertions(): array
     {
         return $this->assertions;
     }
 
-    public function resetAssertions()
+    public function resetAssertions(): self
     {
         $this->assertions = [];
 
         return $this;
     }
 
-    public function setDumpValuesName(array $varName = [])
+    public function setDumpValuesName(array $varName = []): void
     {
         $this->dumpValuesName = $varName;
     }
 
-    public function getDumpValuesName()
+    public function getDumpValuesName(): array
     {
         return $this->dumpValuesName;
     }

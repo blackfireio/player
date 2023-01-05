@@ -22,8 +22,5 @@ use Psr\Http\Message\ResponseInterface;
  */
 interface StepConverterInterface
 {
-    /**
-     * @return RequestInterface
-     */
-    public function createRequest(Step $step, RequestInterface $request = null, ResponseInterface $response = null);
+    public function createRequest(Step $step, RequestInterface $request = null, ResponseInterface $response = null): RequestInterface;
 }

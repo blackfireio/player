@@ -31,24 +31,15 @@ interface ExtensionInterface
 
     public function enterScenario(Scenario $scenario, Context $context);
 
-    /**
-     * @return RequestInterface
-     */
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context);
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface;
 
-    /**
-     * @return ResponseInterface
-     */
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context);
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface;
 
     public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context);
 
     public function abortScenario(Scenario $scenario, \Exception $exception, Context $context);
 
-    /**
-     * @return AbstractStep|null
-     */
-    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context);
+    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ?AbstractStep;
 
     public function leaveScenario(Scenario $scenario, Result $result, Context $context);
 

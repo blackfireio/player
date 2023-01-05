@@ -18,12 +18,11 @@ namespace Blackfire\Player\Step;
  */
 class ClickStep extends Step
 {
-    private $selector;
-
-    public function __construct($selector, $file = null, $line = null)
-    {
-        $this->selector = $selector;
-
+    public function __construct(
+        private readonly string $selector,
+        ?string $file = null,
+        ?int $line = null,
+    ) {
         parent::__construct($file, $line);
     }
 
@@ -32,7 +31,7 @@ class ClickStep extends Step
         return sprintf("└ %s: %s\n", static::class, $this->selector);
     }
 
-    public function getSelector()
+    public function getSelector(): string
     {
         return $this->selector;
     }

@@ -83,7 +83,7 @@ class CliFeedbackExtension extends AbstractExtension
         $this->output->writeln(sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?: '~Untitled~'));
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         ++$this->stepCount;
         ++$this->stepIndex;
@@ -104,7 +104,7 @@ class CliFeedbackExtension extends AbstractExtension
         return $request;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         if ($this->debug || !$this->output->isDecorated()) {
             $this->output->writeln('');

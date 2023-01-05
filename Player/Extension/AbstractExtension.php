@@ -35,12 +35,12 @@ abstract class AbstractExtension implements ExtensionInterface
     {
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         return $request;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         return $response;
     }
@@ -53,8 +53,9 @@ abstract class AbstractExtension implements ExtensionInterface
     {
     }
 
-    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ?AbstractStep
     {
+        return null;
     }
 
     public function leaveScenario(Scenario $scenario, Result $result, Context $context)

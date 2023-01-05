@@ -30,15 +30,12 @@ use GuzzleHttp\Promise\EachPromise;
  */
 class Player
 {
-    private $runner;
-    private $language;
-    private $extensions = [];
+    private array $extensions = [];
 
-    public function __construct(RunnerInterface $runner, ExpressionLanguage $language)
-    {
-        $this->runner = $runner;
-        $this->language = $language;
-
+    public function __construct(
+        private readonly RunnerInterface $runner,
+        private readonly ExpressionLanguage $language,
+    ) {
         $this->addExtension(new TmpDirExtension());
         $this->addExtension(new NameResolverExtension($this->language), 1024);
         $this->addExtension(new TestsExtension($this->language), 512);
@@ -47,15 +44,12 @@ class Player
         $this->addExtension(new WatchdogExtension());
     }
 
-    public function addExtension(ExtensionInterface $extension, $priority = 0)
+    public function addExtension(ExtensionInterface $extension, $priority = 0): void
     {
         $this->extensions[$priority][] = $extension;
     }
 
-    /**
-     * @return Results
-     */
-    public function run(ScenarioSet $scenarioSet, $concurrency = null)
+    public function run(ScenarioSet $scenarioSet, $concurrency = null): Results
     {
         krsort($this->extensions);
         $extensions = \call_user_func_array('array_merge', $this->extensions);

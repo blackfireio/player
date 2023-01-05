@@ -29,23 +29,21 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
  */
 class Provider implements ExpressionFunctionProviderInterface
 {
-    private $faker;
-    private $sandbox;
+    private readonly FakerGenerator $faker;
 
-    public function __construct(FakerGenerator $faker = null, $sandbox = false)
-    {
+    public function __construct(
+        FakerGenerator $faker = null,
+        private readonly bool $sandbox = false,
+    ) {
         $this->faker = null !== $faker ? $faker : FakerFactory::create();
         $this->faker->addProvider(new ImagesGeneratorProvider($this->faker));
-        $this->sandbox = $sandbox;
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @return array
      */
     #[\ReturnTypeWillChange]
-    public function getFunctions()
+    public function getFunctions(): array
     {
         $compiler = function () { return ''; };
 

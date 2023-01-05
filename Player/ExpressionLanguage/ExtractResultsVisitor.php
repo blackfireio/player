@@ -19,7 +19,7 @@ use Symfony\Component\ExpressionLanguage\ParsedExpression;
  */
 class ExtractResultsVisitor
 {
-    private static $ignoredFunctions = [
+    private static array $ignoredFunctions = [
         'constant',
         'link',
         'css',
@@ -27,21 +27,19 @@ class ExtractResultsVisitor
         'xpath',
     ];
 
-    private $functions;
-
-    public function __construct(array $functions)
-    {
-        $this->functions = $functions;
+    public function __construct(
+        private readonly array $functions,
+    ) {
     }
 
-    public function extractResults(ParsedExpression $expression, array $variables)
+    public function extractResults(ParsedExpression $expression, array $variables): array
     {
         $results = $this->visit($expression->getNodes(), $variables);
 
         return array_unique($results, \SORT_REGULAR);
     }
 
-    private function visit(Node\Node $node, array $variables, Node\Node $parentNode = null)
+    private function visit(Node\Node $node, array $variables, Node\Node $parentNode = null): array
     {
         $subExpressions = [];
 

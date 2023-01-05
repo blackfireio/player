@@ -10,11 +10,9 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
  */
 class VariableResolver
 {
-    private $language;
-
-    public function __construct(ExpressionLanguage $language)
-    {
-        $this->language = $language;
+    public function __construct(
+        private readonly ExpressionLanguage $language,
+    ) {
     }
 
     public function resolve(array $toResolve = [])

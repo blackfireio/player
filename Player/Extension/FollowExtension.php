@@ -33,14 +33,14 @@ final class FollowExtension extends AbstractExtension
         $this->language = $language;
     }
 
-    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ?AbstractStep
     {
         if (!$this->language->evaluate($context->getStepContext()->isFollowingRedirects(), $context->getVariableValues(true))) {
-            return;
+            return null;
         }
 
         if ('3' !== substr($response->getStatusCode(), 0, 1) || !$response->hasHeader('Location')) {
-            return;
+            return null;
         }
 
         $follow = new FollowStep();

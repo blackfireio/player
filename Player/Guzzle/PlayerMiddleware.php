@@ -36,10 +36,7 @@ class PlayerMiddleware
         };
     }
 
-    /**
-     * @return PromiseInterface
-     */
-    public function __invoke(RequestInterface $request, array $options)
+    public function __invoke(RequestInterface $request, array $options): PromiseInterface
     {
         $handler = $this->handler;
 

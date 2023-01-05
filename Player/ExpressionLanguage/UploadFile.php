@@ -35,7 +35,7 @@ class UploadFile
 
     public function __toString()
     {
-        return file_get_contents($this->filename);
+        return (string) file_get_contents($this->filename);
     }
 
     public function getFilename()

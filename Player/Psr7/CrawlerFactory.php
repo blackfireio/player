@@ -21,17 +21,14 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class CrawlerFactory
 {
-    /**
-     * @return Crawler|null
-     */
-    public static function create(ResponseInterface $response, $uri)
+    public static function create(ResponseInterface $response, $uri): ?Crawler
     {
         if (!$response->hasHeader('Content-Type')) {
-            return;
+            return null;
         }
 
         if (false === strpos($response->getHeaderLine('Content-Type'), 'html') && false === strpos($response->getHeaderLine('Content-Type'), 'xml')) {
-            return;
+            return null;
         }
 
         $crawler = new Crawler(null, $uri);

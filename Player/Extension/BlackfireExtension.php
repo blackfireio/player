@@ -69,7 +69,7 @@ final class BlackfireExtension extends AbstractExtension
         $this->blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', $version));
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         if (!$step instanceof ConfigurableStep) {
             return $request;
@@ -148,7 +148,7 @@ final class BlackfireExtension extends AbstractExtension
         ;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         $bag = $context->getExtraBag();
 
@@ -184,19 +184,19 @@ final class BlackfireExtension extends AbstractExtension
         return $response;
     }
 
-    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ?AbstractStep
     {
         // if X-Blackfire-Response is set by someone else, don't do anything
         if (!$request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
-            return;
+            return null;
         }
 
         if (!$response->hasHeader('X-Blackfire-Response')) {
-            return;
+            return null;
         }
 
         if (!$this->continueSampling($response, $context, false)) {
-            return;
+            return null;
         }
 
         $reload = new ReloadStep();

@@ -18,9 +18,9 @@ namespace Blackfire\Player\Step;
  */
 class BlockStep extends ConfigurableStep
 {
-    private $blockStep;
-    private $variables = [];
-    private $endpoint;
+    private ?AbstractStep $blockStep = null;
+    private array $variables = [];
+    private ?string $endpoint = null;
 
     public function setBlockStep(AbstractStep $blockStep)
     {
@@ -47,7 +47,7 @@ class BlockStep extends ConfigurableStep
         return $this->blockStep;
     }
 
-    public function endpoint($endpoint)
+    public function endpoint(?string $endpoint)
     {
         $this->endpoint = $endpoint;
         $this->set('endpoint', $endpoint);

@@ -20,15 +20,14 @@ use Blackfire\Player\Exception\LogicException;
  */
 class ScenarioSet implements \IteratorAggregate
 {
-    private $scenarios;
-    private $keys = [];
-    private $extraBag;
-    private $name;
-    private $variables = [];
+    private array $keys = [];
+    private ValueBag $extraBag;
+    private ?string $name = null;
+    private array $variables = [];
 
-    public function __construct(array $scenarios = [])
-    {
-        $this->scenarios = $scenarios;
+    public function __construct(
+        private array $scenarios = [],
+    ) {
         $this->extraBag = new ValueBag();
     }
 
@@ -44,7 +43,7 @@ class ScenarioSet implements \IteratorAggregate
         return $str;
     }
 
-    public function addScenarioSet(self $scenarioSet)
+    public function addScenarioSet(self $scenarioSet): void
     {
         foreach ($scenarioSet as $reference => $scenario) {
             $this->add($scenario, $reference);
@@ -80,11 +79,8 @@ class ScenarioSet implements \IteratorAggregate
         return $this->name;
     }
 
-    /**
-     * @return \Traversable
-     */
     #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): iterable
     {
         return new \ArrayIterator($this->scenarios);
     }

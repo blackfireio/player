@@ -48,10 +48,7 @@ final class StepConverter implements StepConverterInterface
         $this->context = $context;
     }
 
-    /**
-     * @return RequestInterface
-     */
-    public function createRequest(Step $step, RequestInterface $request = null, ResponseInterface $response = null)
+    public function createRequest(Step $step, RequestInterface $request = null, ResponseInterface $response = null): RequestInterface
     {
         $stepContext = $this->context->getStepContext();
         $previousRequest = null !== $request && null !== $response;
@@ -260,7 +257,7 @@ final class StepConverter implements StepConverterInterface
             return Psr7\stream_for(json_encode($parameters));
         }
 
-        return Psr7\stream_for(http_build_query($parameters, null, '&'));
+        return Psr7\stream_for(http_build_query($parameters));
     }
 
     private function evaluateExpression($expression, $variables = null)

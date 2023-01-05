@@ -20,11 +20,9 @@ use Blackfire\Player\Exception\ValueException;
  */
 class ValueBag
 {
-    private $values = [];
-
-    public function __construct(array $values = [])
-    {
-        $this->values = $values;
+    public function __construct(
+        private array $values = [],
+    ) {
     }
 
     public function has($name)

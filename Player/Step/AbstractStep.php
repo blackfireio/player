@@ -18,17 +18,15 @@ namespace Blackfire\Player\Step;
  */
 class AbstractStep
 {
-    protected $next;
+    protected ?AbstractStep $next = null;
 
-    private $name = '';
-    private $file;
-    private $line;
-    private $errors = [];
+    private ?string $name = null;
+    private array $errors = [];
 
-    public function __construct($file = null, $line = null)
-    {
-        $this->file = $file;
-        $this->line = $line;
+    public function __construct(
+        private readonly ?string $file = null,
+        private readonly ?int $line = null,
+    ) {
     }
 
     public function __clone()
@@ -43,51 +41,51 @@ class AbstractStep
         return sprintf("└ %s\n", static::class);
     }
 
-    public function name($name)
+    public function name(?string $name)
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function next(self $step)
+    public function next(self $step): ?self
     {
         $this->next = $step;
 
         return $step->getLast();
     }
 
-    public function getNext()
+    public function getNext(): ?self
     {
         return $this->next;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name ?: null;
     }
 
-    public function getFile()
+    public function getFile(): ?string
     {
         return $this->file;
     }
 
-    public function getLine()
+    public function getLine(): ?int
     {
         return $this->line;
     }
 
-    public function addError($error)
+    public function addError($error): void
     {
         $this->errors[] = $error;
     }
 
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return \count($this->errors) > 0;
     }
 
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -95,7 +93,7 @@ class AbstractStep
     /**
      * @internal
      */
-    public function getLast()
+    public function getLast(): ?self
     {
         if (!$this->next) {
             return $this;

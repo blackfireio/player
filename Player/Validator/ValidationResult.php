@@ -16,32 +16,30 @@ namespace Blackfire\Player\Validator;
  */
 final class ValidationResult
 {
-    private $success;
-    private $errors;
-    private $missingVariables = [];
+    private array $missingVariables = [];
 
-    public function __construct($success = true, array $errors = null)
-    {
-        $this->success = $success;
-        $this->errors = $errors;
+    public function __construct(
+        private readonly bool $success = true,
+        private readonly ?array $errors = null,
+    ) {
     }
 
-    public function isSuccess()
+    public function isSuccess(): bool
     {
         return $this->success;
     }
 
-    public function getErrors()
+    public function getErrors(): ?array
     {
         return $this->errors;
     }
 
-    public function setMissingVariables(array $missingVariables)
+    public function setMissingVariables(array $missingVariables): void
     {
         $this->missingVariables = $missingVariables;
     }
 
-    public function getMissingVariables()
+    public function getMissingVariables(): array
     {
         return $this->missingVariables;
     }

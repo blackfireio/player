@@ -34,7 +34,7 @@ final class WaitExtension extends AbstractExtension
         $this->language = $language;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         if (!$step instanceof ConfigurableStep) {
             return $response;

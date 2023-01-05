@@ -61,10 +61,7 @@ class Parser
         $this->allowMissingVariables = $allowMissingVariables;
     }
 
-    /**
-     * @return ScenarioSet
-     */
-    public function load($file)
+    public function load($file): ScenarioSet
     {
         // Groups are global to all files
         $this->groups = [];
@@ -72,7 +69,7 @@ class Parser
         return $this->doLoad($file);
     }
 
-    protected function doLoad($file)
+    protected function doLoad($file): ScenarioSet
     {
         if (\is_resource($file)) {
             fseek($file, 0);
@@ -100,7 +97,7 @@ class Parser
         return $this->parse($input, $file);
     }
 
-    public function parse($input, $file = null)
+    public function parse($input, $file = null): ScenarioSet
     {
         $input = new Input($input, $file);
 
@@ -134,17 +131,17 @@ class Parser
         return $scenarios;
     }
 
-    public function getGlobalVariables()
+    public function getGlobalVariables(): array
     {
         return array_replace($this->globalVariables, $this->externalVariables);
     }
 
-    public function getMissingVariables()
+    public function getMissingVariables(): array
     {
         return $this->missingVariables;
     }
 
-    private function parseSteps(Input $input, $expectedIndent)
+    private function parseSteps(Input $input, $expectedIndent): AbstractStep
     {
         $root = new EmptyStep();
         $current = null;
@@ -172,7 +169,7 @@ class Parser
         return $root;
     }
 
-    private function parseStep(Input $input, $expectedIndent = 0)
+    private function parseStep(Input $input, $expectedIndent = 0): ScenarioSet|Scenario|AbstractStep
     {
         $line = $input->getNextLine();
 
@@ -414,7 +411,7 @@ class Parser
         return $step;
     }
 
-    private function parseStepConfig(Input $input, AbstractStep $step, $expectedIndent, $ignoreInvalid = false)
+    private function parseStepConfig(Input $input, AbstractStep $step, $expectedIndent, $ignoreInvalid = false): void
     {
         while (!$input->isEof()) {
             $nextIndent = $input->getNextLineIndent();
@@ -633,7 +630,7 @@ If the Player is run through a Blackfire server, you can declare it in the "Vari
         return $expression;
     }
 
-    private function formatStepType(AbstractStep $step)
+    private function formatStepType(AbstractStep $step): string
     {
         return strtolower((new \ReflectionClass($step))->getShortName());
     }

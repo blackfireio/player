@@ -18,12 +18,11 @@ namespace Blackfire\Player\Step;
  */
 class GroupStep extends BlockStep
 {
-    private $key;
-
-    public function __construct($key, $file = null, $line = null)
-    {
-        $this->key = $key;
-
+    public function __construct(
+        private $key,
+        ?string $file = null,
+        ?int $line = null,
+    ) {
         parent::__construct($file, $line);
     }
 

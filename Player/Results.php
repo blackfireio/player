@@ -18,14 +18,14 @@ namespace Blackfire\Player;
  */
 class Results implements \IteratorAggregate
 {
-    private $results = [];
+    private array $results = [];
 
-    public function addResult($key, Result $result)
+    public function addResult($key, Result $result): void
     {
         $this->results[$key] = $result;
     }
 
-    public function isFatalError()
+    public function isFatalError(): bool
     {
         /** @var Result $result */
         foreach ($this->results as $result) {
@@ -37,7 +37,7 @@ class Results implements \IteratorAggregate
         return false;
     }
 
-    public function isExpectationError()
+    public function isExpectationError(): bool
     {
         /** @var Result $result */
         foreach ($this->results as $result) {
@@ -50,7 +50,7 @@ class Results implements \IteratorAggregate
     }
 
     /** @var Result */
-    public function isErrored()
+    public function isErrored(): bool
     {
         foreach ($this->results as $result) {
             if ($result->isErrored()) {
@@ -72,7 +72,7 @@ class Results implements \IteratorAggregate
     }
 
     #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->results);
     }

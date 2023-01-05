@@ -63,7 +63,7 @@ final class TracerExtension extends AbstractExtension
         file_put_contents($target, (string) $scenario);
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         ++$this->stepCount;
 
@@ -75,7 +75,7 @@ final class TracerExtension extends AbstractExtension
         return $request;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         $target = $this->getDirectory();
 

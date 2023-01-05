@@ -28,7 +28,7 @@ use Psr\Http\Message\RequestInterface;
  */
 final class DisableInternalNetworkExtension extends AbstractExtension
 {
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         $host = $request->getUri()->getHost();
 

@@ -15,6 +15,7 @@ use Blackfire\Player\Psr7\CrawlerFactory;
 use Blackfire\Player\Step\StepContext;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -23,44 +24,39 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Context
 {
-    private $name;
-    private $valueBag;
-    private $extraBag;
-    private $generator;
+    private ValueBag $valueBag;
+    private ValueBag $extraBag;
+    private ?\Generator $generator = null;
     private $contextStack;
     private $response;
-    private $crawler;
+    private ?Crawler $crawler = null;
     private $requestStats;
-    private $scenarioSetBag;
     private $resolvedIp;
 
-    public function __construct($name, ValueBag $scenarioSetBag = null)
-    {
-        $this->name = $name;
+    public function __construct(
+        private readonly string $name,
+        private readonly ?ValueBag $scenarioSetBag = null,
+    ) {
         $this->valueBag = new ValueBag();
         $this->extraBag = new ValueBag();
-        $this->scenarioSetBag = $scenarioSetBag;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getValueBag()
+    public function getValueBag(): ValueBag
     {
         return $this->valueBag;
     }
 
-    public function getExtraBag()
+    public function getExtraBag(): ValueBag
     {
         return $this->extraBag;
     }
 
-    /**
-     * @return StepContext
-     */
-    public function getStepContext()
+    public function getStepContext(): StepContext
     {
         if (!$this->contextStack || $this->contextStack->isEmpty()) {
             throw new \RuntimeException('The context stack is not defined yet.');
@@ -69,7 +65,7 @@ class Context
         return $this->contextStack->top();
     }
 
-    public function setRequestResponse(RequestInterface $request, ResponseInterface $response)
+    public function setRequestResponse(RequestInterface $request, ResponseInterface $response): void
     {
         $this->response = $response;
 
@@ -84,7 +80,7 @@ class Context
         return $this->response;
     }
 
-    public function setRequestStats($requestStats)
+    public function setRequestStats($requestStats): void
     {
         $this->requestStats = $requestStats;
     }
@@ -94,7 +90,7 @@ class Context
         return $this->requestStats;
     }
 
-    public function getScenarioSetBag()
+    public function getScenarioSetBag(): ?ValueBag
     {
         return $this->scenarioSetBag;
     }
@@ -104,7 +100,7 @@ class Context
         return $this->resolvedIp;
     }
 
-    public function setResolvedIp($resolvedIp)
+    public function setResolvedIp($resolvedIp): void
     {
         $this->resolvedIp = $resolvedIp;
     }
@@ -112,7 +108,7 @@ class Context
     /**
      * @internal
      */
-    public function setGenerator(\Generator $generator)
+    public function setGenerator(\Generator $generator): void
     {
         $this->generator = $generator;
     }
@@ -120,7 +116,7 @@ class Context
     /**
      * @internal
      */
-    public function setContextStack(\SplStack $contextStack)
+    public function setContextStack(\SplStack $contextStack): void
     {
         $this->contextStack = $contextStack;
     }
@@ -128,7 +124,7 @@ class Context
     /**
      * @internal
      */
-    public function getGenerator()
+    public function getGenerator(): \Generator
     {
         return $this->generator;
     }
@@ -136,7 +132,7 @@ class Context
     /**
      * @internal
      */
-    public function getVariableValues($trim = false)
+    public function getVariableValues($trim = false): array
     {
         $values = $this->valueBag->all($trim);
 

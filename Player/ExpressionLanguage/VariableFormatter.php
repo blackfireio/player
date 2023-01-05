@@ -18,7 +18,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class VariableFormatter
 {
-    public function formatResult($value)
+    public function formatResult($value): string
     {
         switch (true) {
             case true === $value:
@@ -67,7 +67,7 @@ class VariableFormatter
         }
     }
 
-    protected function convertObjectToString($value)
+    protected function convertObjectToString($value): string
     {
         if (method_exists($value, '__toString')) {
             return $value->__toString();
@@ -80,7 +80,7 @@ class VariableFormatter
         return sprintf('(object) "%s"', \get_class($value));
     }
 
-    protected function isHash(array $value)
+    protected function isHash(array $value): bool
     {
         $expectedKey = 0;
 
@@ -93,7 +93,7 @@ class VariableFormatter
         return false;
     }
 
-    protected function dumpEscaped($value)
+    protected function dumpEscaped($value): string
     {
         return str_replace(['\\', '"'], ['\\\\', '\"'], $value);
     }

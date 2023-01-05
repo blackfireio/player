@@ -18,7 +18,7 @@ namespace Blackfire\Player\Step;
  */
 class ReloadStep extends Step
 {
-    public function configureFromStep(AbstractStep $step)
+    public function configureFromStep(AbstractStep $step): void
     {
         if ($step instanceof ConfigurableStep) {
             $this

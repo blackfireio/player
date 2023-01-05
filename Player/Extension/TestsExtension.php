@@ -36,7 +36,7 @@ final class TestsExtension extends AbstractExtension
         $this->responseExtractor = new ResponseExtractor($language);
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context)
+    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
     {
         if (!$step instanceof Step) {
             return $response;

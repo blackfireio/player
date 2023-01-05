@@ -32,7 +32,7 @@ final class StepContext
     private $warmup;
     private $workingDir;
 
-    public function update(ConfigurableStep $step, array $variables)
+    public function update(ConfigurableStep $step, array $variables): void
     {
         $this->workingDir = $step->getFile() ? rtrim(\dirname($step->getFile()), '/').'/' : null;
 

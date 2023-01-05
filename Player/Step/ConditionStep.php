@@ -18,23 +18,23 @@ namespace Blackfire\Player\Step;
  */
 class ConditionStep extends BlockStep
 {
-    private $condition;
-    private $ifStep;
-    private $elseStep;
+    private ?AbstractStep $ifStep = null;
+    private ?AbstractStep $elseStep = null;
 
-    public function __construct($condition, $file = null, $line = null)
-    {
-        $this->condition = $condition;
-
+    public function __construct(
+        private readonly string $condition,
+        ?string $file = null,
+        ?int $line = null,
+    ) {
         parent::__construct($file, $line);
     }
 
-    public function setIfStep(AbstractStep $ifStep)
+    public function setIfStep(AbstractStep $ifStep): void
     {
         $this->ifStep = $ifStep;
     }
 
-    public function setElseStep(AbstractStep $elseStep)
+    public function setElseStep(AbstractStep $elseStep): void
     {
         $this->elseStep = $elseStep;
     }
@@ -54,17 +54,17 @@ class ConditionStep extends BlockStep
         return $str;
     }
 
-    public function getCondition()
+    public function getCondition(): string
     {
         return $this->condition;
     }
 
-    public function getIfStep()
+    public function getIfStep(): ?AbstractStep
     {
         return $this->ifStep;
     }
 
-    public function getElseStep()
+    public function getElseStep(): ?AbstractStep
     {
         return $this->elseStep;
     }

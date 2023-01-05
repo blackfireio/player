@@ -50,13 +50,25 @@ EOF;
 
         $expected = <<<EOEXPECTED
 Blackfire\Player\ScenarioSet {
+  -keys: [
+    "" => true
+  ]
+  -extraBag: Blackfire\Player\ValueBag {
+    -values: []
+  }
+  -name: ""BKF Scenarios""
+  -variables: [
+    "endpoint" => "'http://localhost'"
+    "user_login" => "'escargot'"
+    "user_password" => ""pwdsoupe""
+  ]
   -scenarios: [
     Blackfire\Player\Scenario {
       #next: null
       -name: "'Visitor'"
+      -errors: []
       -file: null
       -line: 8
-      -errors: []
       -auth: null
       -headers: []
       -wait: null
@@ -70,10 +82,10 @@ Blackfire\Player\ScenarioSet {
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: Blackfire\Player\Step\VisitStep {
           #next: null
-          -name: ""
+          -name: null
+          -errors: []
           -file: null
           -line: 12
-          -errors: []
           -auth: null
           -headers: []
           -wait: null
@@ -88,15 +100,15 @@ Blackfire\Player\ScenarioSet {
           -variables: []
           -assertions: []
           -dumpValuesName: []
-          -uri: "url('/integrations')"
           -method: null
           -parameters: []
           -body: null
+          -uri: "url('/integrations')"
         }
-        -name: ""
+        -name: null
+        -errors: []
         -file: null
         -line: 11
-        -errors: []
         -auth: null
         -headers: []
         -wait: null
@@ -111,10 +123,10 @@ Blackfire\Player\ScenarioSet {
         -variables: []
         -assertions: []
         -dumpValuesName: []
-        -uri: "url('/pricing')"
         -method: null
         -parameters: []
         -body: null
+        -uri: "url('/pricing')"
       }
       -variables: [
         "endpoint" => "'http://localhost'"
@@ -127,9 +139,9 @@ Blackfire\Player\ScenarioSet {
     Blackfire\Player\Scenario {
       #next: null
       -name: "'Authenticated'"
+      -errors: []
       -file: null
       -line: 14
-      -errors: []
       -auth: null
       -headers: []
       -wait: null
@@ -142,10 +154,10 @@ Blackfire\Player\ScenarioSet {
       -warmup: null
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: null
-        -name: ""
+        -name: null
+        -errors: []
         -file: null
         -line: 17
-        -errors: []
         -auth: null
         -headers: []
         -wait: null
@@ -160,10 +172,10 @@ Blackfire\Player\ScenarioSet {
         -variables: []
         -assertions: []
         -dumpValuesName: []
-        -uri: "url('/login')"
         -method: null
         -parameters: []
         -body: null
+        -uri: "url('/login')"
       }
       -variables: [
         "endpoint" => "'http://localhost'"
@@ -173,18 +185,6 @@ Blackfire\Player\ScenarioSet {
       -endpoint: ""http://tiptop.endpoint.minicontroll""
       -key: null
     }
-  ]
-  -keys: [
-    "" => true
-  ]
-  -extraBag: Blackfire\Player\ValueBag {
-    -values: []
-  }
-  -name: ""BKF Scenarios""
-  -variables: [
-    "endpoint" => "'http://localhost'"
-    "user_login" => "'escargot'"
-    "user_password" => ""pwdsoupe""
   ]
 }
 EOEXPECTED;

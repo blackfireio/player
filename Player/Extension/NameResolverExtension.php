@@ -69,7 +69,7 @@ final class NameResolverExtension extends AbstractExtension
         $scenario->name(sprintf('"%s"', $name));
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         if (!$step->getName()) {
             return $request;

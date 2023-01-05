@@ -23,7 +23,7 @@ use Psr\Http\Message\RequestInterface;
  */
 final class SecurityExtension extends AbstractExtension
 {
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context)
+    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
     {
         $scheme = $request->getUri()->getScheme();
 

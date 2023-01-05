@@ -13,15 +13,13 @@ use Symfony\Component\ExpressionLanguage\TokenStream;
  */
 class ValidatorParser extends SymfonyParser
 {
-    private $functions;
-    private $stream;
-    private $names;
-    private $missingNames = [];
+    private ?TokenStream $stream = null;
+    private ?array $names = null;
+    private array $missingNames = [];
 
-    public function __construct(array $functions)
-    {
-        $this->functions = $functions;
-
+    public function __construct(
+        private readonly array $functions,
+    ) {
         parent::__construct($functions);
     }
 

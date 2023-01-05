@@ -18,16 +18,13 @@ namespace Blackfire\Player;
  */
 final class Run
 {
-    private $requestIterator;
-    private $scenario;
-    private $context;
     private $clientId;
 
-    public function __construct(\Iterator $requestIterator, Scenario $scenario, Context $context)
-    {
-        $this->requestIterator = $requestIterator;
-        $this->scenario = $scenario;
-        $this->context = $context;
+    public function __construct(
+        private readonly \Iterator $requestIterator,
+        private readonly Scenario $scenario,
+        private readonly Context $context,
+    ) {
     }
 
     public function setClientId($clientId)

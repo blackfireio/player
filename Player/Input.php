@@ -36,7 +36,7 @@ final class Input
         }
     }
 
-    public function isEof()
+    public function isEof(): bool
     {
         return $this->findNextLine() > $this->max;
     }

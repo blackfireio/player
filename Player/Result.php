@@ -23,15 +23,13 @@ use Blackfire\Player\Exception\NonFatalException;
  */
 class Result implements \ArrayAccess, \Iterator
 {
-    private $context;
-    private $values;
-    private $error;
+    private array $values;
 
-    public function __construct(Context $context, \Exception $error = null)
-    {
-        $this->context = $context;
+    public function __construct(
+        private readonly Context $context,
+        private readonly ?\Throwable $error = null,
+    ) {
         $this->values = $context->getValueBag()->all();
-        $this->error = $error;
     }
 
     public function getScenarioName()
@@ -39,7 +37,7 @@ class Result implements \ArrayAccess, \Iterator
         return $this->context->getName();
     }
 
-    public function isFatalError()
+    public function isFatalError(): bool
     {
         return null !== $this->error
             && !$this->error instanceof ExpectationFailureException
@@ -47,25 +45,22 @@ class Result implements \ArrayAccess, \Iterator
         ;
     }
 
-    public function isExpectationError()
+    public function isExpectationError(): bool
     {
         return $this->error instanceof ExpectationFailureException;
     }
 
-    public function isErrored()
+    public function isErrored(): bool
     {
         return null !== $this->error;
     }
 
-    /**
-     * @return \Exception
-     */
-    public function getError()
+    public function getError(): ?\Throwable
     {
         return $this->error;
     }
 
-    public function getValues()
+    public function getValues(): ValueBag
     {
         return $this->context->getValueBag();
     }
