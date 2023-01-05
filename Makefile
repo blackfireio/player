@@ -1,10 +1,8 @@
 .DEFAULT_GOAL := help
 SHELL=/bin/bash
 
-php_version ?= 7.4
-
 image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
-php_image = blackfire/player-test:$(php_version)-$(image_hash)
+php_image = blackfire/player-test:$(image_hash)
 
 box_version = 4.1.0
 box_image = blackfire/php-internal:8.1-v0.1.90
@@ -69,7 +67,7 @@ clean:
 
 build-docker-image:
 	@docker inspect $(php_image) &> /dev/null \
-		|| { echo "Building docker image $(php_image)" ; docker build -f Dockerfile-dev --build-arg PHP_VERSION=$(php_version) -t $(php_image) . ;}
+		|| { echo "Building docker image $(php_image)" ; docker build -f Dockerfile-dev -t $(php_image) . ;}
 .PHONY: build-docker-image
 
 vendor/autoload.php install:

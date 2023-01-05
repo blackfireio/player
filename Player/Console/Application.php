@@ -24,7 +24,7 @@ final class Application extends BaseApplication
 {
     public function __construct()
     {
-        error_reporting(-1);
+        error_reporting(0);
 
         // This is variable is used to replace the version
         // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
@@ -69,7 +69,7 @@ final class Application extends BaseApplication
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
 
         if (!\Phar::running() && $output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
-            parent::renderException($e, $output);
+            self::renderException($e, $output);
         }
     }
 

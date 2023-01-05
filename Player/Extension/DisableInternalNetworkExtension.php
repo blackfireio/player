@@ -41,11 +41,8 @@ final class DisableInternalNetworkExtension extends AbstractExtension
                 throw new SecurityException('Forbidden host IP.');
             }
         } else {
-            // Looks like a hostname
-            if (\PHP_VERSION_ID >= 70000) {
-                if (false === filter_var($host, \FILTER_VALIDATE_DOMAIN)) {
-                    throw new SecurityException('Invalid host name.');
-                }
+            if (false === filter_var($host, \FILTER_VALIDATE_DOMAIN)) {
+                throw new SecurityException('Invalid host name.');
             }
             $ip = gethostbyname($host);
 

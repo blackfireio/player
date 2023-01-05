@@ -132,12 +132,7 @@ class PlayerCommandTest extends TestCase
         $process->setInput('papilou!');
         $process->run();
 
-        if (\PHP_VERSION_ID >= 80100) {
-            $expectedOutput = '
-Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::count() should either be compatible with Countable::count(): int, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /app/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php on line 220
-
-Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /app/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php on line 225
-{
+        $expectedOutput = '{
     "message": "Unable to parse \"papilou!\" at line 1.",
     "success": false,
     "errors": [],
@@ -147,18 +142,6 @@ Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should eit
     }
 }
 ';
-        } else {
-            $expectedOutput = '{
-    "message": "Unable to parse \"papilou!\" at line 1.",
-    "success": false,
-    "errors": [],
-    "input": {
-        "path": "php://stdin",
-        "content": "papilou!"
-    }
-}
-';
-        }
 
         $expectedErrorOutput = <<<EOD
   Unable to parse "papilou!" at line 1.
@@ -182,12 +165,7 @@ EOS;
         $process->setInput($script);
         $process->run();
 
-        if (\PHP_VERSION_ID >= 80100) {
-            $expectedOutput = '
-Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::count() should either be compatible with Countable::count(): int, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /app/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php on line 220
-
-Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /app/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php on line 225
-{
+        $expectedOutput = '{
     "name": null,
     "results": [
         {
@@ -208,29 +186,6 @@ Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should eit
     }
 }
 ';
-        } else {
-            $expectedOutput = '{
-    "name": null,
-    "results": [
-        {
-            "scenario": "\"Test\"",
-            "values": [],
-            "error": {
-                "message": "Unable to crawl a non-absolute URI (/). Did you forget to set an \"endpoint\"?",
-                "code": 0
-            }
-        }
-    ],
-    "message": "Build encountered a fatal error",
-    "code": 65,
-    "success": true,
-    "input": {
-        "path": "php://stdin",
-        "content": "scenario\n    name \"Test\"\n    visit \"/\"\n        expect status_code() == 200"
-    }
-}
-';
-        }
 
         $this->assertSame($expectedOutput, $process->getOutput());
         $this->assertStringContainsString('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
@@ -242,12 +197,7 @@ Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should eit
         $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
         $process->run();
 
-        if (\PHP_VERSION_ID >= 80100) {
-            $expectedOutput = '
-Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::count() should either be compatible with Countable::count(): int, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /app/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php on line 220
-
-Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /app/vendor/guzzlehttp/guzzle/src/Cookie/CookieJar.php on line 225
-{
+        $expectedOutput = '{
     "message": "Cannot load file \"../Player/Tests/fixtures-validate/scenario.json\" because it does not have the right extension. Expected \"bkf\", got \"json\".",
     "success": false,
     "errors": [],
@@ -257,18 +207,6 @@ Deprecated: Return type of GuzzleHttp\Cookie\CookieJar::getIterator() should eit
     }
 }
 ';
-        } else {
-            $expectedOutput = '{
-    "message": "Cannot load file \"../Player/Tests/fixtures-validate/scenario.json\" because it does not have the right extension. Expected \"bkf\", got \"json\".",
-    "success": false,
-    "errors": [],
-    "input": {
-        "path": "../Player/Tests/fixtures-validate/scenario.json",
-        "content": "{\n  \"message\": \"I\'m not a validate scenario file!\"\n}\n"
-    }
-}
-';
-        }
 
         $expectedErrorOutput = <<<EOD
   [ERROR]

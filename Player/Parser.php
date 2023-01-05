@@ -201,7 +201,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('"load" takes a quoted string as an argument %s.', $input->getContextString()));
             }
 
-            $glob = Path::makeAbsolute($matches[2], realpath(\dirname($input->getFile())));
+            $glob = Path::makeAbsolute($matches[2], realpath(\dirname((string) $input->getFile())));
             $paths = Glob::glob($glob);
 
             if (!$paths) {
@@ -210,7 +210,7 @@ class Parser
 
             $scenarios = new ScenarioSet();
             foreach ($paths as $path) {
-                if (realpath($path) === realpath($input->getFile())) {
+                if (realpath($path) === realpath((string) $input->getFile())) {
                     continue;
                 }
 

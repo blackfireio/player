@@ -40,7 +40,7 @@ final class ConsoleLogger extends BaseConsoleLogger
         }
     }
 
-    public function hasErrored()
+    public function hasErrored(): bool
     {
         return $this->errored;
     }
