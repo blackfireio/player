@@ -1,0 +1,218 @@
+#!blackfire-player
+
+scenario
+    name "Blog"
+
+    visit "/blog/"
+        expect status_code() == 200
+
+    click link("Releases")
+        expect status_code() == 200
+        expect css(".pagination-item-prev.disabled") and css(".pagination-item-prev.disabled .pagination-item-link span").text() matches "/Newer posts/"
+        expect css(".pagination-item-next") and css(".pagination-item-next .pagination-item-link a").text() matches "/Older posts/"
+
+    click link("Older posts")
+        expect status_code() == 200
+        expect css(".pagination-item-prev:not(.disabled)").count() == 1
+
+scenario
+    name "Components"
+    set env "dev"
+
+    visit url("/components")
+        name "Getting Component Data"
+        set component_urls css('.components-list td.name a').extract(['_text', 'href'])
+
+    with data in component_urls
+        visit data[1]
+            name "Checking Component " ~ data[0]
+            expect status_code() == 200
+            expect css("h1.content_title") and css("h1.content_title").text() matches "/" ~ data[0] ~ "/"
+            set doc_url xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Documentation')]").count() ? xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Documentation')]").attr("href")
+            set code_url xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Code')]").count() ? xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Code')]").attr("href")
+
+        when doc_url and "Locale" != data[0]
+            visit doc_url
+                name "Checking Docs URL"
+                expect status_code() == 200
+                expect css("h1.content_title") and css("h1.content_title").text() matches "/" ~ data[0] ~ "/"
+
+        when code_url and env == "prod"
+            visit code_url
+                name "Checking Github Code URL"
+                expect status_code() == 200
+
+scenario
+    name "Projects"
+
+    visit url("/projects")
+        name "Checking the main projects page"
+        expect status_code() == 200
+
+    visit url("/components")
+        name "Checking the main components page"
+        expect status_code() == 200
+        expect css(".component-list .component").count() > 30
+
+    with name, project in \
+        { \
+            Drupal: { url: "drupal.org", dep: "HttpFoundation", slug: "/projects/drupal" }, \
+            phpBB: { url: "phpbb.com", dep: "CssSelector", slug: "/projects/phpbb" } \
+        }
+
+        visit url("/projects")
+            name "Checking that " ~ name ~ " is on projects page"
+            expect status_code() == 200
+            expect css("a[href='" ~ project['slug'] ~ "']").count() >= 1
+
+        click css("a[href='" ~ project['slug'] ~ "']")
+            name "Checking project " ~ name
+            expect status_code() == 200
+            expect css("a[href*='" ~ project['url'] ~ "']").count() >= 1
+            expect css("a:contains('" ~ project['dep'] ~ "')").count() >= 1
+
+        click link(project['dep'])
+            name "Checking Component " ~ project['dep']
+            expect status_code() == 200
+            blackfire false
+
+scenario
+    name "Documentation"
+
+    visit "/doc"
+        follow_redirects
+        blackfire false
+
+    reload
+        expect status_code() == 200
+        expect header("Cache-Control") matches "/s-maxage=[1-9]\\d\\d+/"
+
+    visit "/doc/current/index.html"
+        name "Doc pages include the right JavaScript files"
+        expect body() matches '#<script src=".*/build/new-app(\\..+)?\\.js"></script>#'
+        expect body() matches '#<script src=".*/build/new-doc(\\..+)?\\.js"></script>#'
+
+    # TODO: add a test to check that the size of 'doc.js' is small (a frequent
+    # error when using webpack is that every file contains all dependencies,
+    # making them much bigger than needed).
+    # We can't add this test now because the server response doesn't include the
+    # content length header (so we can't use 'header()') and there is no way to
+    # get the length of the 'body()' of the response
+
+scenario
+    name "Assets 404 checks"
+    set urls ["/", "/blog/"]
+    set asset_urls []
+    set env "dev"
+
+    when env == "prod"
+        with url in urls
+            visit url
+                name "Checking page " ~ url
+                expect status_code() == 200
+                set asset_urls merge(asset_urls, css("img").extract("src"))
+
+        with asset_url in unique(asset_urls)
+            wait 200
+
+            visit asset_url
+                name "Checking asset " ~ asset_url
+                expect status_code() in [200, 301, 302, 304]
+                follow_redirects
+                blackfire false
+
+            reload
+                name "Checking redirected asset"
+                expect status_code() == 200
+                blackfire false
+
+group marketing_slugs
+    # slugs from https://github.com/symfony/marketing/tree/master/views/en/
+    set marketing_slugs \
+        [ \
+            'community', 'what-is-symfony', \
+
+            # what-is-symfony
+            'at-a-glance', 'components', 'download', \
+            'elevator-pitches', 'in-five-minutes', 'license', 'projects', \
+
+            # what-is-symfony/in-five-minutes
+            'six-good-reasons', 'six-good-technical-reasons', \
+            'ten-criteria', 'when-use-a-framework', 'why-use-a-framework', \
+
+            # what-is-symfony/elevator-pitches
+            'explained-to-a-developer', 'explained-to-a-project-manager', \
+            'explained-to-a-project-owner', 'explained-to-a-system-administrator', \
+            'explained-to-my-boss', \
+
+            # community
+            'support', \
+        ]
+
+group http_cache_check
+    visit url(url)
+        name "Loading " ~ url
+        blackfire false
+        expect status_code() == 200
+        wait 1000
+
+    reload
+        name "Checking " ~ url
+        blackfire false
+        expect status_code() == 200
+        expect header('Age') > 0
+        expect header('X-Varnish') matches '/\\d+ \\d+/'
+
+scenario
+    name "HTTP Cache"
+    set env "dev"
+    set urls ['/']
+
+    when "prod" == env
+        with url in urls
+            include http_cache_check
+
+        include marketing_slugs
+            with url in marketing_slugs
+                include http_cache_check
+
+scenario
+    name "Marketing Pages"
+
+    include marketing_slugs
+        with slug in marketing_slugs
+            visit url('/' ~ slug)
+                name "Checking " ~ slug
+                expect status_code() == 200
+
+scenario
+    name "Releases"
+
+    visit "/releases"
+        expect status_code() == 200
+        set versions \
+            { \
+                lts: css("#lts-version").text(), \
+                stable: css("#current-version").text(), \
+            }
+
+    # first redirect: /releases?version=4.3.5 -> /releases/4.3.5
+    visit "/releases?version=" ~ versions["stable"]
+        expect status_code() == 301
+        expect header('Location') == '/releases/' ~ versions["stable"]
+
+    # second redirect: /releases/4.3.5 -> /releases/4.3
+    follow
+        expect status_code() == 301
+        expect header('Location') matches '/\\/releases\\/\\d.\\d/'
+
+    # Disabled (temporarily) because I can't make this test work in any way
+    #follow
+    #    expect status_code() == 200
+    #    expect body() matches "is the current"
+    #    expect body() matches "stable version"
+
+    visit "/releases.json"
+        expect status_code() == 200
+        expect versions["stable"] == json("symfony_versions.stable")
+        expect versions["lts"] == json("symfony_versions.lts")

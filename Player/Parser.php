@@ -121,6 +121,7 @@ class Parser
         $scenarios->setVariables($this->getGlobalVariables());
 
         $endpoint = isset($this->getGlobalVariables()['endpoint']) ? $this->getGlobalVariables()['endpoint'] : '';
+        $scenarios->setEndpoint($endpoint);
 
         foreach ($scenarios as $scenario) {
             if (!$scenario->getEndpoint()) {

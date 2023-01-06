@@ -11,6 +11,8 @@
 
 namespace Blackfire\Player\Step;
 
+use Symfony\Component\Serializer\Annotation as SymfonySerializer;
+
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  *
@@ -18,6 +20,7 @@ namespace Blackfire\Player\Step;
  */
 class LoopStep extends BlockStep
 {
+    /** @SymfonySerializer\SerializedName("values") */
     private $iterator;
     private $loopStep;
     private $keyName;

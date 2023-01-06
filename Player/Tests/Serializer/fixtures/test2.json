@@ -1,0 +1,339 @@
+{
+    "version": %f,
+    "name": null,
+    "variables": [],
+    "endpoint": "",
+    "blackfire_environment": null,
+    "scenarios": [
+        {
+            "steps": [
+                {
+                    "uri": "\"\/blog\/\"",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 6,
+                    "type": "visit"
+                },
+                {
+                    "selector": "link(\"Releases\")",
+                    "expectations": [
+                        "status_code() == 200",
+                        "css(\".pagination-item-prev.disabled\") and css(\".pagination-item-prev.disabled .pagination-item-link span\").text() matches \"\/Newer posts\/\"",
+                        "css(\".pagination-item-next\") and css(\".pagination-item-next .pagination-item-link a\").text() matches \"\/Older posts\/\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 9,
+                    "type": "click"
+                },
+                {
+                    "selector": "link(\"Older posts\")",
+                    "expectations": [
+                        "status_code() == 200",
+                        "css(\".pagination-item-prev:not(.disabled)\").count() == 1"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 14,
+                    "type": "click"
+                }
+            ],
+            "name": "Blog",
+            "line": 3
+        },
+        {
+            "variables": {
+                "env": "dev"
+            },
+            "steps": [
+                {
+                    "uri": "url(\"\/components\")",
+                    "variables": {
+                        "component_urls": "css('.components-list td.name a').extract(['_text', 'href'])"
+                    },
+                    "is_blackfire_enabled": true,
+                    "name": "Getting Component Data",
+                    "line": 22,
+                    "type": "visit"
+                },
+                {
+                    "values": "component_urls",
+                    "loop_step": {
+                        "uri": "data[1]",
+                        "expectations": [
+                            "status_code() == 200",
+                            "css(\"h1.content_title\") and css(\"h1.content_title\").text() matches \"\/\" ~ data[0] ~ \"\/\""
+                        ],
+                        "variables": {
+                            "doc_url": "xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Documentation')]\").count() ? xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Documentation')]\").attr(\"href\")",
+                            "code_url": "xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Code')]\").count() ? xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Code')]\").attr(\"href\")"
+                        },
+                        "is_blackfire_enabled": true,
+                        "name": "\"Checking Component \" ~ data[0]",
+                        "line": 27,
+                        "type": "visit"
+                    },
+                    "key_name": "_",
+                    "value_name": "data",
+                    "is_blackfire_enabled": true,
+                    "line": 26,
+                    "type": "loop"
+                }
+            ],
+            "name": "Components",
+            "line": 18
+        },
+        {
+            "steps": [
+                {
+                    "uri": "url(\"\/projects\")",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Checking the main projects page",
+                    "line": 48,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url(\"\/components\")",
+                    "expectations": [
+                        "status_code() == 200",
+                        "css(\".component-list .component\").count() > 30"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Checking the main components page",
+                    "line": 52,
+                    "type": "visit"
+                },
+                {
+                    "values": "{ Drupal: { url: \"drupal.org\", dep: \"HttpFoundation\", slug: \"\/projects\/drupal\" }, phpBB: { url: \"phpbb.com\", dep: \"CssSelector\", slug: \"\/projects\/phpbb\" } }",
+                    "loop_step": {
+                        "uri": "url(\"\/projects\")",
+                        "expectations": [
+                            "status_code() == 200",
+                            "css(\"a[href='\" ~ project['slug'] ~ \"']\").count() >= 1"
+                        ],
+                        "is_blackfire_enabled": true,
+                        "name": "Checking that \" ~ name ~ \" is on projects page",
+                        "line": 63,
+                        "type": "visit"
+                    },
+                    "key_name": "name",
+                    "value_name": "project",
+                    "is_blackfire_enabled": true,
+                    "line": 57,
+                    "type": "loop"
+                }
+            ],
+            "name": "Projects",
+            "line": 45
+        },
+        {
+            "steps": [
+                {
+                    "uri": "\"\/doc\"",
+                    "follow_redirects": "true",
+                    "is_blackfire_enabled": false,
+                    "line": 82,
+                    "type": "visit"
+                },
+                {
+                    "expectations": [
+                        "status_code() == 200",
+                        "header(\"Cache-Control\") matches \"\/s-maxage=[1-9]\\\\d\\\\d+\/\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 86,
+                    "type": "reload"
+                },
+                {
+                    "uri": "\"\/doc\/current\/index.html\"",
+                    "expectations": [
+                        "body() matches '#<script src=\".*\/build\/new-app(\\\\..+)?\\\\.js\"><\/script>#'",
+                        "body() matches '#<script src=\".*\/build\/new-doc(\\\\..+)?\\\\.js\"><\/script>#'"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Doc pages include the right JavaScript files",
+                    "line": 90,
+                    "type": "visit"
+                }
+            ],
+            "name": "Documentation",
+            "line": 79
+        },
+        {
+            "variables": {
+                "urls": "[\"\/\", \"\/blog\/\"]",
+                "asset_urls": "[]",
+                "env": "dev"
+            },
+            "steps": [
+                {
+                    "if_step": {
+                        "values": "urls",
+                        "loop_step": {
+                            "uri": "url",
+                            "expectations": [
+                                "status_code() == 200"
+                            ],
+                            "variables": {
+                                "asset_urls": "merge(asset_urls, css(\"img\").extract(\"src\"))"
+                            },
+                            "is_blackfire_enabled": true,
+                            "name": "\"Checking page \" ~ url",
+                            "line": 110,
+                            "type": "visit"
+                        },
+                        "key_name": "_",
+                        "value_name": "url",
+                        "is_blackfire_enabled": true,
+                        "line": 109,
+                        "type": "loop"
+                    },
+                    "condition": "env == \"prod\"",
+                    "is_blackfire_enabled": true,
+                    "line": 108,
+                    "type": "condition"
+                }
+            ],
+            "name": "Assets 404 checks",
+            "line": 102
+        },
+        {
+            "variables": {
+                "env": "dev",
+                "urls": "['\/']"
+            },
+            "steps": [
+                {
+                    "if_step": {
+                        "values": "urls",
+                        "loop_step": {
+                            "steps": [
+                                {
+                                    "uri": "url(url)",
+                                    "expectations": [
+                                        "status_code() == 200"
+                                    ],
+                                    "wait": "1000",
+                                    "is_blackfire_enabled": false,
+                                    "name": "\"Loading \" ~ url",
+                                    "line": 153,
+                                    "type": "visit"
+                                },
+                                {
+                                    "expectations": [
+                                        "status_code() == 200",
+                                        "header('Age') > 0",
+                                        "header('X-Varnish') matches '\/\\\\d+ \\\\d+\/'"
+                                    ],
+                                    "is_blackfire_enabled": false,
+                                    "name": "\"Checking \" ~ url",
+                                    "line": 159,
+                                    "type": "reload"
+                                }
+                            ],
+                            "is_blackfire_enabled": true,
+                            "line": 152,
+                            "type": "block"
+                        },
+                        "key_name": "_",
+                        "value_name": "url",
+                        "is_blackfire_enabled": true,
+                        "line": 172,
+                        "type": "loop"
+                    },
+                    "condition": "\"prod\" == env",
+                    "is_blackfire_enabled": true,
+                    "line": 171,
+                    "type": "condition"
+                }
+            ],
+            "name": "HTTP Cache",
+            "line": 166
+        },
+        {
+            "steps": [
+                {
+                    "variables": {
+                        "marketing_slugs": "[ 'community', 'what-is-symfony', 'at-a-glance', 'components', 'download', 'elevator-pitches', 'in-five-minutes', 'license', 'projects', 'six-good-reasons', 'six-good-technical-reasons', 'ten-criteria', 'when-use-a-framework', 'why-use-a-framework', 'explained-to-a-developer', 'explained-to-a-project-manager', 'explained-to-a-project-owner', 'explained-to-a-system-administrator', 'explained-to-my-boss', 'support', ]"
+                    },
+                    "steps": [
+                        {
+                            "values": "marketing_slugs",
+                            "loop_step": {
+                                "uri": "url('\/' ~ slug)",
+                                "expectations": [
+                                    "status_code() == 200"
+                                ],
+                                "is_blackfire_enabled": true,
+                                "name": "\"Checking \" ~ slug",
+                                "line": 184,
+                                "type": "visit"
+                            },
+                            "key_name": "_",
+                            "value_name": "slug",
+                            "is_blackfire_enabled": true,
+                            "line": 183,
+                            "type": "loop"
+                        }
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 129,
+                    "type": "block"
+                }
+            ],
+            "name": "Marketing Pages",
+            "line": 179
+        },
+        {
+            "steps": [
+                {
+                    "uri": "\"\/releases\"",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "variables": {
+                        "versions": "{ lts: css(\"#lts-version\").text(), stable: css(\"#current-version\").text(), }"
+                    },
+                    "is_blackfire_enabled": true,
+                    "line": 191,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/releases?version=\" ~ versions[\"stable\"]",
+                    "expectations": [
+                        "status_code() == 301",
+                        "header('Location') == '\/releases\/' ~ versions[\"stable\"]"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 200,
+                    "type": "visit"
+                },
+                {
+                    "expectations": [
+                        "status_code() == 301",
+                        "header('Location') matches '\/\\\\\/releases\\\\\/\\\\d.\\\\d\/'"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 205,
+                    "type": "follow"
+                },
+                {
+                    "uri": "\"\/releases.json\"",
+                    "expectations": [
+                        "status_code() == 200",
+                        "versions[\"stable\"] == json(\"symfony_versions.stable\")",
+                        "versions[\"lts\"] == json(\"symfony_versions.lts\")"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 215,
+                    "type": "visit"
+                }
+            ],
+            "name": "Releases",
+            "line": 188
+        }
+    ]
+}

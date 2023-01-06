@@ -20,4 +20,8 @@ use Blackfire\Player\Step\GroupStep;
  */
 class Scenario extends GroupStep
 {
+    public function getType(): ?string
+    {
+        return null;
+    }
 }

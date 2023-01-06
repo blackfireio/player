@@ -12,6 +12,7 @@
 namespace Blackfire\Player;
 
 use Blackfire\Player\Exception\LogicException;
+use Symfony\Component\Serializer\Annotation as SymfonySerializer;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -20,10 +21,14 @@ use Blackfire\Player\Exception\LogicException;
  */
 class ScenarioSet implements \IteratorAggregate
 {
+    /** @SymfonySerializer\Ignore */
     private array $keys = [];
     private ValueBag $extraBag;
     private ?string $name = null;
     private array $variables = [];
+
+    private ?string $endpoint = null;
+    private ?string $blackfireEnvironment = null;
 
     public function __construct(
         private array $scenarios = [],
@@ -79,10 +84,16 @@ class ScenarioSet implements \IteratorAggregate
         return $this->name;
     }
 
+    /** @SymfonySerializer\Ignore */
     #[\ReturnTypeWillChange]
     public function getIterator(): iterable
     {
         return new \ArrayIterator($this->scenarios);
+    }
+
+    public function getScenarios(): iterable
+    {
+        return $this->getIterator();
     }
 
     public function getExtraBag()
@@ -95,8 +106,33 @@ class ScenarioSet implements \IteratorAggregate
         $this->variables = $variables;
     }
 
+    public function setVariable($key, $value)
+    {
+        $this->variables[$key] = $value;
+    }
+
     public function getVariables()
     {
         return $this->variables;
+    }
+
+    public function getEndpoint(): ?string
+    {
+        return $this->endpoint;
+    }
+
+    public function setEndpoint(?string $endpoint): void
+    {
+        $this->endpoint = $endpoint;
+    }
+
+    public function getBlackfireEnvironment(): ?string
+    {
+        return $this->blackfireEnvironment;
+    }
+
+    public function setBlackfireEnvironment(?string $blackfireEnvironment): void
+    {
+        $this->blackfireEnvironment = $blackfireEnvironment;
     }
 }

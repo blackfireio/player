@@ -183,11 +183,35 @@ EOS;
     "input": {
         "path": "php://stdin",
         "content": "scenario\n    name \"Test\"\n    visit \"/\"\n        expect status_code() == 200"
+    },
+    "blackfire_build": {
+        "version": %f,
+        "name": null,
+        "variables": [],
+        "endpoint": "",
+        "blackfire_environment": null,
+        "scenarios": [
+            {
+                "steps": [
+                    {
+                        "uri": "\"/\"",
+                        "expectations": [
+                            "status_code() == 200"
+                        ],
+                        "is_blackfire_enabled": true,
+                        "line": 3,
+                        "type": "visit"
+                    }
+                ],
+                "name": "Test",
+                "line": 1
+            }
+        ]
     }
 }
 ';
 
-        $this->assertSame($expectedOutput, $process->getOutput());
+        $this->assertStringMatchesFormat($expectedOutput, $process->getOutput());
         $this->assertStringContainsString('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
     }
 

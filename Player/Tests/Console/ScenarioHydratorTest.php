@@ -62,9 +62,12 @@ Blackfire\Player\ScenarioSet {
     "user_login" => "'escargot'"
     "user_password" => ""pwdsoupe""
   ]
+  -endpoint: "'http://localhost'"
+  -blackfireEnvironment: null
   -scenarios: [
     Blackfire\Player\Scenario {
       #next: null
+      #blackfireProfileUuid: null
       -name: "'Visitor'"
       -errors: []
       -file: null
@@ -82,6 +85,7 @@ Blackfire\Player\ScenarioSet {
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: Blackfire\Player\Step\VisitStep {
           #next: null
+          #blackfireProfileUuid: null
           -name: null
           -errors: []
           -file: null
@@ -105,6 +109,7 @@ Blackfire\Player\ScenarioSet {
           -body: null
           -uri: "url('/integrations')"
         }
+        #blackfireProfileUuid: null
         -name: null
         -errors: []
         -file: null
@@ -138,6 +143,7 @@ Blackfire\Player\ScenarioSet {
     }
     Blackfire\Player\Scenario {
       #next: null
+      #blackfireProfileUuid: null
       -name: "'Authenticated'"
       -errors: []
       -file: null
@@ -154,6 +160,7 @@ Blackfire\Player\ScenarioSet {
       -warmup: null
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: null
+        #blackfireProfileUuid: null
         -name: null
         -errors: []
         -file: null

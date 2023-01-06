@@ -1,0 +1,251 @@
+{
+    "version": %f,
+    "name": null,
+    "variables": [],
+    "endpoint": "",
+    "blackfire_environment": null,
+    "scenarios": [
+        {
+            "variables": {
+                "env": "dev",
+                "urls": "[ \"\/\", \"\/development\", \"\/license\", \"\/doc\/1.x\/\", \"\/doc\/2.x\/\", \"\/doc\/2.x\/filters\/first.html\", \"\/api\/2.x\/index.html\", ]"
+            },
+            "steps": [
+                {
+                    "if_step": {
+                        "values": "urls",
+                        "loop_step": {
+                            "steps": [
+                                {
+                                    "uri": "url(url)",
+                                    "expectations": [
+                                        "status_code() == 200"
+                                    ],
+                                    "wait": "200",
+                                    "is_blackfire_enabled": false,
+                                    "name": "\"Loading \" ~ url",
+                                    "line": 4,
+                                    "type": "visit"
+                                },
+                                {
+                                    "expectations": [
+                                        "status_code() == 200",
+                                        "header(\"Cache-Control\") matches \"\/max\\-age=\\\\d+\/\"",
+                                        "header(\"X-Sensiocloud-Cache\") matches \"\/HIT\/\""
+                                    ],
+                                    "is_blackfire_enabled": false,
+                                    "name": "\"Checking \" ~ url",
+                                    "line": 10,
+                                    "type": "reload"
+                                }
+                            ],
+                            "is_blackfire_enabled": true,
+                            "line": 3,
+                            "type": "block"
+                        },
+                        "key_name": "_",
+                        "value_name": "url",
+                        "is_blackfire_enabled": true,
+                        "line": 31,
+                        "type": "loop"
+                    },
+                    "condition": "\"prod\" == env",
+                    "is_blackfire_enabled": true,
+                    "line": 30,
+                    "type": "condition"
+                }
+            ],
+            "name": "HTTP Cache",
+            "line": 17
+        },
+        {
+            "steps": [
+                {
+                    "uri": "\"\/\"",
+                    "expectations": [
+                        "status_code() == 200",
+                        "body() matches \"\/Twig is a modern template engine for PHP\/\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 37,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/doc\/2.x\/api.html\"",
+                    "expectations": [
+                        "status_code() == 200",
+                        "body() matches \"\/Twig for Developers\/\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 41,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/doc\/2.x\/intro.html\"",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 45,
+                    "type": "visit"
+                },
+                {
+                    "selector": "link(\"Edit\")",
+                    "expectations": [
+                        "status_code() == 302",
+                        "header(\"Location\") matches \"{https:\/\/github.com\/login}\""
+                    ],
+                    "is_blackfire_enabled": false,
+                    "line": 48,
+                    "type": "click"
+                }
+            ],
+            "name": "Documentation",
+            "line": 34
+        },
+        {
+            "steps": [
+                {
+                    "uri": "\"\/doc\/2.x\/api.html\"",
+                    "expectations": [
+                        "status_code() == 200",
+                        "1 == link(\"1.x\").count()"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 56,
+                    "type": "visit"
+                },
+                {
+                    "selector": "link(\"1.x\")",
+                    "expectations": [
+                        "status_code() == 200",
+                        "1 == link(\"2.x\").count()"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 60,
+                    "type": "click"
+                },
+                {
+                    "uri": "\"\/doc\/tags\/embed.html\"",
+                    "expectations": [
+                        "status_code() == 302",
+                        "header(\"Location\") == \"\/doc\/3.x\/tags\/embed.html\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 64,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/for\"",
+                    "expectations": [
+                        "status_code() == 302",
+                        "header(\"Location\") == \"\/doc\/3.x\/tags\/for.html\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 68,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/fir\"",
+                    "expectations": [
+                        "status_code() == 200",
+                        "body() matches \"\/Sorry, but there is no Twig tag, filter, test, or function name\/\"",
+                        "css(\"p > a:contains('for')\")"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 72,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/else\"",
+                    "expectations": [
+                        "status_code() == 302",
+                        "header(\"Location\") == \"\/doc\/3.x\/tags\/if.html\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 77,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/in\"",
+                    "expectations": [
+                        "status_code() == 302",
+                        "header(\"Location\") == \"\/doc\/3.x\/templates.html#containment-operator\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 81,
+                    "type": "visit"
+                },
+                {
+                    "uri": "\"\/block\"",
+                    "expectations": [
+                        "status_code() == 200",
+                        "body() matches \"\/can be different things in Twig\/\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 85,
+                    "type": "visit"
+                }
+            ],
+            "name": "Documentation Redirects",
+            "line": 53
+        },
+        {
+            "variables": {
+                "env": "dev"
+            },
+            "steps": [
+                {
+                    "if_step": {
+                        "uri": "\"\/_errors\/404.html\"",
+                        "expectations": [
+                            "status_code() == 200",
+                            "body() matches \"\/Sorry, the page you are looking for could not be found.\/\""
+                        ],
+                        "is_blackfire_enabled": true,
+                        "line": 94,
+                        "type": "visit"
+                    },
+                    "condition": "\"prod\" != env",
+                    "is_blackfire_enabled": true,
+                    "line": 93,
+                    "type": "condition"
+                },
+                {
+                    "if_step": {
+                        "uri": "\"\/foo\/bar\/baz\"",
+                        "expectations": [
+                            "status_code() == 404",
+                            "body() matches \"\/Sorry, the page you are looking for could not be found.\/\""
+                        ],
+                        "is_blackfire_enabled": true,
+                        "line": 99,
+                        "type": "visit"
+                    },
+                    "condition": "\"prod\" == env",
+                    "is_blackfire_enabled": true,
+                    "line": 98,
+                    "type": "condition"
+                }
+            ],
+            "name": "404 page",
+            "line": 89
+        },
+        {
+            "steps": [
+                {
+                    "uri": "\"\/for\"",
+                    "expectations": [
+                        "status_code() == 302",
+                        "header(\"Location\") == \"\/doc\/3.x\/tags\/for.html\""
+                    ],
+                    "is_blackfire_enabled": true,
+                    "line": 106,
+                    "type": "visit"
+                }
+            ],
+            "name": "Shortcuts",
+            "line": 103
+        }
+    ]
+}

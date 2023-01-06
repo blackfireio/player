@@ -1,0 +1,254 @@
+{
+    "version": %f,
+    "name": "Blackfire APP Scenarios",
+    "variables": {
+        "endpoint": "https:\/\/blackfire.io",
+        "user_login": "connect_username_to_be_defined",
+        "user_password": "connect_password_to_be_defined"
+    },
+    "endpoint": "https:\/\/blackfire.io",
+    "blackfire_environment": null,
+    "scenarios": [
+        {
+            "steps": [
+                {
+                    "uri": "url('\/login')",
+                    "expectations": [
+                        "current_url() == endpoint ~ '\/login'"
+                    ],
+                    "assertions": [
+                        "metrics.sql.queries.count <= 12"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Login page",
+                    "line": 13,
+                    "type": "visit"
+                },
+                {
+                    "selector": "link('SymfonyConnect')",
+                    "expectations": [
+                        "current_url() == endpoint ~ '\/session\/connect\/symfony_connect'"
+                    ],
+                    "is_blackfire_enabled": false,
+                    "name": "Connect with Symfony Connect",
+                    "line": 18,
+                    "type": "click"
+                },
+                {
+                    "follow_redirects": "true",
+                    "is_blackfire_enabled": false,
+                    "name": "Follow redirection to Symfony Connect",
+                    "line": 23,
+                    "type": "follow"
+                },
+                {
+                    "parameters": {
+                        "form[_username]": "user_login",
+                        "form[_password]": "user_password"
+                    },
+                    "selector": "button(\"Sign in\")",
+                    "expectations": [
+                        "current_url() == 'https:\/\/connect.symfony.com\/secured\/login_check'"
+                    ],
+                    "follow_redirects": "true",
+                    "is_blackfire_enabled": false,
+                    "name": "Sign in on Symfony Connect",
+                    "line": 28,
+                    "type": "submit"
+                },
+                {
+                    "method": "'POST'",
+                    "uri": "url('\/jwt')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "variables": {
+                        "jwt_token": "json('token')"
+                    },
+                    "is_blackfire_enabled": true,
+                    "name": "JWT",
+                    "line": 36,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/web-api\/my-profiles')",
+                    "expectations": [
+                        "status_code() == 200",
+                        "json('_links.current.href') == endpoint ~ '\/web-api\/profiles?page=1'"
+                    ],
+                    "headers": [
+                        "'Authorization: Bearer ' ~ jwt_token"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Web-Api My profiles",
+                    "line": 42,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/account\/credentials.json')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "variables": {
+                        "user_uuid": "json('uuid')",
+                        "apiToken": "json('apiToken')"
+                    },
+                    "headers": [
+                        "'Accept: application\/json'",
+                        "'X-Blackfire-User-Agent: Blackfire Companion - Chrome\/42 Extension\/1'"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Credentials",
+                    "line": 48,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/api\/v1\/collab-tokens')",
+                    "expectations": [
+                        "status_code() == 200",
+                        "json('collabTokens[0].type') == 'personal'"
+                    ],
+                    "auth": "user_uuid ~ ':' ~ apiToken",
+                    "is_blackfire_enabled": true,
+                    "name": "API collab tokens",
+                    "line": 56,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/api\/v1\/agents')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "variables": {
+                        "agent_uuid": "json('agents[0].agentId')",
+                        "agent_token": "json('agents[0].agentToken')"
+                    },
+                    "auth": "user_uuid ~ ':' ~ apiToken",
+                    "is_blackfire_enabled": true,
+                    "name": "Retrieve agent credentials",
+                    "line": 62,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/agent-api\/v1\/public-keys')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "auth": "agent_uuid ~ ':' ~ agent_token",
+                    "is_blackfire_enabled": true,
+                    "name": "Public Keys",
+                    "line": 69,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/agent-api\/v1\/specs')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "auth": "agent_uuid ~ ':' ~ agent_token",
+                    "is_blackfire_enabled": true,
+                    "name": "Agent specs v1",
+                    "line": 74,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/agent-api\/v2\/specs')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "auth": "agent_uuid ~ ':' ~ agent_token",
+                    "is_blackfire_enabled": true,
+                    "name": "Agent specs v2",
+                    "line": 79,
+                    "type": "visit"
+                },
+                {
+                    "uri": "url('\/agent-api\/v3\/specs')",
+                    "expectations": [
+                        "status_code() == 200"
+                    ],
+                    "auth": "agent_uuid ~ ':' ~ agent_token",
+                    "is_blackfire_enabled": true,
+                    "name": "Agent specs v3",
+                    "line": 84,
+                    "type": "visit"
+                }
+            ],
+            "name": "Authenticated",
+            "line": 10
+        },
+        {
+            "steps": [
+                {
+                    "uri": "url('\/validator')",
+                    "expectations": [
+                        "current_url() == endpoint ~ '\/validator'",
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Validator page",
+                    "line": 92,
+                    "type": "visit"
+                },
+                {
+                    "parameters": {
+                        "input": "'scenarios:\\n    Pricing page:\\n        - \/pricing'"
+                    },
+                    "selector": "css('form.validator')",
+                    "expectations": [
+                        "body() matches '\/The .blackfire.yaml file is valid.\/'",
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Submit a valid \".blackfire.yaml\" file",
+                    "line": 97,
+                    "type": "submit"
+                },
+                {
+                    "parameters": {
+                        "input": "'scenarios:\\n    Pricing page: \/pricing'"
+                    },
+                    "selector": "css('form.validator')",
+                    "expectations": [
+                        "body() matches '\/The .blackfire.yaml file is not valid.\/'",
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Submit an invalid \".blackfire.yaml\" file",
+                    "line": 108,
+                    "type": "submit"
+                },
+                {
+                    "parameters": {
+                        "input": "'scenario\\n    visit url(\\'\/\\')'"
+                    },
+                    "selector": "css('form.validator')",
+                    "expectations": [
+                        "body() matches '\/The bkf scenario file is valid.\/'",
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Submit a valid Player script",
+                    "line": 118,
+                    "type": "submit"
+                },
+                {
+                    "parameters": {
+                        "input": "'scenario\\n        visit url(\\'\/\\')'"
+                    },
+                    "selector": "css('form.validator')",
+                    "expectations": [
+                        "body() matches '\/The bkf scenario file is not valid.\/'",
+                        "status_code() == 200"
+                    ],
+                    "is_blackfire_enabled": true,
+                    "name": "Submit an invalid Player script",
+                    "line": 128,
+                    "type": "submit"
+                }
+            ],
+            "name": "Validator",
+            "line": 89
+        }
+    ]
+}

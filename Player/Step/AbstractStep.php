@@ -11,6 +11,8 @@
 
 namespace Blackfire\Player\Step;
 
+use Symfony\Component\Serializer\Annotation as SymfonySerializer;
+
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  *
@@ -18,7 +20,9 @@ namespace Blackfire\Player\Step;
  */
 class AbstractStep
 {
+    /** @SymfonySerializer\Ignore  */
     protected ?AbstractStep $next = null;
+    protected ?string $blackfireProfileUuid = null;
 
     private ?string $name = null;
     private array $errors = [];
@@ -92,6 +96,8 @@ class AbstractStep
 
     /**
      * @internal
+     *
+     * @SymfonySerializer\Ignore
      */
     public function getLast(): ?self
     {
@@ -100,5 +106,28 @@ class AbstractStep
         }
 
         return $this->next->getLast();
+    }
+
+    /** @SymfonySerializer\SerializedName("type") */
+    public function getType(): ?string
+    {
+        $type = explode('\\', static::class);
+        $type = array_pop($type);
+
+        if (str_ends_with($type, 'Step')) {
+            $type = strtolower(substr($type, 0, -4));
+        }
+
+        return strtolower($type);
+    }
+
+    public function getBlackfireProfileUuid(): ?string
+    {
+        return $this->blackfireProfileUuid;
+    }
+
+    public function setBlackfireProfileUuid(?string $blackfireProfileUuid): void
+    {
+        $this->blackfireProfileUuid = $blackfireProfileUuid;
     }
 }

@@ -23,6 +23,7 @@ use Blackfire\Player\Guzzle\Runner;
 use Blackfire\Player\Player;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
+use Blackfire\Player\Serializer\ScenarioSetSerializer;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\Handler\CurlMultiHandler;
@@ -153,6 +154,8 @@ final class PlayerCommand extends Command
                 ];
             }
 
+            $scenarioSerializer = new ScenarioSetSerializer();
+
             $resultOutput->writeln(JsonOutput::encode([
                 'name' => $scenarios->getName(),
                 'results' => $this->createReport($results),
@@ -160,6 +163,7 @@ final class PlayerCommand extends Command
                 'code' => $exitCode,
                 'success' => true,
                 'input' => $extraInput,
+                'blackfire_build' => $scenarioSerializer->normalize($scenarios),
             ]));
         }
 

@@ -1,0 +1,136 @@
+#!blackfire-player
+
+name "Blackfire APP Scenarios"
+
+endpoint "https://blackfire.io"
+
+set user_login "connect_username_to_be_defined"
+set user_password "connect_password_to_be_defined"
+
+scenario
+    name 'Authenticated'
+
+    visit url('/login')
+        name 'Login page'
+        expect current_url() == endpoint ~ '/login'
+        assert metrics.sql.queries.count <= 12
+
+    click link('SymfonyConnect')
+        name 'Connect with Symfony Connect'
+        blackfire false
+        expect current_url() == endpoint ~ '/session/connect/symfony_connect'
+
+    follow
+        name 'Follow redirection to Symfony Connect'
+        blackfire false
+        follow_redirects
+
+    submit button("Sign in")
+        name 'Sign in on Symfony Connect'
+        blackfire false
+        follow_redirects
+        param form[_username] user_login
+        param form[_password] user_password
+        expect current_url() == 'https://connect.symfony.com/secured/login_check'
+
+    visit url('/jwt')
+        name 'JWT'
+        method 'POST'
+        set jwt_token json('token')
+        expect status_code() == 200
+
+    visit url('/web-api/my-profiles')
+        name 'Web-Api My profiles'
+        header 'Authorization: Bearer ' ~ jwt_token
+        expect status_code() == 200
+        expect json('_links.current.href') == endpoint ~ '/web-api/profiles?page=1'
+
+    visit url('/account/credentials.json')
+        name 'Credentials'
+        header 'Accept: application/json'
+        header 'X-Blackfire-User-Agent: Blackfire Companion - Chrome/42 Extension/1'
+        expect status_code() == 200
+        set user_uuid json('uuid')
+        set apiToken json('apiToken')
+
+    visit url('/api/v1/collab-tokens')
+        name 'API collab tokens'
+        auth user_uuid ~ ':' ~ apiToken
+        expect status_code() == 200
+        expect json('collabTokens[0].type') == 'personal'
+
+    visit url('/api/v1/agents')
+        name 'Retrieve agent credentials'
+        auth user_uuid ~ ':' ~ apiToken
+        expect status_code() == 200
+        set agent_uuid json('agents[0].agentId')
+        set agent_token  json('agents[0].agentToken')
+
+    visit url('/agent-api/v1/public-keys')
+        name 'Public Keys'
+        auth agent_uuid ~ ':' ~ agent_token
+        expect status_code() == 200
+
+    visit url('/agent-api/v1/specs')
+        name 'Agent specs v1'
+        auth agent_uuid ~ ':' ~ agent_token
+        expect status_code() == 200
+
+    visit url('/agent-api/v2/specs')
+        name 'Agent specs v2'
+        auth agent_uuid ~ ':' ~ agent_token
+        expect status_code() == 200
+
+    visit url('/agent-api/v3/specs')
+        name 'Agent specs v3'
+        auth agent_uuid ~ ':' ~ agent_token
+        expect status_code() == 200
+
+scenario
+    name 'Validator'
+
+    visit url('/validator')
+        name 'Validator page'
+        expect current_url() == endpoint ~ '/validator'
+        expect status_code() == 200
+
+    submit css('form.validator')
+        name 'Submit a valid ".blackfire.yaml" file'
+        param input
+        """
+        scenarios:
+            Pricing page:
+                - /pricing
+        """
+        expect body() matches '/The .blackfire.yaml file is valid./'
+        expect status_code() == 200
+
+    submit css('form.validator')
+        name 'Submit an invalid ".blackfire.yaml" file'
+        param input
+        """
+        scenarios:
+            Pricing page: /pricing
+        """
+        expect body() matches '/The .blackfire.yaml file is not valid./'
+        expect status_code() == 200
+
+    submit css('form.validator')
+        name 'Submit a valid Player script'
+        param input
+        """
+        scenario
+            visit url('/')
+        """
+        expect body() matches '/The bkf scenario file is valid./'
+        expect status_code() == 200
+
+    submit css('form.validator')
+        name 'Submit an invalid Player script'
+        param input
+        """
+        scenario
+                visit url('/')
+        """
+        expect body() matches '/The bkf scenario file is not valid./'
+        expect status_code() == 200

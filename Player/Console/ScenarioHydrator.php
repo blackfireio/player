@@ -31,8 +31,11 @@ class ScenarioHydrator
     {
         $parser = new Parser($this->getVariables($input));
 
-        /** @var ScenarioSet $scenarios */
         $scenarios = $parser->load($input->getArgument('file'));
+
+        foreach ($parser->getGlobalVariables() as $key => $value) {
+            $scenarios->setVariable($key, $value);
+        }
 
         // FIXME: should be set on the ScenarioSet directly
         // but for this, we need an enterStep() for the ScenarioSet, which we don't have yet

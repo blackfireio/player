@@ -143,6 +143,8 @@ final class BlackfireExtension extends AbstractExtension
             $bag->remove('blackfire_ref_stats');
         }
 
+        $step->setBlackfireProfileUuid($profileRequest->getUuid());
+
         return $request
             ->withHeader('X-Blackfire-Query', $query)
             ->withHeader('X-Blackfire-Profile-Uuid', $profileRequest->getUuid())
@@ -244,12 +246,12 @@ final class BlackfireExtension extends AbstractExtension
         }
     }
 
-    private function getScenario(Context $context, $env)
+    private function getScenario(Context $context, $env): ?Build\Scenario
     {
         $bag = $context->getExtraBag();
 
         if (null !== $context->getStepContext()->getBlackfireRequest()) {
-            return;
+            return null;
         }
 
         if ($bag->has('blackfire_scenario')) {
