@@ -20,6 +20,7 @@ use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\Json;
 use Blackfire\Player\Psr7\CrawlerFactory;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
@@ -62,7 +63,7 @@ final class BlackfireExtension extends AbstractExtension
 
         // let's not write the same string, otherwise it would be replaced !
         if ($testPart1.'git-version@' === $version) {
-            $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
+            $composer = Json::decode(file_get_contents(__DIR__.'/../../composer.json'));
             $version = $composer['extra']['branch-alias']['dev-master'];
         }
 
@@ -124,7 +125,7 @@ final class BlackfireExtension extends AbstractExtension
             $stats = $bag->get('blackfire_ref_stats');
 
             $options = [
-                'profile_title' => json_encode([
+                'profile_title' => Json::encode([
                     'blackfire-metadata' => [
                         'timers' => [
                             'total' => isset($stats['total_time']) ? $stats['total_time'] : null,

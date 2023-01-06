@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Console;
 
+use Blackfire\Player\Json;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
@@ -33,7 +34,7 @@ final class Application extends BaseApplication
 
         // let's not write the same string, otherwise it would be replaced !
         if ($testPart1.'git-version@' === $version) {
-            $composer = json_decode(file_get_contents(__DIR__.'/../../composer.json'), true);
+            $composer = Json::decode(file_get_contents(__DIR__.'/../../composer.json'));
             $version = $composer['extra']['branch-alias']['dev-master'];
         }
 

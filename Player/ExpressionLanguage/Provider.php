@@ -15,6 +15,7 @@ use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\Exception\SecurityException;
+use Blackfire\Player\Json;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use JmesPath\Env as JmesPath;
@@ -233,7 +234,9 @@ class Provider implements ExpressionFunctionProviderInterface
             }),
 
             new ExpressionFunction('json', $compiler, function ($arguments, $selector) {
-                if (null === $data = json_decode((string) $arguments['_response']->getBody(), true)) {
+                try {
+                    $data = Json::decode((string) $arguments['_response']->getBody());
+                } catch (\Throwable $e) {
                     throw new LogicException(sprintf(' Unable to get the "%s" JSON path as the Response body does not seem to be JSON.', $selector));
                 }
 
