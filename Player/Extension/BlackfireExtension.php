@@ -369,6 +369,10 @@ final class BlackfireExtension extends AbstractExtension
             $path .= '?'.$query;
         }
 
+        if (method_exists($config, 'setIntention')) {
+            $config->setIntention('build');
+        }
+
         $config->setRequestInfo([
             'method' => $request->getMethod(),
             'path' => $path,
