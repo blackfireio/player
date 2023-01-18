@@ -11,7 +11,6 @@
 
 namespace Blackfire\Player\Tests\Serializer;
 
-use Blackfire\Player\Json;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Serializer\ScenarioSetSerializer;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +27,7 @@ class ScenarioSetSerializerTest extends TestCase
         $serialized = $serializer->serialize($scenarioSet);
 
         if (getenv('UPDATE_FIXTURES')) {
-            file_put_contents($expectedFile, Json::encode($serialized, \JSON_PRETTY_PRINT));
+            file_put_contents($expectedFile, $serialized);
         }
 
         $this->assertStringMatchesFormat(file_get_contents($expectedFile), $serialized);
