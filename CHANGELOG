@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.24.0 (2023-01-18)
+
+ * Avoid serialization failure
+
 * 1.23.0 (2023-01-16)
 
  * Use new intention feature when creating builds
