@@ -154,7 +154,13 @@ final class PlayerCommand extends Command
                 ];
             }
 
-            $scenarioSerializer = new ScenarioSetSerializer();
+            $serializedBuild = null;
+
+            try {
+                $scenarioSerializer = new ScenarioSetSerializer();
+                $serializedBuild = $scenarioSerializer->normalize($scenarios);
+            } catch (\Throwable $e) {
+            }
 
             $resultOutput->writeln(JsonOutput::encode([
                 'name' => $scenarios->getName(),
@@ -163,7 +169,7 @@ final class PlayerCommand extends Command
                 'code' => $exitCode,
                 'success' => true,
                 'input' => $extraInput,
-                'blackfire_build' => $scenarioSerializer->normalize($scenarios),
+                'blackfire_build' => $serializedBuild,
             ]));
         }
 
