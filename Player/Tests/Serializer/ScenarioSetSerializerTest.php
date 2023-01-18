@@ -38,5 +38,6 @@ class ScenarioSetSerializerTest extends TestCase
         yield [__DIR__.'/fixtures/test1.bkf', __DIR__.'/fixtures/test1.json'];
         yield [__DIR__.'/fixtures/test2.bkf', __DIR__.'/fixtures/test2.json'];
         yield [__DIR__.'/fixtures/test3.bkf', __DIR__.'/fixtures/test3.json'];
+        yield [__DIR__.'/fixtures/test4.bkf', __DIR__.'/fixtures/test4.json'];
     }
 }

@@ -34,14 +34,14 @@ class Context
     private $resolvedIp;
 
     public function __construct(
-        private readonly string $name,
+        private readonly ?string $name,
         private readonly ?ValueBag $scenarioSetBag = null,
     ) {
         $this->valueBag = new ValueBag();
         $this->extraBag = new ValueBag();
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
