@@ -16,6 +16,9 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use Blackfire\Player\Console\Application;
 use Blackfire\Player\Console\OutputErrorHandler;
+use Blackfire\Player\SentrySupport;
+
+SentrySupport::init();
 
 $application = new Application();
 $outputErrorHandler = new OutputErrorHandler();
