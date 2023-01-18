@@ -31,6 +31,7 @@ class VariableResolver
                     unset($toResolve[$key]);
                     $succeed = true;
                 } catch (SyntaxError $lastException) {
+                    \Sentry\captureException($lastException);
                 }
             }
 

@@ -160,6 +160,7 @@ final class PlayerCommand extends Command
                 $scenarioSerializer = new ScenarioSetSerializer();
                 $serializedBuild = $scenarioSerializer->normalize($scenarios);
             } catch (\Throwable $e) {
+                \Sentry\captureException($e);
             }
 
             $resultOutput->writeln(JsonOutput::encode([
