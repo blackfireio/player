@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.25.0 (2023-01-18)
+
+ * Add Sentry support
+ * Fix optional build name type error
+
 * 1.24.0 (2023-01-18)
 
  * Avoid serialization failure
