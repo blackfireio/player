@@ -1,0 +1,6 @@
+scenario
+    visit "without-name/index.php"
+        name '/competitions'
+        method 'GET'
+        warmup true
+        samples 10

@@ -1,0 +1,24 @@
+{
+    "version": %f,
+    "name": null,
+    "variables": [],
+    "endpoint": "",
+    "blackfire_environment": null,
+    "scenarios": [
+        {
+            "steps": [
+                {
+                    "method": "'GET'",
+                    "uri": "url('https:\/\/api.dreamcargiveaways.co.uk\/competitions')",
+                    "samples": "10",
+                    "warmup": "true",
+                    "is_blackfire_enabled": true,
+                    "name": "\/competitions",
+                    "line": 5,
+                    "type": "visit"
+                }
+            ],
+            "line": 3
+        }
+    ]
+}
