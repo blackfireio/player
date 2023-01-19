@@ -26,6 +26,7 @@ use Blackfire\Player\Result;
 use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\SentrySupport;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
@@ -307,7 +308,13 @@ final class BlackfireExtension extends AbstractExtension
         }
 
         return $this->callApi(function () use ($env, $options) {
-            return $this->blackfire->startBuild($env, $options);
+            $build = $this->blackfire->startBuild($env, $options);
+
+            SentrySupport::addBreadcrumb('Build has been created', [
+                'uuid' => $build->getUuid(),
+            ]);
+
+            return $build;
         });
     }
 

@@ -11,6 +11,8 @@
 
 namespace Blackfire\Player;
 
+use Sentry\Breadcrumb;
+
 class SentrySupport
 {
     public static function init()
@@ -38,5 +40,15 @@ class SentrySupport
             'send_default_pii' => true,
             'max_value_length' => 4096,
         ]);
+    }
+
+    public static function addBreadcrumb(string $message, array $metadata = []): void
+    {
+        \Sentry\addBreadcrumb(Breadcrumb::fromArray([
+            'level' => Breadcrumb::LEVEL_INFO,
+            'category' => 'blackfire',
+            'message' => $message,
+            'data' => $metadata,
+        ]));
     }
 }
