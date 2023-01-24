@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.27.0 (2023-01-24)
+
+ * Add more breadcrumb to Sentry reports
+
 * 1.26.0 (2023-01-19)
 
  * Add breadcrumb to Sentry reports
