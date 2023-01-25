@@ -11,7 +11,8 @@
 
 namespace Blackfire\Player\Step;
 
-use Symfony\Component\Serializer\Annotation as SymfonySerializer;
+use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -20,10 +21,10 @@ use Symfony\Component\Serializer\Annotation as SymfonySerializer;
  */
 class BlockStep extends ConfigurableStep
 {
-    /** @SymfonySerializer\Ignore() */
+    #[Ignore]
     private ?AbstractStep $blockStep = null;
     private array $variables = [];
-    /** @SymfonySerializer\Ignore() */
+    #[Ignore]
     private ?string $endpoint = null;
 
     public function setBlockStep(AbstractStep $blockStep)
@@ -46,7 +47,7 @@ class BlockStep extends ConfigurableStep
         return $str;
     }
 
-    /** @SymfonySerializer\SerializedName("steps") */
+    #[SerializedName('steps')]
     public function getBlockStep()
     {
         return $this->blockStep;

@@ -11,7 +11,8 @@
 
 namespace Blackfire\Player\Step;
 
-use Symfony\Component\Serializer\Annotation as SymfonySerializer;
+use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -24,7 +25,7 @@ class ConfigurableStep extends AbstractStep
     private $headers = [];
     private $wait;
     private $json;
-    /** @SymfonySerializer\Ignore */
+    #[Ignore]
     private $followRedirects;
     private $blackfire;
     private $blackfireRequest;
@@ -102,7 +103,7 @@ class ConfigurableStep extends AbstractStep
         return $this;
     }
 
-    /** @SymfonySerializer\SerializedName("follow_redirects") */
+    #[SerializedName('follow_redirects')]
     public function isFollowingRedirects()
     {
         return $this->followRedirects;
@@ -128,13 +129,13 @@ class ConfigurableStep extends AbstractStep
         return $this->json;
     }
 
-    /** @SymfonySerializer\Ignore() */
+    #[Ignore]
     public function getBlackfire()
     {
         return $this->blackfire;
     }
 
-    /** @SymfonySerializer\SerializedName("is_blackfire_enabled") */
+    #[SerializedName('is_blackfire_enabled')]
     public function isBlackfireEnabled(): ?bool
     {
         if (!$this->getType()) {

@@ -12,7 +12,7 @@
 namespace Blackfire\Player;
 
 use Blackfire\Player\Exception\LogicException;
-use Symfony\Component\Serializer\Annotation as SymfonySerializer;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Annotation as SymfonySerializer;
  */
 class ScenarioSet implements \IteratorAggregate
 {
-    /** @SymfonySerializer\Ignore */
+    #[Ignore]
     private array $keys = [];
     private ValueBag $extraBag;
     private ?string $name = null;
@@ -84,7 +84,7 @@ class ScenarioSet implements \IteratorAggregate
         return $this->name;
     }
 
-    /** @SymfonySerializer\Ignore */
+    #[Ignore]
     #[\ReturnTypeWillChange]
     public function getIterator(): iterable
     {

@@ -11,7 +11,8 @@
 
 namespace Blackfire\Player\Step;
 
-use Symfony\Component\Serializer\Annotation as SymfonySerializer;
+use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -20,7 +21,7 @@ use Symfony\Component\Serializer\Annotation as SymfonySerializer;
  */
 class AbstractStep
 {
-    /** @SymfonySerializer\Ignore  */
+    #[Ignore]
     protected ?AbstractStep $next = null;
     protected ?string $blackfireProfileUuid = null;
 
@@ -96,9 +97,8 @@ class AbstractStep
 
     /**
      * @internal
-     *
-     * @SymfonySerializer\Ignore
      */
+    #[Ignore]
     public function getLast(): ?self
     {
         if (!$this->next) {
@@ -108,7 +108,7 @@ class AbstractStep
         return $this->next->getLast();
     }
 
-    /** @SymfonySerializer\SerializedName("type") */
+    #[SerializedName('type')]
     public function getType(): ?string
     {
         $type = explode('\\', static::class);
