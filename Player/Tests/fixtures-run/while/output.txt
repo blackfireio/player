@@ -1,0 +1,12 @@
+Blackfire Player
+
+Scenario  "Test While iterations"
+ "The login 1"
+GET http://0:8399/while/index.php?component=1
+ "The login 1"
+GET http://0:8399/while/index.php?component=2
+ "The login 1"
+GET http://0:8399/while/index.php?component=3
+  OK
+
+ OK  Scenarios  1  - Steps  3
