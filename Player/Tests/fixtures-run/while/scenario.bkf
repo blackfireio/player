@@ -1,0 +1,13 @@
+scenario
+    set env "dev"
+
+    name "Test While iterations"
+
+    set num 1
+    while num < 4
+        name 'The login loop'
+        visit url('/while/index.php?component=' ~ num)
+            set num num + 1
+            name 'The login ' ~ num
+            expect status_code() == 200
+            expect css("h1.content_title") and css("h1.content_title").text() matches "/" ~ num ~ "/"
