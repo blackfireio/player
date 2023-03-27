@@ -1,4 +1,4 @@
-ARG COMPOSER_VERSION=2.5.4   # https://hub.docker.com/_/composer/tags
+ARG COMPOSER_VERSION=2.5.5   # https://hub.docker.com/_/composer/tags
 ARG PHIVE_VERSION=0.15.2     # https://github.com/phar-io/phive/releases
 
 FROM composer:${COMPOSER_VERSION} as build_composer
