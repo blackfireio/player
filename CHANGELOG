@@ -1,6 +1,14 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.29.0 (2023-01-25)
+
+ * Update Sentry integration
+ * Update dependencies
+ * Update support URL
+ * Update README
+ * Add tests
+
 * 1.28.0 (2023-01-25)
 
  * Use PHP built-in annotations for Serializer configuration

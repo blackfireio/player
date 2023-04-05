@@ -59,11 +59,14 @@
             "*": "dist"
         },
         "sort-packages": true,
-        "platform-check": false
+        "platform-check": false,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.29-dev"
+            "dev-master": "1.30-dev"
         }
     }
 }
