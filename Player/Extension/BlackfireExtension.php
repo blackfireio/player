@@ -559,6 +559,14 @@ final class BlackfireExtension extends AbstractExtension
             return \is_string($key) && 0 === strpos($key, 'blackfire_build:');
         }, \ARRAY_FILTER_USE_KEY);
 
+        if (\count($builds) > 1) {
+            SentrySupport::captureMessage('This player execution is using multiple environments', [
+                'extra' => [
+                    'builds' => array_map(static fn ($build) => $build->getUuid(), $builds),
+                ],
+            ]);
+        }
+
         foreach ($builds as $key => $build) {
             $this->callApi(function () use ($build) {
                 $this->blackfire->closeBuild($build);

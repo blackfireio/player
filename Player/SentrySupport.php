@@ -12,6 +12,7 @@
 namespace Blackfire\Player;
 
 use Sentry\Breadcrumb;
+use Sentry\EventHint;
 
 class SentrySupport
 {
@@ -63,5 +64,11 @@ class SentrySupport
             'message' => $message,
             'data' => $metadata,
         ]));
+    }
+
+    public static function captureMessage(string $message, array $hint = []): void
+    {
+        $hint = EventHint::fromArray($hint);
+        \Sentry\captureMessage($message, null, $hint);
     }
 }
