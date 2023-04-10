@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v1.33.0",
+            "version": "v1.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "aa8f03aca0395d1724988a6c8f4ca95c2b01ecf8"
+                "reference": "2c5950ff2ad29c2af96c69810eb304f0f350177d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/aa8f03aca0395d1724988a6c8f4ca95c2b01ecf8",
-                "reference": "aa8f03aca0395d1724988a6c8f4ca95c2b01ecf8",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/2c5950ff2ad29c2af96c69810eb304f0f350177d",
+                "reference": "2c5950ff2ad29c2af96c69810eb304f0f350177d",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.34-dev"
+                    "dev-master": "1.36-dev"
                 }
             },
             "autoload": {
@@ -80,9 +80,9 @@
             ],
             "support": {
                 "issues": "https://github.com/blackfireio/php-sdk/issues",
-                "source": "https://github.com/blackfireio/php-sdk/tree/v1.33.0"
+                "source": "https://github.com/blackfireio/php-sdk/tree/v1.35.0"
             },
-            "time": "2023-01-26T07:42:49+00:00"
+            "time": "2023-04-06T09:37:28+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -1006,16 +1006,16 @@
         },
         {
             "name": "nyholm/psr7",
-            "version": "1.5.1",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7.git",
-                "reference": "f734364e38a876a23be4d906a2a089e1315be18a"
+                "reference": "bf4aebd170fadf5fd808c70b90535de327e81a50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/f734364e38a876a23be4d906a2a089e1315be18a",
-                "reference": "f734364e38a876a23be4d906a2a089e1315be18a",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/bf4aebd170fadf5fd808c70b90535de327e81a50",
+                "reference": "bf4aebd170fadf5fd808c70b90535de327e81a50",
                 "shasum": ""
             },
             "require": {
@@ -1025,6 +1025,7 @@
                 "psr/http-message": "^1.0"
             },
             "provide": {
+                "php-http/message-factory-implementation": "1.0",
                 "psr/http-factory-implementation": "1.0",
                 "psr/http-message-implementation": "1.0"
             },
@@ -1037,7 +1038,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev"
+                    "dev-master": "1.6-dev"
                 }
             },
             "autoload": {
@@ -1067,7 +1068,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Nyholm/psr7/issues",
-                "source": "https://github.com/Nyholm/psr7/tree/1.5.1"
+                "source": "https://github.com/Nyholm/psr7/tree/1.6.0"
             },
             "funding": [
                 {
@@ -1079,7 +1080,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-06-22T07:13:36+00:00"
+            "time": "2023-04-09T08:34:27+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -4618,5 +4619,5 @@
     "platform-overrides": {
         "php": "8.1.8"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
