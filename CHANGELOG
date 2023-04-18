@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.30.0 (2023-04-18)
+
+ * Switch to Blackfire SDK 2.0
+ * Update dependencies
+
 * 1.29.0 (2023-01-25)
 
  * Update Sentry integration
