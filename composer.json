@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "blackfire/php-sdk": "^2.0",
         "doctrine/annotations": "^2.0",
         "fakerphp/faker": "^1.10",
@@ -53,7 +53,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.1.8"
+            "php": "8.2.5"
         },
         "preferred-install": {
             "*": "dist"
