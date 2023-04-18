@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c3e9e7dfeb39e59144db3a6c0c58725",
+    "content-hash": "52c253a17b0384af51c4e681662d6f25",
     "packages": [
         {
             "name": "blackfire/php-sdk",
