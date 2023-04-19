@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.31.0 (2023-04-19)
+
+ * Display Player version in its output
+
 * 1.30.0 (2023-04-18)
 
  * Switch to Blackfire SDK 2.0
