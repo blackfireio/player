@@ -13,6 +13,7 @@ namespace Blackfire\Player\Extension;
 
 use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpectationFailureException;
+use Blackfire\Player\Player;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
@@ -63,7 +64,7 @@ class CliFeedbackExtension extends AbstractExtension
 
     public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
     {
-        $msg = 'Blackfire Player';
+        $msg = sprintf('Blackfire Player %s', Player::version());
         if ($concurrency > 1) {
             $msg .= sprintf(' - concurrency %d', $concurrency);
         }

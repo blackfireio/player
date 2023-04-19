@@ -21,6 +21,7 @@ use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Json;
+use Blackfire\Player\Player;
 use Blackfire\Player\Psr7\CrawlerFactory;
 use Blackfire\Player\Result;
 use Blackfire\Player\Results;
@@ -57,18 +58,7 @@ final class BlackfireExtension extends AbstractExtension
         $this->output = $output;
         $this->blackfire = $blackfire ?: new BlackfireClient(new BlackfireClientConfiguration());
 
-        // This is variable is used to replace the version
-        // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
-        $version = '@git-version@';
-        $testPart1 = '@';
-
-        // let's not write the same string, otherwise it would be replaced !
-        if ($testPart1.'git-version@' === $version) {
-            $composer = Json::decode(file_get_contents(__DIR__.'/../../composer.json'));
-            $version = $composer['extra']['branch-alias']['dev-master'];
-        }
-
-        $this->blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', $version));
+        $this->blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
     }
 
     public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface

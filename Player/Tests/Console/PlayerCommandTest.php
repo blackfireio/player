@@ -109,7 +109,7 @@ class PlayerCommandTest extends TestCase
         $expectedOutput = str_replace('{{ PORT }}', static::$port, $expectedOutput);
         $expectedOutput = str_replace('{{ SCENARIO_FILE }}', $file, $expectedOutput);
 
-        $this->assertSame($expectedOutput, $output);
+        $this->assertStringMatchesFormat($expectedOutput, $output);
 
         // For --json or --full-report, the output is composed of STDOUT + STDERR.
         // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.

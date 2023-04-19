@@ -1,4 +1,4 @@
-Blackfire Player
+Blackfire Player %s
 
 Scenario  "Redirect"
 Step 1

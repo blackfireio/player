@@ -11,7 +11,7 @@
 
 namespace Blackfire\Player\Console;
 
-use Blackfire\Player\Json;
+use Blackfire\Player\Player;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
@@ -27,18 +27,7 @@ final class Application extends BaseApplication
     {
         error_reporting(0);
 
-        // This is variable is used to replace the version
-        // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
-        $version = '@git-version@';
-        $testPart1 = '@';
-
-        // let's not write the same string, otherwise it would be replaced !
-        if ($testPart1.'git-version@' === $version) {
-            $composer = Json::decode(file_get_contents(__DIR__.'/../../composer.json'));
-            $version = $composer['extra']['branch-alias']['dev-master'];
-        }
-
-        parent::__construct('Blackfire Player', $version);
+        parent::__construct('Blackfire Player', Player::version());
 
         $this->add(new PlayerCommand());
         $this->add(new ValidateCommand());
