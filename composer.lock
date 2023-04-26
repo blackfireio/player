@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v2.0.0",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "c61cfa3b96ff6076b4845b301f86caec85e10811"
+                "reference": "e1358adb573515e9ee68a8d66f6de11d2eca113a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/c61cfa3b96ff6076b4845b301f86caec85e10811",
-                "reference": "c61cfa3b96ff6076b4845b301f86caec85e10811",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/e1358adb573515e9ee68a8d66f6de11d2eca113a",
+                "reference": "e1358adb573515e9ee68a8d66f6de11d2eca113a",
                 "shasum": ""
             },
             "require": {
@@ -77,9 +77,9 @@
             ],
             "support": {
                 "issues": "https://github.com/blackfireio/php-sdk/issues",
-                "source": "https://github.com/blackfireio/php-sdk/tree/v2.0.0"
+                "source": "https://github.com/blackfireio/php-sdk/tree/v2.0.1"
             },
-            "time": "2023-04-18T06:27:22+00:00"
+            "time": "2023-04-26T07:07:07+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -4596,5 +4596,5 @@
     "platform-overrides": {
         "php": "8.2.5"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }
