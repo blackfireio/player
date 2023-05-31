@@ -1,5 +1,6 @@
-ARG COMPOSER_VERSION=2.5.7   # https://hub.docker.com/_/composer/tags
-ARG PHIVE_VERSION=0.15.2     # https://github.com/phar-io/phive/releases
+ARG COMPOSER_VERSION=2.5.7    # https://hub.docker.com/_/composer/tags
+ARG PHIVE_VERSION=0.15.2      # https://github.com/phar-io/phive/releases
+ARG PHPEXTINST_VERSION=2.1.28 # https://github.com/mlocati/docker-php-extension-installer/releases
 
 FROM composer:${COMPOSER_VERSION} as build_composer
 
@@ -7,6 +8,7 @@ FROM php:8.2-cli
 
 ARG COMPOSER_VERSION
 ARG PHIVE_VERSION
+ARG PHPEXTINST_VERSION
 
 COPY --from=build_composer /usr/bin/composer /usr/local/bin/composer
 
@@ -18,6 +20,11 @@ RUN echo 'memory_limit = 1G' > /usr/local/etc/php/conf.d/memory_limit.ini
 
 RUN mkdir ~/.gnupg
 RUN echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
+
+RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHPEXTINST_VERSION}/install-php-extensions && \
+    chmod +x /usr/local/bin/install-php-extensions
+
+RUN install-php-extensions mbstring-stable intl-stable
 
 RUN curl -fsLo phive.phar "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar" && \
     curl -fsLo phive.phar.asc "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar.asc" && \
