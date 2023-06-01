@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 1.32.0 (2023-06-01)
+
+ * Update dependencies
+ * Remove polyfills in favor of using PHP extensions
+
 * 1.31.0 (2023-04-19)
 
  * Display Player version in its output
