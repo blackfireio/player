@@ -40,9 +40,6 @@ class Provider implements ExpressionFunctionProviderInterface
         $this->faker->addProvider(new ImagesGeneratorProvider($this->faker));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     #[\ReturnTypeWillChange]
     public function getFunctions(): array
     {
@@ -78,7 +75,7 @@ class Provider implements ExpressionFunctionProviderInterface
                         if (!$extra->has('tmp_dir')) {
                             throw new LogicException('The "file" provider is not supported when the "TmpDirExtension" is disabled in the sandbox mode.');
                         }
-                        if (0 !== strpos($filename, $extra->get('tmp_dir'))) {
+                        if (!str_starts_with($filename, $extra->get('tmp_dir'))) {
                             throw new SecurityException('The "file" provider does not support absolute file paths in the sandbox mode (use the "fake()" function instead).');
                         }
                     } else {

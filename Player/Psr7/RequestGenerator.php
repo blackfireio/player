@@ -101,7 +101,7 @@ final class RequestGenerator implements \IteratorAggregate
             } elseif ($step instanceof LoopStep) {
                 $iterator = $this->evaluateExpression($step->getIterator(), $request);
                 if (!\is_array($iterator) && !$iterator instanceof \Traversable) {
-                    throw new LogicException(sprintf('Result of expression "%s" is not iterable in step "%s".', $step->getIterator(), \get_class($step)));
+                    throw new LogicException(sprintf('Result of expression "%s" is not iterable in step "%s".', $step->getIterator(), $step::class));
                 }
 
                 foreach ($iterator as $key => $value) {
@@ -126,7 +126,7 @@ final class RequestGenerator implements \IteratorAggregate
 
                 $this->context->setRequestResponse($request, $response);
             } else {
-                throw new LogicException(sprintf('Unsupported step "%s".', \get_class($step)));
+                throw new LogicException(sprintf('Unsupported step "%s".', $step::class));
             }
 
             $this->leaveStep($step);

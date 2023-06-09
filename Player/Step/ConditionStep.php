@@ -23,8 +23,8 @@ class ConditionStep extends BlockStep
 
     public function __construct(
         private readonly string $condition,
-        ?string $file = null,
-        ?int $line = null,
+        string $file = null,
+        int $line = null,
     ) {
         parent::__construct($file, $line);
     }

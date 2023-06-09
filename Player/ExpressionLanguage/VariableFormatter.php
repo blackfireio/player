@@ -77,7 +77,7 @@ class VariableFormatter
             return $value->html();
         }
 
-        return sprintf('(object) "%s"', \get_class($value));
+        return sprintf('(object) "%s"', $value::class);
     }
 
     protected function isHash(array $value): bool

@@ -66,7 +66,7 @@ class RequestGeneratorTest extends TestCase
 
             $this->context->getValueBag()->set('index', $this->context->getValueBag()->get('index') + 1);
 
-            $res[] = \get_class($step);
+            $res[] = $step::class;
         } while ($generator->send([$request, $this->createMock(ResponseInterface::class)]));
 
         $this->assertEquals($expected, $res);

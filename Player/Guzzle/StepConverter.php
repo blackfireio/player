@@ -92,7 +92,7 @@ final class StepConverter implements StepConverterInterface
             return $request;
         }
 
-        throw new LogicException(sprintf('Unsupported step "%s".', \get_class($step)));
+        throw new LogicException(sprintf('Unsupported step "%s".', $step::class));
     }
 
     private function createRequestFromUri(VisitStep $step, StepContext $stepContext)
@@ -227,7 +227,7 @@ final class StepConverter implements StepConverterInterface
         $endpoint = $stepContext->getEndpoint() ? $this->evaluateExpression($stepContext->getEndpoint()) : null;
 
         if (!$endpoint) {
-            if (0 !== strpos($uri, 'http')) {
+            if (!str_starts_with($uri, 'http')) {
                 throw new CrawlException(sprintf('Unable to crawl a non-absolute URI (/%s). Did you forget to set an "endpoint"?', $uri));
             }
 

@@ -27,7 +27,7 @@ class CrawlerFactory
             return null;
         }
 
-        if (false === strpos($response->getHeaderLine('Content-Type'), 'html') && false === strpos($response->getHeaderLine('Content-Type'), 'xml')) {
+        if (!str_contains($response->getHeaderLine('Content-Type'), 'html') && !str_contains($response->getHeaderLine('Content-Type'), 'xml')) {
             return null;
         }
 

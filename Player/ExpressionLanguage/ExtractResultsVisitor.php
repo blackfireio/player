@@ -48,9 +48,9 @@ class ExtractResultsVisitor
         }
 
         if (
-            $node instanceof Node\NameNode && (!$parentNode || !$parentNode instanceof Node\GetAttrNode) ||
-            $node instanceof Node\GetAttrNode ||
-            $node instanceof Node\FunctionNode && !\in_array($node->attributes['name'], self::$ignoredFunctions, true)
+            $node instanceof Node\NameNode && (!$parentNode || !$parentNode instanceof Node\GetAttrNode)
+            || $node instanceof Node\GetAttrNode
+            || $node instanceof Node\FunctionNode && !\in_array($node->attributes['name'], self::$ignoredFunctions, true)
         ) {
             $subExpressions[] = [
                 'expression' => $node->dump(),

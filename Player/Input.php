@@ -125,7 +125,7 @@ final class Input
                 while (null !== $line = array_shift($input)) {
                     ++$lineno;
 
-                    if (\strlen($indent) && 0 !== strpos($line, $indent)) {
+                    if (\strlen($indent) && !str_starts_with($line, $indent)) {
                         throw new SyntaxErrorException(sprintf('Incorrect indentation in multi-lines string at line %d.', $lineno));
                     }
 

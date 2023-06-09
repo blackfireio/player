@@ -28,9 +28,6 @@ final class ConsoleLogger extends BaseConsoleLogger
         LogLevel::ERROR => 1,
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     public function log($level, $message, array $context = [])
     {
         parent::log($level, $message, $context);
