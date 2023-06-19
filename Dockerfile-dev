@@ -1,6 +1,6 @@
-ARG COMPOSER_VERSION=2.5.7    # https://hub.docker.com/_/composer/tags
+ARG COMPOSER_VERSION=2.5.8    # https://hub.docker.com/_/composer/tags
 ARG PHIVE_VERSION=0.15.2      # https://github.com/phar-io/phive/releases
-ARG PHPEXTINST_VERSION=2.1.28 # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG PHPEXTINST_VERSION=2.1.30 # https://github.com/mlocati/docker-php-extension-installer/releases
 
 FROM composer:${COMPOSER_VERSION} as build_composer
 

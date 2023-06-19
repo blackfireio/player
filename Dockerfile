@@ -1,7 +1,7 @@
 FROM php:8.2-cli-alpine
 
 ARG VERSION_SUFFIX=''
-ARG PHPEXTINST_VERSION=2.1.28 # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG PHPEXTINST_VERSION=2.1.30 # https://github.com/mlocati/docker-php-extension-installer/releases
 
 ADD "https://get.blackfire.io/blackfire-player$VERSION_SUFFIX.phar" /usr/local/bin/blackfire-player
 RUN chmod +x /usr/local/bin/blackfire-player
