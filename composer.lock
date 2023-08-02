@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v2.1.0",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "609318472d53f4c222b12851c654e18a27032066"
+                "reference": "e36e33a12fd395ccbf0940062034114636707483"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/609318472d53f4c222b12851c654e18a27032066",
-                "reference": "609318472d53f4c222b12851c654e18a27032066",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/e36e33a12fd395ccbf0940062034114636707483",
+                "reference": "e36e33a12fd395ccbf0940062034114636707483",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1-dev"
+                    "dev-master": "2.2-dev"
                 }
             },
             "autoload": {
@@ -77,9 +77,9 @@
             ],
             "support": {
                 "issues": "https://github.com/blackfireio/php-sdk/issues",
-                "source": "https://github.com/blackfireio/php-sdk/tree/v2.1.0"
+                "source": "https://github.com/blackfireio/php-sdk/tree/v2.2.0"
             },
-            "time": "2023-06-27T09:07:20+00:00"
+            "time": "2023-08-01T13:22:55+00:00"
         },
         {
             "name": "clue/stream-filter",
