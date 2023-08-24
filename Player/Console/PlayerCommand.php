@@ -16,6 +16,7 @@ use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
+use Blackfire\Player\Extension\JUnitExtension;
 use Blackfire\Player\Extension\SecurityExtension;
 use Blackfire\Player\Extension\TracerExtension;
 use Blackfire\Player\Guzzle\CurlFactory;
@@ -63,6 +64,7 @@ final class PlayerCommand extends Command
                 new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode', null),
                 new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
+                new InputOption('junit', '', InputOption::VALUE_REQUIRED, 'Saves the report in JUnit format into passed file path'),
             ])
             ->setDescription('Runs scenario files')
             ->setHelp('Read https://blackfire.io/docs/builds-cookbooks/player to learn about all supported options.')
@@ -84,6 +86,12 @@ final class PlayerCommand extends Command
         }
 
         $json = $input->getOption('json');
+        $junit = $input->getOption('junit');
+        if ('' !== $junit && !extension_loaded('dom')) {
+            $output->writeln('<error>To create junit report you need to install DOM extension first.</error>');
+            $junit = '';
+        }
+
         $sslNoVerify = $input->getOption('ssl-no-verify');
 
         $clients = [$this->createClient($sslNoVerify)];
@@ -117,6 +125,10 @@ final class PlayerCommand extends Command
         }
         if ($input->getOption('disable-internal-network')) {
             $player->addExtension(new DisableInternalNetworkExtension());
+        }
+        if ('' !== $junit) {
+            $junitExtension = new JUnitExtension();
+            $player->addExtension($junitExtension);
         }
 
         $scenarios = (new ScenarioHydrator())->hydrate($input);
@@ -172,6 +184,10 @@ final class PlayerCommand extends Command
                 'input' => $extraInput,
                 'blackfire_build' => $serializedBuild,
             ]));
+        }
+
+        if ('' !== $junit) {
+            file_put_contents($junit, $junitExtension->getXml());
         }
 
         return $exitCode;
