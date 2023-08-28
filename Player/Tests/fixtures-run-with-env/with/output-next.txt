@@ -1,0 +1,170 @@
+Blackfire Player %s
+
+Scenario  "Test components"
+  "Getting Component Data"
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+  [loop 2]
+    [block 3]
+      "Checking Component Asset"
+GET http://0:8399/with/index.php?component=Asset
+GET http://0:8399/with/index.php?component=Asset
+GET http://0:8399/with/index.php?component=Asset
+GET http://0:8399/with/index.php?component=Asset
+GET http://0:8399/with/index.php?component=Asset
+      [condition 5]
+        "Checking Docs URL Asset"
+GET http://0:8399/with/doc.php?component=doc_Asset
+GET http://0:8399/with/doc.php?component=doc_Asset
+GET http://0:8399/with/doc.php?component=doc_Asset
+GET http://0:8399/with/doc.php?component=doc_Asset
+GET http://0:8399/with/doc.php?component=doc_Asset
+      [condition 7]
+    [block 8]
+      "Checking Component BrowserKit"
+GET http://0:8399/with/index.php?component=BrowserKit
+GET http://0:8399/with/index.php?component=BrowserKit
+GET http://0:8399/with/index.php?component=BrowserKit
+GET http://0:8399/with/index.php?component=BrowserKit
+GET http://0:8399/with/index.php?component=BrowserKit
+      [condition 10]
+        "Checking Docs URL BrowserKit"
+GET http://0:8399/with/doc.php?component=doc_BrowserKit
+GET http://0:8399/with/doc.php?component=doc_BrowserKit
+GET http://0:8399/with/doc.php?component=doc_BrowserKit
+GET http://0:8399/with/doc.php?component=doc_BrowserKit
+GET http://0:8399/with/doc.php?component=doc_BrowserKit
+      [condition 12]
+    [block 13]
+      "Checking Component Cache"
+GET http://0:8399/with/index.php?component=Cache
+GET http://0:8399/with/index.php?component=Cache
+GET http://0:8399/with/index.php?component=Cache
+GET http://0:8399/with/index.php?component=Cache
+GET http://0:8399/with/index.php?component=Cache
+      [condition 15]
+        "Checking Docs URL Cache"
+GET http://0:8399/with/doc.php?component=doc_Cache
+GET http://0:8399/with/doc.php?component=doc_Cache
+GET http://0:8399/with/doc.php?component=doc_Cache
+GET http://0:8399/with/doc.php?component=doc_Cache
+GET http://0:8399/with/doc.php?component=doc_Cache
+      [condition 17]
+    [block 18]
+      "Checking Component ClassLoader"
+GET http://0:8399/with/index.php?component=ClassLoader
+GET http://0:8399/with/index.php?component=ClassLoader
+GET http://0:8399/with/index.php?component=ClassLoader
+GET http://0:8399/with/index.php?component=ClassLoader
+GET http://0:8399/with/index.php?component=ClassLoader
+      [condition 20]
+        "Checking Docs URL ClassLoader"
+GET http://0:8399/with/doc.php?component=doc_ClassLoader
+GET http://0:8399/with/doc.php?component=doc_ClassLoader
+GET http://0:8399/with/doc.php?component=doc_ClassLoader
+GET http://0:8399/with/doc.php?component=doc_ClassLoader
+GET http://0:8399/with/doc.php?component=doc_ClassLoader
+      [condition 22]
+    [block 23]
+      "Checking Component Config"
+GET http://0:8399/with/index.php?component=Config
+GET http://0:8399/with/index.php?component=Config
+GET http://0:8399/with/index.php?component=Config
+GET http://0:8399/with/index.php?component=Config
+GET http://0:8399/with/index.php?component=Config
+      [condition 25]
+        "Checking Docs URL Config"
+GET http://0:8399/with/doc.php?component=doc_Config
+GET http://0:8399/with/doc.php?component=doc_Config
+GET http://0:8399/with/doc.php?component=doc_Config
+GET http://0:8399/with/doc.php?component=doc_Config
+GET http://0:8399/with/doc.php?component=doc_Config
+      [condition 27]
+    [block 28]
+      "Checking Component Console"
+GET http://0:8399/with/index.php?component=Console
+GET http://0:8399/with/index.php?component=Console
+GET http://0:8399/with/index.php?component=Console
+GET http://0:8399/with/index.php?component=Console
+GET http://0:8399/with/index.php?component=Console
+      [condition 30]
+        "Checking Docs URL Console"
+GET http://0:8399/with/doc.php?component=doc_Console
+GET http://0:8399/with/doc.php?component=doc_Console
+GET http://0:8399/with/doc.php?component=doc_Console
+GET http://0:8399/with/doc.php?component=doc_Console
+GET http://0:8399/with/doc.php?component=doc_Console
+      [condition 32]
+    [block 33]
+      "Checking Component Contracts"
+GET http://0:8399/with/index.php?component=Contracts
+GET http://0:8399/with/index.php?component=Contracts
+GET http://0:8399/with/index.php?component=Contracts
+GET http://0:8399/with/index.php?component=Contracts
+GET http://0:8399/with/index.php?component=Contracts
+      [condition 35]
+        "Checking Docs URL Contracts"
+GET http://0:8399/with/doc.php?component=doc_Contracts
+GET http://0:8399/with/doc.php?component=doc_Contracts
+GET http://0:8399/with/doc.php?component=doc_Contracts
+GET http://0:8399/with/doc.php?component=doc_Contracts
+GET http://0:8399/with/doc.php?component=doc_Contracts
+      [condition 37]
+    [block 38]
+      "Checking Component CssSelector"
+GET http://0:8399/with/index.php?component=CssSelector
+GET http://0:8399/with/index.php?component=CssSelector
+GET http://0:8399/with/index.php?component=CssSelector
+GET http://0:8399/with/index.php?component=CssSelector
+GET http://0:8399/with/index.php?component=CssSelector
+      [condition 40]
+        "Checking Docs URL CssSelector"
+GET http://0:8399/with/doc.php?component=doc_CssSelector
+GET http://0:8399/with/doc.php?component=doc_CssSelector
+GET http://0:8399/with/doc.php?component=doc_CssSelector
+GET http://0:8399/with/doc.php?component=doc_CssSelector
+GET http://0:8399/with/doc.php?component=doc_CssSelector
+      [condition 42]
+    [block 43]
+      "Checking Component Debug"
+GET http://0:8399/with/index.php?component=Debug
+GET http://0:8399/with/index.php?component=Debug
+GET http://0:8399/with/index.php?component=Debug
+GET http://0:8399/with/index.php?component=Debug
+GET http://0:8399/with/index.php?component=Debug
+      [condition 45]
+        "Checking Docs URL Debug"
+GET http://0:8399/with/doc.php?component=doc_Debug
+GET http://0:8399/with/doc.php?component=doc_Debug
+GET http://0:8399/with/doc.php?component=doc_Debug
+GET http://0:8399/with/doc.php?component=doc_Debug
+GET http://0:8399/with/doc.php?component=doc_Debug
+      [condition 47]
+  OK
+
+Scenario  "Checks on key pages"
+  [loop 1]
+    "Checking performance on path: components"
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+GET http://0:8399/with/components.php
+    "Checking performance on path: doc"
+GET http://0:8399/with/doc.php
+GET http://0:8399/with/doc.php
+GET http://0:8399/with/doc.php
+GET http://0:8399/with/doc.php
+GET http://0:8399/with/doc.php
+    "Checking performance on path: index"
+GET http://0:8399/with/index.php
+GET http://0:8399/with/index.php
+GET http://0:8399/with/index.php
+GET http://0:8399/with/index.php
+GET http://0:8399/with/index.php
+  OK
+
+ OK  Scenarios  2  - Steps  22

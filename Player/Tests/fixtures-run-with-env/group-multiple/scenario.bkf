@@ -1,0 +1,12 @@
+load "group_A.bkf"
+load "group_B.bkf"
+
+scenario
+    name "Group - Multiple"
+
+    include A
+    include B
+
+    visit url('group-multiple/index.php?q=charlie')
+        expect status_code() == 200
+        expect body() == "charlie 15"

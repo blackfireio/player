@@ -11,31 +11,62 @@
 
 namespace Blackfire\Player\Console;
 
+use Blackfire\Client;
+use Blackfire\ClientConfiguration;
+use Blackfire\Player\Adapter\BlackfireSdkAdapter;
+use Blackfire\Player\Adapter\BlackfireSdkAdapterInterface;
+use Blackfire\Player\BuildApi;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
+use Blackfire\Player\Extension\BlackfireEnvResolver;
 use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
+use Blackfire\Player\Extension\ExpectationExtension;
+use Blackfire\Player\Extension\FollowExtension;
+use Blackfire\Player\Extension\NameResolverExtension;
+use Blackfire\Player\Extension\ResponseChecker;
 use Blackfire\Player\Extension\SecurityExtension;
+use Blackfire\Player\Extension\ThrowableExtension;
+use Blackfire\Player\Extension\TmpDirExtension;
 use Blackfire\Player\Extension\TracerExtension;
-use Blackfire\Player\Guzzle\CurlFactory;
-use Blackfire\Player\Guzzle\Runner;
+use Blackfire\Player\Extension\WaitExtension;
+use Blackfire\Player\Extension\WatchdogExtension;
+use Blackfire\Player\Http\CookieJar;
+use Blackfire\Player\ParserFactory;
 use Blackfire\Player\Player;
-use Blackfire\Player\Result;
-use Blackfire\Player\Results;
+use Blackfire\Player\PlayerNext;
+use Blackfire\Player\Reporter\JsonViewReporter;
+use Blackfire\Player\ScenarioSetResult;
 use Blackfire\Player\Serializer\ScenarioSetSerializer;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\Handler\CurlMultiHandler;
-use GuzzleHttp\Handler\Proxy;
-use GuzzleHttp\HandlerStack;
+use Blackfire\Player\StepProcessor\BlockStepProcessor;
+use Blackfire\Player\StepProcessor\ChainProcessor;
+use Blackfire\Player\StepProcessor\ClickStepProcessor;
+use Blackfire\Player\StepProcessor\ConditionStepProcessor;
+use Blackfire\Player\StepProcessor\ExpressionEvaluator;
+use Blackfire\Player\StepProcessor\FollowStepProcessor;
+use Blackfire\Player\StepProcessor\LoopStepProcessor;
+use Blackfire\Player\StepProcessor\ReloadStepProcessor;
+use Blackfire\Player\StepProcessor\RequestStepProcessor;
+use Blackfire\Player\StepProcessor\StepContextFactory;
+use Blackfire\Player\StepProcessor\SubmitStepProcessor;
+use Blackfire\Player\StepProcessor\UriResolver;
+use Blackfire\Player\StepProcessor\VariablesEvaluator;
+use Blackfire\Player\StepProcessor\VisitStepProcessor;
+use Blackfire\Player\StepProcessor\WhileStepProcessor;
+use Blackfire\Player\VariableResolver;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Dumper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\ScopingHttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -48,7 +79,38 @@ final class PlayerCommand extends Command
     public const EXIT_CODE_SCENARIO_ERROR = 65;
     public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
 
-    protected function configure()
+    private HttpClientInterface $blackfireHttpClient;
+    private BlackfireSdkAdapterInterface $blackfireSdkAdapter;
+
+    public function __construct(HttpClientInterface $blackfireHttpClient = null, BlackfireSdkAdapterInterface $blackfireSdkAdapter = null, string $transactionId)
+    {
+        if ($blackfireHttpClient) {
+            $this->blackfireHttpClient = $blackfireHttpClient;
+        } else {
+            $this->blackfireHttpClient = HttpClient::create([
+                'base_uri' => $this->getEnvOrDefault('BLACKFIRE_ENDPOINT', 'https://blackfire.io'),
+                'auth_basic' => [$this->getEnvOrThrow('BLACKFIRE_CLIENT_ID'), $this->getEnvOrThrow('BLACKFIRE_CLIENT_TOKEN')],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => sprintf('Blackfire Player/%s', Player::version()),
+                    'X-Request-Id' => $transactionId,
+                ],
+            ]);
+        }
+
+        if ($blackfireSdkAdapter) {
+            $this->blackfireSdkAdapter = $blackfireSdkAdapter;
+        } else {
+            $blackfire = new Client(new ClientConfiguration());
+            $blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
+
+            $this->blackfireSdkAdapter = new BlackfireSdkAdapter($blackfire);
+        }
+
+        parent::__construct();
+    }
+
+    protected function configure(): void
     {
         $this
             ->setName('run')
@@ -69,13 +131,13 @@ final class PlayerCommand extends Command
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $initializer = new CommandInitializer();
         $initializer($input, $output);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $resultOutput = $output;
         if ($output instanceof ConsoleOutput) {
@@ -85,14 +147,7 @@ final class PlayerCommand extends Command
 
         $json = $input->getOption('json');
         $sslNoVerify = $input->getOption('ssl-no-verify');
-
-        $clients = [$this->createClient($sslNoVerify)];
         $concurrency = $input->getOption('concurrency');
-        for ($i = 1; $i < $concurrency; ++$i) {
-            $clients[] = $this->createClient($sslNoVerify);
-        }
-
-        $runner = new Runner($clients);
         $sandbox = $input->getOption('sandbox');
 
         if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
@@ -107,21 +162,83 @@ final class PlayerCommand extends Command
             }
         }
 
+        $cookieJar = new CookieJar();
+        $uriResolver = new UriResolver();
+        $filesystem = new Filesystem();
+        $scenarioSerializer = new ScenarioSetSerializer();
+
+        $httpClientOptions = [
+            'max_redirects' => 0,
+            'verify_peer' => !$sslNoVerify,
+            'verify_host' => !$sslNoVerify,
+        ];
+
+        $httpClient = HttpClient::create($httpClientOptions);
+
+        $authBasic = array_filter([
+            $this->getEnvOrDefault('BLACKFIRE_BASIC_AUTH_USERNAME'),
+            $this->getEnvOrDefault('BLACKFIRE_BASIC_AUTH_PASSWORD'),
+        ]);
+
+        if (!empty($authBasic) && $input->getOption('endpoint')) {
+            $httpClient = ScopingHttpClient::forBaseUri($httpClient, $input->getOption('endpoint'), [
+                ...$httpClientOptions,
+                'auth_basic' => $authBasic,
+            ]);
+        }
+
         $language = new ExpressionLanguage(null, [new LanguageProvider(null, $sandbox)]);
-        $player = new Player($runner, $language);
+        $buildApi = new BuildApi($this->blackfireSdkAdapter, $this->blackfireHttpClient);
+        $expressionEvaluator = new ExpressionEvaluator($language);
+        $variableResolver = new VariableResolver($language);
+        $blackfireEnvResolver = new BlackfireEnvResolver($input->getOption('blackfire-env'), $language);
+        $player = new PlayerNext(
+            new StepContextFactory(new VariableResolver($language)),
+            new JsonViewReporter($scenarioSerializer, $buildApi, $output),
+            new ChainProcessor([
+                new VisitStepProcessor($expressionEvaluator, $uriResolver),
+                new ClickStepProcessor($expressionEvaluator, $uriResolver),
+                new SubmitStepProcessor($expressionEvaluator, $uriResolver),
+                new FollowStepProcessor($uriResolver),
+                new ReloadStepProcessor(),
+                new RequestStepProcessor($httpClient, $cookieJar),
+
+                new LoopStepProcessor($expressionEvaluator),
+                new WhileStepProcessor($expressionEvaluator),
+                new ConditionStepProcessor($expressionEvaluator),
+                new BlockStepProcessor(),
+            ]),
+            new VariablesEvaluator($language),
+        );
+
+        $player->addExtension(new TmpDirExtension($filesystem));
+        $player->addExtension(new ExpectationExtension(new ResponseChecker($language)), 512);
+        $player->addExtension(new NameResolverExtension($language, $variableResolver), 1024);
+        $player->addExtension(new WaitExtension($language));
+        $player->addExtension(new FollowExtension($language));
+        $player->addExtension(new WatchdogExtension());
         $player->addExtension(new SecurityExtension());
-        $player->addExtension(new BlackfireExtension($language, $input->getOption('blackfire-env'), $output), 510);
-        $player->addExtension(new CliFeedbackExtension($output, (new Terminal())->getWidth()));
+        $player->addExtension(new ThrowableExtension());
+        $player->addExtension(new BlackfireExtension(
+            $language,
+            $blackfireEnvResolver,
+            $buildApi,
+            $this->blackfireSdkAdapter,
+        ), 510);
+        $player->addExtension(new CliFeedbackExtension(
+            $output,
+            new Dumper($output),
+            (new Terminal())->getWidth())
+        );
         if ($input->getOption('tracer')) {
-            $player->addExtension(new TracerExtension($output));
+            $player->addExtension(new TracerExtension($output, $filesystem));
         }
         if ($input->getOption('disable-internal-network')) {
             $player->addExtension(new DisableInternalNetworkExtension());
         }
 
-        $scenarios = (new ScenarioHydrator())->hydrate($input);
-
-        $results = $player->run($scenarios);
+        $scenarios = (new ScenarioHydrator(new ParserFactory($language)))->hydrate($input);
+        $results = $player->run($scenarios, $concurrency);
 
         $exitCode = 0;
         $message = 'Build run successfully';
@@ -154,15 +271,6 @@ final class PlayerCommand extends Command
                 ];
             }
 
-            $serializedBuild = null;
-
-            try {
-                $scenarioSerializer = new ScenarioSetSerializer();
-                $serializedBuild = $scenarioSerializer->normalize($scenarios);
-            } catch (\Throwable $e) {
-                \Sentry\captureException($e);
-            }
-
             $resultOutput->writeln(JsonOutput::encode([
                 'name' => $scenarios->getName(),
                 'results' => $this->createReport($results),
@@ -170,66 +278,47 @@ final class PlayerCommand extends Command
                 'code' => $exitCode,
                 'success' => true,
                 'input' => $extraInput,
-                'blackfire_build' => $serializedBuild,
+                'blackfire_build' => $scenarioSerializer->normalize($scenarios),
             ]));
         }
 
         return $exitCode;
     }
 
-    private function createClient($sslNoVerify)
-    {
-        $handler = $this->createCurlHandler();
-        $stack = HandlerStack::create($handler);
-
-        return new GuzzleClient([
-            'handler' => $stack,
-            'cookies' => true,
-            'allow_redirects' => false,
-            'http_errors' => false,
-            'verify' => !$sslNoVerify,
-        ]);
-    }
-
-    /**
-     * Adapted from \GuzzleHttp\choose_handler() to allow setting the 'handle_factory" option.
-     */
-    private function createCurlHandler()
-    {
-        $handlerOptions = [
-            'handle_factory' => new CurlFactory(3),
-        ];
-
-        if (\function_exists('curl_multi_exec') && \function_exists('curl_exec')) {
-            return Proxy::wrapSync(new CurlMultiHandler($handlerOptions), new CurlHandler($handlerOptions));
-        }
-
-        if (\function_exists('curl_exec')) {
-            return new CurlHandler($handlerOptions);
-        }
-
-        if (\function_exists('curl_multi_exec')) {
-            return new CurlMultiHandler($handlerOptions);
-        }
-
-        throw new \RuntimeException('Blackfire Player requires cURL.');
-    }
-
-    private function createReport(Results $results)
+    private function createReport(ScenarioSetResult $results): array
     {
         $report = [];
 
-        /** @var Result $result */
-        foreach ($results as $key => $result) {
-            $error = $result->getError();
+        foreach ($results->getScenarioResults() as $scenarioResult) {
+            $error = $scenarioResult->getError();
 
             $report[] = [
-                'scenario' => $result->getScenarioName(),
-                'values' => $result->getValues()->all(),
+                'scenario' => $scenarioResult->getScenarioName(),
+                'values' => $scenarioResult->getValues(),
                 'error' => $error ? ['message' => $error->getMessage(), 'code' => $error->getCode()] : null,
             ];
         }
 
         return $report;
+    }
+
+    private function getEnvOrDefault(string $envVar, string $default = null): ?string
+    {
+        $env = getenv($envVar);
+        if (!$env) {
+            $env = $default;
+        }
+
+        return $env;
+    }
+
+    private function getEnvOrThrow(string $envVar): string
+    {
+        $env = getenv($envVar);
+        if (!$env) {
+            throw new \InvalidArgumentException(sprintf('Missing required "%s" environment variable', $envVar));
+        }
+
+        return $env;
     }
 }

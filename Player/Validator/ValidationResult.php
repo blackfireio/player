@@ -16,6 +16,7 @@ namespace Blackfire\Player\Validator;
  */
 final class ValidationResult
 {
+    /** @var string[] */
     private array $missingVariables = [];
 
     public function __construct(
@@ -34,11 +35,17 @@ final class ValidationResult
         return $this->errors;
     }
 
+    /**
+     * @param string[] $missingVariables
+     */
     public function setMissingVariables(array $missingVariables): void
     {
         $this->missingVariables = $missingVariables;
     }
 
+    /**
+     * @return string[]
+     */
     public function getMissingVariables(): array
     {
         return $this->missingVariables;

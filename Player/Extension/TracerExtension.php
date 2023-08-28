@@ -11,15 +11,15 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Json;
-use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\ScenarioResult;
 use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\ScenarioSetResult;
 use Blackfire\Player\Step\AbstractStep;
-use GuzzleHttp\Psr7;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Blackfire\Player\Step\RequestStep;
+use Blackfire\Player\Step\StepContext;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -28,31 +28,28 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @internal
  */
-final class TracerExtension extends AbstractExtension
+final class TracerExtension implements ScenarioSetExtensionInterface, ScenarioExtensionInterface, StepExtensionInterface, ExceptionExtensionInterface
 {
-    private $output;
-    private $dir;
-    private $fs;
-    private $currentDir;
-    private $scenarioIndex;
-    private $stepCount;
+    private readonly string $dir;
 
-    public function __construct(OutputInterface $output)
-    {
-        $this->output = $output;
+    private string $currentDir = '/';
+    private int $scenarioIndex = 0;
+    private int $stepCount = 0;
+
+    public function __construct(
+        private readonly OutputInterface $output,
+        private readonly Filesystem $fs,
+    ) {
         $this->dir = sprintf('%s/blackfire-player-trace/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
-
-        $this->fs = new Filesystem();
-
         $this->fs->remove($this->dir);
     }
 
-    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
+    public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
     {
         $this->stepCount = 0;
     }
 
-    public function enterScenario(Scenario $scenario, Context $context)
+    public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
         if (!$key = $scenario->getKey()) {
             $key = ++$this->scenarioIndex;
@@ -61,59 +58,51 @@ final class TracerExtension extends AbstractExtension
         $target = sprintf('%s/scenario.txt', $this->currentDir);
         $this->fs->mkdir(\dirname($target));
 
-        file_put_contents($target, (string) $scenario);
+        $this->fs->dumpFile($target, (string) $scenario);
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
         ++$this->stepCount;
 
         $target = $this->getDirectory();
 
-        file_put_contents($target.'/request.txt', Psr7\str($request));
-        file_put_contents($target.'/step.txt', (string) $step);
-
-        return $request;
-    }
-
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
-    {
-        $target = $this->getDirectory();
-
-        file_put_contents($target.'/response.txt', Psr7\str($response));
-        file_put_contents($target.'/variables.json', Json::encode($this->getVariables($context), \JSON_PRETTY_PRINT));
-
-        return $response;
-    }
-
-    public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context)
-    {
-        $target = $this->getDirectory();
-        file_put_contents($target.'/variables.json', Json::encode($this->getVariables($context), \JSON_PRETTY_PRINT));
-
-        $response = $context->getResponse();
-        if (!$response) {
-            return;
+        $this->fs->dumpFile($target.'/step.txt', (string) $step);
+        if ($step instanceof RequestStep) {
+            $this->fs->dumpFile($target.'/request.txt', $step->getRequest()->toString());
         }
-
-        file_put_contents($target.'/response.txt', Psr7\str($response));
     }
 
-    public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
+    {
+        $target = $this->getDirectory();
+
+        $variables = $scenarioContext->getVariableValues($stepContext, true);
+        unset($variables['_crawler'], $variables['_response']);
+
+        $this->fs->dumpFile($target.'/variables.json', Json::encode($variables, \JSON_PRETTY_PRINT));
+        if ($step instanceof RequestStep) {
+            $this->fs->dumpFile($target.'/response.txt', $scenarioContext->getLastResponse()->toString());
+        }
+    }
+
+    public function failStep(AbstractStep $step, \Throwable $exception): void
+    {
+        $target = $this->getDirectory();
+
+        $this->fs->dumpFile($target.'/exception.txt', $exception->getMessage()."\n".$exception->getTraceAsString());
+    }
+
+    public function afterScenario(Scenario $scenario, ScenarioContext $scenarioContext, ScenarioResult $scenarioResult): void
+    {
+    }
+
+    public function afterScenarioSet(ScenarioSet $scenarios, int $concurrency, ScenarioSetResult $scenarioSetResult): void
     {
         $this->output->writeln(sprintf('<comment>Traces under %s</>', $this->dir));
     }
 
-    private function getVariables(Context $context)
-    {
-        $variables = $context->getVariableValues();
-        unset($variables['_crawler']);
-        unset($variables['_response']);
-
-        return $variables;
-    }
-
-    private function getDirectory()
+    private function getDirectory(): string
     {
         $target = sprintf('%s/%d', $this->currentDir, $this->stepCount);
         $this->fs->mkdir($target);

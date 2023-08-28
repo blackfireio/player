@@ -1,0 +1,9 @@
+scenario
+    name "scoped-basic-auth-credentials-ok"
+
+    set id 8399
+
+    visit "scoped-basic-auth-credentials-ok/index.php?id="~id
+        expect status_code() == 200
+        expect trim(body()) == 8399
+        set body body()

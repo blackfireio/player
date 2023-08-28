@@ -1,0 +1,6 @@
+scenario
+    name "error-blackfire-api-outage"
+
+    visit "error-blackfire-api-outage/index.php"
+        expect status_code() == 200
+        expect trim(body()) == "ok"

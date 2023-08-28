@@ -13,23 +13,43 @@ namespace Blackfire\Player;
 
 use Sentry\Breadcrumb;
 use Sentry\EventHint;
+use Sentry\EventId;
+use Sentry\Severity;
 
+/**
+ * @internal
+ */
 class SentrySupport
 {
-    public static function init()
+    public static function init(string $transactionId): void
     {
         if (!$dsn = getenv('BLACKFIRE_PLAYER_SENTRY_DSN')) {
             return;
         }
 
+        // This is variable is used to replace the version
+        // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
+        $version = '@git-version@';
+        $testPart1 = '@';
+
+        // let's not write the same string, otherwise it would be replaced !
+        if ($testPart1.'git-version@' === $version) {
+            $composer = Json::decode(file_get_contents(__DIR__.'/../composer.json'));
+            $version = $composer['extra']['branch-alias']['dev-master'];
+        }
+
         \Sentry\init([
             'dsn' => $dsn,
             'max_breadcrumbs' => 50,
-            'release' => Player::version(),
+            'release' => $version,
             'error_types' => \E_ALL & ~\E_DEPRECATED & ~\E_USER_DEPRECATED,
             'send_default_pii' => true,
             'max_value_length' => 4096,
         ]);
+
+        \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($transactionId) {
+            $scope->setTag('transaction_id', $transactionId);
+        });
 
         if ($envVar = getenv('BLACKFIRE_BUILD_UUID')) {
             self::addBreadcrumb(sprintf('Starting build uuid "%s"', $envVar));
@@ -55,9 +75,13 @@ class SentrySupport
         ]));
     }
 
-    public static function captureMessage(string $message, array $hint = []): void
+    public static function captureException(\Throwable $throwable, array $eventHint = [])
     {
-        $hint = EventHint::fromArray($hint);
-        \Sentry\captureMessage($message, null, $hint);
+        \Sentry\captureException($throwable, EventHint::fromArray($eventHint));
+    }
+
+    public static function captureMessage(string $message, Severity $level = null, EventHint $hint = null): ?EventId
+    {
+        return \Sentry\captureMessage($message, $level, $hint);
     }
 }

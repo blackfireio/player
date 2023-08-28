@@ -10,7 +10,7 @@ box_image = blackfire/php-internal:8.2-v1.0.7
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
 
-PHP=@docker run --rm -it -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ $(php_image)
+PHP=@docker run --rm -it -e "PHP_CS_FIXER_IGNORE_ENV=1" -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ $(php_image)
 BOX=@docker run --rm -v $(PWD):/app -w /app $(box_image)
 
 ##

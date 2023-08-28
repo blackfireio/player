@@ -19,7 +19,7 @@ use Symfony\Component\ExpressionLanguage\ParsedExpression;
  */
 class ExtractResultsVisitor
 {
-    private static array $ignoredFunctions = [
+    private const IGNORED_FUNCTIONS = [
         'constant',
         'link',
         'css',
@@ -43,14 +43,16 @@ class ExtractResultsVisitor
     {
         $subExpressions = [];
 
-        foreach ($node->nodes as $k => $n) {
-            $subExpressions = array_merge($subExpressions, $this->visit($n, $variables, $node));
+        foreach ($node->nodes as $n) {
+            $subExpressions[] = $this->visit($n, $variables, $node);
         }
 
+        $subExpressions = array_merge(...$subExpressions);
+
         if (
-            $node instanceof Node\NameNode && (!$parentNode || !$parentNode instanceof Node\GetAttrNode)
+            $node instanceof Node\NameNode && (!$parentNode instanceof Node\GetAttrNode)
             || $node instanceof Node\GetAttrNode
-            || $node instanceof Node\FunctionNode && !\in_array($node->attributes['name'], self::$ignoredFunctions, true)
+            || $node instanceof Node\FunctionNode && !\in_array($node->attributes['name'], self::IGNORED_FUNCTIONS, true)
         ) {
             $subExpressions[] = [
                 'expression' => $node->dump(),
@@ -61,7 +63,7 @@ class ExtractResultsVisitor
         return $subExpressions;
     }
 
-    private function formatResult($value)
+    private function formatResult(mixed $value): string
     {
         return (new VariableFormatter())->formatResult($value);
     }

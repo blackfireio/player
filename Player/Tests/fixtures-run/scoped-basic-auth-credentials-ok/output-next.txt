@@ -1,0 +1,8 @@
+Blackfire Player %s
+
+Scenario  "scoped-basic-auth-credentials-ok"
+  [visit 1]
+GET http://0:8399/scoped-basic-auth-credentials-ok/index.php?id=8399
+  OK
+
+ OK  Scenarios  1  - Steps  1

@@ -16,8 +16,16 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class ReloadStep extends Step
+class ReloadStep extends Step implements StepInitiatorInterface
 {
+    use StepInitiatorTrait;
+
+    public function __construct(string $file = null, int $line = null, Step $initiator = null)
+    {
+        $this->setInitiator($initiator);
+        parent::__construct($file, $line);
+    }
+
     public function configureFromStep(AbstractStep $step): void
     {
         if ($step instanceof ConfigurableStep) {
@@ -25,15 +33,12 @@ class ReloadStep extends Step
                 ->samples($step->getSamples())
                 ->blackfire($step->getBlackfire())
                 ->wait($step->getWait())
+                ->json($step->isJson())
                 ->followRedirects($step->isFollowingRedirects())
             ;
 
             foreach ($step->getHeaders() as $header) {
                 $this->header($header);
-            }
-
-            if ($step->isJson()) {
-                $this->json();
             }
         }
 
@@ -50,8 +55,8 @@ class ReloadStep extends Step
                 $this->expect($expectation);
             }
 
-            foreach ($step->getVariables() as $name => $expression) {
-                $this->set($name, $expression);
+            foreach ($step->getVariables() as $name => $variable) {
+                $this->set($name, $variable);
             }
         }
     }

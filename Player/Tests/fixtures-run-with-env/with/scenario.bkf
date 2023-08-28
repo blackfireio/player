@@ -1,0 +1,42 @@
+scenario
+    set env "dev"
+
+    name "Test components"
+
+    visit url("/with/components.php")
+        name "Getting Component Data"
+        set component_urls css('.components-list td.name a').extract(['_text', 'href'])
+        expect status_code() == 200
+
+    with data in component_urls
+        visit data[1]
+            name "Checking Component " ~ data[0]
+            expect status_code() == 200
+            expect css("h1.content_title") and css("h1.content_title").text() matches "/" ~ data[0] ~ "/"
+            set doc_url xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Documentation')]").count() ? xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Documentation')]").attr("href")
+            set code_url xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Code')]").count() ? xpath("//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Code')]").attr("href")
+
+        when doc_url and "Locale" != data[0]
+            visit doc_url
+                name "Checking Docs URL " ~ data[0]
+                expect status_code() == 200
+                expect css("h1.content_title") and css("h1.content_title").text() matches "/" ~ data[0] ~ "/"
+
+        when code_url and env == "prod"
+            visit code_url
+                name "Checking Github Code URL"
+                expect status_code() == 200
+
+scenario
+    name "Checks on key pages"
+
+    with name, data in \
+        { \
+            components: { path: "/with/components.php", expectedStatusCode: 200 }, \
+            doc: { path: "/with/doc.php", expectedStatusCode: 200 }, \
+            index: { path: "/with/index.php", expectedStatusCode: 200 } \
+        }
+
+        visit url(data["path"])
+            name "Checking performance on path: " ~ name
+            expect status_code() == data["expectedStatusCode"]

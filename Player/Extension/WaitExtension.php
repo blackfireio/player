@@ -11,45 +11,49 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Blackfire\Player\Step\StepContext;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  *
  * @internal
  */
-final class WaitExtension extends AbstractExtension
+final class WaitExtension implements StepExtensionInterface
 {
-    private $language;
-
-    public function __construct(ExpressionLanguage $language)
-    {
-        $this->language = $language;
+    public function __construct(
+        private readonly ExpressionLanguage $language,
+    ) {
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
+    {
+    }
+
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
         if (!$step instanceof ConfigurableStep) {
-            return $response;
+            return;
         }
 
-        if (!$wait = $context->getStepContext()->getWait()) {
-            return $response;
+        if (!$wait = $stepContext->getWait()) {
+            return;
         }
 
         try {
-            usleep(1000 * $this->language->evaluate($wait, $context->getVariableValues(true)));
+            $delay = $this->language->evaluate($wait, $scenarioContext->getVariableValues($stepContext, true));
         } catch (ExpressionSyntaxErrorException $e) {
             throw new InvalidArgumentException(sprintf('Wait syntax error in "%s": %s', $wait, $e->getMessage()));
         }
 
-        return $response;
+        $end = microtime(true) + ($delay / 1_000);
+        while ($end > microtime(true)) {
+            \Fiber::suspend();
+        }
     }
 }

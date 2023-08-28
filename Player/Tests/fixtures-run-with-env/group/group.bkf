@@ -1,0 +1,4 @@
+group homepage
+    visit url('group/index.php')
+        expect status_code() == 200
+

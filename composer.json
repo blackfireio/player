@@ -15,13 +15,13 @@
     ],
     "require": {
         "php": ">=8.2",
-        "blackfire/php-sdk": "^2.0",
+        "ext-uuid": "*",
+        "blackfire/php-sdk": "^2.1 ",
         "doctrine/annotations": "^2.0",
         "fakerphp/faker": "^1.10",
-        "guzzlehttp/guzzle": "^6.1",
         "maltyxx/images-generator": "^1.0",
         "mtdowling/jmespath.php": "^2.2",
-        "nyholm/psr7": "^1.5",
+        "nyholm/psr7": "^1.6",
         "psr/log": "^1.0",
         "sentry/sentry": "^3.12",
         "symfony/console": "^6.0",
@@ -31,6 +31,7 @@
         "symfony/expression-language": "^6.0",
         "symfony/filesystem": "^6.0",
         "symfony/http-client": "^6.2",
+        "symfony/mime": "^6.2",
         "symfony/property-access": "^6.2",
         "symfony/serializer": "^6.2",
         "symfony/var-dumper": "^6.0",
@@ -75,7 +76,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.33-dev"
+            "dev-master": "2.0-dev"
         }
     }
 }

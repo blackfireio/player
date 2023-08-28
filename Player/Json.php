@@ -16,7 +16,7 @@ namespace Blackfire\Player;
  */
 class Json
 {
-    public static function decode(string $json)
+    public static function decode(string $json): mixed
     {
         try {
             return json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
@@ -25,10 +25,10 @@ class Json
         }
     }
 
-    public static function encode($value, $options = 0): string
+    public static function encode(mixed $value, int $options = 0): string
     {
         try {
-            return json_encode($value, \JSON_THROW_ON_ERROR | $options);
+            return json_encode($value, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | $options);
         } catch (\Exception $e) {
             throw new \InvalidArgumentException(sprintf('Unable to encode data into JSON: "%s".', $e->getMessage()), $e->getCode(), $e);
         }

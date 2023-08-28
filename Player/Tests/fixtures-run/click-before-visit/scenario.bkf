@@ -1,0 +1,8 @@
+scenario
+    name "Click before Visit is not allowed"
+    click link("Click me")
+        name "Clicking a button"
+
+    visit url('/click-before-visit/index.php')
+        name "Visiting a step"
+        expect status_code() == 200

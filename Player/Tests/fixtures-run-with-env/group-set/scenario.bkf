@@ -1,0 +1,15 @@
+group slugs
+    set slugs \
+        [ \
+            'about', 'community', 'support' \
+        ]
+
+scenario
+    name "Test slugs"
+
+    include slugs
+        with slug in slugs
+            visit url('/group-set/index.php?slug=' ~ slug)
+                expect status_code() == 200
+                expect body() matches "/" ~ slug ~ " page/"
+

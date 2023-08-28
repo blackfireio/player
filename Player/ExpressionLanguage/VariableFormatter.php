@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\ExpressionLanguage;
 
+use Blackfire\Player\Json;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -18,7 +19,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class VariableFormatter
 {
-    public function formatResult($value): string
+    public function formatResult(mixed $value): string
     {
         switch (true) {
             case true === $value:
@@ -34,15 +35,11 @@ class VariableFormatter
                 return $value;
 
             case \is_array($value):
-                if ($this->isHash($value)) {
+                if (!array_is_list($value)) {
                     $str = '{';
 
                     foreach ($value as $key => $v) {
-                        if (\is_int($key)) {
-                            $str .= sprintf('%s: %s, ', $key, $this->formatResult($v));
-                        } else {
-                            $str .= sprintf('"%s": %s, ', $this->dumpEscaped($key), $this->formatResult($v));
-                        }
+                        $str .= sprintf('%s: %s, ', Json::encode((string) $key), $this->formatResult($v));
                     }
 
                     return rtrim($str, ', ').'}';
@@ -50,24 +47,23 @@ class VariableFormatter
 
                 $str = '[';
 
-                foreach ($value as $key => $v) {
+                foreach ($value as $v) {
                     $str .= sprintf('%s, ', $this->formatResult($v));
                 }
 
                 return rtrim($str, ', ').']';
 
             case \is_object($value):
-                /** @var string $value */
                 $value = $this->convertObjectToString($value);
 
-                return sprintf('"%s"', $this->dumpEscaped($value));
+                return Json::encode($value);
 
             default:
-                return sprintf('"%s"', $this->dumpEscaped($value));
+                return Json::encode($value);
         }
     }
 
-    protected function convertObjectToString($value): string
+    protected function convertObjectToString(object $value): string
     {
         if (method_exists($value, '__toString')) {
             return $value->__toString();
@@ -78,23 +74,5 @@ class VariableFormatter
         }
 
         return sprintf('(object) "%s"', $value::class);
-    }
-
-    protected function isHash(array $value): bool
-    {
-        $expectedKey = 0;
-
-        foreach ($value as $key => $val) {
-            if ($key !== $expectedKey++) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected function dumpEscaped($value): string
-    {
-        return str_replace(['\\', '"'], ['\\\\', '\"'], $value);
     }
 }

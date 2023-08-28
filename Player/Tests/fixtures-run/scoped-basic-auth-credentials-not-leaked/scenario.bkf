@@ -1,0 +1,7 @@
+scenario
+    name "scoped-basic-auth-credentials-not-leaked"
+
+    endpoint "http://localhost:8399"
+
+    visit "scoped-basic-auth-credentials-not-leaked/index.php"
+        expect status_code() == 401

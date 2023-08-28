@@ -1,0 +1,12 @@
+Blackfire Player %s
+
+Scenario  "scraping"
+  [visit 1]
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+  OK
+
+ OK  Scenarios  1  - Steps  1

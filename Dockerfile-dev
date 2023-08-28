@@ -1,6 +1,7 @@
 ARG COMPOSER_VERSION=2.5.8    # https://hub.docker.com/_/composer/tags
 ARG PHIVE_VERSION=0.15.2      # https://github.com/phar-io/phive/releases
 ARG PHPEXTINST_VERSION=2.1.34 # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG UUID_VERSION=1.2.0        # https://pecl.php.net/package/uuid
 
 FROM composer:${COMPOSER_VERSION} as build_composer
 
@@ -9,6 +10,7 @@ FROM php:8.2-cli
 ARG COMPOSER_VERSION
 ARG PHIVE_VERSION
 ARG PHPEXTINST_VERSION
+ARG UUID_VERSION
 
 COPY --from=build_composer /usr/bin/composer /usr/local/bin/composer
 
@@ -24,7 +26,10 @@ RUN echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
 RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHPEXTINST_VERSION}/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions
 
-RUN install-php-extensions mbstring-stable intl-stable
+RUN install-php-extensions \
+    mbstring-stable \
+    intl-stable \
+    uuid-${UUID_VERSION}
 
 RUN curl -fsLo phive.phar "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar" && \
     curl -fsLo phive.phar.asc "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar.asc" && \

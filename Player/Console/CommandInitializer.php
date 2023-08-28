@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 final class CommandInitializer
 {
-    public function __invoke(InputInterface $input, OutputInterface $output)
+    public function __invoke(InputInterface $input, OutputInterface $output): void
     {
         $formatter = $output->getFormatter();
 

@@ -1,0 +1,8 @@
+Blackfire Player %s
+
+Scenario  "scoped-basic-auth-credentials-not-leaked"
+  [visit 1]
+GET http://localhost:8399/scoped-basic-auth-credentials-not-leaked/index.php
+  OK
+
+ OK  Scenarios  1  - Steps  1

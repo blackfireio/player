@@ -1,0 +1,13 @@
+Blackfire Player %s
+
+Scenario  "error-blackfire-api-outage"
+  [visit 1]
+GET http://0:{{ PORT }}/error-blackfire-api-outage/index.php
+GET http://0:{{ PORT }}/error-blackfire-api-outage/index.php
+GET http://0:{{ PORT }}/error-blackfire-api-outage/index.php
+GET http://0:{{ PORT }}/error-blackfire-api-outage/index.php
+GET http://0:{{ PORT }}/error-blackfire-api-outage/index.php
+  Failure on step  "[Reference] anonymous"
+  └ 404: Error while fetching profile from the API.
+
+ KO  Scenarios  1  - Steps  1  - Failures  1

@@ -1,0 +1,8 @@
+Blackfire Player %s
+
+Scenario  "Click before Visit is not allowed"
+  "Clicking a button"
+  Failure on step  "Clicking a button"  defined in /app/Player/Tests/Console/../fixtures-run/click-before-visit/scenario.bkf at line  3
+  └ Cannot click on a link without a previous request.
+
+ KO  Scenarios  1  - Steps  1  - Failures  1

@@ -1,0 +1,125 @@
+Blackfire Player %s
+
+Scenario  "scraping"
+  [visit 1]
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+GET http://0:8399/scraping/index.php?id=8399
+  OK
+
+ OK  Scenarios  1  - Steps  1
+{
+    "name": null,
+    "results": [
+        {
+            "scenario": "\"scraping\"",
+            "values": {
+                "body": "8399"
+            },
+            "error": null
+        }
+    ],
+    "message": "Build run successfully",
+    "code": 0,
+    "success": true,
+    "input": {
+        "path": "%s/Player/Tests/Console/../fixtures-run-with-env/scraping/scenario.bkf",
+        "content": "scenario\n    name \"scraping\"\n\n    set id 8399\n\n    visit \"scraping/index.php?id=\"~id\n        expect status_code() == 200\n        expect trim(body()) == 8399\n        set body body()\n"
+    },
+    "blackfire_build": {
+        "version": %f,
+        "name": null,
+        "variables": {
+            "endpoint": "http://0:8399",
+            "blackfire-env": "Blackfire Test"
+        },
+        "endpoint": "http://0:8399",
+        "blackfire_environment": "'Blackfire Test'",
+        "status": "done",
+        "scenarios": [
+            {
+                "status": "done",
+                "variables": {
+                    "id": "8399"
+                },
+                "steps": [
+                    {
+                        "uri": "\"scraping/index.php?id=\"~id",
+                        "status": "done",
+                        "expectations": [
+                            "status_code() == 200",
+                            "trim(body()) == 8399"
+                        ],
+                        "variables": {
+                            "body": "body()"
+                        },
+                        "is_blackfire_enabled": true,
+                        "uuid": "%x-%x-%x-%x-%x",
+                        "file": "%s/Player/Tests/Console/../fixtures-run-with-env/scraping/scenario.bkf",
+                        "line": 6,
+                        "type": "visit",
+                        "blackfire_profile_uuid": "%x-%x-%x-%x-%x",
+                        "steps": [
+                            {
+                                "status": "done",
+                                "initiator_uuid": "%x-%x-%x-%x-%x",
+                                "follow_redirects": "false",
+                                "is_blackfire_enabled": true,
+                                "uuid": "%x-%x-%x-%x-%x",
+                                "type": "request",
+                                "steps": [
+                                    {
+                                        "status": "done",
+                                        "initiator_uuid": "%x-%x-%x-%x-%x",
+                                        "warmup": "false",
+                                        "follow_redirects": "false",
+                                        "is_blackfire_enabled": false,
+                                        "name": "[Warmup] anonymous",
+                                        "uuid": "%x-%x-%x-%x-%x",
+                                        "type": "request"
+                                    },
+                                    {
+                                        "status": "done",
+                                        "initiator_uuid": "%x-%x-%x-%x-%x",
+                                        "warmup": "false",
+                                        "follow_redirects": "false",
+                                        "is_blackfire_enabled": false,
+                                        "name": "[Warmup] anonymous",
+                                        "uuid": "%x-%x-%x-%x-%x",
+                                        "type": "request"
+                                    },
+                                    {
+                                        "status": "done",
+                                        "initiator_uuid": "%x-%x-%x-%x-%x",
+                                        "warmup": "false",
+                                        "follow_redirects": "false",
+                                        "is_blackfire_enabled": false,
+                                        "name": "[Warmup] anonymous",
+                                        "uuid": "%x-%x-%x-%x-%x",
+                                        "type": "request"
+                                    },
+                                    {
+                                        "status": "done",
+                                        "initiator_uuid": "%x-%x-%x-%x-%x",
+                                        "warmup": "false",
+                                        "follow_redirects": "false",
+                                        "is_blackfire_enabled": false,
+                                        "name": "[Reference] anonymous",
+                                        "uuid": "%x-%x-%x-%x-%x",
+                                        "type": "request"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "name": "scraping",
+                "uuid": "%x-%x-%x-%x-%x",
+                "file": "%s/Player/Tests/Console/../fixtures-run-with-env/scraping/scenario.bkf",
+                "line": 1
+            }
+        ]
+    }
+}

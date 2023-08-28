@@ -1,0 +1,11 @@
+Blackfire Player %s
+
+Scenario  "Group"
+  [block 1]
+    [visit 2]
+GET http://0:{{ PORT }}/group/index.php
+  [visit 3]
+GET http://0:{{ PORT }}/group/index.php
+  OK
+
+ OK  Scenarios  1  - Steps  2

@@ -16,7 +16,6 @@ use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
-use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\BlockStep;
 use Blackfire\Player\Step\ClickStep;
@@ -42,26 +41,34 @@ use Webmozart\PathUtil\Path;
  */
 class Parser
 {
+    private const DEPRECATION_ENV_RESOLVING = 'Resolving an environment at the scenario level using the "blackfire" property is deprecated. Please use `--blackfire-env` instead. %s.';
     public const REGEX_NAME = '[a-zA-Z_\x7f-\xff][\-a-zA-Z0-9_\x7f-\xff]*';
 
-    private $inAGroup;
-    private $variables;
-    private $externalVariables;
-    private $globalVariables = [];
-    private $missingVariables = [];
-    private $groups;
-    private $expressionLanguage;
-    private $name;
-    private $allowMissingVariables;
+    private const KEYWORD_ENDPOINT = 'endpoint';
+    private const KEYWORD_BLACKFIRE_ENV = 'blackfire-env';
 
-    public function __construct(array $externalVariables = [], $allowMissingVariables = false)
-    {
-        $this->expressionLanguage = new ExpressionLanguage(null, [new LanguageProvider()]);
-        $this->externalVariables = $externalVariables;
-        $this->allowMissingVariables = $allowMissingVariables;
+    private bool $inAGroup;
+    /** @var string[] */
+    private array $variables;
+    /** @var string[] */
+    private array $globalVariables = [];
+    /** @var string[] */
+    private array $missingVariables = [];
+    private array $groups;
+    private ?string $name = null;
+
+    public function __construct(
+        private readonly ExpressionLanguage $expressionLanguage,
+        /** @var string[] */
+        private readonly array $externalVariables = [],
+        private readonly bool $allowMissingVariables = false,
+    ) {
     }
 
-    public function load($file): ScenarioSet
+    /**
+     * @param string|resource $file
+     */
+    public function load(mixed $file): ScenarioSet
     {
         // Groups are global to all files
         $this->groups = [];
@@ -69,7 +76,10 @@ class Parser
         return $this->doLoad($file);
     }
 
-    protected function doLoad($file): ScenarioSet
+    /**
+     * @param string|resource $file
+     */
+    protected function doLoad(mixed $file): ScenarioSet
     {
         if (\is_resource($file)) {
             fseek($file, 0);
@@ -97,7 +107,7 @@ class Parser
         return $this->parse($input, $file);
     }
 
-    public function parse($input, $file = null): ScenarioSet
+    public function parse(string $input, string $file = null): ScenarioSet
     {
         $input = new Input($input, $file);
 
@@ -120,8 +130,10 @@ class Parser
         $scenarios->name($this->name);
         $scenarios->setVariables($this->getGlobalVariables());
 
-        $endpoint = isset($this->getGlobalVariables()['endpoint']) ? $this->getGlobalVariables()['endpoint'] : '';
+        $endpoint = $this->getGlobalVariables()[self::KEYWORD_ENDPOINT] ?? '';
+        $blackfireEnv = $this->getGlobalVariables()[self::KEYWORD_BLACKFIRE_ENV] ?? null;
         $scenarios->setEndpoint($endpoint);
+        $scenarios->setBlackfireEnvironment($blackfireEnv);
 
         foreach ($scenarios as $scenario) {
             if (!$scenario->getEndpoint()) {
@@ -142,7 +154,7 @@ class Parser
         return $this->missingVariables;
     }
 
-    private function parseSteps(Input $input, $expectedIndent): AbstractStep
+    private function parseSteps(Input $input, int $expectedIndent): AbstractStep
     {
         $root = new EmptyStep();
         $current = null;
@@ -170,7 +182,7 @@ class Parser
         return $root;
     }
 
-    private function parseStep(Input $input, $expectedIndent = 0): ScenarioSet|Scenario|AbstractStep
+    private function parseStep(Input $input, int $expectedIndent = 0): ScenarioSet|AbstractStep
     {
         $line = $input->getNextLine();
 
@@ -183,15 +195,14 @@ class Parser
         }
 
         $keyword = $matches[1];
-        $hasArgs = isset($matches[2]);
-        $arguments = isset($matches[2]) ? $matches[2] : null;
+        $arguments = $matches[2] ?? null;
 
         if ('load' === $keyword) {
             if ($expectedIndent > 0) {
                 throw new SyntaxErrorException(sprintf('A "load" can only be defined at root %s.', $input->getContextString()));
             }
 
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('A "load" takes a file pattern as a required argument %s.', $input->getContextString()));
             }
 
@@ -217,16 +228,29 @@ class Parser
 
             return $scenarios;
         }
-        if ('endpoint' === $keyword) {
+
+        if (self::KEYWORD_BLACKFIRE_ENV === $keyword) {
             if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('An "endpoint" can only be defined at root %s.', $input->getContextString()));
+                throw new SyntaxErrorException(sprintf('A "%s" can only be defined at root %s.', self::KEYWORD_BLACKFIRE_ENV, $input->getContextString()));
             }
 
-            if (!$hasArgs) {
-                throw new SyntaxErrorException(sprintf('An "endpoint" takes a URL as a required argument %s.', $input->getContextString()));
+            if (null === $arguments) {
+                throw new SyntaxErrorException(sprintf('A "%s" takes either an env UUID or an environment name as a required argument %s.', self::KEYWORD_BLACKFIRE_ENV, $input->getContextString()));
             }
 
-            $this->globalVariables['endpoint'] = $arguments;
+            $this->globalVariables[self::KEYWORD_BLACKFIRE_ENV] = $arguments;
+
+            $step = new EmptyStep();
+        } elseif (self::KEYWORD_ENDPOINT === $keyword) {
+            if ($expectedIndent > 0) {
+                throw new SyntaxErrorException(sprintf('An "%s" can only be defined at root %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
+            }
+
+            if (null === $arguments) {
+                throw new SyntaxErrorException(sprintf('An "%s" takes a URL as a required argument %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
+            }
+
+            $this->globalVariables[self::KEYWORD_ENDPOINT] = $arguments;
 
             $step = new EmptyStep();
         } elseif ('name' === $keyword) {
@@ -234,7 +258,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('A "name" can only be defined at root %s.', $input->getContextString()));
             }
 
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
@@ -256,7 +280,7 @@ class Parser
                 throw new SyntaxErrorException(sprintf('A "group" can only be defined at root %s.', $input->getContextString()));
             }
 
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('A "group" takes a name as a required argument %s.', $input->getContextString()));
             }
 
@@ -268,7 +292,7 @@ class Parser
 
             return $step;
         } elseif ('block' === $keyword) {
-            if ($hasArgs) {
+            if (null !== $arguments) {
                 throw new SyntaxErrorException(sprintf('A "block" does not take any argument %s.', $input->getContextString()));
             }
 
@@ -278,25 +302,25 @@ class Parser
 
             return $step;
         } elseif ('visit' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('A "visit" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new VisitStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('click' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('A "click" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new ClickStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('submit' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('A "submit" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new SubmitStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('include' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('An "include" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
@@ -317,39 +341,53 @@ class Parser
 
             return $step;
         } elseif ('follow' === $keyword) {
-            if ($hasArgs) {
+            if (null !== $arguments) {
                 throw new SyntaxErrorException(sprintf('A "follow" does not take any argument %s.', $input->getContextString()));
             }
 
             $step = new FollowStep($input->getFile(), $input->getLine());
         } elseif ('reload' === $keyword) {
-            if ($hasArgs) {
+            if (null !== $arguments) {
                 throw new SyntaxErrorException(sprintf('A "reload" does not take any argument %s.', $input->getContextString()));
             }
 
             $step = new ReloadStep($input->getFile(), $input->getLine());
         } elseif ('when' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('An "when" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new ConditionStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
-            $step->setIfStep($this->parseSteps($input, $expectedIndent + 1));
+            $childStep = $this->parseSteps($input, $expectedIndent + 1);
+            if (!$childStep->getNext()) {
+                $step->setIfStep($childStep);
+            } else {
+                $blockStep = new BlockStep();
+                $blockStep->setBlockStep($childStep);
+                $step->setIfStep($blockStep);
+            }
 
             return $step;
         } elseif ('while' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('An "while" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new WhileStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
-            $step->setWhileStep($this->parseSteps($input, $expectedIndent + 1));
+            $childStep = $this->parseSteps($input, $expectedIndent + 1);
+            if (!$childStep->getNext()) {
+                $step->setWhileStep($childStep);
+            } else {
+                $blockStep = new BlockStep();
+                $blockStep->setBlockStep($childStep);
+                $step->setWhileStep($blockStep);
+            }
 
             return $step;
         } elseif ('with' === $keyword) {
-            if (!$hasArgs) {
+            if (null === $arguments) {
                 throw new SyntaxErrorException(sprintf('An "with" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
@@ -376,7 +414,14 @@ class Parser
 
             $step = new LoopStep($this->checkExpression($input, $values), $keyName, $valueName, $input->getFile(), $input->getLine());
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
-            $step->setLoopStep($this->parseSteps($input, $expectedIndent + 1));
+            $childStep = $this->parseSteps($input, $expectedIndent + 1);
+            if (!$childStep->getNext()) {
+                $step->setLoopStep($childStep);
+            } else {
+                $blockStep = new BlockStep();
+                $blockStep->setBlockStep($childStep);
+                $step->setLoopStep($blockStep);
+            }
 
             if (!$keyNameExists) {
                 unset($this->variables[$keyName]);
@@ -390,6 +435,9 @@ class Parser
         } elseif ('set' === $keyword) {
             if ($expectedIndent > 0) {
                 throw new LogicException(sprintf('A "set" can only be defined before steps %s.', $input->getContextString()));
+            }
+            if (null === $arguments) {
+                throw new SyntaxErrorException(sprintf('A "set" takes an argument %s.', $input->getContextString()));
             }
 
             if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
@@ -412,7 +460,7 @@ class Parser
         return $step;
     }
 
-    private function parseStepConfig(Input $input, AbstractStep $step, $expectedIndent, $ignoreInvalid = false): void
+    private function parseStepConfig(Input $input, AbstractStep $step, int $expectedIndent, bool $ignoreInvalid = false): void
     {
         while (!$input->isEof()) {
             $nextIndent = $input->getNextLineIndent();
@@ -443,11 +491,10 @@ class Parser
             }
 
             $keyword = $matches[1];
-            $hasArgs = isset($matches[2]);
-            $arguments = isset($matches[2]) ? $matches[2] : null;
+            $arguments = $matches[2] ?? null;
 
             if ('name' === $keyword) {
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
                 }
 
@@ -457,7 +504,7 @@ class Parser
                     throw new LogicException(sprintf('"expect" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('An "expect" takes an expectation as a required argument %s.', $input->getContextString()));
                 }
 
@@ -467,7 +514,7 @@ class Parser
                     throw new LogicException(sprintf('"assert" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('An "assert" takes an assertion as a required argument %s.', $input->getContextString()));
                 }
 
@@ -477,7 +524,7 @@ class Parser
                     throw new LogicException(sprintf('"set" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "set" takes a name and a value as required arguments %s.', $input->getContextString()));
                 }
 
@@ -492,55 +539,49 @@ class Parser
                 $this->variables[$matches[1]] = $matches[1];
                 $step->set($matches[1], $this->checkExpression($input, $matches[2]));
             } elseif ('header' === $keyword) {
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "header" takes an header as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->header($this->checkExpression($input, $arguments));
             } elseif ('auth' === $keyword) {
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "auth" takes a string of format "username:password" as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->auth($this->checkExpression($input, $arguments));
             } elseif ('wait' === $keyword) {
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "wait" takes an expression as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->wait($this->checkExpression($input, $arguments));
             } elseif ('follow_redirects' === $keyword) {
-                $step->followRedirects($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
+                $step->followRedirects(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('blackfire' === $keyword) {
-                $step->blackfire($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
-            } elseif ('blackfire-build' === $keyword || 'blackfire-scenario' === $keyword) { // Internal keywords: do not use
-                if (!$hasArgs) {
-                    throw new SyntaxErrorException(sprintf('A "%s" takes a scenario uuid as a required argument %s.', $keyword, $input->getContextString()));
+                $step->blackfire(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
+                if (!\in_array($step->getBlackfire(), ['true', 'false'], true)) {
+                    // if the `blackfire` keyword match anything than true or false, we are trying to resolve an environment.
+                    SentrySupport::captureMessage('blackfire property used to resolve the blackfire environment');
+                    // $this->output->writeln(sprintf('<warning>%s</warning>', self::DEPRECATION_ENV_RESOLVING));
+                    $step->addDeprecation(sprintf(self::DEPRECATION_ENV_RESOLVING, $input->getContextString()));
                 }
-
-                $step->blackfireScenario($this->checkExpression($input, $arguments));
-            } elseif ('blackfire-request' === $keyword) { // Internal keywords: do not use
-                if (!$hasArgs) {
-                    throw new SyntaxErrorException(sprintf('A "blackfire-request" takes a request uuid as a required argument %s.', $input->getContextString()));
-                }
-
-                $step->blackfireRequest($this->checkExpression($input, $arguments));
             } elseif ('json' === $keyword) {
-                $step->json($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
+                $step->json(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('samples' === $keyword) {
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "samples" takes a number as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->samples($this->checkExpression($input, $arguments));
             } elseif ('warmup' === $keyword) {
-                $step->warmup($hasArgs ? $this->checkExpression($input, $arguments) : 'true');
+                $step->warmup(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('body' === $keyword) {
                 if (!$step instanceof VisitStep && !$step instanceof SubmitStep) {
                     throw new LogicException(sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "body" takes a string as a required argument %s.', $input->getContextString()));
                 }
 
@@ -548,6 +589,10 @@ class Parser
             } elseif ('param' === $keyword) {
                 if (!$step instanceof VisitStep && !$step instanceof SubmitStep) {
                     throw new LogicException(sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
+                }
+
+                if (null === $arguments) {
+                    throw new SyntaxErrorException(sprintf('A "param" takes a required argument %s.', $input->getContextString()));
                 }
 
                 if (!preg_match('/^([^\s]+)\s+(.+)$/', $arguments, $matches)) {
@@ -560,7 +605,7 @@ class Parser
                     throw new LogicException(sprintf('"method" is only available for "visit" steps %s.', $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "method" takes an HTTP verb as a required argument %s.', $input->getContextString()));
                 }
 
@@ -570,7 +615,7 @@ class Parser
                     throw new LogicException(sprintf('"endpoint" is only available for "scenario", "group", or "block" steps %s.', $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('An "endpoint" takes a URL as a required argument %s.', $input->getContextString()));
                 }
 
@@ -580,7 +625,7 @@ class Parser
                     throw new LogicException(sprintf('"dump" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
-                if (!$hasArgs) {
+                if (null === $arguments) {
                     throw new SyntaxErrorException(sprintf('A "dump" takes a required argument %s.', $input->getContextString()));
                 }
 
@@ -596,17 +641,20 @@ class Parser
         }
     }
 
-    private function checkExpression(Input $input, $expression)
+    private function checkExpression(Input $input, string $expression): string
     {
         // for groups, expressions will be checked in context
         if ($this->inAGroup) {
             return $expression;
         }
 
-        // We add the "endpoint" variables to be able to use it anywhere. The
+        // We add the "endpoint" and "blackfire-env" variables to be able to use it anywhere. The
         // value could be injected later, during the parsing or directly in the
         // scenarios via the CLI
-        $variables = array_replace(['endpoint' => null], $this->globalVariables, $this->externalVariables, $this->variables);
+        $variables = array_replace([
+            self::KEYWORD_ENDPOINT => null,
+            self::KEYWORD_BLACKFIRE_ENV => null,
+        ], $this->globalVariables, $this->externalVariables, $this->variables);
 
         try {
             $missingVariables = $this->expressionLanguage->checkExpression($expression, array_keys($variables), $this->allowMissingVariables);

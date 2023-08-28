@@ -16,6 +16,7 @@ use Blackfire\Player\Exception\SecurityException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;
 use Blackfire\Player\ExpressionLanguage\UploadFile;
+use Blackfire\Player\Extension\TmpDirExtension;
 use Blackfire\Player\ValueBag;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
@@ -52,7 +53,7 @@ class ProviderTest extends TestCase
         $language = new ExpressionLanguage(null, [$provider]);
         $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $extra = new ValueBag();
-        $extra->set('tmp_dir', $tmpDir);
+        $extra->set(TmpDirExtension::EXTRA_VALUE_KEY, $tmpDir);
         $fs = new Filesystem();
         $fs->mkdir($tmpDir);
 
@@ -74,7 +75,7 @@ class ProviderTest extends TestCase
         $language = new ExpressionLanguage(null, [$provider]);
         $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $extra = new ValueBag();
-        $extra->set('tmp_dir', $tmpDir);
+        $extra->set(TmpDirExtension::EXTRA_VALUE_KEY, $tmpDir);
         $fs = new Filesystem();
         $fs->mkdir($tmpDir);
 

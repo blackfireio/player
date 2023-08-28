@@ -1,0 +1,9 @@
+scenario
+    name "scraping"
+
+    set id 8399
+
+    visit "scraping/index.php?id="~id
+        expect status_code() == 200
+        expect trim(body()) == 8399
+        set body body()

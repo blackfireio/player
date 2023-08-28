@@ -20,17 +20,13 @@ use Blackfire\Player\Exception\InvalidArgumentException;
  */
 class UploadFile
 {
-    private $filename;
-    private $name;
-
-    public function __construct($filename, $name)
-    {
+    public function __construct(
+        private readonly string $filename,
+        private readonly string $name,
+    ) {
         if (!is_readable($filename)) {
             throw new InvalidArgumentException(sprintf('File "%s" does not exist or is not readable.', $filename));
         }
-
-        $this->filename = $filename;
-        $this->name = $name;
     }
 
     public function __toString()
@@ -38,17 +34,17 @@ class UploadFile
         return (string) file_get_contents($this->filename);
     }
 
-    public function getFilename()
+    public function getFilename(): string
     {
         return $this->filename;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public static function isAbsolutePath($file)
+    public static function isAbsolutePath(string $file): bool
     {
         return strspn($file, '/\\', 0, 1)
             || (\strlen($file) > 3 && ctype_alpha($file[0])

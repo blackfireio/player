@@ -1,0 +1,35 @@
+Blackfire Player %s
+
+Scenario  "Check"
+  [condition 1]
+    [block 2]
+      [loop 3]
+        [block 4]
+          "Loading /"
+GET http://0:8399/with-include/
+          "Checking /"
+GET http://0:8399/with-include/
+      [block 7]
+        [loop 8]
+          [block 9]
+            "Loading /about"
+GET http://0:8399/with-include/about
+            "Checking /about"
+GET http://0:8399/with-include/about
+          [block 12]
+            "Loading /community"
+GET http://0:8399/with-include/community
+            "Checking /community"
+GET http://0:8399/with-include/community
+  OK
+
+Scenario  "Pages"
+  [block 1]
+    [loop 2]
+      "Checking /about"
+GET http://0:8399/with-include/about
+      "Checking /community"
+GET http://0:8399/with-include/community
+  OK
+
+ OK  Scenarios  2  - Steps  8

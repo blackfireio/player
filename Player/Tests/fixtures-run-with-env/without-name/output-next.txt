@@ -1,0 +1,14 @@
+Blackfire Player %s
+
+Scenario  0
+  "/competitions"
+GET http://0:8399/without-name/index.php
+GET http://0:8399/without-name/index.php
+GET http://0:8399/without-name/index.php
+GET http://0:8399/without-name/index.php
+GET http://0:8399/without-name/index.php
+    "Reloading for Blackfire"
+GET http://0:8399/without-name/index.php
+  OK
+
+ OK  Scenarios  1  - Steps  2

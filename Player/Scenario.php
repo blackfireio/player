@@ -12,6 +12,7 @@
 namespace Blackfire\Player;
 
 use Blackfire\Player\Step\GroupStep;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -20,8 +21,21 @@ use Blackfire\Player\Step\GroupStep;
  */
 class Scenario extends GroupStep
 {
+    #[Ignore]
+    protected ?string $blackfireBuildUuid = null;
+
     public function getType(): ?string
     {
         return null;
+    }
+
+    public function getBlackfireBuildUuid(): string|null
+    {
+        return $this->blackfireBuildUuid;
+    }
+
+    public function setBlackfireBuildUuid(string $blackfireBuildUuid): void
+    {
+        $this->blackfireBuildUuid = $blackfireBuildUuid;
     }
 }

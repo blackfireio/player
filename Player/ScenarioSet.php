@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player;
 
+use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Exception\LogicException;
 use Symfony\Component\Serializer\Annotation\Ignore;
 
@@ -21,16 +22,22 @@ use Symfony\Component\Serializer\Annotation\Ignore;
  */
 class ScenarioSet implements \IteratorAggregate
 {
+    /** @var bool[] */
     #[Ignore]
     private array $keys = [];
     private ValueBag $extraBag;
     private ?string $name = null;
+    /** @var string[] */
     private array $variables = [];
+    private int $version = 0;
+
+    private BuildStatus $status = BuildStatus::IN_PROGRESS;
 
     private ?string $endpoint = null;
     private ?string $blackfireEnvironment = null;
 
     public function __construct(
+        /** @var Scenario[] */
         private array $scenarios = [],
     ) {
         $this->extraBag = new ValueBag();
@@ -40,9 +47,9 @@ class ScenarioSet implements \IteratorAggregate
     {
         $str = '';
         $ind = 0;
-        foreach ($this->scenarios as $i => $scenario) {
-            $str .= sprintf(">>> Scenario %d%s <<<\n", ++$ind, !\is_int($i) ? sprintf(' (as %s)', $i) : '');
-            $str .= (string) $scenario."\n";
+        foreach ($this->scenarios as $scenario) {
+            $str .= sprintf(">>> Scenario %d <<<\n", ++$ind);
+            $str .= $scenario."\n";
         }
 
         return $str;
@@ -50,68 +57,69 @@ class ScenarioSet implements \IteratorAggregate
 
     public function addScenarioSet(self $scenarioSet): void
     {
-        foreach ($scenarioSet as $reference => $scenario) {
-            $this->add($scenario, $reference);
+        foreach ($scenarioSet as $scenario) {
+            $this->add($scenario);
         }
     }
 
-    public function add(Scenario $scenario, $reference = null)
+    public function computeNextVersion(): int
+    {
+        ++$this->version;
+
+        return $this->version;
+    }
+
+    public function add(Scenario $scenario): void
     {
         if (null !== $scenario->getKey() && isset($this->keys[$scenario->getKey()])) {
             throw new LogicException(sprintf('Scenario key "%s" is already defined.', $scenario->getKey()));
         }
 
-        if (null !== $reference && !\is_int($reference)) {
-            if (isset($this->scenarios[$reference])) {
-                throw new LogicException(sprintf('Reference "%s" is already defined.', $reference));
-            }
-
-            $this->scenarios[$reference] = $scenario;
-        } else {
-            $this->scenarios[] = $scenario;
-        }
+        $this->scenarios[] = $scenario;
 
         $this->keys[$scenario->getKey()] = true;
     }
 
-    public function name($name)
+    public function name(?string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     #[Ignore]
-    #[\ReturnTypeWillChange]
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->scenarios);
     }
 
-    public function getScenarios(): iterable
+    public function getScenarios(): array
     {
-        return $this->getIterator();
+        return $this->scenarios;
     }
 
-    public function getExtraBag()
+    public function getExtraBag(): ValueBag
     {
         return $this->extraBag;
     }
 
-    public function setVariables(array $variables)
+    public function setVariables(array $variables): void
     {
         $this->variables = $variables;
     }
 
-    public function setVariable($key, $value)
+    public function setVariable(string $key, string $value): void
     {
         $this->variables[$key] = $value;
     }
 
-    public function getVariables()
+    /**
+     * @return string[]
+     */
+    public function getVariables(): array
     {
         return $this->variables;
     }
@@ -134,5 +142,15 @@ class ScenarioSet implements \IteratorAggregate
     public function setBlackfireEnvironment(?string $blackfireEnvironment): void
     {
         $this->blackfireEnvironment = $blackfireEnvironment;
+    }
+
+    public function getStatus(): BuildStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(BuildStatus $status): void
+    {
+        $this->status = $status;
     }
 }

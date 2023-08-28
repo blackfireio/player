@@ -1,14 +1,17 @@
 {
-    "version": %f,
     "name": null,
     "variables": [],
     "endpoint": "",
     "blackfire_environment": null,
+    "status": "in_progress",
     "scenarios": [
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "\"\/blog\/\"",
+                    "uri": "\"/blog/\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -18,10 +21,11 @@
                 },
                 {
                     "selector": "link(\"Releases\")",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "css(\".pagination-item-prev.disabled\") and css(\".pagination-item-prev.disabled .pagination-item-link span\").text() matches \"\/Newer posts\/\"",
-                        "css(\".pagination-item-next\") and css(\".pagination-item-next .pagination-item-link a\").text() matches \"\/Older posts\/\""
+                        "css(\".pagination-item-prev.disabled\") and css(\".pagination-item-prev.disabled .pagination-item-link span\").text() matches \"/Newer posts/\"",
+                        "css(\".pagination-item-next\") and css(\".pagination-item-next .pagination-item-link a\").text() matches \"/Older posts/\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 9,
@@ -29,6 +33,7 @@
                 },
                 {
                     "selector": "link(\"Older posts\")",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
                         "css(\".pagination-item-prev:not(.disabled)\").count() == 1"
@@ -42,12 +47,14 @@
             "line": 3
         },
         {
+            "status": "todo",
             "variables": {
                 "env": "dev"
             },
             "steps": [
                 {
-                    "uri": "url(\"\/components\")",
+                    "uri": "url(\"/components\")",
+                    "status": "todo",
                     "variables": {
                         "component_urls": "css('.components-list td.name a').extract(['_text', 'href'])"
                     },
@@ -57,24 +64,70 @@
                     "type": "visit"
                 },
                 {
-                    "values": "component_urls",
                     "loop_step": {
-                        "uri": "data[1]",
-                        "expectations": [
-                            "status_code() == 200",
-                            "css(\"h1.content_title\") and css(\"h1.content_title\").text() matches \"\/\" ~ data[0] ~ \"\/\""
+                        "status": "todo",
+                        "steps": [
+                            {
+                                "uri": "data[1]",
+                                "status": "todo",
+                                "expectations": [
+                                    "status_code() == 200",
+                                    "css(\"h1.content_title\") and css(\"h1.content_title\").text() matches \"/\" ~ data[0] ~ \"/\""
+                                ],
+                                "variables": {
+                                    "doc_url": "xpath(\"//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Documentation')]\").count() ? xpath(\"//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Documentation')]\").attr(\"href\")",
+                                    "code_url": "xpath(\"//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Code')]\").count() ? xpath(\"//p[contains(@class, 'component-resources')]/*/a[contains(text(), 'Code')]\").attr(\"href\")"
+                                },
+                                "is_blackfire_enabled": true,
+                                "name": "\"Checking Component \" ~ data[0]",
+                                "line": 27,
+                                "type": "visit"
+                            },
+                            {
+                                "if_step": {
+                                    "uri": "doc_url",
+                                    "status": "todo",
+                                    "expectations": [
+                                        "status_code() == 200",
+                                        "css(\"h1.content_title\") and css(\"h1.content_title\").text() matches \"/\" ~ data[0] ~ \"/\""
+                                    ],
+                                    "is_blackfire_enabled": true,
+                                    "name": "Checking Docs URL",
+                                    "line": 35,
+                                    "type": "visit"
+                                },
+                                "condition": "doc_url and \"Locale\" != data[0]",
+                                "status": "todo",
+                                "is_blackfire_enabled": true,
+                                "line": 34,
+                                "type": "condition"
+                            },
+                            {
+                                "if_step": {
+                                    "uri": "code_url",
+                                    "status": "todo",
+                                    "expectations": [
+                                        "status_code() == 200"
+                                    ],
+                                    "is_blackfire_enabled": true,
+                                    "name": "Checking Github Code URL",
+                                    "line": 41,
+                                    "type": "visit"
+                                },
+                                "condition": "code_url and env == \"prod\"",
+                                "status": "todo",
+                                "is_blackfire_enabled": true,
+                                "line": 40,
+                                "type": "condition"
+                            }
                         ],
-                        "variables": {
-                            "doc_url": "xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Documentation')]\").count() ? xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Documentation')]\").attr(\"href\")",
-                            "code_url": "xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Code')]\").count() ? xpath(\"\/\/p[contains(@class, 'component-resources')]\/*\/a[contains(text(), 'Code')]\").attr(\"href\")"
-                        },
                         "is_blackfire_enabled": true,
-                        "name": "\"Checking Component \" ~ data[0]",
-                        "line": 27,
-                        "type": "visit"
+                        "type": "block"
                     },
+                    "values": "component_urls",
                     "key_name": "_",
                     "value_name": "data",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 26,
                     "type": "loop"
@@ -84,9 +137,12 @@
             "line": 18
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "url(\"\/projects\")",
+                    "uri": "url(\"/projects\")",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -96,7 +152,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url(\"\/components\")",
+                    "uri": "url(\"/components\")",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
                         "css(\".component-list .component\").count() > 30"
@@ -107,20 +164,53 @@
                     "type": "visit"
                 },
                 {
-                    "values": "{ Drupal: { url: \"drupal.org\", dep: \"HttpFoundation\", slug: \"\/projects\/drupal\" }, phpBB: { url: \"phpbb.com\", dep: \"CssSelector\", slug: \"\/projects\/phpbb\" } }",
                     "loop_step": {
-                        "uri": "url(\"\/projects\")",
-                        "expectations": [
-                            "status_code() == 200",
-                            "css(\"a[href='\" ~ project['slug'] ~ \"']\").count() >= 1"
+                        "status": "todo",
+                        "steps": [
+                            {
+                                "uri": "url(\"/projects\")",
+                                "status": "todo",
+                                "expectations": [
+                                    "status_code() == 200",
+                                    "css(\"a[href='\" ~ project['slug'] ~ \"']\").count() >= 1"
+                                ],
+                                "is_blackfire_enabled": true,
+                                "name": "Checking that \" ~ name ~ \" is on projects page",
+                                "line": 63,
+                                "type": "visit"
+                            },
+                            {
+                                "selector": "css(\"a[href='\" ~ project['slug'] ~ \"']\")",
+                                "status": "todo",
+                                "expectations": [
+                                    "status_code() == 200",
+                                    "css(\"a[href*='\" ~ project['url'] ~ \"']\").count() >= 1",
+                                    "css(\"a:contains('\" ~ project['dep'] ~ \"')\").count() >= 1"
+                                ],
+                                "is_blackfire_enabled": true,
+                                "name": "\"Checking project \" ~ name",
+                                "line": 68,
+                                "type": "click"
+                            },
+                            {
+                                "selector": "link(project['dep'])",
+                                "status": "todo",
+                                "expectations": [
+                                    "status_code() == 200"
+                                ],
+                                "is_blackfire_enabled": false,
+                                "name": "\"Checking Component \" ~ project['dep']",
+                                "line": 74,
+                                "type": "click"
+                            }
                         ],
                         "is_blackfire_enabled": true,
-                        "name": "Checking that \" ~ name ~ \" is on projects page",
-                        "line": 63,
-                        "type": "visit"
+                        "type": "block"
                     },
+                    "values": "{ Drupal: { url: \"drupal.org\", dep: \"HttpFoundation\", slug: \"/projects/drupal\" }, phpBB: { url: \"phpbb.com\", dep: \"CssSelector\", slug: \"/projects/phpbb\" } }",
                     "key_name": "name",
                     "value_name": "project",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 57,
                     "type": "loop"
@@ -130,28 +220,33 @@
             "line": 45
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "\"\/doc\"",
+                    "uri": "\"/doc\"",
+                    "status": "todo",
                     "follow_redirects": "true",
                     "is_blackfire_enabled": false,
                     "line": 82,
                     "type": "visit"
                 },
                 {
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "header(\"Cache-Control\") matches \"\/s-maxage=[1-9]\\\\d\\\\d+\/\""
+                        "header(\"Cache-Control\") matches \"/s-maxage=[1-9]\\\\d\\\\d+/\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 86,
                     "type": "reload"
                 },
                 {
-                    "uri": "\"\/doc\/current\/index.html\"",
+                    "uri": "\"/doc/current/index.html\"",
+                    "status": "todo",
                     "expectations": [
-                        "body() matches '#<script src=\".*\/build\/new-app(\\\\..+)?\\\\.js\"><\/script>#'",
-                        "body() matches '#<script src=\".*\/build\/new-doc(\\\\..+)?\\\\.js\"><\/script>#'"
+                        "body() matches '#<script src=\".*/build/new-app(\\\\..+)?\\\\.js\"></script>#'",
+                        "body() matches '#<script src=\".*/build/new-doc(\\\\..+)?\\\\.js\"></script>#'"
                     ],
                     "is_blackfire_enabled": true,
                     "name": "Doc pages include the right JavaScript files",
@@ -163,35 +258,85 @@
             "line": 79
         },
         {
+            "status": "todo",
             "variables": {
-                "urls": "[\"\/\", \"\/blog\/\"]",
+                "urls": "[\"/\", \"/blog/\"]",
                 "asset_urls": "[]",
                 "env": "dev"
             },
             "steps": [
                 {
                     "if_step": {
-                        "values": "urls",
-                        "loop_step": {
-                            "uri": "url",
-                            "expectations": [
-                                "status_code() == 200"
-                            ],
-                            "variables": {
-                                "asset_urls": "merge(asset_urls, css(\"img\").extract(\"src\"))"
+                        "status": "todo",
+                        "steps": [
+                            {
+                                "loop_step": {
+                                    "uri": "url",
+                                    "status": "todo",
+                                    "expectations": [
+                                        "status_code() == 200"
+                                    ],
+                                    "variables": {
+                                        "asset_urls": "merge(asset_urls, css(\"img\").extract(\"src\"))"
+                                    },
+                                    "is_blackfire_enabled": true,
+                                    "name": "\"Checking page \" ~ url",
+                                    "line": 110,
+                                    "type": "visit"
+                                },
+                                "values": "urls",
+                                "key_name": "_",
+                                "value_name": "url",
+                                "status": "todo",
+                                "is_blackfire_enabled": true,
+                                "line": 109,
+                                "type": "loop"
                             },
-                            "is_blackfire_enabled": true,
-                            "name": "\"Checking page \" ~ url",
-                            "line": 110,
-                            "type": "visit"
-                        },
-                        "key_name": "_",
-                        "value_name": "url",
+                            {
+                                "loop_step": {
+                                    "status": "todo",
+                                    "steps": [
+                                        {
+                                            "uri": "asset_url",
+                                            "status": "todo",
+                                            "expectations": [
+                                                "status_code() in [200, 301, 302, 304]"
+                                            ],
+                                            "follow_redirects": "true",
+                                            "is_blackfire_enabled": false,
+                                            "name": "\"Checking asset \" ~ asset_url",
+                                            "line": 118,
+                                            "type": "visit"
+                                        },
+                                        {
+                                            "status": "todo",
+                                            "expectations": [
+                                                "status_code() == 200"
+                                            ],
+                                            "is_blackfire_enabled": false,
+                                            "name": "Checking redirected asset",
+                                            "line": 124,
+                                            "type": "reload"
+                                        }
+                                    ],
+                                    "is_blackfire_enabled": true,
+                                    "type": "block"
+                                },
+                                "values": "unique(asset_urls)",
+                                "key_name": "_",
+                                "value_name": "asset_url",
+                                "status": "todo",
+                                "wait": "200",
+                                "is_blackfire_enabled": true,
+                                "line": 115,
+                                "type": "loop"
+                            }
+                        ],
                         "is_blackfire_enabled": true,
-                        "line": 109,
-                        "type": "loop"
+                        "type": "block"
                     },
                     "condition": "env == \"prod\"",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 108,
                     "type": "condition"
@@ -201,50 +346,115 @@
             "line": 102
         },
         {
+            "status": "todo",
             "variables": {
                 "env": "dev",
-                "urls": "['\/']"
+                "urls": "['/']"
             },
             "steps": [
                 {
                     "if_step": {
-                        "values": "urls",
-                        "loop_step": {
-                            "steps": [
-                                {
-                                    "uri": "url(url)",
-                                    "expectations": [
-                                        "status_code() == 200"
+                        "status": "todo",
+                        "steps": [
+                            {
+                                "loop_step": {
+                                    "status": "todo",
+                                    "steps": [
+                                        {
+                                            "uri": "url(url)",
+                                            "status": "todo",
+                                            "expectations": [
+                                                "status_code() == 200"
+                                            ],
+                                            "wait": "1000",
+                                            "is_blackfire_enabled": false,
+                                            "name": "\"Loading \" ~ url",
+                                            "line": 153,
+                                            "type": "visit"
+                                        },
+                                        {
+                                            "status": "todo",
+                                            "expectations": [
+                                                "status_code() == 200",
+                                                "header('Age') > 0",
+                                                "header('X-Varnish') matches '/\\\\d+ \\\\d+/'"
+                                            ],
+                                            "is_blackfire_enabled": false,
+                                            "name": "\"Checking \" ~ url",
+                                            "line": 159,
+                                            "type": "reload"
+                                        }
                                     ],
-                                    "wait": "1000",
-                                    "is_blackfire_enabled": false,
-                                    "name": "\"Loading \" ~ url",
-                                    "line": 153,
-                                    "type": "visit"
+                                    "is_blackfire_enabled": true,
+                                    "line": 152,
+                                    "type": "block"
                                 },
-                                {
-                                    "expectations": [
-                                        "status_code() == 200",
-                                        "header('Age') > 0",
-                                        "header('X-Varnish') matches '\/\\\\d+ \\\\d+\/'"
-                                    ],
-                                    "is_blackfire_enabled": false,
-                                    "name": "\"Checking \" ~ url",
-                                    "line": 159,
-                                    "type": "reload"
-                                }
-                            ],
-                            "is_blackfire_enabled": true,
-                            "line": 152,
-                            "type": "block"
-                        },
-                        "key_name": "_",
-                        "value_name": "url",
+                                "values": "urls",
+                                "key_name": "_",
+                                "value_name": "url",
+                                "status": "todo",
+                                "is_blackfire_enabled": true,
+                                "line": 172,
+                                "type": "loop"
+                            },
+                            {
+                                "variables": {
+                                    "marketing_slugs": "[ 'community', 'what-is-symfony', 'at-a-glance', 'components', 'download', 'elevator-pitches', 'in-five-minutes', 'license', 'projects', 'six-good-reasons', 'six-good-technical-reasons', 'ten-criteria', 'when-use-a-framework', 'why-use-a-framework', 'explained-to-a-developer', 'explained-to-a-project-manager', 'explained-to-a-project-owner', 'explained-to-a-system-administrator', 'explained-to-my-boss', 'support', ]"
+                                },
+                                "status": "todo",
+                                "steps": [
+                                    {
+                                        "loop_step": {
+                                            "status": "todo",
+                                            "steps": [
+                                                {
+                                                    "uri": "url(url)",
+                                                    "status": "todo",
+                                                    "expectations": [
+                                                        "status_code() == 200"
+                                                    ],
+                                                    "wait": "1000",
+                                                    "is_blackfire_enabled": false,
+                                                    "name": "\"Loading \" ~ url",
+                                                    "line": 153,
+                                                    "type": "visit"
+                                                },
+                                                {
+                                                    "status": "todo",
+                                                    "expectations": [
+                                                        "status_code() == 200",
+                                                        "header('Age') > 0",
+                                                        "header('X-Varnish') matches '/\\\\d+ \\\\d+/'"
+                                                    ],
+                                                    "is_blackfire_enabled": false,
+                                                    "name": "\"Checking \" ~ url",
+                                                    "line": 159,
+                                                    "type": "reload"
+                                                }
+                                            ],
+                                            "is_blackfire_enabled": true,
+                                            "line": 152,
+                                            "type": "block"
+                                        },
+                                        "values": "marketing_slugs",
+                                        "key_name": "_",
+                                        "value_name": "url",
+                                        "status": "todo",
+                                        "is_blackfire_enabled": true,
+                                        "line": 176,
+                                        "type": "loop"
+                                    }
+                                ],
+                                "is_blackfire_enabled": true,
+                                "line": 129,
+                                "type": "block"
+                            }
+                        ],
                         "is_blackfire_enabled": true,
-                        "line": 172,
-                        "type": "loop"
+                        "type": "block"
                     },
                     "condition": "\"prod\" == env",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 171,
                     "type": "condition"
@@ -254,16 +464,19 @@
             "line": 166
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
                     "variables": {
                         "marketing_slugs": "[ 'community', 'what-is-symfony', 'at-a-glance', 'components', 'download', 'elevator-pitches', 'in-five-minutes', 'license', 'projects', 'six-good-reasons', 'six-good-technical-reasons', 'ten-criteria', 'when-use-a-framework', 'why-use-a-framework', 'explained-to-a-developer', 'explained-to-a-project-manager', 'explained-to-a-project-owner', 'explained-to-a-system-administrator', 'explained-to-my-boss', 'support', ]"
                     },
+                    "status": "todo",
                     "steps": [
                         {
-                            "values": "marketing_slugs",
                             "loop_step": {
-                                "uri": "url('\/' ~ slug)",
+                                "uri": "url('/' ~ slug)",
+                                "status": "todo",
                                 "expectations": [
                                     "status_code() == 200"
                                 ],
@@ -272,8 +485,10 @@
                                 "line": 184,
                                 "type": "visit"
                             },
+                            "values": "marketing_slugs",
                             "key_name": "_",
                             "value_name": "slug",
+                            "status": "todo",
                             "is_blackfire_enabled": true,
                             "line": 183,
                             "type": "loop"
@@ -288,9 +503,12 @@
             "line": 179
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "\"\/releases\"",
+                    "uri": "\"/releases\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -302,26 +520,29 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/releases?version=\" ~ versions[\"stable\"]",
+                    "uri": "\"/releases?version=\" ~ versions[\"stable\"]",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 301",
-                        "header('Location') == '\/releases\/' ~ versions[\"stable\"]"
+                        "header('Location') == '/releases/' ~ versions[\"stable\"]"
                     ],
                     "is_blackfire_enabled": true,
                     "line": 200,
                     "type": "visit"
                 },
                 {
+                    "line": 205,
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 301",
-                        "header('Location') matches '\/\\\\\/releases\\\\\/\\\\d.\\\\d\/'"
+                        "header('Location') matches '/\\\\/releases\\\\/\\\\d.\\\\d/'"
                     ],
                     "is_blackfire_enabled": true,
-                    "line": 205,
                     "type": "follow"
                 },
                 {
-                    "uri": "\"\/releases.json\"",
+                    "uri": "\"/releases.json\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
                         "versions[\"stable\"] == json(\"symfony_versions.stable\")",

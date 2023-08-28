@@ -11,26 +11,31 @@
 
 namespace Blackfire\Player\Validator;
 
-use Blackfire\Player\Parser;
+use Blackfire\Player\ParserFactory;
 
 /**
  * @internal
  */
 class BkfValidator
 {
-    public function validate($input, array $variables = [], $allowMisingVariables = false): ValidationResult
-    {
-        return $this->doValidate($input, false, $variables, $allowMisingVariables);
+    public function __construct(
+        private readonly ParserFactory $parserFactory,
+    ) {
     }
 
-    public function validateFile($path, array $variables = [], $allowMisingVariables = false): ValidationResult
+    public function validate(string $input, array $variables = [], bool $allowMissingVariables = false): ValidationResult
     {
-        return $this->doValidate($path, true, $variables, $allowMisingVariables);
+        return $this->doValidate($input, false, $variables, $allowMissingVariables);
     }
 
-    private function doValidate($input, $isFilePath, array $variables = [], $allowMisingVariables = false): ValidationResult
+    public function validateFile(string $path, array $variables = [], bool $allowMissingVariables = false): ValidationResult
     {
-        $parser = new Parser($variables, $allowMisingVariables);
+        return $this->doValidate($path, true, $variables, $allowMissingVariables);
+    }
+
+    private function doValidate(string $input, bool $isFilePath, array $variables = [], bool $allowMissingVariables = false): ValidationResult
+    {
+        $parser = $this->parserFactory->createParser($variables, $allowMissingVariables);
 
         try {
             if ($isFilePath) {

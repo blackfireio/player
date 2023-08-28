@@ -23,17 +23,20 @@ class BlockStep extends ConfigurableStep
 {
     #[Ignore]
     private ?AbstractStep $blockStep = null;
+    /** @var string[] */
     private array $variables = [];
     #[Ignore]
     private ?string $endpoint = null;
 
-    public function setBlockStep(AbstractStep $blockStep)
+    public function setBlockStep(AbstractStep $blockStep): void
     {
         $this->blockStep = $blockStep;
     }
 
     public function __clone()
     {
+        parent::__clone();
+
         if ($this->blockStep) {
             $this->blockStep = clone $this->blockStep;
         }
@@ -48,12 +51,12 @@ class BlockStep extends ConfigurableStep
     }
 
     #[SerializedName('steps')]
-    public function getBlockStep()
+    public function getBlockStep(): ?AbstractStep
     {
         return $this->blockStep;
     }
 
-    public function getSteps()
+    public function getSteps(): iterable
     {
         if (!$this->getBlockStep()) {
             return;
@@ -66,7 +69,7 @@ class BlockStep extends ConfigurableStep
         } while ($next = $next->getNext());
     }
 
-    public function endpoint(?string $endpoint)
+    public function endpoint(string $endpoint): self
     {
         $this->endpoint = $endpoint;
         $this->set('endpoint', $endpoint);
@@ -74,30 +77,36 @@ class BlockStep extends ConfigurableStep
         return $this;
     }
 
-    public function has($key)
+    public function has(string $key): bool
     {
         return \array_key_exists($key, $this->variables);
     }
 
-    public function set($key, $value)
+    public function set(string $key, string $value): self
     {
         $this->variables[$key] = $value;
 
         return $this;
     }
 
-    public function getEndpoint()
+    public function getEndpoint(): ?string
     {
         return $this->endpoint;
     }
 
-    public function getVariables()
+    /**
+     * @return string[]
+     */
+    public function getVariables(): array
     {
         return $this->variables;
     }
 
-    protected function blockToString(AbstractStep $step)
+    protected function blockToString(?AbstractStep $step): string
     {
+        if (!$step) {
+            return '';
+        }
         $str = '';
         $pipe = null !== $this->getNext();
         $next = $step;

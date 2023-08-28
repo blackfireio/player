@@ -11,390 +11,669 @@
 
 namespace Blackfire\Player\Tests\Extension;
 
-use Blackfire\Build\Build;
+use Blackfire\Build\Build as SdkBuild;
 use Blackfire\Client;
 use Blackfire\ClientConfiguration;
-use Blackfire\Player\Context;
+use Blackfire\Player\Adapter\BlackfireSdkAdapter;
+use Blackfire\Player\Build\Build;
+use Blackfire\Player\BuildApi;
+use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ExpressionLanguage\Provider;
+use Blackfire\Player\Extension\BlackfireEnvResolver;
 use Blackfire\Player\Extension\BlackfireExtension;
-use Blackfire\Player\Step\ConfigurableStep;
+use Blackfire\Player\Http\Request as HttpRequest;
+use Blackfire\Player\Http\Response as HttpResponse;
+use Blackfire\Player\Json;
+use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ReloadStep;
+use Blackfire\Player\Step\RequestStep;
+use Blackfire\Player\Step\Step;
 use Blackfire\Player\Step\StepContext;
-use Blackfire\Player\ValueBag;
+use Blackfire\Player\Step\VisitStep;
 use Blackfire\Profile;
 use Blackfire\Profile\Request as ProfileRequest;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\HttpClient\MockHttpClient;
 
 class BlackfireExtensionTest extends TestCase
 {
+    public function testBeforeStepAppendsBuildUuidToScenario()
+    {
+        $step = new Scenario('scenario');
+        $step->blackfire('"My Env"');
+
+        $extension = $this->getBlackfireExtension();
+
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
+
+        $scenarioSet = new ScenarioSet();
+        $scenarioSet->getExtraBag()->set('blackfire_build_name', 'the build name');
+
+        $scenarioContext = new ScenarioContext('"foo"', $scenarioSet);
+
+        $extension->beforeStep($step, $stepContext, $scenarioContext);
+
+        $this->assertEquals('4444-3333-2222-1111', $step->getBlackfireBuildUuid());
+    }
+
     /**
-     * @dataProvider stepsProvider
+     * @dataProvider beforeRequestProvider
      */
-    public function testProfileOrWarmup(ConfigurableStep $step, Request $request, $shoudProfile, $shouldWarmup)
+    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, callable $stepAssertions, callable $scenarioContextAssertions = null)
     {
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-        $request = $extension->enterStep($step, $request, $this->createContext($step));
+        $extension = $this->getBlackfireExtension();
 
-        if ($shoudProfile) {
-            $this->assertEquals('1234', $request->getHeaderLine('X-Blackfire-Query'));
-            $this->assertEquals('1111-2222-3333-4444', $request->getHeaderLine('X-Blackfire-Profile-Uuid'));
-        } else {
-            $this->assertFalse($request->hasHeader('X-Blackfire-Query'));
-            $this->assertFalse($request->hasHeader('X-Blackfire-Profile-Uuid'));
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
+
+        $scenarioSet = new ScenarioSet();
+        $scenarioSet->getExtraBag()->set('blackfire_build_name', 'the build name');
+        $build = new Build('21f93c3e-267c-47c9-a85b-df0c2f1d0b4f');
+        $scenarioSet->getExtraBag()->set('blackfire_build:my env', $build);
+
+        $scenarioContext = new ScenarioContext('"foo"', $scenarioSet);
+
+        foreach ($defaultScenarioSetExtraValues as $k => $v) {
+            $scenarioContext->setExtraValue($k, $v);
         }
 
-        if ($shouldWarmup) {
-            $this->assertFalse($request->hasHeader('X-Blackfire-Query'));
-            $this->assertFalse($request->hasHeader('X-Blackfire-Profile-Uuid'));
+        $extension->beforeStep(new RequestStep($request, $step), $stepContext, $scenarioContext);
 
-            $this->assertStringContainsString('[Warmup]', $step->getName());
+        $this->assertEquals($expectedRequest, $request);
+        $stepAssertions($step);
 
-            $second = $step->getNext();
-            $this->assertInstanceOf(ReloadStep::class, $second);
-            $this->assertEquals('false', $second->getBlackfire());
-            $this->assertStringContainsString('[Warmup]', $second->getName());
-
-            $third = $second->getNext();
-            $this->assertInstanceOf(ReloadStep::class, $third);
-            $this->assertEquals('false', $third->getBlackfire());
-            $this->assertStringContainsString('[Warmup]', $third->getName());
-
-            $ref = $third->getNext();
-            $this->assertInstanceOf(ReloadStep::class, $ref);
-            $this->assertEquals('false', $ref->getBlackfire());
-            $this->assertStringContainsString('[Reference]', $ref->getName());
-
-            $real = $ref->getNext();
-            $this->assertInstanceOf(ReloadStep::class, $real);
-            $this->assertEquals('true', $real->getBlackfire());
-            $this->assertNull($real->getNext());
-        } else {
-            $this->assertStringNotContainsString('Warmup', $step->getName());
-
-            $this->assertNull($step->getNext());
+        if ($scenarioContextAssertions) {
+            $scenarioContextAssertions($scenarioContext);
         }
     }
 
-    public function stepsProvider()
+    public function beforeRequestProvider()
     {
-        // Blackfire disabled by default
-
-        yield [
-            (new ConfigurableStep())->name('"Step name"'),
-            new Request('GET', '/'),
-            false,
-            false,
+        $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan');
+        $defaultScenarioSetExtraValues = [];
+        yield 'no env drops the X-Blackfire-Query header' => [
+            new VisitStep('https://app-under-test.lan'),
+            new HttpRequest('GET', 'https://app-under-test.lan'),
+            $defaultScenarioSetExtraValues,
+            $expectedRequest,
+            function (Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+            },
         ];
 
-        // Blackfire enabled, Warmup enabled by default
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-        ;
-
-        yield [
+        $step = new VisitStep('https://app-under-test.lan');
+        $step->blackfire('"my env"');
+        $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234'],
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
+            'cookie' => ['__blackfire=NO_CACHE'],
+        ]);
+        $defaultScenarioSetExtraValues = [];
+        yield 'append the X-Blackfire-Query header when needed' => [
             $step,
-            new Request('GET', '/'),
-            false,
-            true,
+            new HttpRequest('GET', 'https://app-under-test.lan'),
+            $defaultScenarioSetExtraValues,
+            $expectedRequest,
+            function (Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+            },
         ];
 
-        // Blackfire enabled, Warmup enabled by default + samples
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-            ->samples(10)
-        ;
-
-        yield [
+        $step = new VisitStep('https://app-under-test.lan');
+        $step->blackfire('"my env"');
+        $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234'],
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
+            'cookie' => ['my=cookie; __blackfire=NO_CACHE'],
+        ]);
+        $defaultScenarioSetExtraValues = [];
+        yield 'updates the Cookie header when it already exists' => [
             $step,
-            new Request('POST', '/'),
-            false,
-            true,
+            new HttpRequest('GET', 'https://app-under-test.lan', ['cookie' => ['my=cookie']]),
+            $defaultScenarioSetExtraValues,
+            $expectedRequest,
+            function (Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+            },
         ];
 
-        // Blackfire enabled, Warmup enabled explicitly (GET)
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-            ->warmup('true')
-        ;
-
-        yield [
-            $step,
-            new Request('GET', '/'),
-            false,
-            true,
+        $step = new VisitStep('https://app-under-test.lan');
+        $step->blackfire('"my env"');
+        $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234&profile_title=%7B%22blackfire-metadata%22%3A%7B%22timers%22%3A%7B%22total%22%3A2%2C%22name_lookup%22%3A2%2C%22connect%22%3A2%2C%22pre_transfer%22%3A2%2C%22start_transfer%22%3A2%7D%7D%7D'],
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
+            'cookie' => ['my=cookie; __blackfire=NO_CACHE'],
+        ]);
+        $defaultScenarioSetExtraValues = [
+            'blackfire_ref_step' => new VisitStep('https://app-under-test.lan'),
+            'blackfire_ref_stats' => [
+                'total' => 2,
+                'name_lookup' => 2,
+                'connect' => 2,
+                'pre_transfer' => 2,
+                'start_transfer' => 2,
+            ],
         ];
-
-        // Blackfire enabled, Warmup enabled explicitly (POST)
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-            ->warmup('true')
-        ;
-
-        yield [
+        yield 'configures X-Blackfire-Query with ref stats when they exists' => [
             $step,
-            new Request('POST', '/'),
-            true,
-            false,
-        ];
-
-        // Blackfire enabled, Warmup enabled explicitly + samples
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-            ->warmup('true')
-            ->samples(10)
-        ;
-
-        yield [
-            $step,
-            new Request('POST', '/'),
-            false,
-            true,
-        ];
-
-        // Blackfire enabled, Warmup disabled explicitly
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-            ->warmup('false')
-        ;
-
-        yield [
-            $step,
-            new Request('GET', '/'),
-            true,
-            false,
-        ];
-
-        // Blackfire enabled, Warmup with number
-
-        $step = (new ConfigurableStep())
-            ->name('"Step name"')
-            ->blackfire('true')
-            ->warmup('3')
-        ;
-
-        yield [
-            $step,
-            new Request('GET', '/'),
-            false,
-            true,
+            new HttpRequest('GET', 'https://app-under-test.lan', ['cookie' => ['my=cookie']]),
+            $defaultScenarioSetExtraValues,
+            $expectedRequest,
+            function (Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+            },
+            function (ScenarioContext $scenarioContext) {
+                $this->assertNull($scenarioContext->getExtraValue('blackfire_ref_step'));
+                $this->assertNull($scenarioContext->getExtraValue('blackfire_ref_stats'));
+            },
         ];
     }
 
-    public function testTheProfileShouldNotBeRetrievedBeforeTheProfilingIsComplete()
+    /**
+     * @dataProvider beforeRequestFailureProvider
+     */
+    public function testBeforeRequestFailure(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, string $exceptionClass, string $exceptionMessage)
     {
-        $step = new ConfigurableStep();
+        $extension = $this->getBlackfireExtension(null);
 
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
 
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true');
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
 
-        $blackfireClient = $this->createBlackfireClient();
-        $blackfireClient->expects($this->never())->method('getProfile');
-
-        $context = $this->createContext($step);
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $blackfireClient);
-        $extension->enterStep($step, $request, $context);
-        $extension->leaveStep($step, $request, $response, $context);
-        $extension->getNextStep($step, $request, $response, $context);
-    }
-
-    public function testTheProbeCanAskANewSample()
-    {
-        $step = new ConfigurableStep();
-
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
-
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true');
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-        $nextStep = $extension->getNextStep($step, $request, $response, $this->createContext($step));
-
-        $this->assertInstanceOf(ReloadStep::class, $nextStep);
-    }
-
-    public function testTheProbeCanAskToStopSampling()
-    {
-        $step = new ConfigurableStep();
-
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
-
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', '');
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-        $nextStep = $extension->getNextStep($step, $request, $response, $this->createContext($step));
-
-        $this->assertNull($nextStep);
-    }
-
-    public function testTheProgressCannotDiminish()
-    {
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessageMatches('/progress is going backward/');
-
-        $step = new ConfigurableStep();
-
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
-
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33');
-
-        $response2 = new Response();
-        $response2 = $response2->withHeader('X-Blackfire-Response', 'continue=true&progress=15');
-
-        $context = $this->createContext($step);
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-        $extension->leaveStep($step, $request, $response, $context);
-        $extension->leaveStep($step, $request, $response2, $context);
-    }
-
-    public function testTheProgressCannotBeEqualMoreThanTheMaxRetryCount()
-    {
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessageMatches('/progress is not increasing/');
-
-        $step = new ConfigurableStep();
-
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
-
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33');
-
-        $context = $this->createContext($step);
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-
-        for ($i = 0; $i < BlackfireExtension::MAX_RETRY + 1; ++$i) {
-            $extension->leaveStep($step, $request, $response, $context);
-
-            $this->assertEquals(33, $context->getExtraBag()->get('blackfire_progress'));
-            $this->assertEquals($i, $context->getExtraBag()->get('blackfire_retry'));
-        }
-    }
-
-    public function testTheProgressCanBeEqualLessThanTheMaxRetryCount()
-    {
-        $step = new ConfigurableStep();
-
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
-
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33');
-
-        $context = $this->createContext($step);
-
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-
-        for ($i = 0; $i < BlackfireExtension::MAX_RETRY; ++$i) {
-            $extension->leaveStep($step, $request, $response, $context);
+        foreach ($defaultScenarioSetExtraValues as $k => $v) {
+            $scenarioContext->setExtraValue($k, $v);
         }
 
-        $this->assertEquals(33, $context->getExtraBag()->get('blackfire_progress'));
-        $this->assertEquals(9, $context->getExtraBag()->get('blackfire_retry'));
+        $this->expectException($exceptionClass);
+        $this->expectExceptionMessage($exceptionMessage);
 
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=66');
-
-        $extension->leaveStep($step, $request, $response, $context);
-
-        $this->assertEquals(66, $context->getExtraBag()->get('blackfire_progress'));
-        $this->assertEquals(0, $context->getExtraBag()->get('blackfire_retry'));
+        $extension->beforeStep(new RequestStep($request, $step), $stepContext, $scenarioContext);
     }
 
-    public function testItWaits()
+    public function beforeRequestFailureProvider()
     {
-        $step = new ConfigurableStep();
+        $defaultScenarioSetExtraValues = [];
+        $step = new VisitStep('https://app-under-test.lan');
+        $step->blackfire('true');
+        yield 'throws when blackfire env is true but not defined at the ScenarioContext level' => [
+            $step,
+            new HttpRequest('GET', 'https://app-under-test.lan'),
+            $defaultScenarioSetExtraValues,
+            \LogicException::class,
+            '--blackfire-env option must be set when using "blackfire: true" in a scenario.',
+        ];
+    }
 
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+    /**
+     * @dataProvider afterResponseFailureProvider
+     */
+    public function testAfterResponseFailure(HttpResponse $response, array $defaultScenarioSetExtraValues, string $exceptionClass, string $exceptionMessage)
+    {
+        $extension = $this->getBlackfireExtension();
 
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=33&wait=100');
+        $step = new VisitStep('https://app-under-test.lan');
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
+        $step->setStatus(BuildStatus::IN_PROGRESS);
 
-        $context = $this->createContext($step);
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
+        $scenarioContext->setLastResponse($response);
 
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-
-        $start = microtime(true);
-        for ($i = 0; $i < 3; ++$i) {
-            $extension->leaveStep($step, $request, $response, $context);
+        foreach ($defaultScenarioSetExtraValues as $k => $v) {
+            $scenarioContext->setExtraValue($k, $v);
         }
-        $end = microtime(true);
 
-        $this->assertGreaterThanOrEqual(300, ($end - $start) * 1000);
+        $this->expectException($exceptionClass);
+        $this->expectExceptionMessage($exceptionMessage);
+
+        $extension->afterStep(new RequestStep(new HttpRequest('GET', '/'), $step), $stepContext, $scenarioContext);
     }
 
-    public function testTheProgressIsResetAtTheEndOfProfiling()
+    /**
+     * @dataProvider afterResponseProvider
+     */
+    public function testAfterResponse(HttpResponse $response, array $defaultScenarioSetExtraValues, callable $scenarioContextAssertions)
     {
-        $step = new ConfigurableStep();
+        $extension = $this->getBlackfireExtension();
 
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+        $step = new VisitStep('https://app-under-test.lan');
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
+        $step->setStatus(BuildStatus::IN_PROGRESS);
 
-        $response = new Response();
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
+        $scenarioContext->setLastResponse($response);
 
-        $context = $this->createContext($step);
+        foreach ($defaultScenarioSetExtraValues as $k => $v) {
+            $scenarioContext->setExtraValue($k, $v);
+        }
 
-        $extension = new BlackfireExtension(new ExpressionLanguage(), 'My env', new NullOutput(), $this->createBlackfireClient());
-        $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=99'), $context);
-        $this->assertEquals(99, $context->getExtraBag()->get('blackfire_progress'));
+        $extension->afterStep(new RequestStep(new HttpRequest('GET', '/'), $step), $stepContext, $scenarioContext);
 
-        $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=false'), $context);
-        $this->assertEquals(-1, $context->getExtraBag()->get('blackfire_progress'));
-        $this->assertEquals(0, $context->getExtraBag()->get('blackfire_retry'));
-
-        $extension->leaveStep($step, $request, $response->withHeader('X-Blackfire-Response', 'continue=true&progress=10'), $context);
-        $this->assertEquals(10, $context->getExtraBag()->get('blackfire_progress'));
+        $scenarioContextAssertions($scenarioContext, $step);
     }
 
-    public function testBlackfireEnvIsNotLostOnReload()
+    public function afterResponseProvider()
     {
-        $step = new ConfigurableStep();
-        $step->blackfire('"My env"');
-        $step->samples(2);
+        $stats = [
+            'total_time' => 0.04079,
+            'namelookup_time' => 2.2E-5,
+            'connect_time' => 2.2E-5,
+            'pretransfer_time' => 6.5E-5,
+            'starttransfer_time' => 0.040079,
+        ];
 
-        $request = new Request('GET', '/');
-        $request = $request->withHeader('X-Blackfire-Profile-Uuid', '11111');
+        $request = new HttpRequest('GET', 'https://app-under-test.lan');
+        $response = new HttpResponse($request, 200, [], 'My HTML response', $stats);
 
-        $response = new Response();
-        $response = $response->withHeader('X-Blackfire-Response', 'continue=true&progress=10');
+        $defaultScenarioSetExtraValues = [];
 
-        $context = $this->createContext($step);
+        yield 'do nothing without X-Blackfire-Profile-Uuid response header' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            function (ScenarioContext $scenarioContext, Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+                $this->assertNull($scenarioContext->getExtraValue('blackfire_retry'));
+                $this->assertNull($scenarioContext->getExtraValue('blackfire_progress'));
+            },
+        ];
 
-        $extension = new BlackfireExtension(new ExpressionLanguage(), null, new NullOutput(), $this->createBlackfireClient());
-        $nextStep = $extension->getNextStep($step, $request, $response, $context);
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=true&progress=30'],
+        ], 'My HTML response', $stats);
 
-        $this->assertInstanceOf(ReloadStep::class, $nextStep);
-        $this->assertEquals('"My env"', $nextStep->getBlackfire());
+        $defaultScenarioSetExtraValues = [];
+
+        yield 'updates ScenarioContext if sampling should continue' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            function (ScenarioContext $scenarioContext, Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                $this->assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
+            },
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=true&progress=30'],
+        ], 'My HTML response', $stats);
+
+        $defaultScenarioSetExtraValues = [];
+
+        yield 'updates ScenarioContext current progress if response headers contains a progress value' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            function (ScenarioContext $scenarioContext, Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                $this->assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
+            },
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => [''],
+        ], 'My HTML response', $stats);
+
+        $defaultScenarioSetExtraValues = [];
+
+        yield 'updates ScenarioContext current progress if response headers continue value isnt set' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            function (ScenarioContext $scenarioContext, Step $step) {
+                $this->assertEquals('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
+                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                $this->assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
+            },
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=false'],
+        ], 'My HTML response', $stats);
+
+        $defaultScenarioSetExtraValues = [];
+
+        yield 'updates ScenarioContext current progress if response headers continue value equals false' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            function (ScenarioContext $scenarioContext, Step $step) {
+                $this->assertEquals('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
+                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                $this->assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
+            },
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=true&progress=40'],
+        ], 'My HTML response', $stats);
+
+        $defaultScenarioSetExtraValues = [
+            'blackfire_progress' => 40,
+        ];
+
+        yield 'updates ScenarioContext current retry if no progress were made since previous request' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            function (ScenarioContext $scenarioContext, Step $step) {
+                $this->assertNull($step->getBlackfireProfileUuid());
+                $this->assertEquals(1, $scenarioContext->getExtraValue('blackfire_retry'));
+                $this->assertEquals(40, $scenarioContext->getExtraValue('blackfire_progress'));
+            },
+        ];
     }
 
-    protected function createBlackfireClient()
+    public function afterResponseFailureProvider()
+    {
+        $stats = [
+            'total_time' => 0.04079,
+            'namelookup_time' => 2.2E-5,
+            'connect_time' => 2.2E-5,
+            'pretransfer_time' => 6.5E-5,
+            'starttransfer_time' => 0.040079,
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=true&progress=40'],
+        ], 'My HTML response', $stats);
+
+        $defaultScenarioSetExtraValues = [
+            'blackfire_progress' => 40,
+            'blackfire_retry' => 10,
+        ];
+
+        yield 'throws when the retry threshold got hit' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            LogicException::class,
+            'Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#reverse-proxies-and-cdns',
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [
+            BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['d2a963a1-3c1d-44b9-9e86-553f1e30c279'],
+        ]);
+        $response = new HttpResponse($request, 200, [
+            BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=true&progress=80'],
+        ], 'My HTML response', $stats);
+
+        $defaultScenarioSetExtraValues = [
+            'blackfire_progress' => 90,
+            'blackfire_retry' => 0,
+        ];
+
+        yield 'throws when the progress decreases' => [
+            $response,
+            $defaultScenarioSetExtraValues,
+            LogicException::class,
+            'Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#configuration-load-balancer',
+        ];
+    }
+
+    /**
+     * @dataProvider getPreviousStepsProvider
+     */
+    public function testGetPreviousStepsGenerateEnoughWarmupAndReferenceSteps(Step $step, array $expectedSteps, HttpRequest $request)
+    {
+        $extension = $this->getBlackfireExtension();
+
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
+
+        $prependedSteps = iterator_to_array($extension->getPreviousSteps(new RequestStep($request, $step), $stepContext, new ScenarioContext('"foo"', new ScenarioSet())));
+
+        $normalizedStepsOutput = array_map(static fn (AbstractStep $step): array => ['name' => $step->getName()], $prependedSteps);
+
+        $this->assertEquals($expectedSteps, $normalizedStepsOutput);
+    }
+
+    public function getPreviousStepsProvider()
+    {
+        $visitStepWith5Warmups = new VisitStep('https://app.lan');
+        $visitStepWith5Warmups->blackfire('true');
+        $visitStepWith5Warmups->name('"Visit page"');
+        $visitStepWith5Warmups->method('"GET"');
+        $visitStepWith5Warmups->warmup(5);
+        yield 'VisitStep with GET request and 5 warmups' => [
+            $visitStepWith5Warmups,
+            [
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Reference] Visit page"',
+                ],
+            ],
+            new HttpRequest('GET', 'https://app.lan'), [],
+        ];
+
+        $visitStepDefaultWarmup = new VisitStep('https://app.lan');
+        $visitStepDefaultWarmup->blackfire('true');
+        $visitStepDefaultWarmup->name('"Visit page"');
+        $visitStepDefaultWarmup->method('"GET"');
+        yield 'VisitStep with GET request and default warmup' => [
+            $visitStepDefaultWarmup,
+            [
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Reference] Visit page"',
+                ],
+            ],
+            new HttpRequest('GET', 'https://app.lan'), [],
+        ];
+
+        $visitStepHeadMethodWith5Warmups = new VisitStep('https://app.lan');
+        $visitStepHeadMethodWith5Warmups->blackfire('true');
+        $visitStepHeadMethodWith5Warmups->name('"Visit page"');
+        $visitStepHeadMethodWith5Warmups->method('"HEAD"');
+        $visitStepHeadMethodWith5Warmups->warmup(5);
+        yield 'VisitStep with HEAD request and 5 warmups' => [
+            $visitStepHeadMethodWith5Warmups,
+            [
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Reference] Visit page"',
+                ],
+            ],
+            new HttpRequest('HEAD', 'https://app.lan'), [],
+        ];
+
+        $visitStepWith2WarmupsNoSamplesAndPostRequest = new VisitStep('https://app.lan');
+        $visitStepWith2WarmupsNoSamplesAndPostRequest->blackfire('true');
+        $visitStepWith2WarmupsNoSamplesAndPostRequest->name('"Visit page"');
+        $visitStepWith2WarmupsNoSamplesAndPostRequest->method('"POST"');
+        $visitStepWith2WarmupsNoSamplesAndPostRequest->warmup(2);
+        // no warmup are expected here as it is a POST request without having set sample > 1
+        yield 'VisitStep with POST request and 2 warmups' => [
+            $visitStepWith2WarmupsNoSamplesAndPostRequest,
+            [],
+            new HttpRequest('POST', 'https://app.lan'), [],
+        ];
+
+        $visitStepWith2Warmups5SamplesAndPostRequest = new VisitStep('https://app.lan');
+        $visitStepWith2Warmups5SamplesAndPostRequest->blackfire('true');
+        $visitStepWith2Warmups5SamplesAndPostRequest->name('"Visit page"');
+        $visitStepWith2Warmups5SamplesAndPostRequest->method('"POST"');
+        $visitStepWith2Warmups5SamplesAndPostRequest->warmup(2);
+        $visitStepWith2Warmups5SamplesAndPostRequest->samples(5); // edge case
+        yield 'VisitStep with POST request and 2 warmups and 5 samples' => [
+            $visitStepWith2Warmups5SamplesAndPostRequest,
+            [
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Warmup] Visit page"',
+                ],
+                [
+                    'name' => '"[Reference] Visit page"',
+                ],
+            ],
+            new HttpRequest('POST', 'https://app.lan'), [],
+        ];
+
+        $visitStepWithoutBlackfire = new VisitStep('https://app.lan');
+        $visitStepWithoutBlackfire->blackfire('false');
+        $visitStepWithoutBlackfire->name('"Visit page"');
+        $visitStepWithoutBlackfire->warmup(2);
+        $visitStepWithoutBlackfire->samples(5);
+        yield 'VisitStep without blackfire' => [
+            $visitStepWithoutBlackfire,
+            [],
+            new HttpRequest('POST', 'https://app.lan'), [],
+        ];
+    }
+
+    private function getBlackfireExtension(?string $defaultEnv = 'My env'): BlackfireExtension
+    {
+        $blackfireSdkClient = new BlackfireSdkAdapter($this->createBlackfireClient());
+        $language = new ExpressionLanguage(null, [new Provider()]);
+
+        return new BlackfireExtension(
+            $language,
+            new BlackfireEnvResolver($defaultEnv, $language),
+            new BuildApi($blackfireSdkClient, new MockHttpClient()),
+            $blackfireSdkClient
+        );
+    }
+
+    /**
+     * @dataProvider getNextStepsProvider
+     */
+    public function testGetNextSteps(Step $step, HttpResponse $response, array $expectedYieldedSteps)
+    {
+        $extension = $this->getBlackfireExtension();
+
+        $stepContext = new StepContext();
+        $stepContext->update($step, []);
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
+        $scenarioContext->setLastResponse($response);
+
+        $stepsOutput = iterator_to_array($extension->getNextSteps($step, $stepContext, $scenarioContext));
+
+        $this->assertCount(\count($expectedYieldedSteps), $stepsOutput);
+
+        // we cast the output into a php array so that we can perform assertions on the output without worrying about the steps UUIDs
+        $serializedStepsOutput = Json::decode(Json::encode($stepsOutput));
+        $serializedExpectedSteps = Json::decode(Json::encode($expectedYieldedSteps));
+
+        foreach ($serializedStepsOutput as &$serializedOutputStep) {
+            unset($serializedOutputStep['uuid']);
+        }
+
+        foreach ($serializedExpectedSteps as &$serializedExpectedStep) {
+            unset($serializedExpectedStep['uuid']);
+        }
+
+        $this->assertJsonStringEqualsJsonString(Json::encode($serializedExpectedSteps), Json::encode($serializedStepsOutput));
+    }
+
+    public function getNextStepsProvider()
+    {
+        $stats = [
+            'total_time' => 0.04079,
+            'namelookup_time' => 2.2E-5,
+            'connect_time' => 2.2E-5,
+            'pretransfer_time' => 6.5E-5,
+            'starttransfer_time' => 0.040079,
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan');
+        $response = new HttpResponse($request, 200, [], 'what a beautiful response body', []);
+        yield 'yields nothing when no X-Blackfire-Profile-Uuid on request' => [
+            new VisitStep('https://app-under-test.lan'),
+            $response,
+            [],
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['683910c2-9c3c-496d-a5d6-7cee0ee20d38']]);
+        $response = new HttpResponse($request, 200, [], 'what a beautiful response body', $stats);
+        yield 'yields nothing when no X-Blackfire-Response on response' => [
+            new VisitStep('https://app-under-test.lan'),
+            $response,
+            [],
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['683910c2-9c3c-496d-a5d6-7cee0ee20d38']]);
+        $response = new HttpResponse($request, 200, [BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=false']], 'what a beautiful response body', $stats);
+        yield 'yields nothing when no sample is required' => [
+            new VisitStep('https://app-under-test.lan'),
+            $response,
+            [],
+        ];
+
+        $request = new HttpRequest('GET', 'https://app-under-test.lan', [BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['683910c2-9c3c-496d-a5d6-7cee0ee20d38']]);
+        $response = new HttpResponse($request, 200, [BlackfireExtension::HEADER_BLACKFIRE_RESPONSE => ['continue=true&progress=40']], 'what a beautiful response body', $stats);
+        $step = new VisitStep('https://app-under-test.lan');
+        $step->blackfire('"foo"');
+        yield 'yields a ReloadStep when another sample is required' => [
+            $step,
+            $response,
+            [
+                (new ReloadStep())
+                    ->name('\'Reloading for Blackfire\'')
+                    ->blackfire('"foo"'),
+            ],
+        ];
+    }
+
+    private function createBlackfireClient()
     {
         $blackfireConfig = new ClientConfiguration();
 
@@ -406,7 +685,8 @@ class BlackfireExtensionTest extends TestCase
         $profile->method('isErrored')->willReturn(false);
         $profile->method('isSuccessful')->willReturn(true);
 
-        $build = $this->getMockBuilder(Build::class)->disableOriginalConstructor()->getMock();
+        $build = $this->getMockBuilder(SdkBuild::class)->disableOriginalConstructor()->getMock();
+        $build->method('getUuid')->willReturn('4444-3333-2222-1111');
 
         $blackfire = $this->getMockBuilder(Client::class)->getMock();
         $blackfire->method('getConfiguration')->willReturn($blackfireConfig);
@@ -415,19 +695,5 @@ class BlackfireExtensionTest extends TestCase
         $blackfire->method('startBuild')->willReturn($build);
 
         return $blackfire;
-    }
-
-    protected function createContext($step)
-    {
-        $stepContext = new StepContext();
-        $stepContext->update($step, []);
-
-        $contextStack = new \SplStack();
-        $contextStack->push($stepContext);
-
-        $context = new Context('"Context name"', new ValueBag());
-        $context->setContextStack($contextStack);
-
-        return $context;
     }
 }

@@ -1,8 +1,17 @@
 <?php
 
+/*
+ * This file is part of the Blackfire Player package.
+ *
+ * (c) Fabien Potencier <fabien@blackfire.io>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Blackfire\Player\Console;
 
-use Blackfire\Player\Parser;
+use Blackfire\Player\ParserFactory;
 use Blackfire\Player\ScenarioSet;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -11,7 +20,15 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class ScenarioHydrator
 {
-    public function getVariables(InputInterface $input)
+    public function __construct(
+        private readonly ParserFactory $parserFactory,
+    ) {
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getVariables(InputInterface $input): array
     {
         $variables = [];
 
@@ -19,17 +36,21 @@ class ScenarioHydrator
             $variables['endpoint'] = $this->escapeValue($input->getOption('endpoint'));
         }
 
+        if ($input->getOption('blackfire-env')) {
+            $variables['blackfire-env'] = $this->escapeValue($input->getOption('blackfire-env'));
+        }
+
         foreach ($input->getOption('variable') as $variable) {
-            list($key, $value) = explode('=', $variable, 2);
+            [$key, $value] = explode('=', $variable, 2);
             $variables[$key] = $this->escapeValue($value);
         }
 
         return $variables;
     }
 
-    public function hydrate(InputInterface $input)
+    public function hydrate(InputInterface $input): ScenarioSet
     {
-        $parser = new Parser($this->getVariables($input));
+        $parser = $this->parserFactory->createParser($this->getVariables($input));
 
         $scenarios = $parser->load($input->getArgument('file'));
 
@@ -38,7 +59,7 @@ class ScenarioHydrator
         }
 
         // FIXME: should be set on the ScenarioSet directly
-        // but for this, we need an enterStep() for the ScenarioSet, which we don't have yet
+        // but for this, we need an beforeStep() for the ScenarioSet, which we don't have yet
         foreach ($scenarios as $scenario) {
             if (null !== $input->getOption('endpoint') && !$scenario->getEndpoint()) {
                 $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
@@ -56,8 +77,8 @@ class ScenarioHydrator
         return $scenarios;
     }
 
-    private function escapeValue($value)
+    private function escapeValue(string $value): string
     {
-        return sprintf("'%s'", $value);
+        return var_export($value, true);
     }
 }

@@ -11,39 +11,47 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
+use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\AbstractStep;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Blackfire\Player\Step\BlockStep;
+use Blackfire\Player\Step\StepContext;
+use Blackfire\Player\Step\StepInitiatorInterface;
 
 /**
  * @author Luc Vieillescazes <luc.vieillescazes@blackfire.io>
  *
  * @internal
  */
-final class WatchdogExtension extends AbstractExtension
+final class WatchdogExtension implements StepExtensionInterface
 {
-    private $stepLimit;
-    private $totalLimit;
-
-    public function __construct($stepLimit = 50, $totalLimit = 1000)
-    {
-        $this->stepLimit = $stepLimit;
-        $this->totalLimit = $totalLimit;
+    public function __construct(
+        private readonly int $stepLimit = 50,
+        private readonly int $totalLimit = 1000,
+    ) {
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $extra = $context->getExtraBag();
-        $nextStep = $extra->has('_watchdog_next_step') ? $extra->get('_watchdog_next_step') : null;
-        $stepCounter = $extra->has('_watchdog_step_counter') ? $extra->get('_watchdog_step_counter') : 0;
-        $totalCounter = $extra->has('_watchdog_total_counter') ? $extra->get('_watchdog_total_counter') : 0;
-
-        if ($nextStep === $step) {
-            $stepCounter = 1;
-        } else {
-            ++$stepCounter;
+        if ($step instanceof BlockStep) {
+            return;
         }
+
+        // set new ExtraValue counter for step UUID at 0
+        // if step has initiator uuid:
+        //  - increment the initiator uuid counter
+        // increment the step uuid counter otherwise
+
+        $stepUuid = $step->getUuid();
+        if ($step instanceof StepInitiatorInterface && null !== $step->getInitiator()) {
+            $stepUuid = $step->getInitiator()->getUuid();
+        }
+
+        $stepCounterKey = '_watchdog_step_counter:'.$stepUuid;
+
+        $totalCounter = $scenarioContext->getExtraValue('_watchdog_total_counter', 0);
+
+        $stepCounter = $scenarioContext->getExtraValue($stepCounterKey, 0);
+        ++$stepCounter;
 
         if ($stepCounter > $this->stepLimit) {
             throw new \RuntimeException(sprintf('Number of requests per step exceeded ("%d")', $this->stepLimit));
@@ -53,17 +61,11 @@ final class WatchdogExtension extends AbstractExtension
             throw new \RuntimeException(sprintf('Number of requests per scenario exceeded ("%d")', $this->stepLimit));
         }
 
-        $extra->set('_watchdog_step_counter', $stepCounter);
-        $extra->set('_watchdog_total_counter', $totalCounter);
-
-        return $request;
+        $scenarioContext->setExtraValue($stepCounterKey, $stepCounter);
+        $scenarioContext->setExtraValue('_watchdog_total_counter', $totalCounter);
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $extra = $context->getExtraBag();
-        $extra->set('_watchdog_next_step', $step->getNext());
-
-        return $response;
     }
 }

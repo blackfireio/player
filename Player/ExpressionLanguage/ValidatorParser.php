@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Blackfire Player package.
+ *
+ * (c) Fabien Potencier <fabien@blackfire.io>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Blackfire\Player\ExpressionLanguage;
 
 use Symfony\Component\ExpressionLanguage\Node;
@@ -23,7 +32,7 @@ class ValidatorParser extends SymfonyParser
         parent::__construct($functions);
     }
 
-    public function parse(TokenStream $stream, $names = []): Node\Node
+    public function parse(TokenStream $stream, array $names = []): Node\Node
     {
         $this->stream = $stream;
         $this->names = $names;
@@ -32,7 +41,7 @@ class ValidatorParser extends SymfonyParser
         return parent::parse($stream, $names);
     }
 
-    public function parsePrimaryExpression()
+    public function parsePrimaryExpression(): Node\Node
     {
         $token = $this->stream->current;
         switch ($token->type) {
@@ -94,7 +103,7 @@ class ValidatorParser extends SymfonyParser
         return $this->parsePostfixExpression($node);
     }
 
-    public function getMissingNames()
+    public function getMissingNames(): array
     {
         return $this->missingNames;
     }

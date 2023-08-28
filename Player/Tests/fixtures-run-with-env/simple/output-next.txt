@@ -1,0 +1,46 @@
+Blackfire Player %s
+
+Scenario  "Simple"
+  [visit 1]
+GET http://0:{{ PORT }}/simple/index.php
+GET http://0:{{ PORT }}/simple/index.php
+GET http://0:{{ PORT }}/simple/index.php
+GET http://0:{{ PORT }}/simple/index.php
+GET http://0:{{ PORT }}/simple/index.php
+  [visit 2]
+GET http://0:{{ PORT }}/simple/index.php?header
+GET http://0:{{ PORT }}/simple/index.php?header
+GET http://0:{{ PORT }}/simple/index.php?header
+GET http://0:{{ PORT }}/simple/index.php?header
+GET http://0:{{ PORT }}/simple/index.php?header
+  [visit 3]
+GET http://0:{{ PORT }}/simple/index.php?link
+GET http://0:{{ PORT }}/simple/index.php?link
+GET http://0:{{ PORT }}/simple/index.php?link
+GET http://0:{{ PORT }}/simple/index.php?link
+GET http://0:{{ PORT }}/simple/index.php?link
+  [click 4]
+GET http://0:{{ PORT }}/simple/index.php?clicked
+GET http://0:{{ PORT }}/simple/index.php?clicked
+GET http://0:{{ PORT }}/simple/index.php?clicked
+GET http://0:{{ PORT }}/simple/index.php?clicked
+GET http://0:{{ PORT }}/simple/index.php?clicked
+  [visit 5]
+PUT http://0:{{ PORT }}/simple/index.php
+  [visit 6]
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+  [submit 7]
+POST http://0:{{ PORT }}/simple/index.php
+  [visit 8]
+GET http://0:{{ PORT }}/simple/index.php?json
+GET http://0:{{ PORT }}/simple/index.php?json
+GET http://0:{{ PORT }}/simple/index.php?json
+GET http://0:{{ PORT }}/simple/index.php?json
+GET http://0:{{ PORT }}/simple/index.php?json
+  OK
+
+ OK  Scenarios  1  - Steps  8

@@ -20,16 +20,16 @@ use Blackfire\Player\Exception\SyntaxErrorException;
  */
 final class Input
 {
-    private $file;
-    private $lines;
-    private $lineno;
-    private $max;
+    /** @var string[] */
+    private array $lines;
+    private int $lineno = 0;
+    private int $max;
 
-    public function __construct($input, $file = null)
-    {
-        $this->file = $file;
+    public function __construct(
+        string $input,
+        private readonly ?string $file = null,
+    ) {
         $this->lines = $this->splitInput($input);
-        $this->lineno = 0;
 
         if ($this->isEof()) {
             throw new SyntaxErrorException(sprintf('You must define at least one step in file %s.', $file));
@@ -41,44 +41,46 @@ final class Input
         return $this->findNextLine() > $this->max;
     }
 
-    public function getNextLine()
+    public function getNextLine(): string
     {
         while ($this->max >= $this->lineno = $this->findNextLine()) {
             return ltrim($this->lines[$this->lineno]);
         }
+
+        return '';
     }
 
-    public function getCurrentLine()
+    public function getCurrentLine(): string
     {
         return $this->lines[$this->lineno];
     }
 
-    public function getNextLineIndent()
+    public function getNextLineIndent(): int
     {
         return $this->computeIndent($this->findNextLine());
     }
 
-    public function rewindLine()
+    public function rewindLine(): void
     {
         --$this->lineno;
     }
 
-    public function getIndent()
+    public function getIndent(): int
     {
         return $this->computeIndent($this->lineno);
     }
 
-    public function getFile()
+    public function getFile(): ?string
     {
         return $this->file;
     }
 
-    public function getLine()
+    public function getLine(): int
     {
         return $this->lineno;
     }
 
-    public function getContextString()
+    public function getContextString(): string
     {
         if ($this->file) {
             return sprintf('in %s at line %d', $this->file, $this->lineno);
@@ -87,7 +89,7 @@ final class Input
         return sprintf('at line %d', $this->lineno);
     }
 
-    private function findNextLine()
+    private function findNextLine(): int
     {
         $lineno = $this->lineno;
         while (++$lineno <= $this->max) {
@@ -99,14 +101,17 @@ final class Input
         return $this->max + 1;
     }
 
-    private function isEmpty($lineno)
+    private function isEmpty(int $lineno): bool
     {
         // skip lines that do not exit
         // possible when using line continuation
         return !isset($this->lines[$lineno]);
     }
 
-    private function splitInput($input)
+    /**
+     * @return string[]
+     */
+    private function splitInput(string $input): array
     {
         // normalize newlines
         $input = str_replace(["\r\n", "\r"], "\n", $input);
@@ -180,7 +185,7 @@ final class Input
         return $lines;
     }
 
-    private function computeIndent($lineno)
+    private function computeIndent(int $lineno): int
     {
         $line = $this->lines[$lineno];
         $indent = 0;
@@ -206,7 +211,7 @@ final class Input
         return $indent;
     }
 
-    private function escapeValue($val)
+    private function escapeValue(string $val): string
     {
         return sprintf("'%s'", strtr($val, ["\n" => '\n', "'" => "\\'"]));
     }

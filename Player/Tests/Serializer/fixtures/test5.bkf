@@ -1,0 +1,17 @@
+#!blackfire-player
+
+scenario
+    blackfire "env A"
+    visit url('https://api.dreamcargiveaways.co.uk/competitions')
+        name '/competitions'
+        method 'GET'
+        warmup true
+        samples 10
+
+scenario
+    blackfire "env B"
+    visit url('https://api.dreamcargiveaways.co.uk/competitions')
+        name '/competitions'
+        method 'GET'
+        warmup true
+        samples 10
