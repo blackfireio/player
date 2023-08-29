@@ -15,7 +15,8 @@ RUN install-php-extensions \
 RUN touch /usr/local/etc/php/conf.d/error_reporting.ini \
     && echo 'display_errors=Off' >> /usr/local/etc/php/conf.d/error_reporting.ini \
     && echo 'display_startup_errors=Off' >> /usr/local/etc/php/conf.d/error_reporting.ini \
-    && echo 'error_reporting=0' >> /usr/local/etc/php/conf.d/error_reporting.ini
+    && echo 'error_reporting=0' >> /usr/local/etc/php/conf.d/error_reporting.ini \
+    && echo 'memory_limit = 512M' > /usr/local/etc/php/conf.d/memory_limit.ini
 
 WORKDIR /app
 
