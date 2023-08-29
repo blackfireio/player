@@ -19,8 +19,9 @@ namespace Blackfire\Player\Step;
 class VisitStep extends Step
 {
     private ?string $method = null;
+    /** @var string[] */
     private array $parameters = [];
-    private mixed $body = null;
+    private ?string $body = null;
 
     public function __construct(
         private readonly string $uri,
@@ -40,12 +41,12 @@ class VisitStep extends Step
         $this->method = $method;
     }
 
-    public function param($key, $value): void
+    public function param(string $key, string $value): void
     {
         $this->parameters[$key] = $value;
     }
 
-    public function body(mixed $body): void
+    public function body(string $body): void
     {
         $this->body = $body;
     }
@@ -60,12 +61,15 @@ class VisitStep extends Step
         return $this->method;
     }
 
+    /**
+     * @return string[]
+     */
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    public function getBody(): mixed
+    public function getBody(): ?string
     {
         return $this->body;
     }

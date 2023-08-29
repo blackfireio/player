@@ -14,6 +14,7 @@ namespace Blackfire\Player\Console;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -21,16 +22,14 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  */
 final class OutputErrorHandler
 {
-    public function install(SymfonyApplication $application)
+    public function install(SymfonyApplication $application): void
     {
         $dispatcher = new EventDispatcher();
 
         $application->setDispatcher($dispatcher);
 
         $dispatcher->addListener(ConsoleEvents::ERROR, function (ConsoleErrorEvent $event) {
-            if (($event->getInput()->hasOption('json') && $event->getInput()->getOption('json'))
-                || ($event->getInput()->hasOption('full-report') && $event->getInput()->getOption('full-report'))
-            ) {
+            if ($event->getInput()->hasOption('json') && $event->getInput()->getOption('json')) {
                 $extra = ['errors' => []];
 
                 if ($event->getInput()->hasArgument('file')) {
@@ -52,6 +51,14 @@ final class OutputErrorHandler
                 }
 
                 $event->getOutput()->writeln(JsonOutput::error($event->getError(), $extra));
+            } else {
+                $output = $event->getOutput();
+                if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
+                    $output->writeln(sprintf('<error>%s</error>', $event->getError()->getMessage()));
+                    if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG) {
+                        $output->writeln(sprintf('<error>%s</error>', $event->getError()->getTraceAsString()));
+                    }
+                }
             }
         });
     }

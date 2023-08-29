@@ -18,15 +18,15 @@ use Blackfire\Player\Json;
  */
 final class JsonOutput
 {
-    public static function encode($data)
+    public static function encode(mixed $data): string
     {
         return Json::encode($data, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
     }
 
-    public static function error($error, $data = [])
+    public static function error(\Throwable $error, array $data = []): string
     {
         return self::encode(array_replace([
-            'message' => $error instanceof \Throwable ? $error->getMessage() : $error,
+            'message' => $error->getMessage(),
             'success' => false,
         ], $data));
     }

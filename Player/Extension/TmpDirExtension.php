@@ -11,9 +11,9 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
-use Blackfire\Player\Result;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\ScenarioResult;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -21,27 +21,26 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @internal
  */
-final class TmpDirExtension extends AbstractExtension
+final class TmpDirExtension implements ScenarioExtensionInterface
 {
-    private $fs;
+    public const EXTRA_VALUE_KEY = 'tmp_dir';
 
-    public function __construct()
-    {
-        $this->fs = new Filesystem();
+    public function __construct(
+        private readonly Filesystem $fs,
+    ) {
     }
 
-    public function enterScenario(Scenario $scenario, Context $context)
+    public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
         $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $this->fs->mkdir($tmpDir);
-        $context->getExtraBag()->set('tmp_dir', $tmpDir);
+        $scenarioContext->setExtraValue(self::EXTRA_VALUE_KEY, $tmpDir);
     }
 
-    public function leaveScenario(Scenario $scenario, Result $result, Context $context)
+    public function afterScenario(Scenario $scenario, ScenarioContext $scenarioContext, ScenarioResult $scenarioResult): void
     {
-        $extra = $context->getExtraBag();
-        if ($extra->has('tmp_dir')) {
-            $this->fs->remove($extra->get('tmp_dir'));
+        if (null !== $dir = $scenarioContext->getExtraValue(self::EXTRA_VALUE_KEY)) {
+            $this->fs->remove($dir);
         }
     }
 }

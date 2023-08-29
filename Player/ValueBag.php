@@ -25,12 +25,12 @@ class ValueBag
     ) {
     }
 
-    public function has($name)
+    public function has(string $name): bool
     {
         return \array_key_exists($name, $this->values);
     }
 
-    public function get($name)
+    public function get(string $name): mixed
     {
         if (!\array_key_exists($name, $this->values)) {
             throw new ValueException(sprintf('Variable "%s" is not defined.', $name));
@@ -39,17 +39,17 @@ class ValueBag
         return $this->values[$name];
     }
 
-    public function set($name, $value)
+    public function set(string $name, mixed $value): void
     {
         $this->values[$name] = $value;
     }
 
-    public function remove($name)
+    public function remove(string $name): void
     {
         unset($this->values[$name]);
     }
 
-    public function all($trim = false)
+    public function all(bool $trim = false): array
     {
         if (!$trim) {
             return $this->values;

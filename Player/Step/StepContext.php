@@ -18,19 +18,19 @@ namespace Blackfire\Player\Step;
  */
 final class StepContext
 {
-    private $auth;
-    private $headers = [];
-    private $wait;
-    private $json;
-    private $endpoint;
-    private $followRedirects;
-    private $variables = [];
-    private $blackfire;
-    private $blackfireRequest;
-    private $blackfireScenario;
-    private $samples;
-    private $warmup;
-    private $workingDir;
+    private ?string $auth = null;
+    /** @var string[] */
+    private array $headers = [];
+    private ?string $wait = null;
+    private ?string $json = null;
+    private ?string $endpoint = null;
+    private ?string $followRedirects = null;
+    /** @var mixed[] */
+    private array $variables = [];
+    private ?string $blackfire = null;
+    private ?string $samples = null;
+    private ?string $warmup = null;
+    private ?string $workingDir = null;
 
     public function update(ConfigurableStep $step, array $variables): void
     {
@@ -60,14 +60,6 @@ final class StepContext
             $this->blackfire = $step->getBlackfire();
         }
 
-        if (null !== $step->getBlackfireRequest()) {
-            $this->blackfireRequest = $step->getBlackfireRequest();
-        }
-
-        if (null !== $step->getBlackfireScenario()) {
-            $this->blackfireScenario = $step->getBlackfireScenario();
-        }
-
         if (null !== $step->getSamples()) {
             $this->samples = $step->getSamples();
         }
@@ -87,77 +79,68 @@ final class StepContext
         }
     }
 
-    /**
-     * @param string $value Must be an expression
-     *
-     * @internal
-     */
-    public function variable($key, $value)
+    public function variable(string $key, mixed $value): void
     {
         $this->variables[$key] = $value;
     }
 
-    public function getHeaders()
+    /**
+     * @return string[]
+     */
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function getAuth()
+    public function getAuth(): ?string
     {
         return $this->auth;
     }
 
-    public function getWait()
+    public function getWait(): ?string
     {
         return $this->wait;
     }
 
-    public function isFollowingRedirects()
+    public function isFollowingRedirects(): string
     {
         return null === $this->followRedirects ? 'false' : $this->followRedirects;
     }
 
-    public function isJson()
+    public function isJson(): string
     {
         return null === $this->json ? 'false' : $this->json;
     }
 
-    public function getEndpoint()
+    public function getEndpoint(): ?string
     {
         return $this->endpoint;
     }
 
-    public function getVariables()
+    /**
+     * @return mixed[]
+     */
+    public function getVariables(): array
     {
         return $this->variables;
     }
 
-    public function getBlackfireEnv()
+    public function getBlackfireEnv(): ?string
     {
         return $this->blackfire;
     }
 
-    public function getBlackfireRequest()
+    public function getSamples(): string
     {
-        return $this->blackfireRequest;
+        return null === $this->samples ? '1' : $this->samples;
     }
 
-    public function getBlackfireScenario()
-    {
-        return $this->blackfireScenario;
-    }
-
-    public function getSamples()
-    {
-        return null === $this->samples ? 1 : $this->samples;
-    }
-
-    public function getWarmup()
+    public function getWarmup(): string
     {
         return null === $this->warmup ? 'true' : $this->warmup;
     }
 
-    public function getWorkingDir()
+    public function getWorkingDir(): ?string
     {
         return $this->workingDir;
     }

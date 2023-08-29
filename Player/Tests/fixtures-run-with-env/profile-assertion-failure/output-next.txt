@@ -1,0 +1,21 @@
+Blackfire Player %s
+
+Scenario  "profile-assertion-failure"
+  [visit 1]
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php
+  Failure on step defined in /app/Player/Tests/Console/../fixtures-run-with-env/profile-assertion-failure/scenario.bkf at line  4
+  └ Assertion failed: metrics.output.network_out < 220KB
+  [visit 2]
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php?header
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php?header
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php?header
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php?header
+GET http://0:{{ PORT }}/profile-assertion-failure/index.php?header
+  Failure on step defined in /app/Player/Tests/Console/../fixtures-run-with-env/profile-assertion-failure/scenario.bkf at line  8
+  └ Assertion failed: metrics.output.network_out < 220KB
+
+ KO  Scenarios  1  - Steps  2  - Failures  2

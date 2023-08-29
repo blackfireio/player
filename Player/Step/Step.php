@@ -18,37 +18,44 @@ namespace Blackfire\Player\Step;
  */
 class Step extends ConfigurableStep
 {
+    /** @var string[] */
     private array $expectations = [];
+    /** @var string[] */
     private array $variables = [];
+    /** @var string[] */
     private array $assertions = [];
+    /** @var string[] */
     private array $dumpValuesName = [];
 
-    public function expect($expression)
+    public function expect(string $expression): self
     {
         $this->expectations[] = $expression;
 
         return $this;
     }
 
-    public function has($name): bool
+    public function has(string $name): bool
     {
         return \array_key_exists($name, $this->variables);
     }
 
-    public function set($name, $expression): self
+    public function set(string $name, string $variable): self
     {
-        $this->variables[$name] = $expression;
+        $this->variables[$name] = $variable;
 
         return $this;
     }
 
-    public function assert($assertion): self
+    public function assert(string $assertion): self
     {
         $this->assertions[] = $assertion;
 
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getExpectations(): array
     {
         return $this->expectations;
@@ -61,11 +68,17 @@ class Step extends ConfigurableStep
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getVariables(): array
     {
         return $this->variables;
     }
 
+    /**
+     * @return string[]
+     */
     public function getAssertions(): array
     {
         return $this->assertions;
@@ -78,11 +91,17 @@ class Step extends ConfigurableStep
         return $this;
     }
 
-    public function setDumpValuesName(array $varName = []): void
+    /**
+     * @param string[] $varName
+     */
+    public function setDumpValuesName(array $varName): void
     {
         $this->dumpValuesName = $varName;
     }
 
+    /**
+     * @return string[]
+     */
     public function getDumpValuesName(): array
     {
         return $this->dumpValuesName;

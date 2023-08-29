@@ -11,10 +11,13 @@
 
 namespace Blackfire\Player\Console;
 
+use Blackfire\Player\Adapter\BlackfireSdkAdapterInterface;
 use Blackfire\Player\Player;
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
@@ -23,19 +26,14 @@ use Symfony\Component\Console\Terminal;
  */
 final class Application extends BaseApplication
 {
-    public function __construct()
+    public function __construct(BlackfireSdkAdapterInterface $blackfireSdk = null, HttpClientInterface $blackfireHttpClient = null, string $transactionId)
     {
         error_reporting(0);
 
         parent::__construct('Blackfire Player', Player::version());
 
-        $this->add(new PlayerCommand());
+        $this->add(new PlayerCommand($blackfireHttpClient, $blackfireSdk, $transactionId));
         $this->add(new ValidateCommand());
-    }
-
-    public function renderException(\Exception $e, OutputInterface $output)
-    {
-        $this->renderThrowable($e, $output);
     }
 
     public function renderThrowable(\Throwable $e, OutputInterface $output): void
@@ -55,16 +53,18 @@ final class Application extends BaseApplication
         $lines[] = '';
         $lines[] = 'Player documentation at https://blackfire.io/player';
 
-        $output->writeln($this->getHelperSet()->get('formatter')->formatBlock($lines, 'error', true), OutputInterface::VERBOSITY_QUIET);
+        /** @var FormatterHelper $formatter */
+        $formatter = $this->getHelperSet()->get('formatter');
+        $output->writeln($formatter->formatBlock($lines, 'error', true), OutputInterface::VERBOSITY_QUIET);
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
 
         if (!\Phar::running() && $output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
-            self::renderException($e, $output);
+            parent::renderThrowable($e, $output);
         }
     }
 
     // from Symfony\Component\Console\Application
-    private function splitStringByWidth($string, $width)
+    private function splitStringByWidth(string $string, int $width): array
     {
         // str_split is not suitable for multi-byte characters, we should use preg_split to get char array properly.
         // additionally, array_slice() is not enough as some character has doubled width.
@@ -76,19 +76,24 @@ final class Application extends BaseApplication
         $utf8String = mb_convert_encoding($string, 'utf8', $encoding);
         $lines = [];
         $line = '';
-        foreach (preg_split('//u', $utf8String) as $char) {
-            // test if $char could be appended to current line
-            if (mb_strwidth($line.$char, 'utf8') <= $width) {
-                $line .= $char;
-                continue;
+
+        $offset = 0;
+        while (preg_match('/.{1,10000}/u', $utf8String, $m, 0, $offset)) {
+            $offset += \strlen($m[0]);
+
+            foreach (preg_split('//u', $m[0]) as $char) {
+                // test if $char could be appended to current line
+                if (mb_strwidth($line.$char, 'utf8') <= $width) {
+                    $line .= $char;
+                    continue;
+                }
+                // if not, push current line to array and make new line
+                $lines[] = str_pad($line, $width);
+                $line = $char;
             }
-            // if not, push current line to array and make new line
-            $lines[] = str_pad($line, $width);
-            $line = $char;
         }
-        if ('' !== $line) {
-            $lines[] = \count($lines) ? str_pad($line, $width) : $line;
-        }
+
+        $lines[] = \count($lines) ? str_pad($line, $width) : $line;
 
         mb_convert_variables($encoding, 'utf8', $lines);
 

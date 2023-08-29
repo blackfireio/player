@@ -11,97 +11,150 @@
 
 namespace Blackfire\Player\Serializer;
 
+use Blackfire\Player\Build\Build;
 use Blackfire\Player\Json;
+use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @internal
  */
 class ScenarioSetSerializer
 {
-    private readonly SerializerInterface $serializer;
+    private readonly NormalizerInterface $normalizer;
 
     public function __construct()
     {
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory, new CamelCaseToSnakeCaseNameConverter());
 
-        $this->serializer = new Serializer([new ObjectNormalizer($classMetadataFactory, $nameConverter)], [new JsonEncoder()]);
+        $this->normalizer = new Serializer([new ObjectNormalizer($classMetadataFactory, $nameConverter)], []);
     }
 
-    public function serialize(ScenarioSet $scenarioSet)
+    public function serialize(ScenarioSet $scenarioSet, Build $build): string
     {
-        return Json::encode($this->normalize($scenarioSet), \JSON_PRETTY_PRINT);
+        return Json::encode($this->normalize($scenarioSet, $build), \JSON_PRETTY_PRINT);
     }
 
-    public function normalize(ScenarioSet $scenarioSet)
+    public function serializeForJsonView(ScenarioSet $scenarioSet, Build $build): string
     {
+        $data = $this->normalize($scenarioSet, $build);
+
+        unset($data['name'], $data['endpoint'], $data['blackfire_environment']);
+        foreach ($data['scenarios'] as &$scenario) {
+            $this->cleanStepForJsonView($scenario);
+        }
+
+        return Json::encode($data, \JSON_PRETTY_PRINT);
+    }
+
+    public function normalize(ScenarioSet $scenarioSet, Build $build = null): array
+    {
+        if ($build) {
+            $filteredScenarios = array_values(
+                array_filter(
+                    $scenarioSet->getScenarios(),
+                    static fn (Scenario $scenario): bool => $scenario->getBlackfireBuildUuid() === $build->uuid || null === $scenario->getBlackfireBuildUuid()
+                )
+            );
+        } else {
+            $filteredScenarios = $scenarioSet;
+        }
+
         $data = [
-            'version' => microtime(true),
+            'version' => $scenarioSet->computeNextVersion(),
             'name' => $this->removeQuote($scenarioSet->getName()),
             'variables' => $this->removeQuote($scenarioSet->getVariables()),
             'endpoint' => $this->removeQuote($scenarioSet->getEndpoint()),
             'blackfire_environment' => $scenarioSet->getBlackfireEnvironment(),
-            'scenarios' => $this->serializer->normalize($scenarioSet, 'json'),
+            'status' => $scenarioSet->getStatus()->value,
+            'scenarios' => $this->normalizer->normalize($filteredScenarios, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]),
         ];
 
-        foreach ($data['scenarios'] as $key => $scenario) {
-            $data['scenarios'][$key]['name'] = $this->removeQuote($scenario['name']);
-            $data['scenarios'][$key]['variables'] = $this->removeQuote($scenario['variables']);
+        foreach ($data['scenarios'] as &$scenario) {
+            $this->cleanStep($scenario);
 
-            $data['scenarios'][$key] = array_filter($data['scenarios'][$key], static fn ($c) => null !== $c && [] !== $c);
-            foreach ($scenario['steps'] as $kStep => $step) {
-                $data['scenarios'][$key]['steps'][$kStep] = $this->cleanStep($step);
+            // steps property is required
+            $scenario['steps'] ??= [];
+
+            $scenario['variables'] = $this->removeQuote($scenario['variables']);
+            if (empty($scenario['variables']['endpoint'])) {
+                unset($scenario['variables']['endpoint']);
             }
 
-            if (isset($scenario['variables']['endpoint']) && empty($scenario['variables']['endpoint'])) {
-                unset($data['scenarios'][$key]['variables']['endpoint']);
-            }
-
-            foreach (($data['scenarios'][$key]['variables'] ?? []) as $k => $v) {
-                if (($data['variables'][$k] ?? null) === $v) {
-                    unset($data['scenarios'][$key]['variables'][$k]);
-                }
-            }
-
-            if (empty($data['scenarios'][$key]['variables'])) {
-                unset($data['scenarios'][$key]['variables']);
-            }
+            $scenario['variables'] = array_diff_assoc($scenario['variables'], $data['variables']);
         }
 
         return $data;
     }
 
-    private function cleanStep(array $step)
+    private function cleanStep(array &$step): void
     {
-        $step['name'] = $this->removeQuote($step['name']);
-        $step = array_filter($step, static fn ($c) => null !== $c && [] !== $c);
+        unset($step['iid']);
+        $step['name'] = $this->removeQuote($step['name'] ?? null);
+        $step = array_filter($step, static fn (mixed $c): bool => null !== $c && [] !== $c);
 
-        foreach (['if_step', 'else_step', 'loop_step'] as $type) {
+        foreach (['if_step', 'else_step', 'loop_step', 'while_step'] as $type) {
             if (isset($step[$type])) {
-                $step[$type] = $this->cleanStep($step[$type]);
+                $this->cleanStep($step[$type]);
             }
         }
 
-        if (isset($step['steps'])) {
-            foreach ($step['steps'] as $k => $s) {
-                $step['steps'][$k] = $this->cleanStep($s);
+        if (!isset($step['steps']) && !isset($step['generated_steps'])) {
+            return;
+        }
+
+        // Merge `steps` and `generated_steps` while preserving the orders
+        $steps = [];
+        foreach ($step['generated_steps'] ?? [] as $s) {
+            $id = $s['iid'];
+            $steps[$id] = $s;
+        }
+        foreach ($step['steps'] ?? [] as $s) {
+            $id = $s['iid'];
+            if (!isset($steps[$id])) {
+                $steps[$id] = $s;
             }
         }
 
-        return $step;
+        $step['steps'] = array_values($steps);
+        unset($step['generated_steps']);
+
+        array_walk($step['steps'], $this->cleanStep(...));
     }
 
-    private function removeQuote($string)
+    private function cleanStepForJsonView(array &$step): void
+    {
+        $step = array_intersect_key($step, [
+            'name' => true,
+            'blackfire_profile_uuid' => true,
+            'variables' => true,
+            'status' => true,
+            'steps' => true,
+            'type' => true,
+            'uuid' => true,
+            'failing_expectations' => true,
+            'failing_assertions' => true,
+            'errors' => true,
+            'deprecations' => true,
+            'initiator_uuid' => true,
+        ]);
+
+        if (isset($step['steps'])) {
+            array_walk($step['steps'], $this->cleanStepForJsonView(...));
+        }
+    }
+
+    private function removeQuote(mixed $string): mixed
     {
         if (\is_array($string)) {
             foreach ($string as $k => $v) {

@@ -14,6 +14,6 @@ namespace Blackfire\Player\Exception;
 /**
  * @internal
  */
-class SecurityException extends \InvalidArgumentException
+class SecurityException extends InvalidArgumentException
 {
 }

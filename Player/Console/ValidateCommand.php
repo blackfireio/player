@@ -11,6 +11,9 @@
 
 namespace Blackfire\Player\Console;
 
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
+use Blackfire\Player\ParserFactory;
 use Blackfire\Player\Validator\BkfValidator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,7 +29,7 @@ final class ValidateCommand extends Command
 {
     public const EXIT_CODE_FAILURE = 64;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('validate')
@@ -34,6 +37,7 @@ final class ValidateCommand extends Command
                 new InputArgument('file', InputArgument::OPTIONAL, 'The file defining the scenarios'),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs result as JSON', null),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
+                new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use', null),
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
             ])
             ->setDescription('Validate scenario files')
@@ -41,16 +45,18 @@ final class ValidateCommand extends Command
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         $initializer = new CommandInitializer();
         $initializer($input, $output);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $variables = (new ScenarioHydrator())->getVariables($input);
-        $validator = new BkfValidator();
+        $parserFactory = new ParserFactory(new ExpressionLanguage(null, [new LanguageProvider()]));
+
+        $variables = (new ScenarioHydrator($parserFactory))->getVariables($input);
+        $validator = new BkfValidator($parserFactory);
         if (!$input->getArgument('file') || 'php://stdin' === $input->getArgument('file')) {
             $result = $validator->validate(file_get_contents('php://stdin'), $variables, true);
         } else {

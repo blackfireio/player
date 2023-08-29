@@ -18,9 +18,10 @@ use Blackfire\Player\Console\Application;
 use Blackfire\Player\Console\OutputErrorHandler;
 use Blackfire\Player\SentrySupport;
 
-SentrySupport::init();
+$transactionId = \uuid_create(UUID_TYPE_RANDOM);
+SentrySupport::init($transactionId);
 
-$application = new Application();
+$application = new Application(null, null, $transactionId);
 $outputErrorHandler = new OutputErrorHandler();
 $outputErrorHandler->install($application);
 

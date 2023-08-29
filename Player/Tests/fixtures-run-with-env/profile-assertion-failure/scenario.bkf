@@ -1,0 +1,9 @@
+scenario
+    name "profile-assertion-failure"
+
+    visit "profile-assertion-failure/index.php"
+        expect status_code() == 200
+        expect trim(body()) == "ok"
+
+    visit url("profile-assertion-failure/index.php?header")
+        expect status_code() == 200

@@ -1,8 +1,0 @@
-Blackfire Player %s
-
-Scenario  ~Untitled~
- "/competitions"
-GET http://0:8399/without-name/index.php
-  OK
-
- OK  Scenarios  1  - Steps  1

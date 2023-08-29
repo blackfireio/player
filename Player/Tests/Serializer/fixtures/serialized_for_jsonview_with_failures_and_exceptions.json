@@ -1,0 +1,46 @@
+{
+    "variables": [],
+    "status": "in_progress",
+    "scenarios": [
+        {
+            "status": "todo",
+            "variables": [],
+            "steps": [
+                {
+                    "status": "todo",
+                    "name": "/competitions",
+                    "failing_expectations": [
+                        {
+                            "reason": "An expectation failed",
+                            "results": [
+                                {
+                                    "expression": "1 == 2",
+                                    "result": false
+                                },
+                                {
+                                    "expression": "body()",
+                                    "result": "<!DOCTYPE html><html lang=\"en\"... (truncated)"
+                                }
+                            ]
+                        }
+                    ],
+                    "type": "visit"
+                }
+            ]
+        },
+        {
+            "status": "todo",
+            "variables": [],
+            "steps": [
+                {
+                    "status": "todo",
+                    "name": "/competitions",
+                    "errors": [
+                        "Something exploded"
+                    ],
+                    "type": "visit"
+                }
+            ]
+        }
+    ]
+}

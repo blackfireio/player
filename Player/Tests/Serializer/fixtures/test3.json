@@ -1,23 +1,25 @@
 {
-    "version": %f,
     "name": null,
     "variables": [],
     "endpoint": "",
     "blackfire_environment": null,
+    "status": "in_progress",
     "scenarios": [
         {
+            "status": "todo",
             "variables": {
                 "env": "dev",
-                "urls": "[ \"\/\", \"\/development\", \"\/license\", \"\/doc\/1.x\/\", \"\/doc\/2.x\/\", \"\/doc\/2.x\/filters\/first.html\", \"\/api\/2.x\/index.html\", ]"
+                "urls": "[ \"/\", \"/development\", \"/license\", \"/doc/1.x/\", \"/doc/2.x/\", \"/doc/2.x/filters/first.html\", \"/api/2.x/index.html\", ]"
             },
             "steps": [
                 {
                     "if_step": {
-                        "values": "urls",
                         "loop_step": {
+                            "status": "todo",
                             "steps": [
                                 {
                                     "uri": "url(url)",
+                                    "status": "todo",
                                     "expectations": [
                                         "status_code() == 200"
                                     ],
@@ -28,10 +30,11 @@
                                     "type": "visit"
                                 },
                                 {
+                                    "status": "todo",
                                     "expectations": [
                                         "status_code() == 200",
-                                        "header(\"Cache-Control\") matches \"\/max\\-age=\\\\d+\/\"",
-                                        "header(\"X-Sensiocloud-Cache\") matches \"\/HIT\/\""
+                                        "header(\"Cache-Control\") matches \"/max\\-age=\\\\d+/\"",
+                                        "header(\"X-Sensiocloud-Cache\") matches \"/HIT/\""
                                     ],
                                     "is_blackfire_enabled": false,
                                     "name": "\"Checking \" ~ url",
@@ -43,13 +46,16 @@
                             "line": 3,
                             "type": "block"
                         },
+                        "values": "urls",
                         "key_name": "_",
                         "value_name": "url",
+                        "status": "todo",
                         "is_blackfire_enabled": true,
                         "line": 31,
                         "type": "loop"
                     },
                     "condition": "\"prod\" == env",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 30,
                     "type": "condition"
@@ -59,29 +65,34 @@
             "line": 17
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "\"\/\"",
+                    "uri": "\"/\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "body() matches \"\/Twig is a modern template engine for PHP\/\""
+                        "body() matches \"/Twig is a modern template engine for PHP/\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 37,
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/doc\/2.x\/api.html\"",
+                    "uri": "\"/doc/2.x/api.html\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "body() matches \"\/Twig for Developers\/\""
+                        "body() matches \"/Twig for Developers/\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 41,
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/doc\/2.x\/intro.html\"",
+                    "uri": "\"/doc/2.x/intro.html\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -91,9 +102,10 @@
                 },
                 {
                     "selector": "link(\"Edit\")",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 302",
-                        "header(\"Location\") matches \"{https:\/\/github.com\/login}\""
+                        "header(\"Location\") matches \"{https://github.com/login}\""
                     ],
                     "is_blackfire_enabled": false,
                     "line": 48,
@@ -104,9 +116,12 @@
             "line": 34
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "\"\/doc\/2.x\/api.html\"",
+                    "uri": "\"/doc/2.x/api.html\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
                         "1 == link(\"1.x\").count()"
@@ -117,6 +132,7 @@
                 },
                 {
                     "selector": "link(\"1.x\")",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
                         "1 == link(\"2.x\").count()"
@@ -126,30 +142,33 @@
                     "type": "click"
                 },
                 {
-                    "uri": "\"\/doc\/tags\/embed.html\"",
+                    "uri": "\"/doc/tags/embed.html\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 302",
-                        "header(\"Location\") == \"\/doc\/3.x\/tags\/embed.html\""
+                        "header(\"Location\") == \"/doc/3.x/tags/embed.html\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 64,
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/for\"",
+                    "uri": "\"/for\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 302",
-                        "header(\"Location\") == \"\/doc\/3.x\/tags\/for.html\""
+                        "header(\"Location\") == \"/doc/3.x/tags/for.html\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 68,
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/fir\"",
+                    "uri": "\"/fir\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "body() matches \"\/Sorry, but there is no Twig tag, filter, test, or function name\/\"",
+                        "body() matches \"/Sorry, but there is no Twig tag, filter, test, or function name/\"",
                         "css(\"p > a:contains('for')\")"
                     ],
                     "is_blackfire_enabled": true,
@@ -157,30 +176,33 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/else\"",
+                    "uri": "\"/else\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 302",
-                        "header(\"Location\") == \"\/doc\/3.x\/tags\/if.html\""
+                        "header(\"Location\") == \"/doc/3.x/tags/if.html\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 77,
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/in\"",
+                    "uri": "\"/in\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 302",
-                        "header(\"Location\") == \"\/doc\/3.x\/templates.html#containment-operator\""
+                        "header(\"Location\") == \"/doc/3.x/templates.html#containment-operator\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 81,
                     "type": "visit"
                 },
                 {
-                    "uri": "\"\/block\"",
+                    "uri": "\"/block\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "body() matches \"\/can be different things in Twig\/\""
+                        "body() matches \"/can be different things in Twig/\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 85,
@@ -191,38 +213,43 @@
             "line": 53
         },
         {
+            "status": "todo",
             "variables": {
                 "env": "dev"
             },
             "steps": [
                 {
                     "if_step": {
-                        "uri": "\"\/_errors\/404.html\"",
+                        "uri": "\"/_errors/404.html\"",
+                        "status": "todo",
                         "expectations": [
                             "status_code() == 200",
-                            "body() matches \"\/Sorry, the page you are looking for could not be found.\/\""
+                            "body() matches \"/Sorry, the page you are looking for could not be found./\""
                         ],
                         "is_blackfire_enabled": true,
                         "line": 94,
                         "type": "visit"
                     },
                     "condition": "\"prod\" != env",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 93,
                     "type": "condition"
                 },
                 {
                     "if_step": {
-                        "uri": "\"\/foo\/bar\/baz\"",
+                        "uri": "\"/foo/bar/baz\"",
+                        "status": "todo",
                         "expectations": [
                             "status_code() == 404",
-                            "body() matches \"\/Sorry, the page you are looking for could not be found.\/\""
+                            "body() matches \"/Sorry, the page you are looking for could not be found./\""
                         ],
                         "is_blackfire_enabled": true,
                         "line": 99,
                         "type": "visit"
                     },
                     "condition": "\"prod\" == env",
+                    "status": "todo",
                     "is_blackfire_enabled": true,
                     "line": 98,
                     "type": "condition"
@@ -232,12 +259,15 @@
             "line": 89
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "\"\/for\"",
+                    "uri": "\"/for\"",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 302",
-                        "header(\"Location\") == \"\/doc\/3.x\/tags\/for.html\""
+                        "header(\"Location\") == \"/doc/3.x/tags/for.html\""
                     ],
                     "is_blackfire_enabled": true,
                     "line": 106,

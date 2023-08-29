@@ -21,82 +21,67 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  */
 class ConfigurableStep extends AbstractStep
 {
-    private $auth;
-    private $headers = [];
-    private $wait;
-    private $json;
+    private ?string $auth = null;
+    /** @var string[] */
+    private array $headers = [];
+    private ?string $wait = null;
+    private ?string $json = null;
     #[Ignore]
-    private $followRedirects;
-    private $blackfire;
-    private $blackfireRequest;
-    private $blackfireScenario;
-    private $samples;
-    private $warmup;
+    private ?string $followRedirects = null;
+    private ?string $blackfire = null;
+    private ?string $samples = null;
+    private ?string $warmup = null;
 
-    public function followRedirects($follow)
+    public function followRedirects(?string $follow): self
     {
         $this->followRedirects = $follow;
 
         return $this;
     }
 
-    public function header($header)
+    public function header(string $header): self
     {
         $this->headers[] = $header;
 
         return $this;
     }
 
-    public function auth($auth)
+    public function auth(?string $auth): self
     {
         $this->auth = $auth;
 
         return $this;
     }
 
-    public function wait($wait)
+    public function wait(?string $wait): self
     {
         $this->wait = $wait;
 
         return $this;
     }
 
-    public function json()
+    public function json(?string $json): self
     {
-        $this->json = true;
+        $this->json = $json;
 
         return $this;
     }
 
-    public function blackfire($env)
+    public function blackfire(?string $env): self
     {
         $this->blackfire = $env;
 
         return $this;
     }
 
-    public function blackfireRequest($request)
-    {
-        $this->blackfireRequest = $request;
-
-        return $this;
-    }
-
-    public function blackfireScenario($scenario)
-    {
-        $this->blackfireScenario = $scenario;
-
-        return $this;
-    }
-
-    public function samples($samples)
+    public function samples(?string $samples): self
     {
         $this->samples = $samples;
 
         return $this;
     }
 
-    public function warmup($warmup)
+    public function warmup(?string $warmup): self
     {
         $this->warmup = $warmup;
 
@@ -104,33 +89,36 @@ class ConfigurableStep extends AbstractStep
     }
 
     #[SerializedName('follow_redirects')]
-    public function isFollowingRedirects()
+    public function isFollowingRedirects(): ?string
     {
         return $this->followRedirects;
     }
 
-    public function getHeaders()
+    /**
+     * @return string[]
+     */
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function getAuth()
+    public function getAuth(): ?string
     {
         return $this->auth;
     }
 
-    public function getWait()
+    public function getWait(): ?string
     {
         return $this->wait;
     }
 
-    public function isJson()
+    public function isJson(): ?string
     {
         return $this->json;
     }
 
     #[Ignore]
-    public function getBlackfire()
+    public function getBlackfire(): ?string
     {
         return $this->blackfire;
     }
@@ -145,22 +133,12 @@ class ConfigurableStep extends AbstractStep
         return 'false' !== $this->blackfire;
     }
 
-    public function getBlackfireRequest()
-    {
-        return $this->blackfireRequest;
-    }
-
-    public function getBlackfireScenario()
-    {
-        return $this->blackfireScenario;
-    }
-
-    public function getSamples()
+    public function getSamples(): ?string
     {
         return $this->samples;
     }
 
-    public function getWarmup()
+    public function getWarmup(): ?string
     {
         return $this->warmup;
     }

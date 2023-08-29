@@ -11,61 +11,54 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
+use Blackfire\Player\Build\Build;
 use Blackfire\Player\Exception\ExpectationFailureException;
+use Blackfire\Player\Exception\NonFatalException;
 use Blackfire\Player\Player;
-use Blackfire\Player\Result;
-use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\ScenarioResult;
 use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\ScenarioSetResult;
 use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\Step\BlockStep;
+use Blackfire\Player\Step\RequestStep;
 use Blackfire\Player\Step\Step;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Blackfire\Player\Step\StepContext;
+use Symfony\Component\Console\Helper\Dumper;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  *
  * @internal
  */
-class CliFeedbackExtension extends AbstractExtension
+class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExtensionInterface, StepExtensionInterface, ExceptionExtensionInterface
 {
-    private $output;
-    private $scenarioCount;
-    private $stepCount;
-    private $stepIndex;
-    private $failureCount;
-    private $dumper;
-    private $debug;
-    private $terminalWidth;
+    private int $scenarioCount;
+    private int $stepCount;
+    private int $stepDeep;
+    private int $stepIndex;
+    private int $failureCount;
+    private bool $concurrency = false;
+    private array $debugLines = [];
 
-    public function __construct(OutputInterface $output, $terminalWidth)
-    {
-        $this->output = $output;
+    private bool $debug;
+
+    public function __construct(
+        private readonly OutputInterface $output,
+        private readonly Dumper $dumper,
+        private readonly int $terminalWidth,
+    ) {
         $this->debug = $output->isVerbose();
-        $this->terminalWidth = $terminalWidth;
-
-        $h = fopen('php://memory', 'r+b');
-        $dumper = new CliDumper($h);
-        $cloner = new VarCloner();
-        $this->dumper = function ($var) use ($dumper, $cloner, $h, $output) {
-            $dumper->dump($cloner->cloneVar($var));
-
-            $data = stream_get_contents($h, -1, 0);
-            rewind($h);
-            ftruncate($h, 0);
-
-            $output->writeln(rtrim($data));
-        };
     }
 
-    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
+    public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
     {
         $msg = sprintf('Blackfire Player %s', Player::version());
-        if ($concurrency > 1) {
+
+        $this->concurrency = ($concurrency > 1);
+        if ($this->concurrency) {
             $msg .= sprintf(' - concurrency %d', $concurrency);
         }
         $this->output->writeln(sprintf('<fg=blue>%s</>', $msg));
@@ -75,70 +68,91 @@ class CliFeedbackExtension extends AbstractExtension
         $this->failureCount = 0;
     }
 
-    public function enterScenario(Scenario $scenario, Context $context)
+    public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
         ++$this->scenarioCount;
         $this->stepIndex = 0;
+        $this->stepDeep = 0;
 
         $this->output->writeln('');
-        $this->output->writeln(sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?: '~Untitled~'));
+        $this->output->writeln(sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?: $scenarioContext->getExtraValue('_index')));
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        ++$this->stepCount;
-        ++$this->stepIndex;
+        if ($step instanceof Scenario) {
+            return;
+        }
+        if ($step instanceof Step) {
+            ++$this->stepCount;
+        }
+        if (!$step instanceof RequestStep) {
+            ++$this->stepIndex;
+        }
+        ++$this->stepDeep;
 
-        if ($name = $step->getName()) {
-            $name = sprintf('<title> %s </>', $name);
+        $indent = $this->stepDeep > 0 ? str_repeat('  ', $this->stepDeep) : '';
+        if ($step instanceof RequestStep) {
+            $request = $step->getRequest();
+            $name = sprintf('%s %s', $request->method, $request->uri);
+            if (!$this->debug && (\strlen($name) - 3) > $this->terminalWidth) {
+                $name = substr($name, 0, $this->terminalWidth - 3).'...';
+            }
+        } elseif ($name = $step->getName()) {
+            $name = sprintf('<title>%s%s </>', $indent, $name);
         } else {
-            $name = sprintf('Step %d', $this->stepIndex);
+            $name = sprintf('%s[%s %d]', $indent, $step->getType(), $this->stepIndex);
         }
-        $this->output->writeln($name);
 
-        $line = sprintf('%s %s', $request->getMethod(), $request->getUri());
-        if (!$this->debug && (\strlen($line) - 3) > $this->terminalWidth) {
-            $line = substr($line, 0, $this->terminalWidth - 3).'...';
-        }
-        $this->output->write($line);
-
-        return $request;
+        $this->debug($this->linePrefix($scenarioContext).$name."\n");
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        if ($this->debug || !$this->output->isDecorated()) {
-            $this->output->writeln('');
-        } else {
-            $this->output->write("\r\033[K\033[1A\033[K");
+        if ($step instanceof Scenario) {
+            return;
         }
 
+        $this->clearLevelDebug($this->stepDeep);
+
+        --$this->stepDeep;
         if (!$step instanceof Step) {
-            return $response;
+            return;
         }
 
-        foreach ($step->getDumpValuesName() as $varName) {
-            if ('request' === $varName) {
-                $this->output->write(sprintf("<debug>request:</>\n%s\n", \GuzzleHttp\Psr7\str($request)));
-            } elseif ('response' === $varName) {
-                $this->output->write(sprintf("<debug>response:</>\n%s\n", \GuzzleHttp\Psr7\str($response)));
-            } elseif (\array_key_exists($varName, $context->getVariableValues())) {
+        $variables = $scenarioContext->getVariableValues($stepContext, true);
+        $dumpValues = $step->getDumpValuesName();
+        $response = $scenarioContext->hasPreviousResponse() ? $scenarioContext->getLastResponse() : null;
+        if ($response && \in_array('request', $dumpValues, true)) {
+            $this->output->write(sprintf("<debug>request:</>\n%s\n", $response->request->toString()));
+        }
+        if ($response && \in_array('response', $dumpValues, true)) {
+            $this->output->write(sprintf("<debug>response:</>\n%s\n", $response->toString()));
+        }
+        foreach ($dumpValues as $varName) {
+            if ('request' === $varName || 'response' === $varName) {
+                continue;
+            }
+            if (\array_key_exists($varName, $variables)) {
                 $this->output->write(sprintf('<debug>%s:</> ', $varName));
-                $dump = $this->dumper;
-                $dump($context->getVariableValues()[$varName]);
+                $this->dump($variables[$varName]);
             } else {
                 throw new \InvalidArgumentException(sprintf('Could not dump "%s" as the variable is not defined.', $varName));
             }
         }
 
-        if ($step->hasErrors()) {
+        if ($step->hasFailingExpectation()) {
+            $this->printErrors($step, $step->getFailingExpectations());
+        }
+        if ($step->hasFailingAssertion()) {
+            $this->printErrors($step, $step->getFailingAssertions());
+        }
+        if ($step->hasError()) {
             $this->printErrors($step, $step->getErrors());
         }
-
-        return $response;
     }
 
-    public function abortStep(AbstractStep $step, RequestInterface $request, \Exception $exception, Context $context)
+    public function failStep(AbstractStep $step, \Throwable $exception): void
     {
         $this->printErrors($step, [$exception->getMessage()]);
 
@@ -147,22 +161,43 @@ class CliFeedbackExtension extends AbstractExtension
         }
     }
 
-    public function abortScenario(Scenario $scenario, \Exception $exception, Context $context)
+    public function afterScenario(Scenario $scenario, ScenarioContext $scenarioContext, ScenarioResult $scenarioResult): void
     {
-        $this->printErrors($scenario, [$exception->getMessage()]);
+        // iterate over the scenario steps
+        // if one of the steps has errors, we add an error to the ScenarioResult
+        $scenarioErrors = iterator_to_array($this->searchForStepsWithErrors($scenario));
+        if (null === $scenarioResult->getError() && $scenarioErrors) {
+            $scenarioResult->setError(new NonFatalException(implode("\n", $scenarioErrors)));
+        }
 
-        if ($exception instanceof ExpectationFailureException) {
-            $this->printExpectationsFailure($exception);
+        if (!$scenarioResult->isErrored()) {
+            $this->output->writeln($this->linePrefix($scenarioContext).'<success> </> OK');
+        }
+
+        /** @var Build $build */
+        $build = $scenarioContext->getExtraValue('build');
+
+        // render the current build URL, if any
+        if ($build && $build->url) {
+            $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $build->url));
         }
     }
 
-    private function printErrors(AbstractStep $step, array $errors)
+    public function afterScenarioSet(ScenarioSet $scenarios, int $concurrency, ScenarioSetResult $scenarioSetResult): void
     {
-        if ($this->debug || !$this->output->isDecorated()) {
-            $this->output->write("\n");
+        $this->output->writeln('');
+
+        $summary = sprintf('Scenarios <detail> %d </> - Steps <detail> %d </>', $this->scenarioCount, $this->stepCount);
+        if ($scenarioSetResult->isErrored()) {
+            $this->output->writeln(sprintf('<failure> KO </> %s - Failures <failure> %d </>', $summary, $this->failureCount));
         } else {
-            $this->output->write("\r\033[K\033[1A\033[K");
+            $this->output->writeln(sprintf('<success> OK </> %s', $summary));
         }
+    }
+
+    private function printErrors(AbstractStep $step, array $errors): void
+    {
+        $this->clearAllDebug();
 
         ++$this->failureCount;
 
@@ -191,29 +226,92 @@ class CliFeedbackExtension extends AbstractExtension
         }
     }
 
-    private function printExpectationsFailure(ExpectationFailureException $exception)
+    private function debug(string $line): void
+    {
+        if ($this->concurrency || $this->debug || !$this->output->isDecorated()) {
+            $this->output->write($line);
+            if (!str_ends_with($line, "\n")) {
+                $this->output->write("\n");
+            }
+
+            return;
+        }
+
+        $this->output->write("\r\033[K"); // clear the actual line
+        $this->output->write($line);
+
+        $this->debugLines[$this->stepDeep] ??= 0;
+        $this->debugLines[$this->stepDeep] += substr_count($line, "\n");
+    }
+
+    private function clearAllDebug(): void
+    {
+        if ($this->concurrency || $this->debug || !$this->output->isDecorated()) {
+            return;
+        }
+
+        foreach (array_reverse(array_keys($this->debugLines)) as $level) {
+            $this->clearLevelDebug($level);
+        }
+    }
+
+    private function clearLevelDebug(int $level): void
+    {
+        if ($this->concurrency || $this->debug || !$this->output->isDecorated()) {
+            return;
+        }
+
+        $this->output->write("\r\033[K"); // clear the actual line
+        while (($this->debugLines[$level] ?? 0) > 0) {
+            $this->output->write("\033[1A\033[K");  // move the cursor up and clear the line
+            --$this->debugLines[$level];
+        }
+        unset($this->debugLines[$level]);
+    }
+
+    private function printExpectationsFailure(ExpectationFailureException $exception): void
     {
         foreach ($exception->getResults() as $result) {
             $this->output->writeln(sprintf('<failure> </>   └ %s = %s', $result['expression'], $result['result']));
         }
     }
 
-    public function leaveScenario(Scenario $scenario, Result $result, Context $context)
+    private function linePrefix(ScenarioContext $scenarioContext): string
     {
-        if (!$result->isErrored()) {
-            $this->output->writeln('<success> </> OK');
+        if ($this->concurrency) {
+            return sprintf('<fg=blue>Scenario</> <title> %s </> ', $scenarioContext->getName() ?: $scenarioContext->getExtraValue('_index'));
         }
+
+        return '';
     }
 
-    public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
+    private function dump(mixed $var): void
     {
-        $this->output->writeln('');
+        $this->output->writeln(($this->dumper)($var));
+    }
 
-        $summary = sprintf('Scenarios <detail> %d </> - Steps <detail> %d </>', $this->scenarioCount, $this->stepCount);
-        if ($results->isErrored()) {
-            $this->output->writeln(sprintf('<failure> KO </> %s - Failures <failure> %d </>', $summary, $this->failureCount));
-        } else {
-            $this->output->writeln(sprintf('<success> OK </> %s', $summary));
+    /**
+     * Steps with errors are steps having failures or exceptions.
+     */
+    private function searchForStepsWithErrors(AbstractStep $step): iterable
+    {
+        yield from $step->getFailingAssertions();
+
+        yield from $step->getFailingExpectations();
+
+        yield from $step->getErrors();
+
+        $generatedSteps = $step->getGeneratedSteps();
+        foreach ($generatedSteps as $generatedStep) {
+            yield from $this->searchForStepsWithErrors($generatedStep);
+        }
+
+        if ($step instanceof BlockStep) {
+            $childrenSteps = $step->getSteps();
+            /** @var AbstractStep $childStep */
+            foreach ($childrenSteps as $childStep) {
+                yield from $this->searchForStepsWithErrors($childStep);
+            }
         }
     }
 }

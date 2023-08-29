@@ -1,0 +1,26 @@
+Blackfire Player %s
+
+Scenario  "Group - Multiple"
+  [block 1]
+    [visit 2]
+GET http://0:{{ PORT }}/group-multiple/index.php?q=alice
+GET http://0:{{ PORT }}/group-multiple/index.php?q=alice
+GET http://0:{{ PORT }}/group-multiple/index.php?q=alice
+GET http://0:{{ PORT }}/group-multiple/index.php?q=alice
+GET http://0:{{ PORT }}/group-multiple/index.php?q=alice
+  [block 3]
+    [visit 4]
+GET http://0:{{ PORT }}/group-multiple/index.php?q=bob
+GET http://0:{{ PORT }}/group-multiple/index.php?q=bob
+GET http://0:{{ PORT }}/group-multiple/index.php?q=bob
+GET http://0:{{ PORT }}/group-multiple/index.php?q=bob
+GET http://0:{{ PORT }}/group-multiple/index.php?q=bob
+  [visit 5]
+GET http://0:{{ PORT }}/group-multiple/index.php?q=charlie
+GET http://0:{{ PORT }}/group-multiple/index.php?q=charlie
+GET http://0:{{ PORT }}/group-multiple/index.php?q=charlie
+GET http://0:{{ PORT }}/group-multiple/index.php?q=charlie
+GET http://0:{{ PORT }}/group-multiple/index.php?q=charlie
+  OK
+
+ OK  Scenarios  1  - Steps  3

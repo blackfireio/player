@@ -11,12 +11,16 @@
 
 namespace Blackfire\Player\Tests\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Extension\WatchdogExtension;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\ConfigurableStep;
+use Blackfire\Player\Step\FollowStep;
+use Blackfire\Player\Step\Step;
+use Blackfire\Player\Step\StepContext;
+use Blackfire\Player\Step\VisitStep;
+use Blackfire\Player\Step\WhileStep;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class WatchdogExtensionTest extends TestCase
 {
@@ -24,25 +28,26 @@ class WatchdogExtensionTest extends TestCase
     {
         $extension = new WatchdogExtension(1, 10);
 
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
-        $context = new Context('Test');
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
 
         $step = new ConfigurableStep();
+        $stepUuid = $step->getUuid();
+
         $step->next(new ConfigurableStep());
+        $stepContext = new StepContext();
 
-        $extension->enterStep($step, $request, $context);
-        $extension->leaveStep($step, $request, $response, $context);
+        $extension->beforeStep($step, $stepContext, $scenarioContext);
+        $extension->afterStep($step, $stepContext, $scenarioContext);
 
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_step_counter'));
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_total_counter'));
+        $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_step_counter:'.$stepUuid));
+        $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_total_counter'));
 
         $next = $step->getNext();
-        $extension->enterStep($next, $request, $context);
-        $extension->leaveStep($next, $request, $response, $context);
+        $extension->beforeStep($next, $stepContext, $scenarioContext);
+        $extension->afterStep($next, $stepContext, $scenarioContext);
 
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_step_counter'));
-        $this->assertEquals(2, $context->getExtraBag()->get('_watchdog_total_counter'));
+        $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_step_counter:'.$stepUuid));
+        $this->assertEquals(2, $scenarioContext->getExtraValue('_watchdog_total_counter'));
     }
 
     public function testStepLimitExceededThrowsException()
@@ -52,21 +57,24 @@ class WatchdogExtensionTest extends TestCase
 
         $extension = new WatchdogExtension(1, 10);
 
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
-        $context = new Context('Test');
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
 
         $step = new ConfigurableStep();
+        $stepUuid = $step->getUuid();
         $step->next(new ConfigurableStep());
+        $stepContext = new StepContext();
 
-        $extension->enterStep($step, $request, $context);
-        $extension->leaveStep($step, $request, $response, $context);
+        $extension->beforeStep($step, $stepContext, $scenarioContext);
+        $extension->afterStep($step, $stepContext, $scenarioContext);
 
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_step_counter'));
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_total_counter'));
+        $extension->beforeStep($step, $stepContext, $scenarioContext);
+        $extension->afterStep($step, $stepContext, $scenarioContext);
+
+        $this->assertEquals(2, $scenarioContext->getExtraValue('_watchdog_step_counter:'.$stepUuid));
+        $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_total_counter'));
 
         $next = new ConfigurableStep();
-        $extension->enterStep($next, $request, $context);
+        $extension->beforeStep($next, $stepContext, $scenarioContext);
     }
 
     public function testTotalLimitExceededThrowsException()
@@ -76,20 +84,88 @@ class WatchdogExtensionTest extends TestCase
 
         $extension = new WatchdogExtension(1, 1);
 
-        $request = $this->createMock(RequestInterface::class);
-        $response = $this->createMock(ResponseInterface::class);
-        $context = new Context('Test');
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
 
         $step = new ConfigurableStep();
+        $stepUuid = $step->getUuid();
         $step->next(new ConfigurableStep());
+        $stepContext = new StepContext();
 
-        $extension->enterStep($step, $request, $context);
-        $extension->leaveStep($step, $request, $response, $context);
+        $extension->beforeStep($step, $stepContext, $scenarioContext);
+        $extension->afterStep($step, $stepContext, $scenarioContext);
 
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_step_counter'));
-        $this->assertEquals(1, $context->getExtraBag()->get('_watchdog_total_counter'));
+        $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_step_counter:'.$stepUuid));
+        $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_total_counter'));
 
         $next = $step->getNext();
-        $extension->enterStep($next, $request, $context);
+        $extension->beforeStep($next, $stepContext, $scenarioContext);
+    }
+
+    public function testStepWithInitiatorIncrementsInitiatorStepCounter()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Number of requests per step exceeded ("6")');
+
+        $extension = new WatchdogExtension(6, 10);
+
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
+
+        $step = new VisitStep('/login');
+        $stepUuid = $step->getUuid();
+        $step->next(new ConfigurableStep());
+
+        $stepContext = new StepContext();
+
+        $extension->beforeStep($step, $stepContext, $scenarioContext);
+        $extension->afterStep($step, $stepContext, $scenarioContext);
+
+        for ($i = 0; $i < 5; ++$i) {
+            $this->doInitiateStep($step, $extension, $scenarioContext);
+        }
+
+        $this->assertEquals(6, $scenarioContext->getExtraValue('_watchdog_step_counter:'.$stepUuid));
+        $this->assertEquals(6, $scenarioContext->getExtraValue('_watchdog_total_counter'));
+
+        // once again to throw the exception
+        $this->doInitiateStep($step, $extension, $scenarioContext);
+    }
+
+    public function testIgnoresBlockStep()
+    {
+        $extension = new WatchdogExtension(10, 40);
+
+        $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
+
+        $step = new WhileStep('"i < 4');
+        $blockStepUuid = $step->getUuid();
+        $visitSteps = [];
+
+        for ($i = 0; $i < 4; ++$i) {
+            $step = new VisitStep('/login');
+            $visitSteps[] = $step->getUuid();
+            $stepContext = new StepContext();
+            $extension->beforeStep($step, $stepContext, $scenarioContext);
+            $extension->afterStep($step, $stepContext, $scenarioContext);
+
+            for ($j = 0; $j < 4; ++$j) {
+                $this->doInitiateStep($step, $extension, $scenarioContext);
+            }
+        }
+
+        $this->assertNull($scenarioContext->getExtraValue('_watchdog_step_counter:'.$blockStepUuid));
+        foreach ($visitSteps as $visitStepUuid) {
+            $this->assertEquals(5, $scenarioContext->getExtraValue('_watchdog_step_counter:'.$visitStepUuid));
+        }
+
+        $this->assertEquals(20, $scenarioContext->getExtraValue('_watchdog_total_counter'));
+    }
+
+    private function doInitiateStep(Step $step, WatchdogExtension $extension, ScenarioContext $scenarioContext)
+    {
+        $generatedStep = new FollowStep(null, null, $step);
+        $generatedStepContext = new StepContext();
+
+        $extension->beforeStep($generatedStep, $generatedStepContext, $scenarioContext);
+        $extension->afterStep($generatedStep, $generatedStepContext, $scenarioContext);
     }
 }

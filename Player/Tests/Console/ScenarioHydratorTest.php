@@ -1,12 +1,26 @@
 <?php
 
+/*
+ * This file is part of the Blackfire Player package.
+ *
+ * (c) Fabien Potencier <fabien@blackfire.io>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\PlayerCommand;
 use Blackfire\Player\Console\ScenarioHydrator;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
+use Blackfire\Player\ParserFactory;
+use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Tests\VarDumper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\VarDumper\Cloner\Stub;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 class ScenarioHydratorTest extends TestCase
@@ -43,9 +57,9 @@ EOF;
             'file' => $stream,
             '--endpoint' => 'http://localhost',
             '--variable' => ['user_login=escargot'],
-        ], (new PlayerCommand())->getDefinition());
+        ], (new PlayerCommand(null, null, 'a396ccc8-51e1-4047-93aa-ca3f3847f425'))->getDefinition());
 
-        $hydrator = new ScenarioHydrator();
+        $hydrator = new ScenarioHydrator(new ParserFactory(new ExpressionLanguage(null, [new LanguageProvider()])));
         $scenarios = $hydrator->hydrate($input);
 
         $expected = <<<EOEXPECTED
@@ -62,14 +76,28 @@ Blackfire\Player\ScenarioSet {
     "user_login" => "'escargot'"
     "user_password" => ""pwdsoupe""
   ]
+  -version: 0
+  -status: Blackfire\Player\Enum\BuildStatus {
+    +name: "IN_PROGRESS"
+    +value: "in_progress"
+  }
   -endpoint: "'http://localhost'"
   -blackfireEnvironment: null
   -scenarios: [
     Blackfire\Player\Scenario {
       #next: null
       #blackfireProfileUuid: null
+      #status: Blackfire\Player\Enum\BuildStatus {#1
+        +name: "TODO"
+        +value: "todo"
+      }
       -name: "'Visitor'"
+      -failingExpectations: []
+      -failingAssertions: []
       -errors: []
+      -deprecations: []
+      -generatedSteps: []
+      -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       -file: null
       -line: 8
       -auth: null
@@ -78,16 +106,20 @@ Blackfire\Player\ScenarioSet {
       -json: null
       -followRedirects: null
       -blackfire: null
-      -blackfireRequest: null
-      -blackfireScenario: null
       -samples: null
       -warmup: null
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: Blackfire\Player\Step\VisitStep {
           #next: null
           #blackfireProfileUuid: null
+          #status: Blackfire\Player\Enum\BuildStatus {#1}
           -name: null
+          -failingExpectations: []
+          -failingAssertions: []
           -errors: []
+          -deprecations: []
+          -generatedSteps: []
+          -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
           -file: null
           -line: 12
           -auth: null
@@ -96,8 +128,6 @@ Blackfire\Player\ScenarioSet {
           -json: null
           -followRedirects: null
           -blackfire: null
-          -blackfireRequest: null
-          -blackfireScenario: null
           -samples: null
           -warmup: null
           -expectations: []
@@ -110,8 +140,14 @@ Blackfire\Player\ScenarioSet {
           -uri: "url('/integrations')"
         }
         #blackfireProfileUuid: null
+        #status: Blackfire\Player\Enum\BuildStatus {#1}
         -name: null
+        -failingExpectations: []
+        -failingAssertions: []
         -errors: []
+        -deprecations: []
+        -generatedSteps: []
+        -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
         -file: null
         -line: 11
         -auth: null
@@ -120,8 +156,6 @@ Blackfire\Player\ScenarioSet {
         -json: null
         -followRedirects: null
         -blackfire: null
-        -blackfireRequest: null
-        -blackfireScenario: null
         -samples: null
         -warmup: null
         -expectations: []
@@ -140,12 +174,19 @@ Blackfire\Player\ScenarioSet {
       ]
       -endpoint: "'http://localhost'"
       -key: null
+      #blackfireBuildUuid: null
     }
     Blackfire\Player\Scenario {
       #next: null
       #blackfireProfileUuid: null
+      #status: Blackfire\Player\Enum\BuildStatus {#1}
       -name: "'Authenticated'"
+      -failingExpectations: []
+      -failingAssertions: []
       -errors: []
+      -deprecations: []
+      -generatedSteps: []
+      -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       -file: null
       -line: 14
       -auth: null
@@ -154,15 +195,19 @@ Blackfire\Player\ScenarioSet {
       -json: null
       -followRedirects: null
       -blackfire: null
-      -blackfireRequest: null
-      -blackfireScenario: null
       -samples: null
       -warmup: null
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: null
         #blackfireProfileUuid: null
+        #status: Blackfire\Player\Enum\BuildStatus {#1}
         -name: null
+        -failingExpectations: []
+        -failingAssertions: []
         -errors: []
+        -deprecations: []
+        -generatedSteps: []
+        -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
         -file: null
         -line: 17
         -auth: null
@@ -171,8 +216,6 @@ Blackfire\Player\ScenarioSet {
         -json: null
         -followRedirects: null
         -blackfire: null
-        -blackfireRequest: null
-        -blackfireScenario: null
         -samples: null
         -warmup: null
         -expectations: []
@@ -191,6 +234,7 @@ Blackfire\Player\ScenarioSet {
       ]
       -endpoint: ""http://tiptop.endpoint.minicontroll""
       -key: null
+      #blackfireBuildUuid: null
     }
   ]
 }
@@ -201,8 +245,12 @@ EOEXPECTED;
 
     private function getVarDumperDump($data)
     {
+        $casters = [
+            AbstractStep::class => self::uuidCaster(...),
+        ];
+
         $h = fopen('php://memory', 'r+');
-        $cloner = new VarCloner();
+        $cloner = new VarCloner($casters);
         $cloner->setMaxItems(-1);
         $dumper = new VarDumper($h);
         $dumper->setColors(false);
@@ -211,5 +259,12 @@ EOEXPECTED;
         fclose($h);
 
         return rtrim($data);
+    }
+
+    private static function uuidCaster(AbstractStep $object, array $array, Stub $stub, bool $isNested, int $filter = 0)
+    {
+        $array["\x00Blackfire\Player\Step\AbstractStep\x00uuid"] = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+        return $array;
     }
 }

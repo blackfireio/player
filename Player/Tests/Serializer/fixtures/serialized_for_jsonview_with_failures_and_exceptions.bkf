@@ -1,0 +1,15 @@
+#!blackfire-player
+
+scenario
+    visit url('https://api.dreamcargiveaways.co.uk/competitions')
+        name '/competitions'
+        method 'GET'
+        warmup true
+        samples 10
+
+scenario
+    visit url('https://api.dreamcargiveaways.co.uk/competitions')
+        name '/competitions'
+        method 'GET'
+        warmup true
+        samples 10

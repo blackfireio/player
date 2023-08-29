@@ -11,10 +11,11 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Exception\SecurityException;
+use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\AbstractStep;
-use Psr\Http\Message\RequestInterface;
+use Blackfire\Player\Step\RequestStep;
+use Blackfire\Player\Step\StepContext;
 
 /**
  * @author Luc Vieillescazes <luc.vieillescazes@blackfire.io>
@@ -26,38 +27,60 @@ use Psr\Http\Message\RequestInterface;
  *
  * @internal
  */
-final class DisableInternalNetworkExtension extends AbstractExtension
+final class DisableInternalNetworkExtension implements StepExtensionInterface
 {
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $host = $request->getUri()->getHost();
-
-        // Looks like an ip
-        if (
-            preg_match('/^((2[0-4]|1\d|[1-9])?\d|25[0-5])(\.(?1)){3}\z/', $host)
-            || preg_match('/^(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:(?!$)|$)|\2))(?4){5}((?4){2}|((2[0-4]|1\d|[1-9])?\d|25[0-5])(\.(?7)){3})\z/i', $host)
-        ) {
-            if (false === filter_var($host, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
-                throw new SecurityException('Forbidden host IP.');
-            }
-        } else {
-            if (false === filter_var($host, \FILTER_VALIDATE_DOMAIN)) {
-                throw new SecurityException('Invalid host name.');
-            }
-            $ip = gethostbyname($host);
-
-            if ($ip === $host) {
-                throw new SecurityException(sprintf('Could not resolve host: %s.', $host));
-            }
-
-            if (false === filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
-                throw new SecurityException(sprintf('The host "%s" resolves to a forbidden IP.', $host));
-            }
-
-            // Force IP
-            $context->setResolvedIp($ip);
+        if (!$step instanceof RequestStep) {
+            return;
         }
 
-        return $request;
+        $request = $step->getRequest();
+        $host = parse_url($request->uri, \PHP_URL_HOST);
+        if (!$host) {
+            throw new \InvalidArgumentException(sprintf('Unable to parse host from uri "%s"', $request->uri));
+        }
+
+        if ($this->isIpAddress($host)) {
+            $this->assertsIsPublicIp($host);
+        } elseif (!isset($request->options['resolve'][$host])) {
+            // Force resolved IP (because the DNS could return another IP when cURL will resolve the hostname)
+            $request->options['resolve'] = [$host => $this->resolveHost($host)];
+        }
+
+        foreach ($request->options['resolve'] ?? [] as $resolveHost => $resolveIp) {
+            $this->assertsIsPublicIp($resolveIp, sprintf('The host "%s" resolves to a forbidden IP', $resolveHost));
+        }
+    }
+
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
+    {
+    }
+
+    private function isIpAddress(string $host): bool
+    {
+        return preg_match('/^((2[0-4]|1\d|[1-9])?\d|25[0-5])(\.(?1)){3}\z/', $host)
+            || preg_match('/^(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:(?!$)|$)|\2))(?4){5}((?4){2}|((2[0-4]|1\d|[1-9])?\d|25[0-5])(\.(?7)){3})\z/i', $host);
+    }
+
+    private function assertsIsPublicIp(string $ip, string $context = 'Forbidden host IP'): void
+    {
+        if (false === filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
+            throw new SecurityException(sprintf('%s %s', $context, $ip));
+        }
+    }
+
+    private function resolveHost(string $host): string
+    {
+        if (false === filter_var($host, \FILTER_VALIDATE_DOMAIN)) {
+            throw new SecurityException(sprintf('Invalid host name %s', $host));
+        }
+        $resolvedIp = gethostbyname($host);
+
+        if ($resolvedIp === $host) {
+            throw new SecurityException(sprintf('Could not resolve host: %s', $host));
+        }
+
+        return $resolvedIp;
     }
 }

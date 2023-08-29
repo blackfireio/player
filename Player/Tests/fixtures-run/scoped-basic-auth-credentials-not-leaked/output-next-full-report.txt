@@ -1,0 +1,69 @@
+Blackfire Player %s
+
+Scenario  "scoped-basic-auth-credentials-not-leaked"
+  [visit 1]
+GET http://localhost:8399/scoped-basic-auth-credentials-not-leaked/index.php
+  OK
+
+ OK  Scenarios  1  - Steps  1
+{
+    "name": null,
+    "results": [
+        {
+            "scenario": "\"scoped-basic-auth-credentials-not-leaked\"",
+            "values": [],
+            "error": null
+        }
+    ],
+    "message": "Build run successfully",
+    "code": 0,
+    "success": true,
+    "input": {
+        "path": "%s/Player/Tests/Console/../fixtures-run/scoped-basic-auth-credentials-not-leaked/scenario.bkf",
+        "content": "scenario\n    name \"scoped-basic-auth-credentials-not-leaked\"\n\n    endpoint \"http://localhost:8399\"\n\n    visit \"scoped-basic-auth-credentials-not-leaked/index.php\"\n        expect status_code() == 401\n"
+    },
+    "blackfire_build": {
+        "version": %f,
+        "name": null,
+        "variables": {
+            "endpoint": "http://0:8399"
+        },
+        "endpoint": "http://0:8399",
+        "blackfire_environment": null,
+        "status": "done",
+        "scenarios": [
+            {
+                "status": "done",
+                "variables": [],
+                "steps": [
+                    {
+                        "uri": "\"scoped-basic-auth-credentials-not-leaked/index.php\"",
+                        "status": "done",
+                        "expectations": [
+                            "status_code() == 401"
+                        ],
+                        "is_blackfire_enabled": true,
+                        "uuid": "%x-%x-%x-%x-%x",
+                        "file": "%s/Player/Tests/Console/../fixtures-run/scoped-basic-auth-credentials-not-leaked/scenario.bkf",
+                        "line": 6,
+                        "type": "visit",
+                        "steps": [
+                            {
+                                "status": "done",
+                                "initiator_uuid": "%x-%x-%x-%x-%x",
+                                "follow_redirects": "false",
+                                "is_blackfire_enabled": true,
+                                "uuid": "%x-%x-%x-%x-%x",
+                                "type": "request"
+                            }
+                        ]
+                    }
+                ],
+                "name": "scoped-basic-auth-credentials-not-leaked",
+                "uuid": "%x-%x-%x-%x-%x",
+                "file": "%s/Player/Tests/Console/../fixtures-run/scoped-basic-auth-credentials-not-leaked/scenario.bkf",
+                "line": 1
+            }
+        ]
+    }
+}

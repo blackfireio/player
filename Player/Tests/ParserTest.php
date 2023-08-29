@@ -15,18 +15,60 @@ use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\SyntaxErrorException;
+use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\VisitStep;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
+    public function testParsingBlackfireEnv()
+    {
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
+        $scenarioSet = $parser->parse(<<<'EOF'
+blackfire-env "Blackfire Test"
+
+scenario Test 1
+    set env "prod"
+    endpoint 'http://toto.com'
+
+    # A comment
+    visit url('/blog/')
+        expect "prod" == env
+
+scenario Test2
+    reload
+EOF
+        );
+        $this->assertCount(2, $scenarioSet);
+
+        $this->assertEquals('"Blackfire Test"', $scenarioSet->getBlackfireEnvironment());
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[0];
+        $this->assertEquals('Test 1', $scenario->getKey());
+        $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
+
+        $this->assertEquals([
+            'env' => '"prod"',
+            'endpoint' => '\'http://toto.com\'',
+        ], $scenario->getVariables());
+
+        /** @var Scenario $scenario */
+        $scenario = $scenarioSet->getIterator()[1];
+        $this->assertEquals('Test2', $scenario->getKey());
+        $this->assertInstanceOf(ReloadStep::class, $scenario->getBlockStep());
+        $this->assertEquals(['endpoint' => ''], $scenario->getVariables());
+    }
+
     public function testParsingSeparatedScenario()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 scenario Test 1
     set env "prod"
@@ -60,7 +102,7 @@ EOF
 
     public function testParsingGlobalConfiguration()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set env "prod"
 endpoint 'http://toto.com'
@@ -105,12 +147,14 @@ EOF
      */
     public function testWarmupStepConfig($content, $expectedStep, $expectedScenario = null)
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse($content);
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[0];
-        $this->assertEquals($expectedStep, $scenario->getBlockStep()->getWarmup());
+        $step = $scenario->getBlockStep();
+        $this->assertInstanceOf(ConfigurableStep::class, $step);
+        $this->assertEquals($expectedStep, $step->getWarmup());
         $this->assertEquals($expectedScenario, $scenario->getWarmup());
     }
 
@@ -178,7 +222,7 @@ EOF
      */
     public function testDocSamples($input)
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse($input);
 
         $this->assertInstanceOf(ScenarioSet::class, $scenarioSet);
@@ -427,7 +471,7 @@ scenario
         expect status_code() == 200
         set latest_post_title css(".post h2").first()
         set latest_post_href css(".post h2 a").first().attr("href")
-        set latest_posts css(".post h2 a").extract('_text', 'href')
+        set latest_posts css(".post h2 a").extract(['_text', 'href'])
         set age header("Age")
         set content_type header("Content-Type")
         set token regex('/name="_token" value="([^"]+)"/')
@@ -467,7 +511,7 @@ EOF
             $this->expectExceptionMessage($exceptionMessage);
         }
 
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
@@ -528,7 +572,7 @@ EOF
             $this->expectExceptionMessage($exceptionMessage);
         }
 
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
@@ -572,7 +616,7 @@ EOF
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('#Cannot load file ".*/Player/Tests/ParserTest.php" because it does not have the right extension. Expected "bkf", got "php".#');
 
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $parser->load(__FILE__);
     }
 
@@ -581,28 +625,28 @@ EOF
         $s = fopen(__DIR__.'/fixtures-run/simple/scenario.bkf', 'r');
         $copy = fopen('php://memory', 'r+b');
         stream_copy_to_stream($s, $copy);
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarios = $parser->load($copy);
         $this->assertCount(1, $scenarios->getIterator());
     }
 
     public function testLoadBlackfireBkfViaFile()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarios = $parser->load(__DIR__.'/fixtures-run/simple/scenario.bkf');
         $this->assertCount(1, $scenarios->getIterator());
     }
 
     public function testLoadBlackfireYamlViaFile()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarios = $parser->load(__DIR__.'/fixtures/yaml/.blackfire.yaml');
         $this->assertCount(1, $scenarios->getIterator());
     }
 
     public function testLineContinuation()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set single 'a\
 b\
@@ -632,7 +676,7 @@ EOF
 
     public function testMultiLines()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set multi
 """
@@ -666,7 +710,7 @@ EOF
 
     public function testMultiLinesInterpolationNotEnabled()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set multi
 """
@@ -688,7 +732,7 @@ EOF
 
     public function testMultiLinesInterpolation()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set multi
 """i
@@ -706,7 +750,7 @@ EOF
 
     public function testMultiLinesEscapingInterpolation()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set multi
 """i
@@ -724,7 +768,7 @@ EOF
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Incorrect indentation in multi-lines string at line 8.');
 
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $parser->parse(<<<'EOF'
 scenario Test 1
     visit url('/')
@@ -752,7 +796,7 @@ If the Player is run through a Blackfire server, you can declare it in the "Vari
 EOF
         );
 
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $parser->parse(<<<'EOF'
 scenario Test 1
     when env != "prod"
@@ -764,7 +808,7 @@ EOF
 
     public function testDetectMissingVariables()
     {
-        $parser = new Parser([], true);
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]), [], true);
         $parser->parse(<<<'EOF'
 scenario Test 1
     when env != "prod"
@@ -778,7 +822,7 @@ EOF
 
     public function testMultiLinesWithoutInterpolatedVariables()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set login admin
 set password qwerty
@@ -803,7 +847,7 @@ EOF
 
     public function testMultiLinesWithInterpolatedVariables()
     {
-        $parser = new Parser();
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
 set login admin
 set password qwerty
@@ -828,7 +872,7 @@ EOF
 
     public function testMissingInterpolatedVariables()
     {
-        $parser = new Parser([], true);
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]), [], true);
         $parser->parse(<<<'EOF'
 scenario Test 1
     visit url('/')
@@ -847,7 +891,7 @@ EOF
 
     public function testMissingNotinterpolatedVariables()
     {
-        $parser = new Parser([], true);
+        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]), [], true);
         $parser->parse(<<<'EOF'
 scenario Test 1
     visit url('/')

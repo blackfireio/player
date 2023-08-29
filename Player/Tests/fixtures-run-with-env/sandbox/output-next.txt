@@ -1,0 +1,14 @@
+Blackfire Player %s
+
+Scenario  "Simple"
+  [visit 1]
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+GET http://0:{{ PORT }}/simple/index.php?form
+  [submit 2]
+  Failure on step defined in {{ SCENARIO_FILE }} at line  7
+  └ The "file" provider does not support relative file paths in the sandbox mode (use the "fake()" function instead).
+
+ KO  Scenarios  1  - Steps  2  - Failures  1

@@ -1,20 +1,23 @@
 {
-    "version": %f,
     "name": "Blackfire APP Scenarios",
     "variables": {
-        "endpoint": "https:\/\/blackfire.io",
+        "endpoint": "https://blackfire.io",
         "user_login": "connect_username_to_be_defined",
         "user_password": "connect_password_to_be_defined"
     },
-    "endpoint": "https:\/\/blackfire.io",
+    "endpoint": "https://blackfire.io",
     "blackfire_environment": null,
+    "status": "in_progress",
     "scenarios": [
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "url('\/login')",
+                    "uri": "url('/login')",
+                    "status": "todo",
                     "expectations": [
-                        "current_url() == endpoint ~ '\/login'"
+                        "current_url() == endpoint ~ '/login'"
                     ],
                     "assertions": [
                         "metrics.sql.queries.count <= 12"
@@ -26,8 +29,9 @@
                 },
                 {
                     "selector": "link('SymfonyConnect')",
+                    "status": "todo",
                     "expectations": [
-                        "current_url() == endpoint ~ '\/session\/connect\/symfony_connect'"
+                        "current_url() == endpoint ~ '/session/connect/symfony_connect'"
                     ],
                     "is_blackfire_enabled": false,
                     "name": "Connect with Symfony Connect",
@@ -35,10 +39,11 @@
                     "type": "click"
                 },
                 {
+                    "line": 23,
+                    "status": "todo",
                     "follow_redirects": "true",
                     "is_blackfire_enabled": false,
                     "name": "Follow redirection to Symfony Connect",
-                    "line": 23,
                     "type": "follow"
                 },
                 {
@@ -47,8 +52,9 @@
                         "form[_password]": "user_password"
                     },
                     "selector": "button(\"Sign in\")",
+                    "status": "todo",
                     "expectations": [
-                        "current_url() == 'https:\/\/connect.symfony.com\/secured\/login_check'"
+                        "current_url() == 'https://connect.symfony.com/secured/login_check'"
                     ],
                     "follow_redirects": "true",
                     "is_blackfire_enabled": false,
@@ -58,7 +64,8 @@
                 },
                 {
                     "method": "'POST'",
-                    "uri": "url('\/jwt')",
+                    "uri": "url('/jwt')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -71,10 +78,11 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/web-api\/my-profiles')",
+                    "uri": "url('/web-api/my-profiles')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
-                        "json('_links.current.href') == endpoint ~ '\/web-api\/profiles?page=1'"
+                        "json('_links.current.href') == endpoint ~ '/web-api/profiles?page=1'"
                     ],
                     "headers": [
                         "'Authorization: Bearer ' ~ jwt_token"
@@ -85,7 +93,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/account\/credentials.json')",
+                    "uri": "url('/account/credentials.json')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -94,8 +103,8 @@
                         "apiToken": "json('apiToken')"
                     },
                     "headers": [
-                        "'Accept: application\/json'",
-                        "'X-Blackfire-User-Agent: Blackfire Companion - Chrome\/42 Extension\/1'"
+                        "'Accept: application/json'",
+                        "'X-Blackfire-User-Agent: Blackfire Companion - Chrome/42 Extension/1'"
                     ],
                     "is_blackfire_enabled": true,
                     "name": "Credentials",
@@ -103,7 +112,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/api\/v1\/collab-tokens')",
+                    "uri": "url('/api/v1/collab-tokens')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200",
                         "json('collabTokens[0].type') == 'personal'"
@@ -115,7 +125,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/api\/v1\/agents')",
+                    "uri": "url('/api/v1/agents')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -130,7 +141,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/agent-api\/v1\/public-keys')",
+                    "uri": "url('/agent-api/v1/public-keys')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -141,7 +153,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/agent-api\/v1\/specs')",
+                    "uri": "url('/agent-api/v1/specs')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -152,7 +165,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/agent-api\/v2\/specs')",
+                    "uri": "url('/agent-api/v2/specs')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -163,7 +177,8 @@
                     "type": "visit"
                 },
                 {
-                    "uri": "url('\/agent-api\/v3\/specs')",
+                    "uri": "url('/agent-api/v3/specs')",
+                    "status": "todo",
                     "expectations": [
                         "status_code() == 200"
                     ],
@@ -178,11 +193,14 @@
             "line": 10
         },
         {
+            "status": "todo",
+            "variables": [],
             "steps": [
                 {
-                    "uri": "url('\/validator')",
+                    "uri": "url('/validator')",
+                    "status": "todo",
                     "expectations": [
-                        "current_url() == endpoint ~ '\/validator'",
+                        "current_url() == endpoint ~ '/validator'",
                         "status_code() == 200"
                     ],
                     "is_blackfire_enabled": true,
@@ -192,11 +210,12 @@
                 },
                 {
                     "parameters": {
-                        "input": "'scenarios:\\n    Pricing page:\\n        - \/pricing'"
+                        "input": "'scenarios:\\n    Pricing page:\\n        - /pricing'"
                     },
                     "selector": "css('form.validator')",
+                    "status": "todo",
                     "expectations": [
-                        "body() matches '\/The .blackfire.yaml file is valid.\/'",
+                        "body() matches '/The .blackfire.yaml file is valid./'",
                         "status_code() == 200"
                     ],
                     "is_blackfire_enabled": true,
@@ -206,11 +225,12 @@
                 },
                 {
                     "parameters": {
-                        "input": "'scenarios:\\n    Pricing page: \/pricing'"
+                        "input": "'scenarios:\\n    Pricing page: /pricing'"
                     },
                     "selector": "css('form.validator')",
+                    "status": "todo",
                     "expectations": [
-                        "body() matches '\/The .blackfire.yaml file is not valid.\/'",
+                        "body() matches '/The .blackfire.yaml file is not valid./'",
                         "status_code() == 200"
                     ],
                     "is_blackfire_enabled": true,
@@ -220,11 +240,12 @@
                 },
                 {
                     "parameters": {
-                        "input": "'scenario\\n    visit url(\\'\/\\')'"
+                        "input": "'scenario\\n    visit url(\\'/\\')'"
                     },
                     "selector": "css('form.validator')",
+                    "status": "todo",
                     "expectations": [
-                        "body() matches '\/The bkf scenario file is valid.\/'",
+                        "body() matches '/The bkf scenario file is valid./'",
                         "status_code() == 200"
                     ],
                     "is_blackfire_enabled": true,
@@ -234,11 +255,12 @@
                 },
                 {
                     "parameters": {
-                        "input": "'scenario\\n        visit url(\\'\/\\')'"
+                        "input": "'scenario\\n        visit url(\\'/\\')'"
                     },
                     "selector": "css('form.validator')",
+                    "status": "todo",
                     "expectations": [
-                        "body() matches '\/The bkf scenario file is not valid.\/'",
+                        "body() matches '/The bkf scenario file is not valid./'",
                         "status_code() == 200"
                     ],
                     "is_blackfire_enabled": true,

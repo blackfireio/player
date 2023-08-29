@@ -11,383 +11,248 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Build;
-use Blackfire\Client as BlackfireClient;
-use Blackfire\ClientConfiguration as BlackfireClientConfiguration;
-use Blackfire\Exception\ApiException;
-use Blackfire\Player\Context;
+use Blackfire\Player\Adapter\BlackfireSdkAdapterInterface;
+use Blackfire\Player\Build\Build;
+use Blackfire\Player\BuildApi;
 use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\LogicException;
-use Blackfire\Player\Exception\SyntaxErrorException;
+use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\Http\CrawlerFactory;
+use Blackfire\Player\Http\Request;
 use Blackfire\Player\Json;
-use Blackfire\Player\Player;
-use Blackfire\Player\Psr7\CrawlerFactory;
-use Blackfire\Player\Result;
-use Blackfire\Player\Results;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\ScenarioSet;
-use Blackfire\Player\SentrySupport;
+use Blackfire\Player\ScenarioSetResult;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
+use Blackfire\Player\Step\RequestStep;
 use Blackfire\Player\Step\Step;
+use Blackfire\Player\Step\StepContext;
+use Blackfire\Player\Step\StepInitiatorInterface;
 use Blackfire\Profile\Configuration as ProfileConfiguration;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
  *
  * @internal
  */
-final class BlackfireExtension extends AbstractExtension
+final class BlackfireExtension implements NextStepExtensionInterface, StepExtensionInterface, ScenarioSetExtensionInterface
 {
     public const MAX_RETRY = 10;
 
-    private $language;
-    private $defaultEnv;
-    private $output;
-    private $blackfire;
+    public const HEADER_BLACKFIRE_QUERY = 'x-blackfire-query';
+    public const HEADER_BLACKFIRE_PROFILE_UUID = 'x-blackfire-profile-uuid';
+    public const HEADER_BLACKFIRE_RESPONSE = 'x-blackfire-response';
 
-    public function __construct(ExpressionLanguage $language, $defaultEnv, OutputInterface $output, BlackfireClient $blackfire = null)
-    {
-        $this->language = $language;
-        $this->defaultEnv = $defaultEnv;
-        $this->output = $output;
-        $this->blackfire = $blackfire ?: new BlackfireClient(new BlackfireClientConfiguration());
-
-        $this->blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
+    public function __construct(
+        private readonly ExpressionLanguage $language,
+        private readonly BlackfireEnvResolver $blackfireEnvResolver,
+        private readonly BuildApi $buildApi,
+        private readonly BlackfireSdkAdapterInterface $blackfire,
+    ) {
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function getPreviousSteps(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): iterable
     {
-        if (!$step instanceof ConfigurableStep) {
-            return $request;
+        if (!$step instanceof RequestStep) {
+            return;
         }
 
-        $env = $context->getStepContext()->getBlackfireEnv();
-        $env = null === $env ? false : $this->language->evaluate($env, $context->getVariableValues(true));
+        $request = $step->getRequest();
+
+        $env = $stepContext->getBlackfireEnv();
+        $env = null === $env ? false : $this->language->evaluate($env, $scenarioContext->getVariableValues($stepContext, true));
         if (false === $env) {
-            return $request->withoutHeader('X-Blackfire-Query');
-        }
-        if (true === $env) {
-            if (null === $this->defaultEnv) {
-                throw new \LogicException('--blackfire-env option must be set when using "blackfire: true" in a scenario.');
-            }
-
-            $env = $this->defaultEnv;
+            return;
         }
 
-        $this->blackfire->getConfiguration()->setEnv($env);
-
-        if ($request->hasHeader('X-Blackfire-Query')) {
-            return $request;
+        if (isset($request->headers[self::HEADER_BLACKFIRE_QUERY])) {
+            return;
         }
 
-        $scenario = $this->getScenario($context, $env);
-
-        // Warmup the endpoint before profiling
-        $count = $this->warmupCount($step, $request, $context);
+        // we're gonna compute a number of warmup steps (basically ReloadSteps taking the same params as the currently processed step)
+        $count = $this->warmupCount($stepContext, $request->method, $scenarioContext->getVariableValues($stepContext, true));
+        // Those warmup steps are going to be processed _before_ the current step.
+        // The current step processing will take place after the last warmup step is over.
         if ($count > 0) {
-            $step->next($this->createWarmupSteps($step, $count, $context));
-
-            return $request;
+            yield from $this->computeWarmupSteps($step->getInitiator(), $scenarioContext, $count, $request);
         }
-
-        $config = $this->createProfileConfig($step, $context, $request, $scenario);
-        $profileRequest = $this->callApi(function () use ($config) {
-            return $this->blackfire->createRequest($config);
-        });
-
-        // Add a random cookie to help crossing caches
-        if ($request->hasHeader('Cookie')) {
-            $request = $request->withHeader('Cookie', $request->getHeaderLine('Cookie').'; __blackfire=NO_CACHE');
-        } else {
-            $request = $request->withHeader('Cookie', '__blackfire=NO_CACHE');
-        }
-
-        $query = $profileRequest->getToken();
-
-        // Send raw (without profiling) performance information
-        $bag = $context->getExtraBag();
-        if ($bag->has('blackfire_ref_stats') && \is_array($bag->get('blackfire_ref_stats'))) {
-            $stats = $bag->get('blackfire_ref_stats');
-
-            $options = [
-                'profile_title' => Json::encode([
-                    'blackfire-metadata' => [
-                        'timers' => [
-                            'total' => isset($stats['total_time']) ? $stats['total_time'] : null,
-                            'name_lookup' => isset($stats['namelookup_time']) ? $stats['namelookup_time'] : null,
-                            'connect' => isset($stats['connect_time']) ? $stats['connect_time'] : null,
-                            'pre_transfer' => isset($stats['pretransfer_time']) ? $stats['pretransfer_time'] : null,
-                            'start_transfer' => isset($stats['starttransfer_time']) ? $stats['starttransfer_time'] : null,
-                        ],
-                    ],
-                ]),
-            ];
-            $query .= '&'.http_build_query($options, '', '&', \PHP_QUERY_RFC3986);
-
-            $bag->remove('blackfire_ref_step');
-            $bag->remove('blackfire_ref_stats');
-        }
-
-        $step->setBlackfireProfileUuid($profileRequest->getUuid());
-
-        return $request
-            ->withHeader('X-Blackfire-Query', $query)
-            ->withHeader('X-Blackfire-Profile-Uuid', $profileRequest->getUuid())
-        ;
     }
 
-    public function leaveStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ResponseInterface
+    public function getNextSteps(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): iterable
     {
-        $bag = $context->getExtraBag();
-
-        if ($bag->has('blackfire_ref_step') && $step === $bag->get('blackfire_ref_step')) {
-            $bag->set('blackfire_ref_stats', $context->getRequestStats());
+        if (!$scenarioContext->hasPreviousResponse()) {
+            return;
+        }
+        $response = $scenarioContext->getLastResponse();
+        if (empty($response->request->headers[self::HEADER_BLACKFIRE_PROFILE_UUID])) {
+            return;
         }
 
-        if (!$uuid = $request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
-            return $response;
+        if (empty($response->headers[self::HEADER_BLACKFIRE_RESPONSE])) {
+            return;
         }
 
-        if (!$response->hasHeader('X-Blackfire-Response')) {
-            throw new \LogicException('Are you authorized to profile this page? Probe not found or invalid signature. Please read https://support.blackfire.platform.sh/hc/en-us/articles/4843027173778-Are-You-Authorized-to-Profile-this-Page-Probe-Not-Found-or-Invalid-signature-');
+        $blackfireResponseHeader = $response->headers[self::HEADER_BLACKFIRE_RESPONSE][0];
+        if (!$this->shouldContinueSampling($blackfireResponseHeader, $scenarioContext, false)) {
+            return;
         }
 
-        // Profile needs more samples
-        if ($this->continueSampling($response, $context)) {
-            return $response;
-        }
-
-        // Request is over. Read the profile
-        $crawler = CrawlerFactory::create($response, $request->getUri());
-        if (null !== $crawler && !$step->getName()) {
-            if (\count($c = $crawler->filter('title'))) {
-                $this->callApi(function () use ($uuid, $c) {
-                    $this->blackfire->updateProfile($uuid, $c->first()->text());
-                });
-            }
-        }
-
-        $this->assertProfile($step, $request, $response);
-
-        return $response;
-    }
-
-    public function getNextStep(AbstractStep $step, RequestInterface $request, ResponseInterface $response, Context $context): ?AbstractStep
-    {
-        // if X-Blackfire-Response is set by someone else, don't do anything
-        if (!$request->getHeaderLine('X-Blackfire-Profile-Uuid')) {
-            return null;
-        }
-
-        if (!$response->hasHeader('X-Blackfire-Response')) {
-            return null;
-        }
-
-        if (!$this->continueSampling($response, $context, false)) {
-            return null;
-        }
-
-        $reload = new ReloadStep();
+        $reload = new ReloadStep(initiator: $step instanceof StepInitiatorInterface ? $step->getInitiator() : ($step instanceof Step ? $step : null));
         $reload->name("'Reloading for Blackfire'");
+
         if ($step instanceof ConfigurableStep) {
             $reload->blackfire($step->getBlackfire());
         }
 
-        return $reload;
+        yield $reload;
     }
 
-    public function leaveScenario(Scenario $scenario, Result $result, Context $context)
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $extra = $context->getExtraBag();
-        if (!$extra->has('blackfire_scenario')) {
+        if ($step instanceof Scenario) {
+            $env = $this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step);
+            if (false === $env) {
+                return;
+            }
+
+            // now let's find the build for that env. If it doesn't exists, create it
+            $build = $this->buildApi->getOrCreate($env, $scenarioContext->getScenarioSet());
+            $scenarioContext->setExtraValue('build', $build);
+
+            // now assign the build UUID to the step
+            $step->setBlackfireBuildUuid($build->uuid);
+
             return;
         }
 
-        $blackfireScenario = $extra->get('blackfire_scenario');
-        $extra->remove('blackfire_scenario');
+        if ($step instanceof RequestStep) {
+            $request = $step->getRequest();
 
-        $errors = [];
-        if ($result->isFatalError() || $result->isExpectationError()) {
-            $error = $result->getError();
-            if ($error instanceof ApiException) { // Replace by a more friendly message on Blackfire
-                $message = sprintf('Got a "%s" error from Blackfire\'s API. Please consult the Player output for more details.', $error->getCode());
-            } else {
-                $message = $error->getMessage();
+            $env = $this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step);
+            if (false === $env) {
+                unset($request->headers[self::HEADER_BLACKFIRE_QUERY]);
+
+                return;
             }
 
-            $errors = [
-                ['message' => $message, 'code' => $error->getCode()],
-            ];
-        }
+            $this->blackfire->getConfiguration()->setEnv($env);
 
-        $report = $this->callApi(function () use ($blackfireScenario, $errors) {
-            return $this->blackfire->closeScenario($blackfireScenario, $errors);
-        });
+            if (isset($request->headers[self::HEADER_BLACKFIRE_QUERY])) {
+                return;
+            }
 
-        $extra->set('blackfire_report', $report);
+            $config = $this->createBuildProfileConfig($step->getInitiator(), $stepContext, $scenarioContext, $request);
+            $profileRequest = $this->blackfire->createRequest($config);
 
-        if (null !== $blackfireScenario->getUrl()) {
-            $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $blackfireScenario->getUrl()));
+            if (isset($request->headers['cookie'])) {
+                $request->headers['cookie'] = [$request->headers['cookie'][0].'; __blackfire=NO_CACHE'];
+            } else {
+                $request->headers['cookie'] = ['__blackfire=NO_CACHE'];
+            }
+
+            $query = $profileRequest->getToken();
+
+            // Send raw (without profiling) performance information
+            $stats = $scenarioContext->getExtraValue('blackfire_ref_stats');
+            if ($stats && \is_array($stats)) {
+                $options = [
+                    'profile_title' => Json::encode([
+                        'blackfire-metadata' => [
+                            'timers' => $stats,
+                        ],
+                    ]),
+                ];
+                $query .= '&'.http_build_query($options, '', '&', \PHP_QUERY_RFC3986);
+
+                $scenarioContext->removeExtraValue('blackfire_ref_step');
+                $scenarioContext->removeExtraValue('blackfire_ref_stats');
+            }
+
+            $request->headers[self::HEADER_BLACKFIRE_QUERY] = [$query];
+            $request->headers[self::HEADER_BLACKFIRE_PROFILE_UUID] = [$profileRequest->getUuid()];
         }
     }
 
-    private function getScenario(Context $context, $env): ?Build\Scenario
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $bag = $context->getExtraBag();
+        if ($step instanceof RequestStep) {
+            $response = $scenarioContext->getLastResponse();
 
-        if (null !== $context->getStepContext()->getBlackfireRequest()) {
-            return null;
+            if ($step === $scenarioContext->getExtraValue('blackfire_ref_step')) {
+                $scenarioContext->setExtraValue('blackfire_ref_stats', $response->stats);
+            }
+
+            if (empty($response->request->headers[self::HEADER_BLACKFIRE_PROFILE_UUID])) {
+                return;
+            }
+
+            $uuid = $response->request->headers[self::HEADER_BLACKFIRE_PROFILE_UUID][0];
+            if (empty($response->headers[self::HEADER_BLACKFIRE_RESPONSE])) {
+                throw new LogicException('Are you authorized to profile this page? Probe not found or invalid signature. Please read https://support.blackfire.platform.sh/hc/en-us/articles/4843027173778-Are-You-Authorized-to-Profile-this-Page-Probe-Not-Found-or-Invalid-signature-');
+            }
+
+            // Check if the profile needs more samples
+            $blackfireResponseHeader = $response->headers[self::HEADER_BLACKFIRE_RESPONSE][0];
+            if ($this->shouldContinueSampling($blackfireResponseHeader, $scenarioContext)) {
+                return;
+            }
+
+            // Request is over. Read the profile
+            if (!$step->getInitiator()->getName() && null !== $crawler = CrawlerFactory::create($response, $response->request->uri)) {
+                if (\count($c = $crawler->filter('title'))) {
+                    $this->blackfire->updateProfile($uuid, $c->first()->text());
+                }
+            }
+
+            $parentStep = $step->getInitiator();
+            $parentStep->setBlackfireProfileUuid($uuid);
+            $this->assertProfile($parentStep, $uuid);
         }
-
-        if ($bag->has('blackfire_scenario')) {
-            return $bag->get('blackfire_scenario');
-        }
-
-        if (null !== $context->getStepContext()->getBlackfireScenario()) {
-            $scenarioUuid = $this->language->evaluate($context->getStepContext()->getBlackfireScenario(), $context->getVariableValues(true));
-            $scenario = new Build\Scenario(new Build\Build($env, []), ['uuid' => $scenarioUuid]);
-            $bag->set('blackfire_scenario', $scenario);
-
-            return $scenario;
-        }
-
-        $scenarioSetBag = $context->getScenarioSetBag();
-        $build = null;
-        $buildKey = 'blackfire_build:'.$env;
-        if ($scenarioSetBag->has($buildKey)) {
-            $build = $scenarioSetBag->get($buildKey);
-        } elseif (isset($_SERVER['BLACKFIRE_BUILD_UUID'])) {
-            $build = new Build\Build($env, ['uuid' => $_SERVER['BLACKFIRE_BUILD_UUID']]);
-            $scenarioSetBag->set($buildKey, $build);
-        } else {
-            $buildName = $scenarioSetBag->has('blackfire_build_name') ? $scenarioSetBag->get('blackfire_build_name') : null;
-            $build = $this->createBuild($env, $buildName);
-            $scenarioSetBag->set($buildKey, $build);
-        }
-
-        $scenarioName = null;
-        if ($context->getName()) {
-            $scenarioName = $this->language->evaluate($context->getName(), $context->getVariableValues(true));
-        }
-
-        $scenario = $this->createScenario($build, $scenarioName);
-        $bag->set('blackfire_scenario', $scenario);
-
-        return $scenario;
     }
 
-    private function createBuild($env, $buildName)
-    {
-        $options = [
-            'trigger_name' => 'Blackfire Player',
-            'build_name' => $buildName,
-        ];
-
-        if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
-            $options['external_id'] = $_SERVER['BLACKFIRE_EXTERNAL_ID'];
-        }
-
-        if (isset($_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'])) {
-            $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'];
-        }
-
-        return $this->callApi(function () use ($env, $options) {
-            $build = $this->blackfire->startBuild($env, $options);
-
-            SentrySupport::addBreadcrumb('Build has been created', [
-                'uuid' => $build->getUuid(),
-            ]);
-
-            return $build;
-        });
-    }
-
-    private function createScenario(Build\Build $build, $title)
-    {
-        if (!$env = $this->blackfire->getConfiguration()->getEnv()) {
-            throw new SyntaxErrorException('You must set the environment you want to work with on the Blackfire client configuration.');
-        }
-
-        $options = [
-            'title' => $title,
-            'trigger_name' => 'Blackfire Player',
-        ];
-
-        if (isset($_SERVER['BLACKFIRE_EXTERNAL_ID'])) {
-            $options['external_id'] = $_SERVER['BLACKFIRE_EXTERNAL_ID'].':'.$this->slugify($title);
-        }
-
-        if (isset($_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'])) {
-            $options['external_parent_id'] = $_SERVER['BLACKFIRE_EXTERNAL_PARENT_ID'].':'.$this->slugify($title);
-        }
-
-        return $this->callApi(function () use ($build, $options) {
-            return $this->blackfire->startScenario($build, $options);
-        });
-    }
-
-    private function slugify($title)
-    {
-        static $cnt;
-
-        if (empty($title)) {
-            return (string) ++$cnt;
-        }
-
-        return trim(strtolower(preg_replace('~[^\pL\d]+~u', '-', $title)), '-');
-    }
-
-    private function createProfileConfig(ConfigurableStep $step, Context $context, RequestInterface $request, Build\Scenario $scenario = null)
+    private function createBuildProfileConfig(Step $step, StepContext $stepContext, ScenarioContext $context, Request $request): ProfileConfiguration
     {
         $config = new ProfileConfiguration();
-        if (null !== $scenario) {
-            $config->setScenario($scenario);
-        }
 
-        $blackfireRequest = $context->getStepContext()->getBlackfireRequest();
-        if (null !== $blackfireRequest) {
-            $config->setUuid($this->language->evaluate($blackfireRequest, $context->getVariableValues(true)));
-        }
+        $config->setSamples($this->language->evaluate($stepContext->getSamples(), $context->getVariableValues($stepContext, true)));
 
-        $config->setSamples($this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true)));
+        $path = parse_url($request->uri, \PHP_URL_PATH) ?: '/';
+        $config->setTitle($this->language->evaluate($step->getName() ?: Json::encode(sprintf('%s resource', $path)), $context->getVariableValues($stepContext, true)));
 
-        $name = $step->getName() ?: sprintf('%s resource', $request->getUri()->getPath() ?: '/');
-        $config->setTitle(trim($name, '"'));
-
-        $path = $request->getUri()->getPath() ?: '/';
-        $query = $request->getUri()->getQuery();
-        if ('' !== $query) {
+        $query = parse_url($request->uri, \PHP_URL_QUERY);
+        if ($query) {
             $path .= '?'.$query;
         }
 
+        $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
+        $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
+        if (!$build) {
+            throw new RuntimeException('Could not find build in the ScenarioSet');
+        }
+
         $config->setIntention('build');
+        $config->setBuildUuid($build->uuid);
 
         $config->setRequestInfo([
-            'method' => $request->getMethod(),
+            'method' => $request->method,
             'path' => $path,
             'headers' => $step->getHeaders(),
         ]);
 
-        if ($step instanceof Step) {
-            foreach ($step->getAssertions() as $assertion) {
-                $config->assert($assertion);
-            }
+        foreach ($step->getAssertions() as $assertion) {
+            $config->assert($assertion);
         }
 
         return $config;
     }
 
-    private function assertProfile(AbstractStep $step, RequestInterface $request, ResponseInterface $response)
+    private function assertProfile(Step $step, string $blackfireProfileUuid): void
     {
-        $profile = $this->callApi(function () use ($request) {
-            return $this->blackfire->getProfile($request->getHeaderLine('X-Blackfire-Profile-Uuid'));
-        });
+        $profile = $this->blackfire->getProfile($blackfireProfileUuid);
 
         if ($profile->isErrored()) {
             if ($profile->getTests()) {
@@ -396,54 +261,52 @@ final class BlackfireExtension extends AbstractExtension
 
             throw new ExpectationErrorException('None of your assertions apply to this scenario.');
         } elseif (!$profile->isSuccessful()) {
-            $failures = [];
+            $hasFailingAssertion = false;
             foreach ($profile->getTests() as $test) {
                 foreach ($test->getFailures() as $failure) {
-                    $failures[] = $failure;
+                    $hasFailingAssertion = true;
+                    $step->addFailingAssertion(sprintf('Assertion failed: %s', $failure));
                 }
             }
 
-            if (!$failures) { // It is a recommendation report
+            if (!$hasFailingAssertion) { // It is a recommendation report
                 foreach ($profile->getRecommendations() as $test) {
                     foreach ($test->getFailures() as $failure) {
-                        $failures[] = $failure;
+                        $step->addFailingAssertion(sprintf('Assertion failed: %s', $failure));
                     }
                 }
             }
-
-            $step->addError(sprintf("Assertions failed:\n  %s", implode("\n  ", $failures)));
         }
     }
 
-    private function continueSampling(ResponseInterface $response, Context $context, $checkProgress = true)
+    private function shouldContinueSampling(string $blackfireResponseHeader, ScenarioContext $scenarioContext, bool $checkProgress = true): bool
     {
-        parse_str($response->getHeaderLine('X-Blackfire-Response'), $values);
+        parse_str($blackfireResponseHeader, $values);
 
         $continue = isset($values['continue']) && 'true' === $values['continue'];
 
-        $extraBag = $context->getExtraBag();
         if (!$continue) {
-            $extraBag->set('blackfire_progress', -1);
-            $extraBag->set('blackfire_retry', 0);
-        } elseif ($continue && isset($values['progress']) && $checkProgress) {
-            $prevProgress = $extraBag->has('blackfire_progress') ? $extraBag->get('blackfire_progress') : -1;
+            $scenarioContext->setExtraValue('blackfire_progress', -1);
+            $scenarioContext->setExtraValue('blackfire_retry', 0);
+        } elseif (isset($values['progress']) && $checkProgress) {
+            $prevProgress = $scenarioContext->getExtraValue('blackfire_progress', -1);
             $progress = (int) $values['progress'];
 
             if ($progress < $prevProgress) {
                 throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#configuration-load-balancer');
             }
             if ($progress === $prevProgress) {
-                $retry = $extraBag->has('blackfire_retry') ? $extraBag->get('blackfire_retry') : 0;
+                $retry = $scenarioContext->getExtraValue('blackfire_retry', 0);
                 ++$retry;
                 if ($retry >= self::MAX_RETRY) {
                     throw new LogicException('Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#reverse-proxies-and-cdns');
                 }
-                $extraBag->set('blackfire_retry', $retry);
+                $scenarioContext->setExtraValue('blackfire_retry', $retry);
             } else {
-                $extraBag->set('blackfire_retry', 0);
+                $scenarioContext->setExtraValue('blackfire_retry', 0);
             }
 
-            $extraBag->set('blackfire_progress', $progress);
+            $scenarioContext->setExtraValue('blackfire_progress', $progress);
         }
 
         $wait = isset($values['wait']) ? (int) $values['wait'] : 0;
@@ -454,127 +317,88 @@ final class BlackfireExtension extends AbstractExtension
         return $continue;
     }
 
-    private function warmupCount(ConfigurableStep $step, RequestInterface $request, Context $context)
+    private function warmupCount(StepContext $stepContext, string $requestMethod, array $contextVariables): int
     {
-        $value = $this->language->evaluate($context->getStepContext()->getWarmup(), $context->getVariableValues(true));
+        $value = $this->language->evaluate($stepContext->getWarmup(), $contextVariables);
 
         if (false === $value) {
             return 0;
         }
 
-        $samples = (int) $this->language->evaluate($context->getStepContext()->getSamples(), $context->getVariableValues(true));
+        $samples = (int) $this->language->evaluate($stepContext->getSamples(), $contextVariables);
 
-        if (\in_array($request->getMethod(), ['GET', 'HEAD'], true) || $samples > 1) {
+        if (\in_array($requestMethod, ['GET', 'HEAD'], true) || $samples > 1) {
             return true === $value ? 3 : (int) $value;
         }
 
         return 0;
     }
 
-    private function createWarmupSteps(ConfigurableStep $step, $warmupCount, Context $context)
+    /**
+     * Yields warmupCount ReloadSteps + 1 which will be used as perf reference.
+     */
+    private function computeWarmupSteps(Step $step, ScenarioContext $scenarioContext, int $warmupCount, Request $request): iterable
     {
-        $name = null;
-        if ($step->getName()) {
-            $name = $this->language->evaluate($step->getName());
-        }
+        for ($i = 0; $i < $warmupCount; ++$i) {
+            $warmupStep = new RequestStep($request, $step);
+            $warmupStep->warmup('false');
 
-        $nextStep = $step->getNext();
-        for ($i = 0; $i <= $warmupCount; ++$i) {
-            $reload = (new ReloadStep())
-                ->warmup('false')
+            // Warmup requests
+            $warmupStep
+                ->name(Json::encode(sprintf('[Warmup] %s', trim($step->getName() ?? 'anonymous', '"'))))
+                ->blackfire('false')
             ;
 
-            if (0 === $i) {
-                // The real request to profile
-                $reload
-                    ->name($name ? sprintf('"%s"', $name) : null)
-                    ->configureFromStep($step)
-                ;
-            } elseif (1 === $i) {
-                // Raw Performance request
-                $reload
-                    ->name($name ? sprintf('"[Reference] %s"', $name) : null)
-                    ->blackfire('false')
-                ;
-
-                $context->getExtraBag()->set('blackfire_ref_step', $reload);
-            } else {
-                // Warmup requests
-                $reload
-                    ->name($name ? sprintf('"[Warmup] %s"', $name) : null)
-                    ->blackfire('false')
-                ;
-            }
-
-            if (null !== $nextStep) {
-                $reload->next($nextStep);
-            }
-
-            $nextStep = $reload;
+            yield $warmupStep;
         }
 
-        // Update the step for the current request
-        // We don't want assertions or expectations on this step as it is the first warmup request
-        $step->name($name ? sprintf('"[Warmup] %s"', $name) : null);
-        if ($step instanceof Step) {
-            $step
-                ->resetAssertions()
-                ->resetExpectations()
-            ;
-        }
+        // raw perf request
+        $referencePerfStep = (new RequestStep($request, $step))
+            ->warmup('false')
+            ->name(Json::encode(sprintf('[Reference] %s', trim($step->getName() ?? 'anonymous', '"'))))
+            ->blackfire('false')
+        ;
 
-        return $nextStep;
+        $scenarioContext->setExtraValue('blackfire_ref_step', $referencePerfStep);
+
+        yield $referencePerfStep;
     }
 
-    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
+    public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
     {
-        $bag = $scenarios->getExtraBag();
-
         if (!\is_string($scenarios->getName())) {
             return;
         }
 
-        $bag->set('blackfire_build_name', trim($scenarios->getName(), '"'));
+        $scenarios->getExtraBag()->set('blackfire_build_name', trim($scenarios->getName(), '"'));
     }
 
-    public function leaveScenarioSet(ScenarioSet $scenarios, Results $results)
+    public function afterScenarioSet(ScenarioSet $scenarios, int $concurrency, ScenarioSetResult $scenarioSetResult): void
     {
         $bag = $scenarios->getExtraBag();
 
-        if (!$env = $this->blackfire->getConfiguration()->getEnv()) {
-            return $env;
+        if (!$this->blackfire->getConfiguration()->getEnv()) {
+            return;
         }
 
-        $builds = array_filter($bag->all(), function ($key) {
-            return \is_string($key) && str_starts_with($key, 'blackfire_build:');
-        }, \ARRAY_FILTER_USE_KEY);
-
-        if (\count($builds) > 1) {
-            SentrySupport::captureMessage('This player execution is using multiple environments', [
-                'extra' => [
-                    'builds' => array_map(static fn ($build) => $build->getUuid(), $builds),
-                ],
-            ]);
-        }
+        /** @var Build[] $builds */
+        $builds = array_filter(
+            $bag->all(),
+            static fn (int|string $key): bool => \is_string($key) && str_starts_with($key, 'blackfire_build:'),
+            \ARRAY_FILTER_USE_KEY
+        );
 
         foreach ($builds as $key => $build) {
-            $this->callApi(function () use ($build) {
-                $this->blackfire->closeBuild($build);
-            });
             $bag->remove($key);
         }
     }
 
-    private function callApi($closure)
+    private function findEnvBuildFromExtraBag(string $env, ScenarioSet $scenarios): ?Build
     {
-        try {
-            return $closure();
-        } catch (ApiException $e) {
-            // Remove the headers from the exception
-            $message = preg_replace('/ \[headers: [^\]]*\]$/', '', $e->getMessage());
-            $message = preg_replace('/^\d*: /', '', $message);
+        $bag = $scenarios->getExtraBag();
 
-            throw ApiException::fromStatusCode($message, $e->getCode());
-        }
+        $buildKey = 'blackfire_build:'.$env;
+
+        return $bag->has($buildKey) ? $bag->get($buildKey) : null;
     }
 }

@@ -11,14 +11,17 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Exception\ExpressionSyntaxErrorException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
+use Blackfire\Player\Json;
 use Blackfire\Player\Scenario;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\ScenarioResult;
 use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\ScenarioSetResult;
 use Blackfire\Player\Step\AbstractStep;
+use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\VariableResolver;
-use Psr\Http\Message\RequestInterface;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**
@@ -26,18 +29,15 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
  *
  * @internal
  */
-final class NameResolverExtension extends AbstractExtension
+final class NameResolverExtension implements ScenarioSetExtensionInterface, ScenarioExtensionInterface, StepExtensionInterface
 {
-    private $language;
-    private $variableResolver;
-
-    public function __construct(ExpressionLanguage $language, VariableResolver $variableResolver = null)
-    {
-        $this->language = $language;
-        $this->variableResolver = $variableResolver ?: new VariableResolver($this->language);
+    public function __construct(
+        private readonly ExpressionLanguage $language,
+        private readonly VariableResolver $variableResolver,
+    ) {
     }
 
-    public function enterScenarioSet(ScenarioSet $scenarios, $concurrency)
+    public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
     {
         if (!$scenarios->getName()) {
             return;
@@ -50,10 +50,14 @@ final class NameResolverExtension extends AbstractExtension
             throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $scenarios->getName(), $e->getMessage()));
         }
 
-        $scenarios->name(sprintf('"%s"', $name));
+        $scenarios->name(Json::encode((string) $name));
     }
 
-    public function enterScenario(Scenario $scenario, Context $context)
+    public function afterScenarioSet(ScenarioSet $scenarios, int $concurrency, ScenarioSetResult $scenarioSetResult): void
+    {
+    }
+
+    public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
         if (!$scenario->getName()) {
             return;
@@ -66,23 +70,29 @@ final class NameResolverExtension extends AbstractExtension
             throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $scenario->getName(), $e->getMessage()));
         }
 
-        $scenario->name(sprintf('"%s"', $name));
+        $scenario->name(Json::encode((string) $name));
     }
 
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function afterScenario(Scenario $scenario, ScenarioContext $scenarioContext, ScenarioResult $scenarioResult): void
+    {
+    }
+
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
         if (!$step->getName()) {
-            return $request;
+            return;
         }
 
         try {
-            $name = $this->language->evaluate($step->getName(), $context->getVariableValues(true));
+            $name = $this->language->evaluate($step->getName(), $scenarioContext->getVariableValues($stepContext, true));
         } catch (SyntaxError $e) {
             throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $step->getName(), $e->getMessage()));
         }
 
-        $step->name(sprintf('"%s"', $name));
+        $step->name(Json::encode((string) $name));
+    }
 
-        return $request;
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
+    {
     }
 }

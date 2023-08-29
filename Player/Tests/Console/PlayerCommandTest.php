@@ -12,101 +12,84 @@
 namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\Application;
+use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class PlayerCommandTest extends TestCase
 {
-    private static $port;
-    private static $server;
+    use MockServerTrait;
+
+    private const FIXTURES_DIR = 'fixtures-run';
+    private static string $port;
 
     public static function setUpBeforeClass(): void
     {
-        static::$port = getenv('BLACKFIRE_WS_PORT');
-
-        self::bootServer();
+        self::$port = getenv('BLACKFIRE_WS_PORT') ?: '8399';
+        self::getRunningServer(self::FIXTURES_DIR, self::$port);
     }
 
     public static function tearDownAfterClass(): void
     {
-        self::$server->stop(0);
-        self::$server = null;
-    }
-
-    private static function bootServer()
-    {
-        if (self::$server && !self::$server->isTerminated() && self::$server->isRunning()) {
-            return;
-        }
-
-        if (self::$server) {
-            self::$server->stop(0);
-        }
-
-        $finder = new PhpExecutableFinder();
-
-        if (false === $binary = $finder->find()) {
-            throw new \RuntimeException('Unable to find PHP binary to run server.');
-        }
-
-        self::$server = new Process([$binary, '-S', '0:'.static::$port, '-t', __DIR__.'/../fixtures-run']);
-        self::$server->start();
-
-        usleep(250000);
-
-        if (self::$server->isTerminated() && !self::$server->isSuccessful()) {
-            throw new ProcessFailedException(self::$server);
-        }
-    }
-
-    public function doSetUp()
-    {
-        self::bootServer();
+        self::stopServer();
     }
 
     public function providePlayerTests()
     {
         $dirs = Finder::create()
-            ->in(__DIR__.'/../fixtures-run')
+            ->in(__DIR__.'/../'.self::FIXTURES_DIR)
             ->directories();
 
         foreach ($dirs as $dir) {
-            foreach (['index.php', 'output.txt', 'scenario.bkf'] as $file) {
+            foreach (['index.php', 'output-next.txt', 'scenario.bkf'] as $file) {
                 $file = sprintf('%s/%s', $dir->getPathname(), $file);
                 if (!file_exists($file)) {
                     throw new \Exception(sprintf('The fixture file "%s" does not exist.', $file));
                 }
             }
 
-            $reportFile = sprintf('%s/output-full-report.txt', $dir->getPathname());
+            $reportFile = sprintf('%s/output-next-full-report.txt', $dir->getPathname());
             $cliOptions = sprintf('%s/cli-options.php', $dir->getPathname());
+            $exitCodeFile = sprintf('%s/exit-code.txt', $dir->getPathname());
 
-            yield $dir->getBasename() => [
+            yield $dir->getBasename().' (next)' => [
                 sprintf('%s/scenario.bkf', $dir->getPathname()),
-                file_get_contents(sprintf('%s/output.txt', $dir->getPathname())),
-                file_exists($reportFile) ? file_get_contents($reportFile) : null,
-                file_exists($cliOptions) ? require $cliOptions : [],
+                file_get_contents(sprintf('%s/output-next.txt', $dir->getPathname())),
+                [
+                    'expected_exit_code' => file_exists($exitCodeFile) ? (int) (file_get_contents($exitCodeFile)) : 0,
+                    'report_file' => file_exists($reportFile) ? file_get_contents($reportFile) : null,
+                    'cli_options' => file_exists($cliOptions) ? require $cliOptions : [],
+                ],
             ];
         }
     }
 
     /** @dataProvider providePlayerTests */
-    public function testPlayer($file, $expectedOutput, $expectedReportOutput, $cliOptions)
+    public function testPlayer($file, $expectedOutput, array $testOptions)
     {
-        $application = new Application();
+        $expectedExitCode = $testOptions['expected_exit_code'];
+        $expectedReportOutput = $testOptions['report_file'];
+        $cliOptions = $testOptions['cli_options'];
+
+        $application = new Application(
+            new StubbedSdkAdapter('Blackfire Test'),
+            new MockHttpClient(),
+            'a396ccc8-51e1-4047-93aa-ca3f3847f425',
+        );
+
         $tester = new CommandTester($application->get('run'));
         $tester->execute(array_merge([
             'file' => $file,
-            '--endpoint' => 'http://0:'.static::$port,
+            '--endpoint' => 'http://0:'.self::$port,
         ], $cliOptions));
 
         $output = $tester->getDisplay();
         $output = implode("\n", array_map('rtrim', explode("\n", $output)));
-        $expectedOutput = str_replace('{{ PORT }}', static::$port, $expectedOutput);
+        $expectedOutput = str_replace('{{ PORT }}', self::$port, $expectedOutput);
         $expectedOutput = str_replace('{{ SCENARIO_FILE }}', $file, $expectedOutput);
 
         $this->assertStringMatchesFormat($expectedOutput, $output);
@@ -114,14 +97,18 @@ class PlayerCommandTest extends TestCase
         // For --json or --full-report, the output is composed of STDOUT + STDERR.
         // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.
 
+        $this->assertEquals($expectedExitCode, $tester->getStatusCode());
+
         if ($expectedReportOutput) {
             $tester->execute([
                 'file' => $file,
-                '--endpoint' => 'http://0:'.static::$port,
+                '--endpoint' => 'http://0:'.self::$port,
                 '--json' => true,
             ]);
 
-            $this->assertStringMatchesFormat($expectedReportOutput, $tester->getDisplay());
+            $output = $tester->getDisplay();
+            $output = implode("\n", array_map('rtrim', explode("\n", $output)));
+            $this->assertStringMatchesFormat($expectedReportOutput, $output);
         }
     }
 
@@ -190,20 +177,29 @@ EOS;
         "variables": [],
         "endpoint": "",
         "blackfire_environment": null,
+        "status": "done",
         "scenarios": [
             {
+                "status": "done",
+                "variables": [],
                 "steps": [
                     {
                         "uri": "\"/\"",
+                        "status": "done",
                         "expectations": [
                             "status_code() == 200"
                         ],
                         "is_blackfire_enabled": true,
+                        "errors": [
+                            "Unable to crawl a non-absolute URI (/). Did you forget to set an \"endpoint\"?"
+                        ],
+                        "uuid": "%x-%x-%x-%x-%x",
                         "line": 3,
                         "type": "visit"
                     }
                 ],
                 "name": "Test",
+                "uuid": "%x-%x-%x-%x-%x",
                 "line": 1
             }
         ]

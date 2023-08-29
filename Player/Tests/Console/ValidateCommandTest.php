@@ -47,7 +47,7 @@ class ValidateCommandTest extends TestCase
     /** @dataProvider providePlayerTests */
     public function testValidate($file, $expectedOutput, $expectedJsonOutput)
     {
-        $application = new Application();
+        $application = new Application(null, null, 'a396ccc8-51e1-4047-93aa-ca3f3847f425');
         $tester = new CommandTester($application->get('validate'));
         $tester->execute([
             'file' => $file,

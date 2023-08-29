@@ -18,8 +18,9 @@ namespace Blackfire\Player\Step;
  */
 class SubmitStep extends Step
 {
+    /** @var string[] */
     private array $parameters = [];
-    private mixed $body = null;
+    private ?string $body = null;
 
     public function __construct(
         private readonly string $selector,
@@ -34,12 +35,12 @@ class SubmitStep extends Step
         return sprintf("└ %s: %s\n", static::class, $this->selector);
     }
 
-    public function param($key, $value): void
+    public function param(string $key, string $value): void
     {
         $this->parameters[$key] = $value;
     }
 
-    public function body(mixed $body): void
+    public function body(string $body): void
     {
         $this->body = $body;
     }
@@ -49,12 +50,15 @@ class SubmitStep extends Step
         return $this->selector;
     }
 
+    /**
+     * @return string[]
+     */
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    public function getBody()
+    public function getBody(): ?string
     {
         return $this->body;
     }

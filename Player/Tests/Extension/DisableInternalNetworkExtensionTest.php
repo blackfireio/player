@@ -11,11 +11,13 @@
 
 namespace Blackfire\Player\Tests\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Exception\SecurityException;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
-use Blackfire\Player\Step\AbstractStep;
-use GuzzleHttp\Psr7\Request;
+use Blackfire\Player\Http\Request as HttpRequest;
+use Blackfire\Player\ScenarioContext;
+use Blackfire\Player\Step\RequestStep;
+use Blackfire\Player\Step\StepContext;
+use Blackfire\Player\Step\VisitStep;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\DnsMock;
 
@@ -27,7 +29,7 @@ class DisableInternalNetworkExtensionTest extends TestCase
     /**
      * @dataProvider provideInvalidUri
      */
-    public function testInvalidUri($uri, $exceptionMessage)
+    public function testBeforeRequestWithInvalidUri($uri, $exceptionMessage)
     {
         $this->expectException(SecurityException::class);
         $this->expectExceptionMessage($exceptionMessage);
@@ -37,9 +39,11 @@ class DisableInternalNetworkExtensionTest extends TestCase
         ]);
 
         $extension = new DisableInternalNetworkExtension();
-        $request = new Request('GET', $uri);
+        $request = new HttpRequest('GET', $uri);
 
-        $extension->enterStep($this->createMock(AbstractStep::class), $request, $this->createMock(Context::class));
+        $visitStep = new VisitStep($uri);
+
+        $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createMock(ScenarioContext::class));
     }
 
     public function provideInvalidUri()
@@ -53,14 +57,16 @@ class DisableInternalNetworkExtensionTest extends TestCase
     /**
      * @dataProvider provideValidUri
      */
-    public function testValidUri($uri)
+    public function testBeforeRequestWithValidUri($uri)
     {
         $extension = new DisableInternalNetworkExtension();
-        $request = new Request('GET', $uri);
+        $request = new HttpRequest('GET', $uri);
 
-        $res = $extension->enterStep($this->createMock(AbstractStep::class), $request, $this->createMock(Context::class));
+        $visitStep = new VisitStep($uri);
 
-        $this->assertSame($request, $res);
+        $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createMock(ScenarioContext::class));
+
+        $this->expectNotToPerformAssertions();
     }
 
     public function provideValidUri()

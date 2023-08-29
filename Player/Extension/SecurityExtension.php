@@ -11,27 +11,33 @@
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Context;
 use Blackfire\Player\Exception\SecurityException;
+use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\AbstractStep;
-use Psr\Http\Message\RequestInterface;
+use Blackfire\Player\Step\RequestStep;
+use Blackfire\Player\Step\StepContext;
 
 /**
  * @author Luc Vieillescazes <luc.vieillescazes@blackfire.io>
  *
  * @internal
  */
-final class SecurityExtension extends AbstractExtension
+final class SecurityExtension implements StepExtensionInterface
 {
-    public function enterStep(AbstractStep $step, RequestInterface $request, Context $context): RequestInterface
+    public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $scheme = $request->getUri()->getScheme();
+        if (!$step instanceof RequestStep) {
+            return;
+        }
 
-        // Other protocols are disabled by Guzzle anyway if cURL is recent enough
+        $request = $step->getRequest();
+        $scheme = parse_url($request->uri, \PHP_URL_SCHEME);
         if (!\in_array($scheme, ['http', 'https'], true)) {
             throw new SecurityException(sprintf('Invalid protocol ("%s").', $scheme));
         }
+    }
 
-        return $request;
+    public function afterStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
+    {
     }
 }

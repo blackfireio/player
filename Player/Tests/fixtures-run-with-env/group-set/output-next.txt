@@ -1,0 +1,26 @@
+Blackfire Player %s
+
+Scenario  "Test slugs"
+  [block 1]
+    [loop 2]
+      [visit 3]
+GET http://0:8399/group-set/index.php?slug=about
+GET http://0:8399/group-set/index.php?slug=about
+GET http://0:8399/group-set/index.php?slug=about
+GET http://0:8399/group-set/index.php?slug=about
+GET http://0:8399/group-set/index.php?slug=about
+      [visit 4]
+GET http://0:8399/group-set/index.php?slug=community
+GET http://0:8399/group-set/index.php?slug=community
+GET http://0:8399/group-set/index.php?slug=community
+GET http://0:8399/group-set/index.php?slug=community
+GET http://0:8399/group-set/index.php?slug=community
+      [visit 5]
+GET http://0:8399/group-set/index.php?slug=support
+GET http://0:8399/group-set/index.php?slug=support
+GET http://0:8399/group-set/index.php?slug=support
+GET http://0:8399/group-set/index.php?slug=support
+GET http://0:8399/group-set/index.php?slug=support
+  OK
+
+ OK  Scenarios  1  - Steps  3

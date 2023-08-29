@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Blackfire Player package.
+ *
+ * (c) Fabien Potencier <fabien@blackfire.io>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Blackfire\Player;
 
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
@@ -15,7 +24,7 @@ class VariableResolver
     ) {
     }
 
-    public function resolve(array $toResolve = [])
+    public function resolve(array $toResolve = [], array $variables = []): array
     {
         $resolved = [];
         while ($toResolve) {
@@ -26,7 +35,7 @@ class VariableResolver
                     if (null === $value || '' === $value) {
                         $resolved[$key] = $value;
                     } else {
-                        $resolved[$key] = $this->language->evaluate($value, $resolved);
+                        $resolved[$key] = $this->language->evaluate($value, $resolved + $variables);
                     }
                     unset($toResolve[$key]);
                     $succeed = true;

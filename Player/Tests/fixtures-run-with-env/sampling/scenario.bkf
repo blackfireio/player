@@ -1,0 +1,7 @@
+scenario
+    name "sampling"
+
+    set id 8399
+
+    visit "sampling/index.php?id="~id
+        samples 5

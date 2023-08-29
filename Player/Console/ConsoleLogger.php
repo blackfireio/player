@@ -19,20 +19,20 @@ use Symfony\Component\Console\Logger\ConsoleLogger as BaseConsoleLogger;
  */
 final class ConsoleLogger extends BaseConsoleLogger
 {
-    private $errored = false;
-
-    private $errorLevels = [
+    private const ERROR_LEVELS = [
         LogLevel::EMERGENCY => 1,
         LogLevel::ALERT => 1,
         LogLevel::CRITICAL => 1,
         LogLevel::ERROR => 1,
     ];
 
-    public function log($level, $message, array $context = [])
+    private bool $errored = false;
+
+    public function log(mixed $level, mixed $message, array $context = []): void
     {
         parent::log($level, $message, $context);
 
-        if (isset($this->errorLevels[$level])) {
+        if (isset(self::ERROR_LEVELS[$level])) {
             $this->errored = true;
         }
     }
