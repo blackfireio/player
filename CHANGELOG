@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.0.0 (2023-08-29)
+
+ * Player internals refactoring
+ * Deprecate multi-environment builds
+ * Update dependencies
+
 * 1.32.0 (2023-06-01)
 
  * Update dependencies
