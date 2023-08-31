@@ -15,6 +15,7 @@ use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;
 use Blackfire\Player\Extension\ResponseChecker;
+use Blackfire\Player\Http\CrawlerFactory;
 use Blackfire\Player\Http\Request;
 use Blackfire\Player\Http\Response;
 use Blackfire\Player\Json;
@@ -109,6 +110,31 @@ class ResponseCheckerTest extends TestCase
                 [
                     'expression' => 'json("foo.zee")',
                     'result' => 200,
+                ],
+            ],
+        ];
+
+        $response = new Response(
+            new Request('GET', 'https://app.bkf/some.json'),
+            200,
+            [
+                'content-type' => ['text/html'],
+            ],
+            '<!DOCTYPE html><html><head><title>Page title</title></head><body><h1>List</h1><ul class="items"><li class="item">Item 1</li><li class="item">Item 2</li></ul></body></html>',
+            []
+        );
+        yield 'searching using a css property which is not in the response' => [
+            [
+                'css(".items") and css(".items .item:nth-child(3)").text() matches "/Newer posts/"',
+            ],
+            [
+                '_crawler' => CrawlerFactory::create($response, $response->request->uri),
+                '_response' => $response,
+            ],
+            [
+                [
+                    'expression' => 'css(".items") and css(".items .item:nth-child(3)").text() matches "/Newer posts/"',
+                    'result' => 'The current node list is empty.',
                 ],
             ],
         ];
