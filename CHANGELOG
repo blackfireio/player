@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.0.2 (2023-09-01)
+
+ * Improve reported expectation failure error message
+
 * 2.0.1 (2023-08-29)
 
  * Increase docker image memory limit
