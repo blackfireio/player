@@ -24,6 +24,7 @@ use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
 use Blackfire\Player\Extension\ExpectationExtension;
 use Blackfire\Player\Extension\FollowExtension;
+use Blackfire\Player\Extension\InteractiveStepByStepExtension;
 use Blackfire\Player\Extension\NameResolverExtension;
 use Blackfire\Player\Extension\ResponseChecker;
 use Blackfire\Player\Extension\SecurityExtension;
@@ -125,6 +126,7 @@ final class PlayerCommand extends Command
                 new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode', null),
                 new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification', null),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
+                new InputOption('step', '', InputOption::VALUE_NONE, 'Interactive execution. Ask user validation before every step.', null),
             ])
             ->setDescription('Runs scenario files')
             ->setHelp('Read https://blackfire.io/docs/builds-cookbooks/player to learn about all supported options.')
@@ -210,6 +212,10 @@ final class PlayerCommand extends Command
             ]),
             new VariablesEvaluator($language),
         );
+
+        if ($input->getOption('step')) {
+            $player->addExtension(new InteractiveStepByStepExtension($this->getHelper('question'), $input, $output), 2048);
+        }
 
         $player->addExtension(new TmpDirExtension($filesystem));
         $player->addExtension(new ExpectationExtension(new ResponseChecker($language)), 512);
