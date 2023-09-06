@@ -48,14 +48,14 @@ class JsonViewReporter
             try {
                 $this->buildApi->updateBuild($build, $jsonView);
             } catch (HttpExceptionInterface $e) {
-                SentrySupport::captureException($e, [
-                    'extra' => [
-                        'json_view' => $jsonView,
-                    ],
-                ]);
                 $statusCode = $e->getResponse()->getStatusCode();
 
                 if (BuildStatus::DONE === $scenarioSet->getStatus()) {
+                    SentrySupport::captureException($e, [
+                        'extra' => [
+                            'json_view' => $jsonView,
+                        ],
+                    ]);
                     throw new ApiCallException(sprintf('%d: %s', $statusCode, 'Failed to send the last jsonview'), $statusCode, $e);
                 }
                 $this->output->writeln(sprintf('<warning> </>%s', $e->getMessage()));
