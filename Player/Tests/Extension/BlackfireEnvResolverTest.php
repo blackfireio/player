@@ -31,9 +31,10 @@ class BlackfireEnvResolverTest extends TestCase
             $resolver,
             $stepContext,
             $scenarioContext,
+            $step,
         ] = $this->arrange($defaultEnv, $stepBlackfire, $scenarioSetEnvironment);
 
-        $output = $resolver->resolve($stepContext, $scenarioContext);
+        $output = $resolver->resolve($stepContext, $scenarioContext, $step);
 
         $this->assertEquals($expectedResult, $output);
     }
@@ -85,9 +86,10 @@ class BlackfireEnvResolverTest extends TestCase
             $resolver,
             $stepContext,
             $scenarioContext,
+            $step,
         ] = $this->arrange($defaultEnv, $stepBlackfire, $scenarioSetEnvironment);
 
-        $output = $resolver->resolve($stepContext, $scenarioContext);
+        $output = $resolver->resolve($stepContext, $scenarioContext, $step);
 
         $this->assertEquals($expectedResult, $output);
     }
@@ -119,12 +121,13 @@ class BlackfireEnvResolverTest extends TestCase
             $resolver,
             $stepContext,
             $scenarioContext,
+            $step,
         ] = $this->arrange($defaultEnv, $stepBlackfire, $scenarioSetEnvironment);
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('--blackfire-env option must be set when using "blackfire: true" in a scenario.');
 
-        $resolver->resolve($stepContext, $scenarioContext);
+        $resolver->resolve($stepContext, $scenarioContext, $step);
     }
 
     public function errorsProvider()
@@ -134,6 +137,45 @@ class BlackfireEnvResolverTest extends TestCase
             'true',
             null,
             true,
+        ];
+    }
+
+    /**
+     * @dataProvider deprecationsProvider
+     */
+    public function testDeprecationWarning(?string $defaultEnv, ?string $stepBlackfire, ?string $scenarioSetEnvironment, string|bool $expectedResult, array $expectedDeprecations)
+    {
+        [
+            $resolver,
+            $stepContext,
+            $scenarioContext,
+            $step,
+        ] = $this->arrange($defaultEnv, $stepBlackfire, $scenarioSetEnvironment);
+
+        $output = $resolver->resolve($stepContext, $scenarioContext, $step);
+
+        $this->assertEquals($expectedDeprecations, $step->getDeprecations());
+        $this->assertEquals($expectedResult, $output);
+    }
+
+    public function deprecationsProvider()
+    {
+        yield 'shows deprecation when blackfire resolves an environment name' => [
+            'blackfire dev',
+            '"blackfire dev"',
+            null,
+            'blackfire dev',
+            [
+                'Resolving an environment at the scenario level using the "blackfire" property is deprecated. Please use `--blackfire-env` instead.',
+            ],
+        ];
+
+        yield 'no deprecation if it resolves boolean' => [
+            'blackfire dev',
+            'true',
+            null,
+            'blackfire dev',
+            [],
         ];
     }
 
@@ -158,6 +200,7 @@ class BlackfireEnvResolverTest extends TestCase
             $resolver,
             $stepContext,
             $scenarioContext,
+            $step,
         ];
     }
 }

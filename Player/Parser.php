@@ -41,11 +41,9 @@ use Webmozart\PathUtil\Path;
  */
 class Parser
 {
-    private const DEPRECATION_ENV_RESOLVING = 'Resolving an environment at the scenario level using the "blackfire" property is deprecated. Please use `--blackfire-env` instead. %s.';
     public const REGEX_NAME = '[a-zA-Z_\x7f-\xff][\-a-zA-Z0-9_\x7f-\xff]*';
 
     private const KEYWORD_ENDPOINT = 'endpoint';
-    private const KEYWORD_BLACKFIRE_ENV = 'blackfire-env';
 
     private bool $inAGroup;
     /** @var string[] */
@@ -131,9 +129,7 @@ class Parser
         $scenarios->setVariables($this->getGlobalVariables());
 
         $endpoint = $this->getGlobalVariables()[self::KEYWORD_ENDPOINT] ?? '';
-        $blackfireEnv = $this->getGlobalVariables()[self::KEYWORD_BLACKFIRE_ENV] ?? null;
         $scenarios->setEndpoint($endpoint);
-        $scenarios->setBlackfireEnvironment($blackfireEnv);
 
         foreach ($scenarios as $scenario) {
             if (!$scenario->getEndpoint()) {
@@ -229,19 +225,7 @@ class Parser
             return $scenarios;
         }
 
-        if (self::KEYWORD_BLACKFIRE_ENV === $keyword) {
-            if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('A "%s" can only be defined at root %s.', self::KEYWORD_BLACKFIRE_ENV, $input->getContextString()));
-            }
-
-            if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "%s" takes either an env UUID or an environment name as a required argument %s.', self::KEYWORD_BLACKFIRE_ENV, $input->getContextString()));
-            }
-
-            $this->globalVariables[self::KEYWORD_BLACKFIRE_ENV] = $arguments;
-
-            $step = new EmptyStep();
-        } elseif (self::KEYWORD_ENDPOINT === $keyword) {
+        if (self::KEYWORD_ENDPOINT === $keyword) {
             if ($expectedIndent > 0) {
                 throw new SyntaxErrorException(sprintf('An "%s" can only be defined at root %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
             }
@@ -560,12 +544,6 @@ class Parser
                 $step->followRedirects(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('blackfire' === $keyword) {
                 $step->blackfire(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
-                if (!\in_array($step->getBlackfire(), ['true', 'false'], true)) {
-                    // if the `blackfire` keyword match anything than true or false, we are trying to resolve an environment.
-                    SentrySupport::captureMessage('blackfire property used to resolve the blackfire environment');
-                    // $this->output->writeln(sprintf('<warning>%s</warning>', self::DEPRECATION_ENV_RESOLVING));
-                    $step->addDeprecation(sprintf(self::DEPRECATION_ENV_RESOLVING, $input->getContextString()));
-                }
             } elseif ('json' === $keyword) {
                 $step->json(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('samples' === $keyword) {
@@ -648,12 +626,11 @@ class Parser
             return $expression;
         }
 
-        // We add the "endpoint" and "blackfire-env" variables to be able to use it anywhere. The
+        // We add the "endpoint" variable to be able to use it anywhere. The
         // value could be injected later, during the parsing or directly in the
         // scenarios via the CLI
         $variables = array_replace([
             self::KEYWORD_ENDPOINT => null,
-            self::KEYWORD_BLACKFIRE_ENV => null,
         ], $this->globalVariables, $this->externalVariables, $this->variables);
 
         try {

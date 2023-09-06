@@ -27,45 +27,6 @@ use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-    public function testParsingBlackfireEnv()
-    {
-        $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
-        $scenarioSet = $parser->parse(<<<'EOF'
-blackfire-env "Blackfire Test"
-
-scenario Test 1
-    set env "prod"
-    endpoint 'http://toto.com'
-
-    # A comment
-    visit url('/blog/')
-        expect "prod" == env
-
-scenario Test2
-    reload
-EOF
-        );
-        $this->assertCount(2, $scenarioSet);
-
-        $this->assertEquals('"Blackfire Test"', $scenarioSet->getBlackfireEnvironment());
-
-        /** @var Scenario $scenario */
-        $scenario = $scenarioSet->getIterator()[0];
-        $this->assertEquals('Test 1', $scenario->getKey());
-        $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
-
-        $this->assertEquals([
-            'env' => '"prod"',
-            'endpoint' => '\'http://toto.com\'',
-        ], $scenario->getVariables());
-
-        /** @var Scenario $scenario */
-        $scenario = $scenarioSet->getIterator()[1];
-        $this->assertEquals('Test2', $scenario->getKey());
-        $this->assertInstanceOf(ReloadStep::class, $scenario->getBlockStep());
-        $this->assertEquals(['endpoint' => ''], $scenario->getVariables());
-    }
-
     public function testParsingSeparatedScenario()
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));

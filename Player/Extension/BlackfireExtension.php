@@ -63,9 +63,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
 
         $request = $step->getRequest();
 
-        $env = $stepContext->getBlackfireEnv();
-        $env = null === $env ? false : $this->language->evaluate($env, $scenarioContext->getVariableValues($stepContext, true));
-        if (false === $env) {
+        if (!$this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step)) {
             return;
         }
 
@@ -231,7 +229,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
         $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
         if (!$build) {
-            throw new RuntimeException('Could not find build in the ScenarioSet');
+            throw new RuntimeException(sprintf('Could not find build for env %s in the ScenarioSet', $env));
         }
 
         $config->setIntention('build');

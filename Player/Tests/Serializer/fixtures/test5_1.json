@@ -21,9 +21,6 @@
                     "type": "visit"
                 }
             ],
-            "deprecations": [
-                "Resolving an environment at the scenario level using the \"blackfire\" property is deprecated. Please use `--blackfire-env` instead. at line 4."
-            ],
             "line": 3
         },
         {
@@ -41,9 +38,6 @@
                     "line": 13,
                     "type": "visit"
                 }
-            ],
-            "deprecations": [
-                "Resolving an environment at the scenario level using the \"blackfire\" property is deprecated. Please use `--blackfire-env` instead. at line 12."
             ],
             "line": 11
         }
