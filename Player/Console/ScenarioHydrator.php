@@ -65,13 +65,13 @@ class ScenarioHydrator
                 $scenario->endpoint($this->escapeValue($input->getOption('endpoint')));
             }
 
-            if (null !== $input->getOption('blackfire-env') && null === $scenario->getBlackfire()) {
-                $scenario->blackfire($this->escapeValue($input->getOption('blackfire-env')));
-            }
-
             foreach ($parser->getGlobalVariables() as $key => $value) {
                 $scenario->set($key, $value);
             }
+        }
+
+        if (null !== $input->getOption('blackfire-env')) {
+            $scenarios->setBlackfireEnvironment($input->getOption('blackfire-env'));
         }
 
         return $scenarios;
