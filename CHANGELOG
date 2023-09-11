@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.1.0 (2023-09-11)
+
+ * Implement a `--step` option
+ * Drop support for `blackfire-env` top-level property
+ * Update dependencies
+
 * 2.0.2 (2023-09-01)
 
  * Improve reported expectation failure error message
