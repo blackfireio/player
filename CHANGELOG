@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.1.1 (2023-09-14)
+
+ * Remove hard dependency to ext-uuid
+ * Fix deprecation triggering
+
 * 2.1.0 (2023-09-11)
 
  * Implement a `--step` option
