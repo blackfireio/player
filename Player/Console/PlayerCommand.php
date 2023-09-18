@@ -79,6 +79,7 @@ final class PlayerCommand extends Command
     public const EXIT_CODE_EXPECTATION_ERROR = 64;
     public const EXIT_CODE_SCENARIO_ERROR = 65;
     public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
+    public const EXIT_CODE_BLACKFIRE_NETWORK_ERROR = 67;
 
     private HttpClientInterface $blackfireHttpClient;
     private BlackfireSdkAdapterInterface $blackfireSdkAdapter;
@@ -249,7 +250,10 @@ final class PlayerCommand extends Command
         $exitCode = 0;
         $message = 'Build run successfully';
 
-        if ($results->isFatalError()) {
+        if ($results->isBlackfireNetworkError()) {
+            $exitCode = self::EXIT_CODE_BLACKFIRE_NETWORK_ERROR;
+            $message = 'Build encountered an error while reaching the Blackfire APIs';
+        } elseif ($results->isFatalError()) {
             $exitCode = self::EXIT_CODE_SCENARIO_ERROR;
             $message = 'Build encountered a fatal error';
         } elseif ($results->isExpectationError()) {

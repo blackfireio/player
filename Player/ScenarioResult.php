@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player;
 
+use Blackfire\Player\Exception\ApiCallException;
 use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\Exception\NonFatalException;
 
@@ -23,6 +24,11 @@ class ScenarioResult
         private readonly ScenarioContext $scenarioContext,
         private null|\Throwable $error,
     ) {
+    }
+
+    public function isBlackfireNetworkError(): bool
+    {
+        return null !== $this->error && $this->error instanceof ApiCallException;
     }
 
     public function isFatalError(): bool

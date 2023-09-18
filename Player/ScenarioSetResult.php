@@ -32,6 +32,17 @@ class ScenarioSetResult
         return $this->results;
     }
 
+    public function isBlackfireNetworkError(): bool
+    {
+        foreach ($this->results as $result) {
+            if ($result->isBlackfireNetworkError()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isFatalError(): bool
     {
         foreach ($this->results as $result) {
