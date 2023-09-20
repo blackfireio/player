@@ -1,1 +1,15 @@
-*
+.buildkite
+.dockerignore
+.git*
+.github
+.phive
+.phpunit*
+.php-cs*
+bin/tools
+box*
+Dockerfile*
+phive.xml
+phpstan.neon
+phpunit.xml.dist
+Player/Tests
+vendor
