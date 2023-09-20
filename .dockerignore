@@ -8,6 +8,7 @@
 bin/tools
 box*
 Dockerfile*
+Makefile
 phive.xml
 phpstan.neon
 phpunit.xml.dist
