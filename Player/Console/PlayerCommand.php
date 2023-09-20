@@ -81,33 +81,16 @@ final class PlayerCommand extends Command
     public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
     public const EXIT_CODE_BLACKFIRE_NETWORK_ERROR = 67;
 
-    private HttpClientInterface $blackfireHttpClient;
-    private BlackfireSdkAdapterInterface $blackfireSdkAdapter;
+    private ?HttpClientInterface $blackfireHttpClient;
+    private ?BlackfireSdkAdapterInterface $blackfireSdkAdapter;
+    private string $transactionId;
 
-    public function __construct(HttpClientInterface $blackfireHttpClient = null, BlackfireSdkAdapterInterface $blackfireSdkAdapter = null, string $transactionId)
+    public function __construct(
+        HttpClientInterface $blackfireHttpClient = null, BlackfireSdkAdapterInterface $blackfireSdkAdapter = null, string $transactionId)
     {
-        if ($blackfireHttpClient) {
-            $this->blackfireHttpClient = $blackfireHttpClient;
-        } else {
-            $this->blackfireHttpClient = HttpClient::create([
-                'base_uri' => $this->getEnvOrDefault('BLACKFIRE_ENDPOINT', 'https://blackfire.io'),
-                'auth_basic' => [$this->getEnvOrThrow('BLACKFIRE_CLIENT_ID'), $this->getEnvOrThrow('BLACKFIRE_CLIENT_TOKEN')],
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => sprintf('Blackfire Player/%s', Player::version()),
-                    'X-Request-Id' => $transactionId,
-                ],
-            ]);
-        }
-
-        if ($blackfireSdkAdapter) {
-            $this->blackfireSdkAdapter = $blackfireSdkAdapter;
-        } else {
-            $blackfire = new Client(new ClientConfiguration());
-            $blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
-
-            $this->blackfireSdkAdapter = new BlackfireSdkAdapter($blackfire);
-        }
+        $this->blackfireHttpClient = $blackfireHttpClient;
+        $this->blackfireSdkAdapter = $blackfireSdkAdapter;
+        $this->transactionId = $transactionId;
 
         parent::__construct();
     }
@@ -146,6 +129,25 @@ final class PlayerCommand extends Command
         if ($output instanceof ConsoleOutput) {
             $output = $output->getErrorOutput();
             $output->setFormatter($resultOutput->getFormatter());
+        }
+
+        if (!$this->blackfireHttpClient) {
+            $this->blackfireHttpClient = HttpClient::create([
+                'base_uri' => $this->getEnvOrDefault('BLACKFIRE_ENDPOINT', 'https://blackfire.io'),
+                'auth_basic' => [$this->getEnvOrThrow('BLACKFIRE_CLIENT_ID'), $this->getEnvOrThrow('BLACKFIRE_CLIENT_TOKEN')],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => sprintf('Blackfire Player/%s', Player::version()),
+                    'X-Request-Id' => $this->transactionId,
+                ],
+            ]);
+        }
+
+        if (!$this->blackfireSdkAdapter) {
+            $blackfire = new Client(new ClientConfiguration());
+            $blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
+
+            $this->blackfireSdkAdapter = new BlackfireSdkAdapter($blackfire);
         }
 
         $json = $input->getOption('json');
