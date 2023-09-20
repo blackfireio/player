@@ -26,17 +26,17 @@ WORKDIR /app
 
 COPY --from=build_composer /app/vendor /app/vendor
 COPY CHANGELOG LICENSE README.rst /app/
-# composer.json Required to get the version
-COPY composer.json /app/
 COPY ./bin/. /app/bin/
 COPY ./Player/. /app/Player/
 
 
 FROM php:${PHP_VERSION}-alpine
+ARG UUID_VERSION \
+    BLACKFIRE_PLAYER_VERSION
+
+ENV BLACKFIRE_PLAYER_VERSION=$BLACKFIRE_PLAYER_VERSION
 
 COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
-
-ARG UUID_VERSION
 
 RUN install-php-extensions \
     uuid-${UUID_VERSION} \
@@ -56,7 +56,3 @@ COPY --from=sources /app /app
 ENV USING_PLAYER_DOCKER_RELEASE=1
 
 ENTRYPOINT ["/app/bin/blackfire-player.php"]
-
-
-# demo                           latest                     33698ad118f1   6 minutes ago   163MB
-#demo                           latest                     a11eafb88df1   2 seconds ago    154MB

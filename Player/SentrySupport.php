@@ -27,16 +27,7 @@ class SentrySupport
             return;
         }
 
-        // This is variable is used to replace the version
-        // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
-        $version = '@git-version@';
-        $testPart1 = '@';
-
-        // let's not write the same string, otherwise it would be replaced !
-        if ($testPart1.'git-version@' === $version) {
-            $composer = Json::decode(file_get_contents(__DIR__.'/../composer.json'));
-            $version = $composer['extra']['branch-alias']['dev-master'];
-        }
+        $version = Player::version();
 
         \Sentry\init([
             'dsn' => $dsn,

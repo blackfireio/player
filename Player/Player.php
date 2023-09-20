@@ -20,6 +20,11 @@ class Player
         if ($v) {
             return $v;
         }
+
+        if (!empty($_ENV['BLACKFIRE_PLAYER_VERSION'])) {
+            return $_ENV['BLACKFIRE_PLAYER_VERSION'];
+        }
+
         // This is variable is used to replace the version
         // by box, see https://github.com/box-project/box/blob/master/doc/configuration.md#replaceable-placeholders
         $version = '@git-version@';
@@ -27,8 +32,12 @@ class Player
 
         // let's not write the same string, otherwise it would be replaced !
         if ($testPart1.'git-version@' === $version) {
-            $composer = Json::decode(file_get_contents(__DIR__.'/../composer.json'));
-            $version = $composer['extra']['branch-alias']['dev-master'];
+            if (file_exists(__DIR__.'/../composer.json')) {
+                $composer = Json::decode(file_get_contents(__DIR__.'/../composer.json'));
+                $version = $composer['extra']['branch-alias']['dev-master'];
+            } else {
+                $version = 'dev';
+            }
         }
 
         $v = $version;

@@ -12,6 +12,13 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
+
+      -
+        name: Set COMPOSER_ROOT_VERSION environment variable
+        uses: "ergebnis/composer-root-version-action@main"
+        with:
+          branch: master
+
       -
         name: Docker meta
         id: docker_meta
@@ -41,7 +48,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/386,linux/arm64
           build-args: |
-            VERSION_SUFFIX=-latest
+            BLACKFIRE_PLAYER_VERSION=${{ env.COMPOSER_ROOT_VERSION }}
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}

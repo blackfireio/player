@@ -55,7 +55,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/386,linux/arm64
           build-args: |
-            VERSION_SUFFIX=-${{ env.VERSION }}
+            BLACKFIRE_PLAYER_VERSION=${{ env.VERSION }}
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
