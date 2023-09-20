@@ -1,6 +1,12 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.2.0 (2023-09-20)
+
+ * Add a dedicated exit code when Blackfire encounter an error while requesting Blackfire APIs
+ * Update dependencies
+ * Fix boot of the app without credentials
+
 * 2.1.1 (2023-09-14)
 
  * Remove hard dependency to ext-uuid
