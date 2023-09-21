@@ -28,8 +28,6 @@ final class Application extends BaseApplication
 {
     public function __construct(BlackfireSdkAdapterInterface $blackfireSdk = null, HttpClientInterface $blackfireHttpClient = null, string $transactionId)
     {
-        error_reporting(0);
-
         parent::__construct('Blackfire Player', Player::version());
 
         $this->add(new PlayerCommand($blackfireHttpClient, $blackfireSdk, $transactionId));
