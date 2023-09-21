@@ -5,6 +5,8 @@ on:
     tags:
       - 'v*'
 
+concurrency: prod
+
 jobs:
   docker:
     runs-on: ubuntu-latest
