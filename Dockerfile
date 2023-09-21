@@ -20,15 +20,14 @@ COPY composer.json composer.lock /app/
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-FROM scratch as sources
+FROM alpine as sources
 
 WORKDIR /app
 
 COPY --from=build_composer /app/vendor /app/vendor
-COPY CHANGELOG LICENSE README.rst /app/
-COPY ./bin/. /app/bin/
-COPY ./Player/. /app/Player/
+COPY ./. /app/
 
+RUN rm composer.json composer.lock
 
 FROM php:${PHP_VERSION}-alpine
 ARG UUID_VERSION \
@@ -52,7 +51,8 @@ RUN touch /usr/local/etc/php/conf.d/error_reporting.ini \
 WORKDIR /app
 
 COPY --from=sources /app /app
+RUN ln -s /app/bin/blackfire-player.php /bin/blackfire-player
 
 ENV USING_PLAYER_DOCKER_RELEASE=1
 
-ENTRYPOINT ["/app/bin/blackfire-player.php"]
+ENTRYPOINT ["/bin/blackfire-player"]
