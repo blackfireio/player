@@ -50,7 +50,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/386,linux/arm64
           build-args: |
-            BLACKFIRE_PLAYER_VERSION="${{ env.COMPOSER_ROOT_VERSION }}@${{ env.GITHUB_SHA }}"
+            BLACKFIRE_PLAYER_VERSION="${{ env.COMPOSER_ROOT_VERSION }}@${{ github.sha }}"
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}

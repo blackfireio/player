@@ -43,14 +43,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       -
-        name: Wait for package to be available
-        timeout-minutes: 10
-        run: |
-          until $(curl --output /dev/null --silent --head --fail https://get.blackfire.io/blackfire-player-${{ env.VERSION }}.phar); do
-              printf '.'
-              sleep 5
-          done
-      -
         name: Build and push
         uses: docker/build-push-action@v4
         with:
