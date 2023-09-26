@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.3.0 (2023-09-26)
+
+ * Use Player source instead of Phar in the Docker image
+ * Update dependencies
+
 * 2.2.0 (2023-09-20)
 
  * Add a dedicated exit code when Blackfire encounter an error while requesting Blackfire APIs
