@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.3.1 (2023-09-28)
+
+ * Ensures network errors are handled on json view update
+
 * 2.3.0 (2023-09-26)
 
  * Use Player source instead of Phar in the Docker image
