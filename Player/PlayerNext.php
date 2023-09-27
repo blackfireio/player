@@ -92,9 +92,6 @@ class PlayerNext
             }
         }
 
-        $scenarioSet->setStatus(BuildStatus::DONE);
-        $this->reporter->report($scenarioSet);
-
         foreach ($this->getSortedExtensions() as $extension) {
             if ($extension instanceof ScenarioSetExtensionInterface) {
                 $extension->afterScenarioSet($scenarioSet, $concurrency, $scenarioSetResult);

@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Serializer;
 
 use Blackfire\Player\Build\Build;
+use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Json;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
@@ -80,8 +81,12 @@ class ScenarioSetSerializer
             'scenarios' => $this->normalizer->normalize($filteredScenarios, 'json', [AbstractObjectNormalizer::SKIP_NULL_VALUES => true]),
         ];
 
+        $allScenariosAreDone = true;
         foreach ($data['scenarios'] as &$scenario) {
             $this->cleanStep($scenario);
+            if ('done' !== $scenario['status']) {
+                $allScenariosAreDone = false;
+            }
 
             // steps property is required
             $scenario['steps'] ??= [];
@@ -92,6 +97,11 @@ class ScenarioSetSerializer
             }
 
             $scenario['variables'] = array_diff_assoc($scenario['variables'], $data['variables']);
+        }
+
+        if ($allScenariosAreDone) {
+            $data['status'] = 'done';
+            $scenarioSet->setStatus(BuildStatus::DONE);
         }
 
         return $data;
