@@ -11,32 +11,37 @@ Read more about how to `download and use Blackfire Player
 Usage
 -----
 
-Use ``blackfire-player`` with Docker.
-Working directory is expected to be at ``/app`` in the container.
+``blackfire-player`` is distributed through a Docker image.
 
-Example running a scenario located in ``my-scenario.bkf`` file:
+To run a scenario located in the ``my-scenario.bkf`` file, run the following
+command:
 
 .. code-block:: bash
 
     docker run --rm -it -e BLACKFIRE_CLIENT_ID -e BLACKFIRE_CLIENT_TOKEN -v "`pwd`:/app" blackfire/player run my-scenario.bkf
 
+The ``pwd`` part is the local working directory (we are using the current
+directory here) and it is mapped to the ``/app`` path in the Docker container.
+
+``BLACKFIRE_CLIENT_ID`` and ``BLACKFIRE_CLIENT_TOKEN`` environment variables
+need to be properly exposed from the host in order to be able to use the
+:doc:`Blackfire Profiler integration </integrations/blackfire-player>`.
+
 .. note::
 
-    ``BLACKFIRE_CLIENT_ID`` and ``BLACKFIRE_CLIENT_TOKEN`` environment variables
-    need to be properly exposed from the host in order to be able to use the `Blackfire
-    Profiler integration <https://blackfire.io/docs/integrations/blackfire-player#documentation>`_.
+    To make it simpler to run this command, you might create a shell alias
+    (that you can store in a ``.bashrc`` or ``.zshrc`` file depending on your
+    shell):
 
-**You may also add a shell alias** (in ``.bashrc``, ``.zshrc``, etc.) for convenience.
+    .. code-block:: bash
 
-.. code-block:: bash
+        alias blackfire-player="docker run --rm -it -e BLACKFIRE_CLIENT_ID -e BLACKFIRE_CLIENT_TOKEN -v \"`pwd`:/app\" blackfire/player"
 
-    alias blackfire-player=docker run --rm -it -e BLACKFIRE_CLIENT_ID -e BLACKFIRE_CLIENT_TOKEN -v "`pwd`:/app" blackfire/player
+    Don't forget to restart your terminal for it to take effect. You can then
+    use ``blackfire-player`` as if it was the binary itself:
 
-Then, after sourcing your RC file, you can use ``blackfire-player`` as if it was
-the binary itself:
+    .. code-block:: bash
 
-.. code-block:: bash
-
-    blackfire-player --version
-    blackfire-player list
-    blackfire-player run my-scenario.bkf
+        blackfire-player --version
+        blackfire-player list
+        blackfire-player run my-scenario.bkf
