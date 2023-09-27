@@ -11,9 +11,7 @@
 
 namespace Blackfire\Player\Tests\Console;
 
-use Blackfire\Player\Console\Application;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -27,48 +25,39 @@ class ValidateCommandTest extends TestCase
             ->directories();
 
         foreach ($dirs as $dir) {
-            foreach (['output.txt', 'scenario.bkf'] as $file) {
+            foreach (['output.txt', 'output-json.txt', 'scenario.bkf'] as $file) {
                 $file = sprintf('%s/%s', $dir->getPathname(), $file);
                 if (!file_exists($file)) {
                     throw new \Exception(sprintf('The fixture file "%s" does not exist.', $file));
                 }
             }
 
-            $jsonFile = sprintf('%s/output-json.txt', $dir->getPathname());
-
             yield $dir->getBasename() => [
                 sprintf('%s/scenario.bkf', $dir->getPathname()),
-                file_get_contents(sprintf('%s/output.txt', $dir->getPathname())),
-                file_exists($jsonFile) ? file_get_contents($jsonFile) : null,
+                sprintf('%s/output.txt', $dir->getPathname()),
+                sprintf('%s/output-err.txt', $dir->getPathname()),
+                sprintf('%s/output-json.txt', $dir->getPathname()),
+                sprintf('%s/output-json-err.txt', $dir->getPathname()),
             ];
         }
     }
 
     /** @dataProvider providePlayerTests */
-    public function testValidate($file, $expectedOutput, $expectedJsonOutput)
+    public function testValidate($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath)
     {
-        $application = new Application(null, null, 'a396ccc8-51e1-4047-93aa-ca3f3847f425');
-        $tester = new CommandTester($application->get('validate'));
-        $tester->execute([
-            'file' => $file,
-        ]);
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', $file], __DIR__.'/../../../bin');
+        $process->run();
 
-        $output = $tester->getDisplay();
-        $output = implode("\n", array_map('rtrim', explode("\n", $output)));
+        $this->assertStringMatchesFormat(file_get_contents($outputPath), $process->getOutput());
+        $this->assertStringMatchesFormat(file_get_contents($errorOutputPath), $process->getErrorOutput());
 
-        $this->assertStringMatchesFormat($expectedOutput, $output);
+        $finder = new PhpExecutableFinder();
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', $file, '--json'], __DIR__.'/../../../bin');
+        $process->run();
 
-        // For --json and --full-report, the output is composed of STDOUT + STDERR.
-        // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.
-
-        if ($expectedJsonOutput) {
-            $tester->execute([
-                'file' => $file,
-                '--json' => true,
-            ]);
-
-            $this->assertStringMatchesFormat($expectedJsonOutput, $tester->getDisplay());
-        }
+        $this->assertStringMatchesFormat(file_get_contents($jsonOutputPath), $process->getOutput());
+        $this->assertStringMatchesFormat(file_get_contents($jsonErrorOutputPath), $process->getErrorOutput());
     }
 
     public function testErrorInRealWorld()
@@ -92,7 +81,7 @@ class ValidateCommandTest extends TestCase
     }
 
     /** @dataProvider providePlayerTests */
-    public function testValidateStdIn($file, $expectedOutput, $expectedJsonOutput)
+    public function testValidateStdIn($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath)
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--json'], __DIR__.'/../../../bin');
@@ -100,15 +89,15 @@ class ValidateCommandTest extends TestCase
         $process->run();
 
         $this->assertTrue($process->isSuccessful());
-        $this->assertStringMatchesFormat($expectedJsonOutput, $process->getOutput());
+        $this->assertStringMatchesFormat(file_get_contents($jsonOutputPath), $process->getOutput());
+        $this->assertStringMatchesFormat(file_get_contents($jsonErrorOutputPath), $process->getErrorOutput());
 
         $process = new Process([$finder->find(), 'blackfire-player.php', 'validate'], __DIR__.'/../../../bin');
         $process->setInput(file_get_contents($file));
         $process->run();
 
-        $expectedOutput = implode("\n", array_map(function ($line) { return rtrim($line); }, explode("\n", $expectedOutput)));
-
-        $this->assertStringMatchesFormat($expectedOutput, $process->getOutput());
+        $this->assertStringMatchesFormat(file_get_contents($outputPath), $process->getOutput());
+        $this->assertStringMatchesFormat(file_get_contents($errorOutputPath), $process->getErrorOutput());
     }
 
     public function testErrorStdIn()

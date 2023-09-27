@@ -76,6 +76,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class PlayerCommand extends Command
 {
+    use DockerDeprecationTrait;
+
     public const EXIT_CODE_EXPECTATION_ERROR = 64;
     public const EXIT_CODE_SCENARIO_ERROR = 65;
     public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
@@ -130,6 +132,8 @@ final class PlayerCommand extends Command
             $output = $output->getErrorOutput();
             $output->setFormatter($resultOutput->getFormatter());
         }
+
+        $this->ensureCommandIsRunInDockerContainer($output);
 
         if (!$this->blackfireHttpClient) {
             $this->blackfireHttpClient = HttpClient::create([
