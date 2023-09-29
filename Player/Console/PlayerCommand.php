@@ -217,7 +217,7 @@ final class PlayerCommand extends Command
         );
 
         if ($input->getOption('step')) {
-            $player->addExtension(new InteractiveStepByStepExtension($this->getHelper('question'), $input, $output), 2048);
+            $player->addExtension(new InteractiveStepByStepExtension($this->getHelper('question'), $input, $output, $variableResolver), 2048);
         }
 
         $player->addExtension(new TmpDirExtension($filesystem));
