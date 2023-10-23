@@ -184,7 +184,7 @@ class BlackfireEnvResolverTest extends TestCase
         $language = new ExpressionLanguage(null, [new Provider()]);
         $resolver = new BlackfireEnvResolver($defaultEnv, $language);
 
-        $step = new VisitStep('https://app.bkf');
+        $step = new VisitStep('https://app.dev.bkf');
         if ($stepBlackfire) {
             $step->blackfire($stepBlackfire);
         }
