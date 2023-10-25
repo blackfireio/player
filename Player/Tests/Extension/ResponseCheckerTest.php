@@ -57,7 +57,7 @@ class ResponseCheckerTest extends TestCase
             ],
             [
                 '_response' => new Response(
-                    new Request('GET', 'https://app.bkf/some.json'),
+                    new Request('GET', 'https://app.dev.bkf/some.json'),
                     200, [],
                     Json::encode(['foo' => [
                         'bar' => 400,
@@ -93,7 +93,7 @@ class ResponseCheckerTest extends TestCase
             ],
             [
                 '_response' => new Response(
-                    new Request('GET', 'https://app.bkf/some.json'),
+                    new Request('GET', 'https://app.dev.bkf/some.json'),
                     200, [],
                     Json::encode(['foo' => [
                         'bar' => 400,
@@ -115,7 +115,7 @@ class ResponseCheckerTest extends TestCase
         ];
 
         $response = new Response(
-            new Request('GET', 'https://app.bkf/some.json'),
+            new Request('GET', 'https://app.dev.bkf/some.json'),
             200,
             [
                 'content-type' => ['text/html'],
