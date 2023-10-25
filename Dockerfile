@@ -50,8 +50,8 @@ RUN touch /usr/local/etc/php/conf.d/error_reporting.ini \
 
 WORKDIR /app
 
-COPY --from=sources /app /app
-RUN ln -s /app/bin/blackfire-player.php /bin/blackfire-player
+COPY --from=sources /app /usr/lib/blackfire
+RUN ln -s /usr/lib/blackfire/bin/blackfire-player.php /bin/blackfire-player
 
 ENV USING_PLAYER_DOCKER_RELEASE=1
 
