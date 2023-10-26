@@ -118,6 +118,7 @@ class VisitStepProcessorTest extends TestCase
     public function provideForTestProcessPreserveHeaders(): iterable
     {
         yield 'Authorization header' => ['Authorization', 'Bearer foo:bar'];
+        yield 'Content-Type header' => ['Content-Type', 'application/custom'];
     }
 
     private function createProcessor(): StepProcessorInterface
