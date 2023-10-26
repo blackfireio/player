@@ -55,13 +55,13 @@ class VisitStepProcessor implements StepProcessorInterface
         $headers = $this->expressionEvaluator->evaluateHeaders($stepContext, $scenarioContext);
         if (null === $body = $step->getBody()) {
             if ($this->expressionEvaluator->evaluateExpression($stepContext->isJson(), $stepContext, $scenarioContext)) {
-                $headers['content-type'] = [Request::CONTENT_TYPE_JSON];
+                $headers['content-type'] ??= [Request::CONTENT_TYPE_JSON];
             } else {
-                $headers['content-type'] = [Request::CONTENT_TYPE_FORM];
+                $headers['content-type'] ??= [Request::CONTENT_TYPE_FORM];
             }
             $body = $this->expressionEvaluator->evaluateValues($step->getParameters(), $stepContext, $scenarioContext);
         } else {
-            $headers['content-type'] = [Request::CONTENT_TYPE_RAW];
+            $headers['content-type'] ??= [Request::CONTENT_TYPE_RAW];
             $body = $this->expressionEvaluator->evaluateExpression($body, $stepContext, $scenarioContext);
         }
 
