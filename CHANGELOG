@@ -1,6 +1,10 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.3.3 (2023-10-30)
+
+ * Ensure headers defined in a Blackfire Scenario are preserved (Thanks @mnocon)
+
 * 2.3.2 (2023-10-25)
 
  * Move Blackfire Internals from `/app` to `/usr/bin/blackfire` in the docker image
