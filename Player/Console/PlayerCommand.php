@@ -26,6 +26,7 @@ use Blackfire\Player\Extension\ExpectationExtension;
 use Blackfire\Player\Extension\FollowExtension;
 use Blackfire\Player\Extension\InteractiveStepByStepExtension;
 use Blackfire\Player\Extension\NameResolverExtension;
+use Blackfire\Player\Extension\ResetCookieJarExtension;
 use Blackfire\Player\Extension\ResponseChecker;
 use Blackfire\Player\Extension\SecurityExtension;
 use Blackfire\Player\Extension\ThrowableExtension;
@@ -232,6 +233,7 @@ final class PlayerCommand extends Command
         $player->addExtension(new WatchdogExtension());
         $player->addExtension(new SecurityExtension());
         $player->addExtension(new ThrowableExtension());
+        $player->addExtension(new ResetCookieJarExtension($cookieJar));
         $player->addExtension(new BlackfireExtension(
             $language,
             $blackfireEnvResolver,
