@@ -19,6 +19,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -27,6 +28,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 final class ValidateCommand extends Command
 {
+    use DockerDeprecationTrait;
+
     public const EXIT_CODE_FAILURE = 64;
 
     protected function configure(): void
@@ -53,6 +56,15 @@ final class ValidateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $errorOutput = $output;
+        if ($output instanceof ConsoleOutput) {
+            $originalOutput = $output;
+            $errorOutput = $output->getErrorOutput();
+            $errorOutput->setFormatter($originalOutput->getFormatter());
+        }
+
+        $this->ensureCommandIsRunInDockerContainer($errorOutput);
+
         $parserFactory = new ParserFactory(new ExpressionLanguage(null, [new LanguageProvider()]));
 
         $variables = (new ScenarioHydrator($parserFactory))->getVariables($input);
