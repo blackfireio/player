@@ -409,7 +409,7 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             LogicException::class,
-            'Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#reverse-proxies-and-cdns',
+            'Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://docs.blackfire.io/up-and-running/reverse-proxies#reverse-proxies-and-cdns',
         ];
 
         $request = new HttpRequest('GET', 'https://app-under-test.lan', [
@@ -428,7 +428,7 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             LogicException::class,
-            'Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#configuration-load-balancer',
+            'Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://docs.blackfire.io/up-and-running/reverse-proxies#configuration-load-balancer',
         ];
     }
 

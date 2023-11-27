@@ -291,13 +291,13 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             $progress = (int) $values['progress'];
 
             if ($progress < $prevProgress) {
-                throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#configuration-load-balancer');
+                throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://docs.blackfire.io/up-and-running/reverse-proxies#configuration-load-balancer');
             }
             if ($progress === $prevProgress) {
                 $retry = $scenarioContext->getExtraValue('blackfire_retry', 0);
                 ++$retry;
                 if ($retry >= self::MAX_RETRY) {
-                    throw new LogicException('Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://blackfire.io/docs/up-and-running/reverse-proxies#reverse-proxies-and-cdns');
+                    throw new LogicException('Profiling progress is inconsistent (progress is not increasing). That happens for instance when using a reverse proxy or an HTTP cache server such as Varnish. Please read https://docs.blackfire.io/up-and-running/reverse-proxies#reverse-proxies-and-cdns');
                 }
                 $scenarioContext->setExtraValue('blackfire_retry', $retry);
             } else {

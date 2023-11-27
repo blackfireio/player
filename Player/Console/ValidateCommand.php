@@ -44,7 +44,7 @@ final class ValidateCommand extends Command
                 new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
             ])
             ->setDescription('Validate scenario files')
-            ->setHelp('Read https://blackfire.io/docs/builds-cookbooks/player to learn about all supported options.')
+            ->setHelp('Read https://docs.blackfire.io/builds-cookbooks/player to learn about all supported options.')
         ;
     }
 

@@ -22,7 +22,7 @@ trait DockerDeprecationTrait
     {
         if (!isset($_ENV['USING_PLAYER_DOCKER_RELEASE'])) {
             $output->writeln('<error>You should use the Blackfire Player using the Docker release.</error>');
-            $output->writeln('<error>Blackfire Player v3 will not provide support other than the Docker release, see https://blackfire.io/docs/builds-cookbooks/player#usage.</error>');
+            $output->writeln('<error>Blackfire Player v3 will not provide support other than the Docker release, see https://docs.blackfire.io/builds-cookbooks/player#usage.</error>');
             $output->writeln('');
         }
     }
