@@ -6,7 +6,7 @@ It provides a nice DSL to **crawl HTTP services**, **assert
 responses**, and **extract data** from HTML/XML/JSON responses.
 
 Read more about how to `download and use Blackfire Player
-<https://blackfire.io/docs/builds-cookbooks/player>`_.
+<https://docs.blackfire.io/builds-cookbooks/player>`_.
 
 Usage
 -----

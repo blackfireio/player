@@ -116,7 +116,7 @@ final class PlayerCommand extends Command
                 new InputOption('step', '', InputOption::VALUE_NONE, 'Interactive execution. Ask user validation before every step.', null),
             ])
             ->setDescription('Runs scenario files')
-            ->setHelp('Read https://blackfire.io/docs/builds-cookbooks/player to learn about all supported options.')
+            ->setHelp('Read https://docs.blackfire.io/builds-cookbooks/player to learn about all supported options.')
         ;
     }
 
