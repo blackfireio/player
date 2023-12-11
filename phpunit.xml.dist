@@ -9,7 +9,7 @@
         <env name="BLACKFIRE_CLIENT_TOKEN" value="token-12341234123412341234123412341234123412341234"/>
         <env name="BLACKFIRE_BASIC_AUTH_USERNAME" value="admin"/>
         <env name="BLACKFIRE_BASIC_AUTH_PASSWORD" value="admin"/>
-        <server name="SYMFONY_PHPUNIT_VERSION" value="9.6.13" />
+        <server name="SYMFONY_PHPUNIT_VERSION" value="9" />
     </php>
 
     <testsuites>
