@@ -1,3 +1,3 @@
-You should use the Blackfire Player using the Docker release.
-Blackfire Player v3 will not provide support other than the Docker release, see https://docs.blackfire.io/builds-cookbooks/player#usage.
+[37;41mYou should use the Blackfire Player using the Docker release.[39;49m
+[37;41mBlackfire Player v3 will not provide support other than the Docker release, see https://docs.blackfire.io/builds-cookbooks/player#usage.[39;49m
 

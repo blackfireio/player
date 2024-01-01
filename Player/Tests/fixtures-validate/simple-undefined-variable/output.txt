@@ -1,6 +1,7 @@
-The scenarios are valid.
+[32mThe scenarios are valid.[39m
 
- ! [NOTE] You need to define the following variables using the `--variable`%A
- !        option:%A
- !%A
- !        expected_status%A
+[33m ! [NOTE] You need to define the following variables using the `--variable`     [39m
+[33m !        option:                                                               [39m
+[33m !                                                                              [39m
+[33m !        expected_status                                                       [39m
+

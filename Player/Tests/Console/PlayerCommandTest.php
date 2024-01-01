@@ -229,11 +229,13 @@ EOS;
 ';
 
         $expectedErrorOutput = <<<EOD
-  [ERROR]
-  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because
-  it does not have the right extension. Expected "bkf", got "json".
-
-  Player documentation at https://blackfire.io/player
+[37;41m                                                                               [39;49m
+[37;41m  [ERROR]                                                                      [39;49m
+[37;41m  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because   [39;49m
+[37;41m  it does not have the right extension. Expected "bkf", got "json".            [39;49m
+[37;41m                                                                               [39;49m
+[37;41m  Player documentation at https://blackfire.io/player                          [39;49m
+[37;41m                                                                               [39;49m
 EOD;
 
         $oneLineExpected = implode(' ', array_filter(array_map('trim', explode("\n", $expectedErrorOutput))));

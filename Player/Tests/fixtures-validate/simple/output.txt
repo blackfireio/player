@@ -1,1 +1,1 @@
-The scenarios are valid.
+[32mThe scenarios are valid.[39m
