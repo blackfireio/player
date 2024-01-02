@@ -1,2 +1,2 @@
-The scenarios are not valid:
+[32mThe scenarios are not valid:[39m
  - Unknown keyword "vit" %s line 4.
