@@ -30,9 +30,10 @@ use Blackfire\Player\Step\SubmitStep;
 use Blackfire\Player\Step\VisitStep;
 use Blackfire\Player\Step\WhileStep;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\Glob;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Yaml\Parser as YamlParser;
-use Webmozart\Glob\Glob;
-use Webmozart\PathUtil\Path;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>
@@ -206,16 +207,21 @@ class Parser
                 throw new SyntaxErrorException(sprintf('"load" takes a quoted string as an argument %s.', $input->getContextString()));
             }
 
-            $glob = Path::makeAbsolute($matches[2], realpath(\dirname((string) $input->getFile())));
-            $paths = Glob::glob($glob);
+            $inputFile = realpath((string) $input->getFile());
+            $baseDir = $input->getFile() ? \dirname($inputFile) : realpath(getcwd());
+            $finder = new Finder();
+            $finder->files()->in($baseDir)->path(Glob::toRegex($matches[2]));
 
-            if (!$paths) {
-                throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $glob));
+            if (!$finder->hasResults()) {
+                dd($finder);
+                throw new InvalidArgumentException(sprintf('File "%s" does not exist in "%s".', $matches[2], $baseDir));
             }
 
             $scenarios = new ScenarioSet();
-            foreach ($paths as $path) {
-                if (realpath($path) === realpath((string) $input->getFile())) {
+            /** @var SplFileInfo $file */
+            foreach ($finder as $file) {
+                $path = $file->getRealPath();
+                if ($path === $inputFile) {
                     continue;
                 }
 
