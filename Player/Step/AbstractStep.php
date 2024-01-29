@@ -12,8 +12,8 @@
 namespace Blackfire\Player\Step;
 
 use Blackfire\Player\Enum\BuildStatus;
-use Symfony\Component\Serializer\Annotation\Ignore;
-use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>

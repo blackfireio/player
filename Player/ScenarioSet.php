@@ -13,7 +13,7 @@ namespace Blackfire\Player;
 
 use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Exception\LogicException;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>

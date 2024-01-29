@@ -16,7 +16,7 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 class VarDumper extends CliDumper
 {
-    public function enterHash(Cursor $cursor, $type, $class, $hasChild)
+    public function enterHash(Cursor $cursor, $type, $class, $hasChild): void
     {
         if (Cursor::HASH_INDEXED === $type || Cursor::HASH_ASSOC === $type) {
             $class = 0;
@@ -24,7 +24,7 @@ class VarDumper extends CliDumper
         parent::enterHash($cursor, $type, $class, $hasChild);
     }
 
-    protected function dumpKey(Cursor $cursor)
+    protected function dumpKey(Cursor $cursor): void
     {
         if (Cursor::HASH_INDEXED !== $cursor->hashType) {
             parent::dumpKey($cursor);
