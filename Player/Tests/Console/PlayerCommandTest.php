@@ -214,7 +214,7 @@ EOS;
     public function testErrorInRealWorld()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../Player/Tests/fixtures-validate/scenario.json', '--no-ansi', '--json'], __DIR__.'/../../../bin');
         $process->run();
 
         $expectedOutput = '{
@@ -229,13 +229,13 @@ EOS;
 ';
 
         $expectedErrorOutput = <<<EOD
-[37;41m                                                                               [39;49m
-[37;41m  [ERROR]                                                                      [39;49m
-[37;41m  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because   [39;49m
-[37;41m  it does not have the right extension. Expected "bkf", got "json".            [39;49m
-[37;41m                                                                               [39;49m
-[37;41m  Player documentation at https://blackfire.io/player                          [39;49m
-[37;41m                                                                               [39;49m
+
+  [ERROR]
+  Cannot load file "../Player/Tests/fixtures-validate/scenario.json" because
+  it does not have the right extension. Expected "bkf", got "json".
+
+  Player documentation at https://blackfire.io/player
+
 EOD;
 
         $oneLineExpected = implode(' ', array_filter(array_map('trim', explode("\n", $expectedErrorOutput))));

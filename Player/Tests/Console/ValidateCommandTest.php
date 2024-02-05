@@ -46,14 +46,14 @@ class ValidateCommandTest extends TestCase
     public function testValidate($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath)
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', $file], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', $file], __DIR__.'/../../../bin');
         $process->run();
 
         $this->assertStringMatchesFormat(file_get_contents($outputPath), $process->getOutput());
         $this->assertStringMatchesFormat(file_get_contents($errorOutputPath), $process->getErrorOutput());
 
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', $file, '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', $file, '--json'], __DIR__.'/../../../bin');
         $process->run();
 
         $this->assertStringMatchesFormat(file_get_contents($jsonOutputPath), $process->getOutput());
@@ -63,7 +63,7 @@ class ValidateCommandTest extends TestCase
     public function testErrorInRealWorld()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
         $process->run();
 
         $expectedOutput = '{
@@ -84,7 +84,7 @@ class ValidateCommandTest extends TestCase
     public function testValidateStdIn($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath)
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', '--json'], __DIR__.'/../../../bin');
         $process->setInput(file_get_contents($file));
         $process->run();
 
@@ -92,7 +92,7 @@ class ValidateCommandTest extends TestCase
         $this->assertStringMatchesFormat(file_get_contents($jsonOutputPath), $process->getOutput());
         $this->assertStringMatchesFormat(file_get_contents($jsonErrorOutputPath), $process->getErrorOutput());
 
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi'], __DIR__.'/../../../bin');
         $process->setInput(file_get_contents($file));
         $process->run();
 
@@ -103,7 +103,7 @@ class ValidateCommandTest extends TestCase
     public function testErrorStdIn()
     {
         $finder = new PhpExecutableFinder();
-        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--json'], __DIR__.'/../../../bin');
+        $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', '--json'], __DIR__.'/../../../bin');
         $process->setInput('papilou!');
         $process->run();
 
