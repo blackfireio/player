@@ -104,6 +104,7 @@ final class PlayerCommand extends Command
             ->setName('run')
             ->setDefinition([
                 new InputArgument('file', InputArgument::OPTIONAL, 'The file defining the scenarios'),
+                new InputOption('config', '', InputOption::VALUE_OPTIONAL, 'The configuration file to retrieve configuration from', null),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
                 new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
                 new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
@@ -136,23 +137,49 @@ final class PlayerCommand extends Command
 
         $this->ensureCommandIsRunInDockerContainer($output);
 
+        // The Blackfire SDK Adapter is always null in production. We only inject one for testing purpose.
+        if (!$this->blackfireSdkAdapter) {
+            $clientConfiguration = null;
+            if (null !== $configFile = $input->getOption('config')) {
+                $clientConfiguration = ClientConfiguration::createFromFile($configFile);
+            }
+
+            if (!$clientConfiguration) {
+                $clientConfiguration = new ClientConfiguration();
+            }
+
+            $blackfire = new Client($clientConfiguration);
+            $blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
+
+            $this->blackfireSdkAdapter = new BlackfireSdkAdapter($blackfire);
+        }
+
+        [
+            'client_id' => $clientId,
+            'client_token' => $clientToken,
+            'endpoint' => $endpoint,
+        ] = $this->getConfig($this->blackfireSdkAdapter);
+
         if (!$this->blackfireHttpClient) {
+            $errorMessagePattern = 'Missing required "%s" configuration. Either configure it using "%s" environment variable or in your .blackfire.ini file';
+
+            if (!$clientId) {
+                throw new \InvalidArgumentException(sprintf($errorMessagePattern, 'client_id', 'BLACKFIRE_CLIENT_ID'));
+            }
+
+            if (!$clientToken) {
+                throw new \InvalidArgumentException(sprintf($errorMessagePattern, 'client_token', 'BLACKFIRE_CLIENT_TOKEN'));
+            }
+
             $this->blackfireHttpClient = HttpClient::create([
-                'base_uri' => $this->getEnvOrDefault('BLACKFIRE_ENDPOINT', 'https://blackfire.io'),
-                'auth_basic' => [$this->getEnvOrThrow('BLACKFIRE_CLIENT_ID'), $this->getEnvOrThrow('BLACKFIRE_CLIENT_TOKEN')],
+                'base_uri' => $endpoint,
+                'auth_basic' => [$clientId, $clientToken],
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'User-Agent' => sprintf('Blackfire Player/%s', Player::version()),
                     'X-Request-Id' => $this->transactionId,
                 ],
             ]);
-        }
-
-        if (!$this->blackfireSdkAdapter) {
-            $blackfire = new Client(new ClientConfiguration());
-            $blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
-
-            $this->blackfireSdkAdapter = new BlackfireSdkAdapter($blackfire);
         }
 
         $json = $input->getOption('json');
@@ -338,5 +365,18 @@ final class PlayerCommand extends Command
         }
 
         return $env;
+    }
+
+    private function getConfig(BlackfireSdkAdapterInterface $adapter): array
+    {
+        $clientId = $adapter->getConfiguration()->getClientId();
+        $clientToken = $adapter->getConfiguration()->getClientToken();
+        $endpoint = $adapter->getConfiguration()->getEndPoint();
+
+        return [
+            'client_id' => $clientId,
+            'client_token' => $clientToken,
+            'endpoint' => $endpoint,
+        ];
     }
 }
