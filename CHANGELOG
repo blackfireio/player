@@ -1,6 +1,11 @@
 Blackfire Player Changelog
 ==========================
 
+* 2.4.7 (2024-02-19)
+
+ * Fix .blackfire.ini support
+ * Update Dependencies
+
 * 2.4.6 (2024-02-05)
 
  * Fix deprecations
