@@ -25,8 +25,8 @@ class VisitStep extends Step
 
     public function __construct(
         private readonly string $uri,
-        string $file = null,
-        int $line = null,
+        ?string $file = null,
+        ?int $line = null,
     ) {
         parent::__construct($file, $line);
     }

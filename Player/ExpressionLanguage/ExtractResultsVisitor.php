@@ -39,7 +39,7 @@ class ExtractResultsVisitor
         return array_unique($results, \SORT_REGULAR);
     }
 
-    private function visit(Node\Node $node, array $variables, Node\Node $parentNode = null): array
+    private function visit(Node\Node $node, array $variables, ?Node\Node $parentNode = null): array
     {
         $subExpressions = [];
 

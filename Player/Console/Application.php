@@ -26,7 +26,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class Application extends BaseApplication
 {
-    public function __construct(BlackfireSdkAdapterInterface $blackfireSdk = null, HttpClientInterface $blackfireHttpClient = null, string $transactionId)
+    public function __construct(BlackfireSdkAdapterInterface|null $blackfireSdk, HttpClientInterface|null $blackfireHttpClient, string $transactionId)
     {
         parent::__construct('Blackfire Player', Player::version());
 

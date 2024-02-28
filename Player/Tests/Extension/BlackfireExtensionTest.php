@@ -65,7 +65,7 @@ class BlackfireExtensionTest extends TestCase
     /**
      * @dataProvider beforeRequestProvider
      */
-    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, callable $stepAssertions, callable $scenarioContextAssertions = null)
+    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, callable $stepAssertions, ?callable $scenarioContextAssertions = null)
     {
         $extension = $this->getBlackfireExtension();
 

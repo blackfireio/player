@@ -24,7 +24,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
 
     public function __construct(
         private readonly string $envName,
-        Profile|\Closure $profileFactory = null,
+        Profile|\Closure|null $profileFactory = null,
     ) {
         $this->profileFactory = $profileFactory;
     }
@@ -37,7 +37,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
         return $conf;
     }
 
-    public function createRequest(string|Configuration $config = null): Request
+    public function createRequest(string|Configuration|null $config = null): Request
     {
         return new Request($config, [
             'query_string' => 'foo=bar',
@@ -45,7 +45,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
         ]);
     }
 
-    public function updateProfile(string $uuid, string $title, array $metadata = null): bool
+    public function updateProfile(string $uuid, string $title, ?array $metadata = null): bool
     {
         return true;
     }
@@ -63,7 +63,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
         return new Profile(fn () => ['report' => ['state' => 'successful']], $uuid);
     }
 
-    public function startBuild(string $env = null, array $options = []): Build
+    public function startBuild(?string $env = null, array $options = []): Build
     {
         return new Build('4444-3333-2222-1111');
     }

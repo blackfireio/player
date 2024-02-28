@@ -36,7 +36,7 @@ class BlackfireSdkAdapter implements BlackfireSdkAdapterInterface
         }
     }
 
-    public function createRequest(string|Configuration $config = null): Request
+    public function createRequest(string|Configuration|null $config = null): Request
     {
         try {
             return $this->blackfireClient->createRequest($config);
@@ -45,7 +45,7 @@ class BlackfireSdkAdapter implements BlackfireSdkAdapterInterface
         }
     }
 
-    public function updateProfile(string $uuid, string $title, array $metadata = null): bool
+    public function updateProfile(string $uuid, string $title, ?array $metadata = null): bool
     {
         try {
             return $this->blackfireClient->updateProfile($uuid, $title, $metadata);
@@ -63,7 +63,7 @@ class BlackfireSdkAdapter implements BlackfireSdkAdapterInterface
         }
     }
 
-    public function startBuild(string $env = null, array $options = []): Build
+    public function startBuild(?string $env = null, array $options = []): Build
     {
         try {
             $sdkBuild = $this->blackfireClient->startBuild($env, $options);

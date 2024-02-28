@@ -25,7 +25,7 @@ class Request
         public string $uri,
         /** @var string[][] */
         public array $headers = [],
-        public null|string|iterable|\Closure $body = null,
+        public string|iterable|\Closure|null $body = null,
         public array $options = [],
     ) {
     }

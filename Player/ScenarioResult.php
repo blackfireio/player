@@ -22,7 +22,7 @@ class ScenarioResult
 {
     public function __construct(
         private readonly ScenarioContext $scenarioContext,
-        private null|\Throwable $error,
+        private \Throwable|null $error,
     ) {
     }
 
@@ -53,7 +53,7 @@ class ScenarioResult
         return $this->error;
     }
 
-    public function getScenarioName(): null|string
+    public function getScenarioName(): string|null
     {
         return $this->scenarioContext->getName();
     }

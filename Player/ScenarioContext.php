@@ -21,8 +21,8 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ScenarioContext
 {
-    private null|Response $lastResponse = null;
-    private null|Crawler $crawler = null;
+    private Response|null $lastResponse = null;
+    private Crawler|null $crawler = null;
     private ValueBag $valueBag;
     private ValueBag $extraBag;
 

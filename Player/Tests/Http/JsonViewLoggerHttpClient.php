@@ -35,7 +35,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
         return $this->httpClient->request($method, $url, $options);
     }
 
-    public function stream(ResponseInterface|iterable $responses, float $timeout = null): ResponseStreamInterface
+    public function stream(ResponseInterface|iterable $responses, ?float $timeout = null): ResponseStreamInterface
     {
         return $this->httpClient->stream($responses, $timeout);
     }

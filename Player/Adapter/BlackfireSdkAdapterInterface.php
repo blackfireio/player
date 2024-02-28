@@ -21,11 +21,11 @@ interface BlackfireSdkAdapterInterface
 {
     public function getConfiguration(): ClientConfiguration;
 
-    public function createRequest(string|Configuration $config = null): Request;
+    public function createRequest(string|Configuration|null $config = null): Request;
 
-    public function updateProfile(string $uuid, string $title, array $metadata = null): bool;
+    public function updateProfile(string $uuid, string $title, ?array $metadata = null): bool;
 
     public function getProfile(string $uuid): Profile;
 
-    public function startBuild(string $env = null, array $options = []): Build;
+    public function startBuild(?string $env = null, array $options = []): Build;
 }

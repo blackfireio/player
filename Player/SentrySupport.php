@@ -71,7 +71,7 @@ class SentrySupport
         \Sentry\captureException($throwable, EventHint::fromArray($eventHint));
     }
 
-    public static function captureMessage(string $message, Severity $level = null, EventHint $hint = null): ?EventId
+    public static function captureMessage(string $message, ?Severity $level = null, ?EventHint $hint = null): ?EventId
     {
         return \Sentry\captureMessage($message, $level, $hint);
     }

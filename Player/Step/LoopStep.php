@@ -18,14 +18,14 @@ namespace Blackfire\Player\Step;
  */
 class LoopStep extends BlockStep
 {
-    private null|AbstractStep $loopStep = null;
+    private AbstractStep|null $loopStep = null;
 
     public function __construct(
         private readonly string $values,
         private readonly string $keyName,
         private readonly string $valueName,
-        string $file = null,
-        int $line = null,
+        ?string $file = null,
+        ?int $line = null,
     ) {
         parent::__construct($file, $line);
     }
@@ -48,7 +48,7 @@ class LoopStep extends BlockStep
         return $this->values;
     }
 
-    public function getLoopStep(): null|AbstractStep
+    public function getLoopStep(): AbstractStep|null
     {
         return $this->loopStep;
     }

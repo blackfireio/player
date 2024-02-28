@@ -74,7 +74,7 @@ final class Cookie
      *
      * @throws \InvalidArgumentException
      */
-    public static function fromString(string $cookie, string $url = null): static
+    public static function fromString(string $cookie, ?string $url = null): static
     {
         $parts = explode(';', $cookie);
 

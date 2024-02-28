@@ -106,7 +106,7 @@ class Parser
         return $this->parse($input, $file);
     }
 
-    public function parse(string $input, string $file = null): ScenarioSet
+    public function parse(string $input, ?string $file = null): ScenarioSet
     {
         $input = new Input($input, $file);
 
