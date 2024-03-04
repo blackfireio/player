@@ -19,7 +19,7 @@ use Symfony\Component\DomCrawler\UriResolver as SymfonyUriResolver;
  */
 class UriResolver
 {
-    public function resolveUri(string|null $baseUri, string $uri): string
+    public function resolveUri(?string $baseUri, string $uri): string
     {
         if (!$baseUri) {
             if (null === parse_url($uri, \PHP_URL_SCHEME)) {

@@ -23,7 +23,7 @@ trait StepInitiatorTrait
         return $this->initiator;
     }
 
-    public function setInitiator(Step|null $step): void
+    public function setInitiator(?Step $step): void
     {
         if ($step instanceof StepInitiatorInterface) {
             $this->initiator = $step->getInitiator() ?? $step;
@@ -32,7 +32,7 @@ trait StepInitiatorTrait
         }
     }
 
-    public function getInitiatorUuid(): string|null
+    public function getInitiatorUuid(): ?string
     {
         return $this->initiator?->getUuid();
     }

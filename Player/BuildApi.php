@@ -46,7 +46,7 @@ class BuildApi
         return $build;
     }
 
-    public function createBuild(string|null $buildName, string $env): Build
+    public function createBuild(?string $buildName, string $env): Build
     {
         $options = [
             'trigger_name' => 'Blackfire Player',

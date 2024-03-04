@@ -27,7 +27,7 @@ class ExpressionEvaluator
     ) {
     }
 
-    public function evaluateExpression(string|null $expression, StepContext $stepContext, ScenarioContext $scenarioContext, bool $trim = true): mixed
+    public function evaluateExpression(?string $expression, StepContext $stepContext, ScenarioContext $scenarioContext, bool $trim = true): mixed
     {
         if (!$expression) {
             return $expression;

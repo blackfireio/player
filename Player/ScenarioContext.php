@@ -21,8 +21,8 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ScenarioContext
 {
-    private Response|null $lastResponse = null;
-    private Crawler|null $crawler = null;
+    private ?Response $lastResponse = null;
+    private ?Crawler $crawler = null;
     private ValueBag $valueBag;
     private ValueBag $extraBag;
 
@@ -102,7 +102,7 @@ class ScenarioContext
         return $this->name;
     }
 
-    public function getScenarioSet(): ScenarioSet|null
+    public function getScenarioSet(): ?ScenarioSet
     {
         return $this->scenarioSet;
     }

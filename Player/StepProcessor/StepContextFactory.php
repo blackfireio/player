@@ -27,7 +27,7 @@ class StepContextFactory
     ) {
     }
 
-    public function createStepContext(AbstractStep $step, StepContext $parentStepContext): StepContext|null
+    public function createStepContext(AbstractStep $step, StepContext $parentStepContext): ?StepContext
     {
         if (!$step instanceof ConfigurableStep) {
             return null;
