@@ -29,7 +29,7 @@ class Scenario extends GroupStep
         return null;
     }
 
-    public function getBlackfireBuildUuid(): string|null
+    public function getBlackfireBuildUuid(): ?string
     {
         return $this->blackfireBuildUuid;
     }

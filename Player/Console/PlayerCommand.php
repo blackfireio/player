@@ -84,12 +84,12 @@ final class PlayerCommand extends Command
     public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
     public const EXIT_CODE_BLACKFIRE_NETWORK_ERROR = 67;
 
-    private HttpClientInterface|null $blackfireHttpClient;
-    private BlackfireSdkAdapterInterface|null $blackfireSdkAdapter;
+    private ?HttpClientInterface $blackfireHttpClient;
+    private ?BlackfireSdkAdapterInterface $blackfireSdkAdapter;
     private string $transactionId;
 
     public function __construct(
-        HttpClientInterface|null $blackfireHttpClient, BlackfireSdkAdapterInterface|null $blackfireSdkAdapter, string $transactionId)
+        ?HttpClientInterface $blackfireHttpClient, ?BlackfireSdkAdapterInterface $blackfireSdkAdapter, string $transactionId)
     {
         $this->blackfireHttpClient = $blackfireHttpClient;
         $this->blackfireSdkAdapter = $blackfireSdkAdapter;

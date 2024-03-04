@@ -20,7 +20,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class CrawlerFactory
 {
-    public static function create(Response $response, string|null $uri): ?Crawler
+    public static function create(Response $response, ?string $uri): ?Crawler
     {
         $contentType = $response->headers['content-type'][0] ?? null;
         if (!$contentType) {

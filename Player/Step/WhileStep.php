@@ -18,7 +18,7 @@ namespace Blackfire\Player\Step;
  */
 class WhileStep extends BlockStep
 {
-    private AbstractStep|null $whileStep = null;
+    private ?AbstractStep $whileStep = null;
 
     public function __construct(
         private readonly string $condition,
@@ -46,7 +46,7 @@ class WhileStep extends BlockStep
         return $this->condition;
     }
 
-    public function getWhileStep(): AbstractStep|null
+    public function getWhileStep(): ?AbstractStep
     {
         return $this->whileStep;
     }

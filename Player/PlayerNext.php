@@ -32,8 +32,8 @@ class PlayerNext
 {
     /** @var (StepExtensionInterface|ScenarioExtensionInterface|ScenarioSetExtensionInterface|NextStepExtensionInterface|ExceptionExtensionInterface)[][] */
     private array $extensions = [];
-    private array|null $extensionsSorted = null;
-    private AbstractStep|null $currentStep = null;
+    private ?array $extensionsSorted = null;
+    private ?AbstractStep $currentStep = null;
 
     public function __construct(
         private readonly StepContextFactory $stepContextFactory,

@@ -21,7 +21,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
 {
     use AsyncDecoratorTrait;
 
-    private array|null $lastJsonView;
+    private ?array $lastJsonView;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -45,7 +45,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
         $this->lastJsonView = null;
     }
 
-    public function getLastJsonView(): array|null
+    public function getLastJsonView(): ?array
     {
         return $this->lastJsonView;
     }
