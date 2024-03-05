@@ -1,461 +1,461 @@
-Blackfire Player Changelog
-==========================
+CHANGELOG
+=========
 
 * 2.4.7 (2024-02-19)
 
- * Fix .blackfire.ini support
- * Update Dependencies
+  - Fix .blackfire.ini support
+  - Update Dependencies
 
 * 2.4.6 (2024-02-05)
 
- * Fix deprecations
- * Update Dependencies
+  - Fix deprecations
+  - Update Dependencies
 
 * 2.4.5 (2024-01-17)
 
- * Update Dependencies
+  - Update Dependencies
 
 * 2.4.4 (2024-01-08)
 
- * Update Dependencies
+  - Update Dependencies
 
 * 2.4.3 (2023-12-21)
 
- * Update Dependencies
+  - Update Dependencies
 
 * 2.4.2 (2023-12-18)
 
- * Update Dependencies
+  - Update Dependencies
 
 * 2.4.1 (2023-11-28)
 
- * Fix description of `merge` function (Thanks @Kocal)
- * Ensure cookie jar is cleared before running every build scenario
+  - Fix description of `merge` function (Thanks @Kocal)
+  - Ensure cookie jar is cleared before running every build scenario
 
 * 2.4.0 (2023-11-27)
 
- * Add a deprecation message when Player is run outside of its Docker image context
- * Update dependencies
+  - Add a deprecation message when Player is run outside of its Docker image context
+  - Update dependencies
 
 * 2.3.3 (2023-10-30)
 
- * Ensure headers defined in a Blackfire Scenario are preserved (Thanks @mnocon)
+  - Ensure headers defined in a Blackfire Scenario are preserved (Thanks @mnocon)
 
 * 2.3.2 (2023-10-25)
 
- * Move Blackfire Internals from `/app` to `/usr/bin/blackfire` in the docker image
- * Update dependencies
+  - Move Blackfire Internals from `/app` to `/usr/bin/blackfire` in the docker image
+  - Update dependencies
 
 * 2.3.1 (2023-09-28)
 
- * Ensures network errors are handled on json view update
+  - Ensures network errors are handled on json view update
 
 * 2.3.0 (2023-09-26)
 
- * Use Player source instead of Phar in the Docker image
- * Update dependencies
+  - Use Player source instead of Phar in the Docker image
+  - Update dependencies
 
 * 2.2.0 (2023-09-20)
 
- * Add a dedicated exit code when Blackfire encounter an error while requesting Blackfire APIs
- * Update dependencies
- * Fix boot of the app without credentials
+  - Add a dedicated exit code when Blackfire encounter an error while requesting Blackfire APIs
+  - Update dependencies
+  - Fix boot of the app without credentials
 
 * 2.1.1 (2023-09-14)
 
- * Remove hard dependency to ext-uuid
- * Fix deprecation triggering
+  - Remove hard dependency to ext-uuid
+  - Fix deprecation triggering
 
 * 2.1.0 (2023-09-11)
 
- * Implement a `--step` option
- * Drop support for `blackfire-env` top-level property
- * Update dependencies
+  - Implement a `--step` option
+  - Drop support for `blackfire-env` top-level property
+  - Update dependencies
 
 * 2.0.2 (2023-09-01)
 
- * Improve reported expectation failure error message
+  - Improve reported expectation failure error message
 
 * 2.0.1 (2023-08-29)
 
- * Increase docker image memory limit
+  - Increase docker image memory limit
 
 * 2.0.0 (2023-08-29)
 
- * Player internals refactoring
- * Deprecate multi-environment builds
- * Update dependencies
+  - Player internals refactoring
+  - Deprecate multi-environment builds
+  - Update dependencies
 
 * 1.32.0 (2023-06-01)
 
- * Update dependencies
- * Remove polyfills in favor of using PHP extensions
+  - Update dependencies
+  - Remove polyfills in favor of using PHP extensions
 
 * 1.31.0 (2023-04-19)
 
- * Display Player version in its output
+  - Display Player version in its output
 
 * 1.30.0 (2023-04-18)
 
- * Switch to Blackfire SDK 2.0
- * Update dependencies
+  - Switch to Blackfire SDK 2.0
+  - Update dependencies
 
 * 1.29.0 (2023-01-25)
 
- * Update Sentry integration
- * Update dependencies
- * Update support URL
- * Update README
- * Add tests
+  - Update Sentry integration
+  - Update dependencies
+  - Update support URL
+  - Update README
+  - Add tests
 
 * 1.28.0 (2023-01-25)
 
- * Use PHP built-in annotations for Serializer configuration
- * Update dependencies
+  - Use PHP built-in annotations for Serializer configuration
+  - Update dependencies
 
 * 1.27.0 (2023-01-24)
 
- * Add more breadcrumb to Sentry reports
+  - Add more breadcrumb to Sentry reports
 
 * 1.26.0 (2023-01-19)
 
- * Add breadcrumb to Sentry reports
+  - Add breadcrumb to Sentry reports
 
 * 1.25.0 (2023-01-18)
 
- * Add Sentry support
- * Fix optional build name type error
+  - Add Sentry support
+  - Fix optional build name type error
 
 * 1.24.0 (2023-01-18)
 
- * Avoid serialization failure
+  - Avoid serialization failure
 
 * 1.23.0 (2023-01-16)
 
- * Use new intention feature when creating builds
- * Serialize the build as Json in output
- * Add PHP 8.1 as a requirement
- * Add PHP return types
- * Modern usage of Json
- * Update dependencies
+  - Use new intention feature when creating builds
+  - Serialize the build as Json in output
+  - Add PHP 8.1 as a requirement
+  - Add PHP return types
+  - Modern usage of Json
+  - Update dependencies
 
 * 1.22.0 (2022-12-12)
 
- * Disable Docker image error reporting
- * Update dependencies
+  - Disable Docker image error reporting
+  - Update dependencies
 
 * 1.21.0 (2022-12-01)
 
- * Support multiple group files
- * Update dependencies
+  - Support multiple group files
+  - Update dependencies
 
 * 1.20.0 (2022-11-08)
 
- * Migrate to Box 4.1
- * Prevent passing non-scalar values to DSL functions
- * Update dependencies
+  - Migrate to Box 4.1
+  - Prevent passing non-scalar values to DSL functions
+  - Update dependencies
 
 * 1.19.0 (2022-07-29)
 
- * Provide an alternative image generator that does not rely on a third-party website
- * Fix BC break in Faker
- * Update to Symfony 6.1
- * Update dependencies
+  - Provide an alternative image generator that does not rely on a third-party website
+  - Fix BC break in Faker
+  - Update to Symfony 6.1
+  - Update dependencies
 
 * 1.18.0 (2022-06-16)
 
- * Provide a better error message when the faker image server is down/slow
- * Fix deprecation notice
- * Update dependencies
+  - Provide a better error message when the faker image server is down/slow
+  - Fix deprecation notice
+  - Update dependencies
 
 * 1.17.0 (2022-04-01)
 
- * Mark all classes internal
- * Update dependencies
- * Fix output formatting
- * Fix deprecations
+  - Mark all classes internal
+  - Update dependencies
+  - Fix output formatting
+  - Fix deprecations
 
 * 1.16.0 (2022-01-25)
 
- * Update dependencies
- * Fix deprecation with PHP 8.1
+  - Update dependencies
+  - Fix deprecation with PHP 8.1
 
 * 1.15.0 (2021-11-17)
 
- * Update dependencies
+  - Update dependencies
 
 * 1.14.0 (2021-09-21)
 
- * Make Docker support multi-arch
- * Update dependencies
- * Fix re-use of groups with profiled step
+  - Make Docker support multi-arch
+  - Update dependencies
+  - Fix re-use of groups with profiled step
 
 * 1.13.0 (2021-08-16)
 
- * Add a docker image (Thanks @scyzoryck)
+  - Add a docker image (Thanks @scyzoryck)
 
 * 1.12.0 (2021-07-06)
 
- * Update dependencies
+  - Update dependencies
 
 * 1.11.0 (2021-03-24)
 
- * Implement variable interpolation in multiline strings (Thanks @scyzoryck)
- * Allow 'X-Blackfire-Response' progress value to stay constant
- * Add support for the 'wait' instruction of the 'X-Blackfire-Response' header
+  - Implement variable interpolation in multiline strings (Thanks @scyzoryck)
+  - Allow 'X-Blackfire-Response' progress value to stay constant
+  - Add support for the 'wait' instruction of the 'X-Blackfire-Response' header
 
 * 1.10.1 (2021-03-09)
 
- * Fix handling headers containing ":"
- * Update dependencies
+  - Fix handling headers containing ":"
+  - Update dependencies
 
 * 1.10.0 (2020-10-28)
 
- * Bump minimum PHP version to 7.1.3
- * Replace Faker with a fork
- * Bump min Symfony version to 4.4 and 5.1
+  - Bump minimum PHP version to 7.1.3
+  - Replace Faker with a fork
+  - Bump min Symfony version to 4.4 and 5.1
 
 * 1.9.3 (2020-10-20)
 
- * Update dependencies
+  - Update dependencies
 
 * 1.9.2 (2020-09-09)
 
- * Update dependencies
+  - Update dependencies
 
 * 1.9.1 (2020-07-17)
 
- * Properly dump nested arrays in output
- * Update dependencies
+  - Properly dump nested arrays in output
+  - Update dependencies
 
 * 1.9.0 (2020-06-23)
 
- * Add support for scenarios validation using stdin
- * Add support for scenarios validation with variables defined in the environment
- * Update dependencies
+  - Add support for scenarios validation using stdin
+  - Add support for scenarios validation with variables defined in the environment
+  - Update dependencies
 
 * 1.8.2 (2020-02-27)
 
- * Fix : Remove the Blackfire Query before following a redirection
+  - Fix : Remove the Blackfire Query before following a redirection
 
 * 1.8.1 (2020-02-27)
 
- * Update documentation
- * Update dependencies
- * Fix X-Blackfire-Query header not sent when "blackfire" option is used within an env name in a step
+  - Update documentation
+  - Update dependencies
+  - Fix X-Blackfire-Query header not sent when "blackfire" option is used within an env name in a step
 
 * 1.8.0 (2020-01-15)
 
- * Add support for loading the content of a file in a test (like `expect body() == file('expected.html')`)
+  - Add support for loading the content of a file in a test (like `expect body() == file('expected.html')`)
 
 * 1.7.0 (2020-01-07)
 
- * Add support for running scenarios stored in a .blackfire.yaml file
- * Update documentation
- * Update dependencies
+  - Add support for running scenarios stored in a .blackfire.yaml file
+  - Update documentation
+  - Update dependencies
 
 * 1.6.1 (2019-12-06)
 
- * Fix typo
+  - Fix typo
 
 * 1.6.0 (2019-12-06)
 
- * Add support for a sandbox mode
- * Fix compat with PHP 5
+  - Add support for a sandbox mode
+  - Fix compat with PHP 5
 
 * 1.5.1 (2019-10-28)
 
- * Avoid the BKF validator to throw exceptions
- * Fix Player when submitting a form with some file upload fields and some hidden fields
- * Update dependencies
+  - Avoid the BKF validator to throw exceptions
+  - Fix Player when submitting a form with some file upload fields and some hidden fields
+  - Update dependencies
 
 * 1.5.0 (2019-06-05)
 
- * Fixed stdin support for the player
- * Update dependencies
+  - Fixed stdin support for the player
+  - Update dependencies
 
 * 1.4.1 (2019-03-19)
 
- * Revert empty group latest change, allow for declaring variables
+  - Revert empty group latest change, allow for declaring variables
 
 * 1.4.0 (2019-03-18)
 
- * Forbid to declare empty groups
- * Fix error when value come from Expectation and Symfony DomCrawler component
- * Update dependencies
+  - Forbid to declare empty groups
+  - Fix error when value come from Expectation and Symfony DomCrawler component
+  - Update dependencies
 
 * 1.3.0 (2019-02-12)
 
- * Add `--ssl-no-verify` option to `run` command
+  - Add `--ssl-no-verify` option to `run` command
 
 * 1.2.1 (2019-02-04)
 
- * Fix certificate verification when using DisableInternalNetworkExtension
- * Update player composer dependencies
- * Fix typo in doc
+  - Fix certificate verification when using DisableInternalNetworkExtension
+  - Update player composer dependencies
+  - Fix typo in doc
 
 * 1.2.0 (2019-01-29)
 
- * Add the Disable Internal Network Extension
- * Update to latest Composer CA bundle
+  - Add the Disable Internal Network Extension
+  - Update to latest Composer CA bundle
 
 * 1.1.2 (2019-01-24)
 
- * Update dependencies
- * Improve documentation
+  - Update dependencies
+  - Improve documentation
 
 * 1.1.1 (2019-01-11)
 
- * Fix request info sent when using Blackfire's build
+  - Fix request info sent when using Blackfire's build
 
 * 1.1.0 (2019-01-10)
 
- * Dump variables when the --tracer option is used
- * Improve error message for invalid assertions configuration
+  - Dump variables when the --tracer option is used
+  - Improve error message for invalid assertions configuration
 
 * 1.0.1 (2019-01-04)
 
- * Fix cryptic message when no-endpoint is defined
+  - Fix cryptic message when no-endpoint is defined
 
 * 1.0.0 (2019-01-03)
 
- * Release version 1.0
+  - Release version 1.0
 
 * 0.16.0 (2018-12-18)
 
- * Remove deprecated --full-report option for "run" command
+  - Remove deprecated --full-report option for "run" command
 
 * 0.15.1 (2018-12-17)
 
- * Bump to Blackfire SDK 1.17.6
+  - Bump to Blackfire SDK 1.17.6
 
 * 0.15.0 (2018-12-14)
 
- * Bump to Blackfire SDK 1.17.4
+  - Bump to Blackfire SDK 1.17.4
 
 * 0.14.0 (2018-11-30)
 
- * Improve error reporting
- * Fix expectations not sent to Blackfire
+  - Improve error reporting
+  - Fix expectations not sent to Blackfire
 
 * 0.13.0 (2018-09-21)
 
- * Add support of multi-line expressions
+  - Add support of multi-line expressions
 
 * 0.12.0 (2018-09-12)
 
- * Deprecate --full-report in favor of --json option for "run" command
- * Use an erroneous exit code when "validate" command fails
- * Remove the deprecated --validate option for "run" command in favor of the "validate" command
+  - Deprecate --full-report in favor of --json option for "run" command
+  - Use an erroneous exit code when "validate" command fails
+  - Remove the deprecated --validate option for "run" command in favor of the "validate" command
 
 * 0.11.0 (2018-08-08)
 
- * Use URL as default step name
- * Remove quotes around step and build names
+  - Use URL as default step name
+  - Remove quotes around step and build names
 
 * 0.10.0 (2018-07-30)
 
- * Standardize ``run --full-report`` output command (BC break)
- * Fix variable management
+  - Standardize ``run --full-report`` output command (BC break)
+  - Fix variable management
 
 * 0.9.0 (2018-07-16)
 
- * Add Blackfire PHP SDK User-Agent header suffix with Player version
- * Allow to set a build name
- * Change "warmup" default value from "false" to "true"
+  - Add Blackfire PHP SDK User-Agent header suffix with Player version
+  - Allow to set a build name
+  - Change "warmup" default value from "false" to "true"
 
 * 0.8.2 (2018-07-09)
 
- * Fix JSON error handling when reading stdin as input
+  - Fix JSON error handling when reading stdin as input
 
 * 0.8.1 (2018-07-06)
 
- * Improve error handling
- * Add more info to error output
- * Reword error messages
- * Update documentation
- * Update dependencies
+  - Improve error handling
+  - Add more info to error output
+  - Reword error messages
+  - Update documentation
+  - Update dependencies
 
 * 0.8.0 (2018-06-25)
 
- * Add a validate command
- * Remove deprecated --json option
- * Deprecate run --validate option
- * Forward Blackfire player expectation failures to Blackfire API
+  - Add a validate command
+  - Remove deprecated --json option
+  - Deprecate run --validate option
+  - Forward Blackfire player expectation failures to Blackfire API
 
 * 0.7.0 (2018-06-14)
 
- * restrict loading to files with the 'bkf' extension
- * rework build references to have one reference per scenario
- * enable Blackfire by default when the '--blackfire-env' CLI option is used
- * fix usage of variables
+  - restrict loading to files with the 'bkf' extension
+  - rework build references to have one reference per scenario
+  - enable Blackfire by default when the '--blackfire-env' CLI option is used
+  - fix usage of variables
 
 * 0.6.0 (2018-04-17)
 
- * send Guzzle timers to Blackfire
- * improve exception messages
- * fix variables resolving
- * fix CLI parameters escaping
+  - send Guzzle timers to Blackfire
+  - improve exception messages
+  - fix variables resolving
+  - fix CLI parameters escaping
 
 * 0.5.0-alpha-5 (2017-11-07)
 
- * add a 'warmup' step option
- * add a new CLI option '--full-report' and deprecate '--json'
- * add a cookie to profiled requests to help cross HTTP caches
- * add an extension to avoid infinite loops
+  - add a 'warmup' step option
+  - add a new CLI option '--full-report' and deprecate '--json'
+  - add a cookie to profiled requests to help cross HTTP caches
+  - add an extension to avoid infinite loops
 
 * 0.5.0-alpha-1 (2017-01-05)
 
- * Second major release. It breaks backwards compatibility. For now on, the
+  - Second major release. It breaks backwards compatibility. For now on, the
    player is only distributed as a .phar file and cannot be embedded in a PHP
    project anymore.
 
 * 0.4.6 (2016-12-05)
 
- * fix usage of parent build
+  - fix usage of parent build
 
 * 0.4.5 (2016-06-21)
 
- * fix usage with headers defined in steps
+  - fix usage with headers defined in steps
 
 * 0.4.4 (2016-06-21)
 
- * Fix typo in function name
+  - Fix typo in function name
 
 * 0.4.3 (2016-06-20)
 
- * throw exceptions in case configuration is invalid
+  - throw exceptions in case configuration is invalid
 
 * 0.4.2 (2016-06-20)
 
- * made player exit with error when errors are logged
+  - made player exit with error when errors are logged
 
 * 0.4.1 (2016-05-24)
 
- * fixed embedding scenarios bug
+  - fixed embedding scenarios bug
 
 * 0.4.0 (2016-05-18)
 
- * updated deps
- * added log for extracted values
- * allowed endpoint to have a non-empty baseurl
+  - updated deps
+  - added log for extracted values
+  - allowed endpoint to have a non-empty baseurl
 
 * 0.3.0 (2016-01-27)
 
- * added reload support
- * added a default User-Agent as it is required by some web servers
- * fixed request content-type when no parameters are provided
- * added the possibility to pass any variable to regex()
- * added the merge function
- * enable debug mode in guzzle when -vvv
+  - added reload support
+  - added a default User-Agent as it is required by some web servers
+  - fixed request content-type when no parameters are provided
+  - added the possibility to pass any variable to regex()
+  - added the merge function
+  - enable debug mode in guzzle when -vvv
 
 * 0.2.0 (2015-12-22)
 
- * added the possibility to configure Blackfire build references
- * added regex function
- * added the join function
- * added support for fake values
+  - added the possibility to configure Blackfire build references
+  - added regex function
+  - added the join function
+  - added support for fake values
 
 * 0.1.0 (2016-12-17)
 
- * Initial release
+  - Initial release
