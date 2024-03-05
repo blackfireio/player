@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.4.8 (2024-03-05)
+
+  - Fix CS
+  - Update dependencies
+
 * 2.4.7 (2024-02-19)
 
   - Fix .blackfire.ini support
