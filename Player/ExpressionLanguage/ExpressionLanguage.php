@@ -20,9 +20,9 @@ use Symfony\Component\ExpressionLanguage\ParsedExpression;
  */
 class ExpressionLanguage extends SymfonyExpressionLanguage
 {
-    private ?ExtractResultsVisitor $resultsVisitor = null;
-    private ?ValidatorParser $parser = null;
-    private ?Lexer $lexer = null;
+    private ExtractResultsVisitor|null $resultsVisitor = null;
+    private ValidatorParser|null $parser = null;
+    private Lexer|null $lexer = null;
 
     public function extractResults(ParsedExpression $expression, array $variables): array
     {

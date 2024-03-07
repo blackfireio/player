@@ -58,7 +58,7 @@ class ScenarioSetSerializer
         return Json::encode($data, \JSON_PRETTY_PRINT);
     }
 
-    public function normalize(ScenarioSet $scenarioSet, ?Build $build = null): array
+    public function normalize(ScenarioSet $scenarioSet, Build|null $build = null): array
     {
         if ($build) {
             $filteredScenarios = array_values(

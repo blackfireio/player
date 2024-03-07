@@ -25,7 +25,7 @@ readonly class BlackfireEnvResolver
     private const DEPRECATION_ENV_RESOLVING = 'Resolving an environment at the scenario level using the "blackfire" property is deprecated. Please use `--blackfire-env` instead.';
 
     public function __construct(
-        private ?string $defaultEnv,
+        private string|null $defaultEnv,
         private ExpressionLanguage $language,
     ) {
     }

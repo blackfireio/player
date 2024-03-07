@@ -26,7 +26,8 @@ return (new PhpCsFixer\Config())
         'return_assignment' => true,
         'fopen_flags' => false,
         'strict_param' => true,
-        'phpdoc_separation' => ['groups' => [['ORM\\*'], ['Assert\\*']]],
+        'phpdoc_separation' => ['groups' => [['ORM\\*'], ['Assert\\*', 'Assert'], ['SymfonySerializer\\*']]],
+        'nullable_type_declaration' => ['syntax' => 'union'],
         'header_comment' => ['header' => $header],
     ))
 ;

@@ -23,12 +23,12 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class AbstractStep
 {
     #[Ignore]
-    protected ?AbstractStep $next = null;
+    protected AbstractStep|null $next = null;
     #[Ignore]
-    protected ?string $blackfireProfileUuid = null;
+    protected string|null $blackfireProfileUuid = null;
     protected BuildStatus $status = BuildStatus::TODO;
 
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @var [][]
@@ -59,8 +59,8 @@ class AbstractStep
     private string $uuid;
 
     public function __construct(
-        private readonly ?string $file = null,
-        private readonly ?int $line = null,
+        private readonly string|null $file = null,
+        private readonly int|null $line = null,
     ) {
         $this->uuid = uuid_create(\UUID_TYPE_RANDOM);
     }
@@ -83,36 +83,36 @@ class AbstractStep
         return sprintf("└ %s\n", static::class);
     }
 
-    public function name(?string $name): static
+    public function name(string|null $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function next(self $step): ?self
+    public function next(self $step): self|null
     {
         $this->next = $step;
 
         return $step->getLast();
     }
 
-    public function getNext(): ?self
+    public function getNext(): self|null
     {
         return $this->next;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name ?: null;
     }
 
-    public function getFile(): ?string
+    public function getFile(): string|null
     {
         return $this->file;
     }
 
-    public function getLine(): ?int
+    public function getLine(): int|null
     {
         return $this->line;
     }
@@ -191,7 +191,7 @@ class AbstractStep
      * @internal
      */
     #[Ignore]
-    public function getLast(): ?self
+    public function getLast(): self|null
     {
         if (!$this->next) {
             return $this;
@@ -201,7 +201,7 @@ class AbstractStep
     }
 
     #[SerializedName('type')]
-    public function getType(): ?string
+    public function getType(): string|null
     {
         $type = explode('\\', static::class);
         $type = array_pop($type);
@@ -214,7 +214,7 @@ class AbstractStep
     }
 
     #[SerializedName('blackfire_profile_uuid')]
-    public function getSerializedBlackfireProfileUuid(): ?string
+    public function getSerializedBlackfireProfileUuid(): string|null
     {
         // we want to send the profile UUID only once it has been processed
         if (BuildStatus::DONE === $this->status) {
@@ -248,7 +248,7 @@ class AbstractStep
         return $truncatedFailingExpectations;
     }
 
-    public function getBlackfireProfileUuid(): ?string
+    public function getBlackfireProfileUuid(): string|null
     {
         return $this->blackfireProfileUuid;
     }
@@ -288,7 +288,7 @@ class AbstractStep
     }
 
     #[SerializedName('iid')]
-    public function getInstanceId(): ?string
+    public function getInstanceId(): string|null
     {
         return spl_object_id($this);
     }

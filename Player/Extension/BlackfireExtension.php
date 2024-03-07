@@ -391,7 +391,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         }
     }
 
-    private function findEnvBuildFromExtraBag(string $env, ScenarioSet $scenarios): ?Build
+    private function findEnvBuildFromExtraBag(string $env, ScenarioSet $scenarios): Build|null
     {
         $bag = $scenarios->getExtraBag();
 

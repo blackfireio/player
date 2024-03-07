@@ -15,7 +15,7 @@ readonly class Build
 {
     public function __construct(
         public string $uuid,
-        public ?string $url = null,
+        public string|null $url = null,
     ) {
     }
 }

@@ -35,7 +35,7 @@ final class Cookie
     private function __construct(
         private readonly string $name,
         private readonly string $value,
-        private readonly ?string $expires,
+        private readonly string|null $expires,
         private readonly string $path,
         private readonly string $domain,
         private readonly bool $secure,
@@ -74,7 +74,7 @@ final class Cookie
      *
      * @throws \InvalidArgumentException
      */
-    public static function fromString(string $cookie, ?string $url = null): static
+    public static function fromString(string $cookie, string|null $url = null): static
     {
         $parts = explode(';', $cookie);
 
@@ -135,7 +135,7 @@ final class Cookie
         );
     }
 
-    private static function parseDate(string $dateValue): ?string
+    private static function parseDate(string $dateValue): string|null
     {
         // trim single quotes around date if present
         if (($length = \strlen($dateValue)) > 1 && "'" === $dateValue[0] && "'" === $dateValue[$length - 1]) {

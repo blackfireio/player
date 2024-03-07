@@ -21,14 +21,14 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ScenarioContext
 {
-    private ?Response $lastResponse = null;
-    private ?Crawler $crawler = null;
+    private Response|null $lastResponse = null;
+    private Crawler|null $crawler = null;
     private ValueBag $valueBag;
     private ValueBag $extraBag;
 
     public function __construct(
-        private readonly ?string $name,
-        private ?ScenarioSet $scenarioSet,
+        private readonly string|null $name,
+        private ScenarioSet|null $scenarioSet,
     ) {
         $this->valueBag = new ValueBag();
         $this->extraBag = new ValueBag();
@@ -97,12 +97,12 @@ class ScenarioContext
         $this->extraBag->remove($name);
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
 
-    public function getScenarioSet(): ?ScenarioSet
+    public function getScenarioSet(): ScenarioSet|null
     {
         return $this->scenarioSet;
     }

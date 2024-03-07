@@ -45,7 +45,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
         ]);
     }
 
-    public function updateProfile(string $uuid, string $title, ?array $metadata = null): bool
+    public function updateProfile(string $uuid, string $title, array|null $metadata = null): bool
     {
         return true;
     }
@@ -63,7 +63,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
         return new Profile(fn () => ['report' => ['state' => 'successful']], $uuid);
     }
 
-    public function startBuild(?string $env = null, array $options = []): Build
+    public function startBuild(string|null $env = null, array $options = []): Build
     {
         return new Build('4444-3333-2222-1111');
     }

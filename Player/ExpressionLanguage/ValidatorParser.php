@@ -22,8 +22,8 @@ use Symfony\Component\ExpressionLanguage\TokenStream;
  */
 class ValidatorParser extends SymfonyParser
 {
-    private ?TokenStream $stream = null;
-    private ?array $names = null;
+    private TokenStream|null $stream = null;
+    private array|null $names = null;
     private array $missingNames = [];
 
     public function __construct(

@@ -65,7 +65,7 @@ class BlackfireExtensionTest extends TestCase
     /**
      * @dataProvider beforeRequestProvider
      */
-    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, callable $stepAssertions, ?callable $scenarioContextAssertions = null)
+    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, callable $stepAssertions, callable|null $scenarioContextAssertions = null)
     {
         $extension = $this->getBlackfireExtension();
 
@@ -580,7 +580,7 @@ class BlackfireExtensionTest extends TestCase
         ];
     }
 
-    private function getBlackfireExtension(?string $defaultEnv = 'My env'): BlackfireExtension
+    private function getBlackfireExtension(string|null $defaultEnv = 'My env'): BlackfireExtension
     {
         $blackfireSdkClient = new BlackfireSdkAdapter($this->createBlackfireClient());
         $language = new ExpressionLanguage(null, [new Provider()]);

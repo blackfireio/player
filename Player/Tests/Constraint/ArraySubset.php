@@ -23,7 +23,7 @@ final class ArraySubset extends Constraint
     {
     }
 
-    private function _evaluate($other, string $description = '', bool $returnResult = false): ?bool
+    private function _evaluate($other, string $description = '', bool $returnResult = false): bool|null
     {
         // type cast $other & $this->subset as an array to allow
         // support in standard array functions.
@@ -75,7 +75,7 @@ final class ArraySubset extends Constraint
         return iterator_to_array($other);
     }
 
-    public function evaluate($other, string $description = '', bool $returnResult = false): ?bool
+    public function evaluate($other, string $description = '', bool $returnResult = false): bool|null
     {
         return $this->_evaluate($other, $description, $returnResult);
     }

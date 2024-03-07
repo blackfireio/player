@@ -22,14 +22,14 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 class Scenario extends GroupStep
 {
     #[Ignore]
-    protected ?string $blackfireBuildUuid = null;
+    protected string|null $blackfireBuildUuid = null;
 
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return null;
     }
 
-    public function getBlackfireBuildUuid(): ?string
+    public function getBlackfireBuildUuid(): string|null
     {
         return $this->blackfireBuildUuid;
     }

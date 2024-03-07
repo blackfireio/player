@@ -20,8 +20,8 @@ class ClickStep extends Step
 {
     public function __construct(
         private readonly string $selector,
-        ?string $file = null,
-        ?int $line = null,
+        string|null $file = null,
+        int|null $line = null,
     ) {
         parent::__construct($file, $line);
     }

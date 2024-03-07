@@ -21,9 +21,9 @@ class FollowStep extends Step implements StepInitiatorInterface
     use StepInitiatorTrait;
 
     public function __construct(
-        private readonly ?string $file = null,
-        private readonly ?int $line = null,
-        ?Step $initiator = null
+        private readonly string|null $file = null,
+        private readonly int|null $line = null,
+        Step|null $initiator = null
     ) {
         parent::__construct($file, $line);
 

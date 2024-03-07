@@ -26,15 +26,15 @@ class ScenarioSet implements \IteratorAggregate
     #[Ignore]
     private array $keys = [];
     private ValueBag $extraBag;
-    private ?string $name = null;
+    private string|null $name = null;
     /** @var string[] */
     private array $variables = [];
     private int $version = 0;
 
     private BuildStatus $status = BuildStatus::IN_PROGRESS;
 
-    private ?string $endpoint = null;
-    private ?string $blackfireEnvironment = null;
+    private string|null $endpoint = null;
+    private string|null $blackfireEnvironment = null;
 
     public function __construct(
         /** @var Scenario[] */
@@ -80,12 +80,12 @@ class ScenarioSet implements \IteratorAggregate
         $this->keys[$scenario->getKey()] = true;
     }
 
-    public function name(?string $name): void
+    public function name(string|null $name): void
     {
         $this->name = $name;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -124,22 +124,22 @@ class ScenarioSet implements \IteratorAggregate
         return $this->variables;
     }
 
-    public function getEndpoint(): ?string
+    public function getEndpoint(): string|null
     {
         return $this->endpoint;
     }
 
-    public function setEndpoint(?string $endpoint): void
+    public function setEndpoint(string|null $endpoint): void
     {
         $this->endpoint = $endpoint;
     }
 
-    public function getBlackfireEnvironment(): ?string
+    public function getBlackfireEnvironment(): string|null
     {
         return $this->blackfireEnvironment;
     }
 
-    public function setBlackfireEnvironment(?string $blackfireEnvironment): void
+    public function setBlackfireEnvironment(string|null $blackfireEnvironment): void
     {
         $this->blackfireEnvironment = $blackfireEnvironment;
     }

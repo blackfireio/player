@@ -21,18 +21,18 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  */
 class ConfigurableStep extends AbstractStep
 {
-    private ?string $auth = null;
+    private string|null $auth = null;
     /** @var string[] */
     private array $headers = [];
-    private ?string $wait = null;
-    private ?string $json = null;
+    private string|null $wait = null;
+    private string|null $json = null;
     #[Ignore]
-    private ?string $followRedirects = null;
-    private ?string $blackfire = null;
-    private ?string $samples = null;
-    private ?string $warmup = null;
+    private string|null $followRedirects = null;
+    private string|null $blackfire = null;
+    private string|null $samples = null;
+    private string|null $warmup = null;
 
-    public function followRedirects(?string $follow): self
+    public function followRedirects(string|null $follow): self
     {
         $this->followRedirects = $follow;
 
@@ -46,42 +46,42 @@ class ConfigurableStep extends AbstractStep
         return $this;
     }
 
-    public function auth(?string $auth): self
+    public function auth(string|null $auth): self
     {
         $this->auth = $auth;
 
         return $this;
     }
 
-    public function wait(?string $wait): self
+    public function wait(string|null $wait): self
     {
         $this->wait = $wait;
 
         return $this;
     }
 
-    public function json(?string $json): self
+    public function json(string|null $json): self
     {
         $this->json = $json;
 
         return $this;
     }
 
-    public function blackfire(?string $env): self
+    public function blackfire(string|null $env): self
     {
         $this->blackfire = $env;
 
         return $this;
     }
 
-    public function samples(?string $samples): self
+    public function samples(string|null $samples): self
     {
         $this->samples = $samples;
 
         return $this;
     }
 
-    public function warmup(?string $warmup): self
+    public function warmup(string|null $warmup): self
     {
         $this->warmup = $warmup;
 
@@ -89,7 +89,7 @@ class ConfigurableStep extends AbstractStep
     }
 
     #[SerializedName('follow_redirects')]
-    public function isFollowingRedirects(): ?string
+    public function isFollowingRedirects(): string|null
     {
         return $this->followRedirects;
     }
@@ -102,29 +102,29 @@ class ConfigurableStep extends AbstractStep
         return $this->headers;
     }
 
-    public function getAuth(): ?string
+    public function getAuth(): string|null
     {
         return $this->auth;
     }
 
-    public function getWait(): ?string
+    public function getWait(): string|null
     {
         return $this->wait;
     }
 
-    public function isJson(): ?string
+    public function isJson(): string|null
     {
         return $this->json;
     }
 
     #[Ignore]
-    public function getBlackfire(): ?string
+    public function getBlackfire(): string|null
     {
         return $this->blackfire;
     }
 
     #[SerializedName('is_blackfire_enabled')]
-    public function isBlackfireEnabled(): ?bool
+    public function isBlackfireEnabled(): bool|null
     {
         if (!$this->getType()) {
             return null;
@@ -133,12 +133,12 @@ class ConfigurableStep extends AbstractStep
         return 'false' !== $this->blackfire;
     }
 
-    public function getSamples(): ?string
+    public function getSamples(): string|null
     {
         return $this->samples;
     }
 
-    public function getWarmup(): ?string
+    public function getWarmup(): string|null
     {
         return $this->warmup;
     }

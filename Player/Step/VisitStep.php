@@ -18,15 +18,15 @@ namespace Blackfire\Player\Step;
  */
 class VisitStep extends Step
 {
-    private ?string $method = null;
+    private string|null $method = null;
     /** @var string[] */
     private array $parameters = [];
-    private ?string $body = null;
+    private string|null $body = null;
 
     public function __construct(
         private readonly string $uri,
-        ?string $file = null,
-        ?int $line = null,
+        string|null $file = null,
+        int|null $line = null,
     ) {
         parent::__construct($file, $line);
     }
@@ -56,7 +56,7 @@ class VisitStep extends Step
         return $this->uri;
     }
 
-    public function getMethod(): ?string
+    public function getMethod(): string|null
     {
         return $this->method;
     }
@@ -69,7 +69,7 @@ class VisitStep extends Step
         return $this->parameters;
     }
 
-    public function getBody(): ?string
+    public function getBody(): string|null
     {
         return $this->body;
     }

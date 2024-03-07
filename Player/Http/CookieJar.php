@@ -33,7 +33,7 @@ class CookieJar
         $this->cookieJar = [];
     }
 
-    public function updateFromSetCookie(array $setCookies, ?string $uri = null): void
+    public function updateFromSetCookie(array $setCookies, string|null $uri = null): void
     {
         $cookies = [];
 
@@ -56,7 +56,7 @@ class CookieJar
         }
     }
 
-    public function updateFromResponse(ResponseInterface $response, ?string $uri = null): void
+    public function updateFromResponse(ResponseInterface $response, string|null $uri = null): void
     {
         $headers = $response->getHeaders(false);
         $this->updateFromSetCookie($headers['set-cookie'] ?? [], $uri);

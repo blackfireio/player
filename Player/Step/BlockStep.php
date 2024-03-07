@@ -22,11 +22,11 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class BlockStep extends ConfigurableStep
 {
     #[Ignore]
-    private ?AbstractStep $blockStep = null;
+    private AbstractStep|null $blockStep = null;
     /** @var string[] */
     private array $variables = [];
     #[Ignore]
-    private ?string $endpoint = null;
+    private string|null $endpoint = null;
 
     public function setBlockStep(AbstractStep $blockStep): void
     {
@@ -51,7 +51,7 @@ class BlockStep extends ConfigurableStep
     }
 
     #[SerializedName('steps')]
-    public function getBlockStep(): ?AbstractStep
+    public function getBlockStep(): AbstractStep|null
     {
         return $this->blockStep;
     }
@@ -89,7 +89,7 @@ class BlockStep extends ConfigurableStep
         return $this;
     }
 
-    public function getEndpoint(): ?string
+    public function getEndpoint(): string|null
     {
         return $this->endpoint;
     }
@@ -102,7 +102,7 @@ class BlockStep extends ConfigurableStep
         return $this->variables;
     }
 
-    protected function blockToString(?AbstractStep $step): string
+    protected function blockToString(AbstractStep|null $step): string
     {
         if (!$step) {
             return '';

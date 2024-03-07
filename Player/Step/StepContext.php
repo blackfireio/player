@@ -18,19 +18,19 @@ namespace Blackfire\Player\Step;
  */
 final class StepContext
 {
-    private ?string $auth = null;
+    private string|null $auth = null;
     /** @var string[] */
     private array $headers = [];
-    private ?string $wait = null;
-    private ?string $json = null;
-    private ?string $endpoint = null;
-    private ?string $followRedirects = null;
+    private string|null $wait = null;
+    private string|null $json = null;
+    private string|null $endpoint = null;
+    private string|null $followRedirects = null;
     /** @var mixed[] */
     private array $variables = [];
-    private ?string $blackfire = null;
-    private ?string $samples = null;
-    private ?string $warmup = null;
-    private ?string $workingDir = null;
+    private string|null $blackfire = null;
+    private string|null $samples = null;
+    private string|null $warmup = null;
+    private string|null $workingDir = null;
 
     public function update(ConfigurableStep $step, array $variables): void
     {
@@ -92,12 +92,12 @@ final class StepContext
         return $this->headers;
     }
 
-    public function getAuth(): ?string
+    public function getAuth(): string|null
     {
         return $this->auth;
     }
 
-    public function getWait(): ?string
+    public function getWait(): string|null
     {
         return $this->wait;
     }
@@ -112,7 +112,7 @@ final class StepContext
         return null === $this->json ? 'false' : $this->json;
     }
 
-    public function getEndpoint(): ?string
+    public function getEndpoint(): string|null
     {
         return $this->endpoint;
     }
@@ -125,7 +125,7 @@ final class StepContext
         return $this->variables;
     }
 
-    public function getBlackfireEnv(): ?string
+    public function getBlackfireEnv(): string|null
     {
         return $this->blackfire;
     }
@@ -140,7 +140,7 @@ final class StepContext
         return null === $this->warmup ? 'true' : $this->warmup;
     }
 
-    public function getWorkingDir(): ?string
+    public function getWorkingDir(): string|null
     {
         return $this->workingDir;
     }

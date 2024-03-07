@@ -21,7 +21,7 @@ final class ValidationResult
 
     public function __construct(
         private readonly bool $success = true,
-        private readonly ?array $errors = null,
+        private readonly array|null $errors = null,
     ) {
     }
 
@@ -30,7 +30,7 @@ final class ValidationResult
         return $this->success;
     }
 
-    public function getErrors(): ?array
+    public function getErrors(): array|null
     {
         return $this->errors;
     }

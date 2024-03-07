@@ -27,7 +27,7 @@ final class Input
 
     public function __construct(
         string $input,
-        private readonly ?string $file = null,
+        private readonly string|null $file = null,
     ) {
         $this->lines = $this->splitInput($input);
 
@@ -70,7 +70,7 @@ final class Input
         return $this->computeIndent($this->lineno);
     }
 
-    public function getFile(): ?string
+    public function getFile(): string|null
     {
         return $this->file;
     }

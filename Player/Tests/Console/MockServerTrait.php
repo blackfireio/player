@@ -17,9 +17,9 @@ use Symfony\Component\Process\Process;
 
 trait MockServerTrait
 {
-    protected static ?Process $server = null;
+    protected static Process|null $server = null;
 
-    public static function getRunningServer(string $fixturesDir, ?string $port = null): Process
+    public static function getRunningServer(string $fixturesDir, string|null $port = null): Process
     {
         $port = $port ?? '8399';
 

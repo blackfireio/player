@@ -21,7 +21,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
 {
     use AsyncDecoratorTrait;
 
-    private ?array $lastJsonView;
+    private array|null $lastJsonView;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -35,7 +35,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
         return $this->httpClient->request($method, $url, $options);
     }
 
-    public function stream(ResponseInterface|iterable $responses, ?float $timeout = null): ResponseStreamInterface
+    public function stream(ResponseInterface|iterable $responses, float|null $timeout = null): ResponseStreamInterface
     {
         return $this->httpClient->stream($responses, $timeout);
     }
@@ -45,7 +45,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
         $this->lastJsonView = null;
     }
 
-    public function getLastJsonView(): ?array
+    public function getLastJsonView(): array|null
     {
         return $this->lastJsonView;
     }

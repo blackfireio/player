@@ -13,5 +13,5 @@ namespace Blackfire\Player\Step;
 
 interface StepInitiatorInterface
 {
-    public function getInitiator(): ?Step;
+    public function getInitiator(): Step|null;
 }

@@ -20,12 +20,12 @@ class SubmitStep extends Step
 {
     /** @var string[] */
     private array $parameters = [];
-    private ?string $body = null;
+    private string|null $body = null;
 
     public function __construct(
         private readonly string $selector,
-        ?string $file = null,
-        ?int $line = null,
+        string|null $file = null,
+        int|null $line = null,
     ) {
         parent::__construct($file, $line);
     }
@@ -58,7 +58,7 @@ class SubmitStep extends Step
         return $this->parameters;
     }
 
-    public function getBody(): ?string
+    public function getBody(): string|null
     {
         return $this->body;
     }

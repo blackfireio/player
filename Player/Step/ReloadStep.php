@@ -20,7 +20,7 @@ class ReloadStep extends Step implements StepInitiatorInterface
 {
     use StepInitiatorTrait;
 
-    public function __construct(?string $file = null, ?int $line = null, ?Step $initiator = null)
+    public function __construct(string|null $file = null, int|null $line = null, Step|null $initiator = null)
     {
         $this->setInitiator($initiator);
         parent::__construct($file, $line);

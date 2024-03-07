@@ -35,7 +35,7 @@ class Provider implements ExpressionFunctionProviderInterface
     private readonly FakerGenerator $faker;
 
     public function __construct(
-        ?FakerGenerator $faker = null,
+        FakerGenerator|null $faker = null,
         private readonly bool $sandbox = false,
     ) {
         $this->faker = null !== $faker ? $faker : FakerFactory::create();
@@ -69,7 +69,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_crawler']->selectButton($selector);
             }),
 
-            new ExpressionFunction('file', $compiler, function (array $arguments, string $filename, ?string $name = null) {
+            new ExpressionFunction('file', $compiler, function (array $arguments, string $filename, string|null $name = null) {
                 if ($this->sandbox) {
                     if (UploadFile::isAbsolutePath($filename)) {
                         $extra = $arguments['_extra'];
@@ -186,7 +186,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return array_merge($arr1, $arr2);
             }),
 
-            new ExpressionFunction('fake', $compiler, function (array $arguments, ?string $provider = null/* , $othersArgs ... */) {
+            new ExpressionFunction('fake', $compiler, function (array $arguments, string|null $provider = null/* , $othersArgs ... */) {
                 $arguments = \func_get_args();
 
                 if (!$provider) {
@@ -222,7 +222,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $ret;
             }),
 
-            new ExpressionFunction('regex', $compiler, function (array $arguments, string $regex, ?string $str = null) {
+            new ExpressionFunction('regex', $compiler, function (array $arguments, string $regex, string|null $str = null) {
                 if (null === $str) {
                     if ($arguments['_response'] instanceof Response) {
                         $str = $arguments['_response']->body;

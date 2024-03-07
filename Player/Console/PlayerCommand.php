@@ -84,12 +84,12 @@ final class PlayerCommand extends Command
     public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
     public const EXIT_CODE_BLACKFIRE_NETWORK_ERROR = 67;
 
-    private ?HttpClientInterface $blackfireHttpClient;
-    private ?BlackfireSdkAdapterInterface $blackfireSdkAdapter;
+    private HttpClientInterface|null $blackfireHttpClient;
+    private BlackfireSdkAdapterInterface|null $blackfireSdkAdapter;
     private string $transactionId;
 
     public function __construct(
-        ?HttpClientInterface $blackfireHttpClient, ?BlackfireSdkAdapterInterface $blackfireSdkAdapter, string $transactionId)
+        HttpClientInterface|null $blackfireHttpClient, BlackfireSdkAdapterInterface|null $blackfireSdkAdapter, string $transactionId)
     {
         $this->blackfireHttpClient = $blackfireHttpClient;
         $this->blackfireSdkAdapter = $blackfireSdkAdapter;
@@ -347,7 +347,7 @@ final class PlayerCommand extends Command
         return $report;
     }
 
-    private function getEnvOrDefault(string $envVar, ?string $default = null): ?string
+    private function getEnvOrDefault(string $envVar, string|null $default = null): string|null
     {
         $env = getenv($envVar);
         if (!$env) {

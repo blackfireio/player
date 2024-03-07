@@ -16,14 +16,14 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 trait StepInitiatorTrait
 {
     #[Ignore]
-    private readonly ?Step $initiator;
+    private readonly Step|null $initiator;
 
-    public function getInitiator(): ?Step
+    public function getInitiator(): Step|null
     {
         return $this->initiator;
     }
 
-    public function setInitiator(?Step $step): void
+    public function setInitiator(Step|null $step): void
     {
         if ($step instanceof StepInitiatorInterface) {
             $this->initiator = $step->getInitiator() ?? $step;
@@ -32,7 +32,7 @@ trait StepInitiatorTrait
         }
     }
 
-    public function getInitiatorUuid(): ?string
+    public function getInitiatorUuid(): string|null
     {
         return $this->initiator?->getUuid();
     }

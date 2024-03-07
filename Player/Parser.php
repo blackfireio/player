@@ -54,7 +54,7 @@ class Parser
     /** @var string[] */
     private array $missingVariables = [];
     private array $groups;
-    private ?string $name = null;
+    private string|null $name = null;
 
     public function __construct(
         private readonly ExpressionLanguage $expressionLanguage,
@@ -106,7 +106,7 @@ class Parser
         return $this->parse($input, $file);
     }
 
-    public function parse(string $input, ?string $file = null): ScenarioSet
+    public function parse(string $input, string|null $file = null): ScenarioSet
     {
         $input = new Input($input, $file);
 

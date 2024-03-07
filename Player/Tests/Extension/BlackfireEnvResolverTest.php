@@ -25,7 +25,7 @@ class BlackfireEnvResolverTest extends TestCase
     /**
      * @dataProvider resolveAnEnvironmentProvider
      */
-    public function testResolveAnEnvironment(?string $defaultEnv, ?string $stepBlackfire, ?string $scenarioSetEnvironment, string|bool $expectedResult)
+    public function testResolveAnEnvironment(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult)
     {
         [
             $resolver,
@@ -80,7 +80,7 @@ class BlackfireEnvResolverTest extends TestCase
     /**
      * @dataProvider precedenceProvider
      */
-    public function testResolveAnEnvironmentPrecedence(?string $defaultEnv, ?string $stepBlackfire, ?string $scenarioSetEnvironment, string|bool $expectedResult)
+    public function testResolveAnEnvironmentPrecedence(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult)
     {
         [
             $resolver,
@@ -115,7 +115,7 @@ class BlackfireEnvResolverTest extends TestCase
     /**
      * @dataProvider errorsProvider()
      */
-    public function testResolveThrowsAnError(?string $defaultEnv, ?string $stepBlackfire, ?string $scenarioSetEnvironment)
+    public function testResolveThrowsAnError(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment)
     {
         [
             $resolver,
@@ -143,7 +143,7 @@ class BlackfireEnvResolverTest extends TestCase
     /**
      * @dataProvider deprecationsProvider
      */
-    public function testDeprecationWarning(?string $defaultEnv, ?string $stepBlackfire, ?string $scenarioSetEnvironment, string|bool $expectedResult, array $expectedDeprecations)
+    public function testDeprecationWarning(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult, array $expectedDeprecations)
     {
         [
             $resolver,
@@ -179,7 +179,7 @@ class BlackfireEnvResolverTest extends TestCase
         ];
     }
 
-    private function arrange(?string $defaultEnv, ?string $stepBlackfire, ?string $scenarioSetEnvironment): array
+    private function arrange(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment): array
     {
         $language = new ExpressionLanguage(null, [new Provider()]);
         $resolver = new BlackfireEnvResolver($defaultEnv, $language);
