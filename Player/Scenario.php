@@ -12,7 +12,7 @@
 namespace Blackfire\Player;
 
 use Blackfire\Player\Step\GroupStep;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 /**
  * @author Fabien Potencier <fabien@blackfire.io>

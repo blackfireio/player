@@ -12,7 +12,7 @@
 namespace Blackfire\Player\Step;
 
 use Blackfire\Player\Http\Request;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 /**
  * @internal

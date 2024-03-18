@@ -16,9 +16,8 @@ use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Json;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioSet;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
@@ -35,7 +34,7 @@ class ScenarioSetSerializer
 
     public function __construct()
     {
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory, new CamelCaseToSnakeCaseNameConverter());
 
         $this->normalizer = new Serializer([new ObjectNormalizer($classMetadataFactory, $nameConverter)], []);
