@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* v2.5.0 (2024-03-18)
+
+  - Fix CS
+  - Update dependencies
+  - Upgrade player to Symfony 7.0
+
 * v2.4.8 (2024-03-05)
 
   - Fix CS
