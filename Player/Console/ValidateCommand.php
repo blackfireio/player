@@ -28,8 +28,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 final class ValidateCommand extends Command
 {
-    use DockerDeprecationTrait;
-
     public const EXIT_CODE_FAILURE = 64;
 
     protected function configure(): void
@@ -62,8 +60,6 @@ final class ValidateCommand extends Command
             $errorOutput = $output->getErrorOutput();
             $errorOutput->setFormatter($originalOutput->getFormatter());
         }
-
-        $this->ensureCommandIsRunInDockerContainer($errorOutput);
 
         $parserFactory = new ParserFactory(new ExpressionLanguage(null, [new LanguageProvider()]));
 
