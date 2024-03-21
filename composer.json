@@ -15,6 +15,10 @@
     ],
     "require": {
         "php": ">=8.2",
+        "ext-ctype": "*",
+        "ext-filter": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
         "blackfire/php-sdk": "^2.1 ",
         "fakerphp/faker": "^1.10",
         "maltyxx/images-generator": "^1.0",
