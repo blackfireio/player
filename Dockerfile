@@ -14,7 +14,8 @@ WORKDIR /app
 
 COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
 RUN install-php-extensions \
-    zip-stable
+    zip-stable \
+    intl-stable
 
 COPY composer.json composer.lock /app/
 
