@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.5.1 (2024-03-22)
+
+  - Remove .phar deprecation
+  - Add explicit PHP extensions requirements
+
 * v2.5.0 (2024-03-18)
 
   - Fix CS
