@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* v2.5.2 (2024-04-10)
+
+  - Update dependencies
+
 * v2.5.1 (2024-03-22)
 
   - Remove .phar deprecation
