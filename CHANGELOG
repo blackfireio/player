@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.5.3 (2024-04-18)
+
+  - Update dependencies
+  - [player] fix github actions deprecations
+
 * v2.5.2 (2024-04-10)
 
   - Update dependencies
