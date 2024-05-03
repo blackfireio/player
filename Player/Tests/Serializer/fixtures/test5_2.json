@@ -13,10 +13,12 @@
                     "method": "'GET'",
                     "uri": "url('https://api.dreamcargiveaways.co.uk/competitions')",
                     "status": "todo",
-                    "samples": "10",
                     "warmup": "true",
                     "is_blackfire_enabled": true,
                     "name": "/competitions",
+                    "deprecations": [
+                        "The \"samples\" attribute has no effect, is deprecated and will be removed in version 3. Remove it from your configuration."
+                    ],
                     "line": 5,
                     "type": "visit"
                 }

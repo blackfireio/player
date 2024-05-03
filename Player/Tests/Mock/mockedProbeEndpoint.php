@@ -14,31 +14,11 @@ require_once __DIR__.'/mockState.php';
 const HEADER_BLACKFIRE_QUERY = 'x-blackfire-query';
 const HEADER_BLACKFIRE_RESPONSE = 'x-blackfire-response';
 
-function buildBkfResponseHeader(array &$mockState, array $blackfireQuery, string $endpoint): string
+function buildBkfResponseHeader(): string
 {
-    // let's mock the fact that we correctly computed one sample
-    ++$mockState['endpoints'][$endpoint]['performed_samples'];
-    $performedSamples = $mockState['endpoints'][$endpoint]['performed_samples'];
-
-    $aggregSamples = $blackfireQuery['aggreg_samples'] ?? 1;
-    $completion = (100 * $performedSamples) / $aggregSamples;
-
-    $profileContinues = 'true';
-
-    if ($performedSamples >= $aggregSamples) {
-        $profileContinues = 'false';
-    }
-
-    $blackfireResponse = [
-        'continue' => $profileContinues,
-    ];
-
-    if ('true' === $profileContinues) {
-        $blackfireResponse['progress'] = $completion;
-        $blackfireResponse['wait'] = 0;
-    }
-
-    return http_build_query($blackfireResponse);
+    return http_build_query([
+        'continue' => 'false',
+    ]);
 }
 
 function mockedProbeEndpoint(callable $responseFactory)
@@ -60,7 +40,6 @@ function mockedProbeEndpoint(callable $responseFactory)
     if (!isset($mockState['endpoints'][$endpoint])) {
         $mockState['endpoints'][$endpoint] = [
             'called_times' => 0,
-            'performed_samples' => 0,
         ];
     }
 
@@ -71,7 +50,7 @@ function mockedProbeEndpoint(callable $responseFactory)
         parse_str($headers[HEADER_BLACKFIRE_QUERY], $blackfireQuery);
 
         // compute a blackfire response header
-        $blackfireResponse = buildBkfResponseHeader($mockState, $blackfireQuery, $endpoint);
+        $blackfireResponse = buildBkfResponseHeader();
 
         // append it to the response
         header(HEADER_BLACKFIRE_RESPONSE.': '.$blackfireResponse);

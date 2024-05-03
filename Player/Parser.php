@@ -553,11 +553,7 @@ class Parser
             } elseif ('json' === $keyword) {
                 $step->json(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('samples' === $keyword) {
-                if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "samples" takes a number as a required argument %s.', $input->getContextString()));
-                }
-
-                $step->samples($this->checkExpression($input, $arguments));
+                $step->addDeprecation('The "samples" attribute has no effect, is deprecated and will be removed in version 3. Remove it from your configuration.');
             } elseif ('warmup' === $keyword) {
                 $step->warmup(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('body' === $keyword) {
