@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.6.0 (2024-05-06)
+
+  - Update dependencies
+  - Deprecate the samples attribute in .blackfire.yml file
+
 * v2.5.4 (2024-04-30)
 
   - Update dependencies
