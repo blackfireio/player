@@ -28,7 +28,6 @@ final class StepContext
     /** @var mixed[] */
     private array $variables = [];
     private string|null $blackfire = null;
-    private string|null $samples = null;
     private string|null $warmup = null;
     private string|null $workingDir = null;
 
@@ -58,10 +57,6 @@ final class StepContext
 
         if (null !== $step->getBlackfire()) {
             $this->blackfire = $step->getBlackfire();
-        }
-
-        if (null !== $step->getSamples()) {
-            $this->samples = $step->getSamples();
         }
 
         if (null !== $step->getWarmup()) {
@@ -128,11 +123,6 @@ final class StepContext
     public function getBlackfireEnv(): string|null
     {
         return $this->blackfire;
-    }
-
-    public function getSamples(): string
-    {
-        return null === $this->samples ? '1' : $this->samples;
     }
 
     public function getWarmup(): string

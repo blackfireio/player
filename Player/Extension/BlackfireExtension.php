@@ -216,8 +216,6 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
     {
         $config = new ProfileConfiguration();
 
-        $config->setSamples($this->language->evaluate($stepContext->getSamples(), $context->getVariableValues($stepContext, true)));
-
         $path = parse_url($request->uri, \PHP_URL_PATH) ?: '/';
         $config->setTitle($this->language->evaluate($step->getName() ?: Json::encode(sprintf('%s resource', $path)), $context->getVariableValues($stepContext, true)));
 
@@ -323,9 +321,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             return 0;
         }
 
-        $samples = (int) $this->language->evaluate($stepContext->getSamples(), $contextVariables);
-
-        if (\in_array($requestMethod, ['GET', 'HEAD'], true) || $samples > 1) {
+        if (\in_array($requestMethod, ['GET', 'HEAD'], true)) {
             return true === $value ? 3 : (int) $value;
         }
 

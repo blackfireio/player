@@ -534,37 +534,15 @@ class BlackfireExtensionTest extends TestCase
             new HttpRequest('HEAD', 'https://app.lan'), [],
         ];
 
-        $visitStepWith2WarmupsNoSamplesAndPostRequest = new VisitStep('https://app.lan');
-        $visitStepWith2WarmupsNoSamplesAndPostRequest->blackfire('true');
-        $visitStepWith2WarmupsNoSamplesAndPostRequest->name('"Visit page"');
-        $visitStepWith2WarmupsNoSamplesAndPostRequest->method('"POST"');
-        $visitStepWith2WarmupsNoSamplesAndPostRequest->warmup(2);
+        $visitStepWith2WarmupsAndPostRequest = new VisitStep('https://app.lan');
+        $visitStepWith2WarmupsAndPostRequest->blackfire('true');
+        $visitStepWith2WarmupsAndPostRequest->name('"Visit page"');
+        $visitStepWith2WarmupsAndPostRequest->method('"POST"');
+        $visitStepWith2WarmupsAndPostRequest->warmup(2);
         // no warmup are expected here as it is a POST request without having set sample > 1
         yield 'VisitStep with POST request and 2 warmups' => [
-            $visitStepWith2WarmupsNoSamplesAndPostRequest,
+            $visitStepWith2WarmupsAndPostRequest,
             [],
-            new HttpRequest('POST', 'https://app.lan'), [],
-        ];
-
-        $visitStepWith2Warmups5SamplesAndPostRequest = new VisitStep('https://app.lan');
-        $visitStepWith2Warmups5SamplesAndPostRequest->blackfire('true');
-        $visitStepWith2Warmups5SamplesAndPostRequest->name('"Visit page"');
-        $visitStepWith2Warmups5SamplesAndPostRequest->method('"POST"');
-        $visitStepWith2Warmups5SamplesAndPostRequest->warmup(2);
-        $visitStepWith2Warmups5SamplesAndPostRequest->samples(5); // edge case
-        yield 'VisitStep with POST request and 2 warmups and 5 samples' => [
-            $visitStepWith2Warmups5SamplesAndPostRequest,
-            [
-                [
-                    'name' => '"[Warmup] Visit page"',
-                ],
-                [
-                    'name' => '"[Warmup] Visit page"',
-                ],
-                [
-                    'name' => '"[Reference] Visit page"',
-                ],
-            ],
             new HttpRequest('POST', 'https://app.lan'), [],
         ];
 
@@ -572,7 +550,6 @@ class BlackfireExtensionTest extends TestCase
         $visitStepWithoutBlackfire->blackfire('false');
         $visitStepWithoutBlackfire->name('"Visit page"');
         $visitStepWithoutBlackfire->warmup(2);
-        $visitStepWithoutBlackfire->samples(5);
         yield 'VisitStep without blackfire' => [
             $visitStepWithoutBlackfire,
             [],

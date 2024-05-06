@@ -7,14 +7,6 @@ GET http://0:8399/sampling/index.php?id=8399
 GET http://0:8399/sampling/index.php?id=8399
 GET http://0:8399/sampling/index.php?id=8399
 GET http://0:8399/sampling/index.php?id=8399
-    "Reloading for Blackfire"
-GET http://0:8399/sampling/index.php?id=8399
-      "Reloading for Blackfire"
-GET http://0:8399/sampling/index.php?id=8399
-        "Reloading for Blackfire"
-GET http://0:8399/sampling/index.php?id=8399
-          "Reloading for Blackfire"
-GET http://0:8399/sampling/index.php?id=8399
   OK
 
- OK  Scenarios  1  - Steps  5
+ OK  Scenarios  1  - Steps  1

@@ -94,7 +94,6 @@ EOF
         $this->assertEquals([
             '"Accept-Language: en-US"',
         ], $scenario->getBlockStep()->getHeaders());
-        $this->assertEquals(10, $scenario->getBlockStep()->getSamples());
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[1];
@@ -179,9 +178,9 @@ EOF
     }
 
     /**
-     * @dataProvider provideDocSamples
+     * @dataProvider provideDocExamples
      */
-    public function testDocSamples($input)
+    public function testDocExamples($input)
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse($input);
@@ -189,7 +188,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $scenarioSet);
     }
 
-    public function provideDocSamples()
+    public function provideDocExamples()
     {
         yield [<<<'EOF'
 scenario

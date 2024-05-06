@@ -30,7 +30,6 @@ class ReloadStep extends Step implements StepInitiatorInterface
     {
         if ($step instanceof ConfigurableStep) {
             $this
-                ->samples($step->getSamples())
                 ->blackfire($step->getBlackfire())
                 ->wait($step->getWait())
                 ->json($step->isJson())
