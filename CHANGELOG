@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.6.2 (2024-05-27)
+
+  - Update dependencies
+  - Bump docker image version
+
 * v2.6.1 (2024-05-13)
 
   - Update dependencies
