@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-ctype": "*",
         "ext-filter": "*",
         "ext-intl": "*",
@@ -64,7 +64,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.2.5"
+            "php": "8.3"
         },
         "preferred-install": {
             "*": "dist"
