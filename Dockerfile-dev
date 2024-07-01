@@ -5,7 +5,7 @@ ARG UUID_VERSION=1.2.0        # https://pecl.php.net/package/uuid
 
 FROM composer:${COMPOSER_VERSION} as build_composer
 
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 ARG PHIVE_VERSION
 ARG PHPEXTINST_VERSION

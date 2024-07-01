@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.2.19        # https://hub.docker.com/_/php/tags?page=1&name=8.2
+ARG PHP_VERSION=8.3.7         # https://hub.docker.com/_/php/tags?page=1&name=8.3
 ARG COMPOSER_VERSION=2.7.7    # https://hub.docker.com/_/composer/tags
 ARG PHPEXTINST_VERSION=2.2.17 # https://github.com/mlocati/docker-php-extension-installer/releases
 ARG UUID_VERSION=1.2.0        # https://pecl.php.net/package/uuid
