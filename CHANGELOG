@@ -4,7 +4,7 @@ CHANGELOG
 * v2.6.7 (2024-07-08)
 
   - Update dependencies
-  - Switch to Docker images v1.0.35
+  - Internal releasing changes
   - Upgrade Player image to 8.3
 
 * v2.6.6 (2024-07-01)
