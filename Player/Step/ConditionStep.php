@@ -42,12 +42,12 @@ class ConditionStep extends BlockStep
     public function __toString()
     {
         $pipe = null !== $this->next;
-        $str = sprintf("└ %s: %s\n", static::class, $this->condition);
-        $str .= sprintf("%s └ When true:\n", $pipe ? '|' : '');
+        $str = \sprintf("└ %s: %s\n", static::class, $this->condition);
+        $str .= \sprintf("%s └ When true:\n", $pipe ? '|' : '');
         $str .= $this->blockToString($this->ifStep);
 
         if ($this->elseStep) {
-            $str .= sprintf("%s └ Else:\n", $pipe ? '|' : '');
+            $str .= \sprintf("%s └ Else:\n", $pipe ? '|' : '');
             $str .= $this->blockToString($this->elseStep);
         }
 

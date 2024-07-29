@@ -35,7 +35,7 @@ class ExpressionEvaluator
         try {
             return $this->language->evaluate($expression, $scenarioContext->getVariableValues($stepContext, $trim));
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error in "%s": %s', $expression, $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $expression, $e->getMessage()));
         }
     }
 
@@ -67,7 +67,7 @@ class ExpressionEvaluator
                 [$username, $password] = explode(':', $auth);
                 $password = ltrim($password);
 
-                $headers['authorization'] = [sprintf('Basic %s', base64_encode(sprintf('%s:%s', $username, $password)))];
+                $headers['authorization'] = [\sprintf('Basic %s', base64_encode(\sprintf('%s:%s', $username, $password)))];
             }
         }
 

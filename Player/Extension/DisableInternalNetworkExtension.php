@@ -38,7 +38,7 @@ final class DisableInternalNetworkExtension implements StepExtensionInterface
         $request = $step->getRequest();
         $host = parse_url($request->uri, \PHP_URL_HOST);
         if (!$host) {
-            throw new \InvalidArgumentException(sprintf('Unable to parse host from uri "%s"', $request->uri));
+            throw new \InvalidArgumentException(\sprintf('Unable to parse host from uri "%s"', $request->uri));
         }
 
         if ($this->isIpAddress($host)) {
@@ -49,7 +49,7 @@ final class DisableInternalNetworkExtension implements StepExtensionInterface
         }
 
         foreach ($request->options['resolve'] ?? [] as $resolveHost => $resolveIp) {
-            $this->assertsIsPublicIp($resolveIp, sprintf('The host "%s" resolves to a forbidden IP', $resolveHost));
+            $this->assertsIsPublicIp($resolveIp, \sprintf('The host "%s" resolves to a forbidden IP', $resolveHost));
         }
     }
 
@@ -66,19 +66,19 @@ final class DisableInternalNetworkExtension implements StepExtensionInterface
     private function assertsIsPublicIp(string $ip, string $context = 'Forbidden host IP'): void
     {
         if (false === filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE)) {
-            throw new SecurityException(sprintf('%s %s', $context, $ip));
+            throw new SecurityException(\sprintf('%s %s', $context, $ip));
         }
     }
 
     private function resolveHost(string $host): string
     {
         if (false === filter_var($host, \FILTER_VALIDATE_DOMAIN)) {
-            throw new SecurityException(sprintf('Invalid host name %s', $host));
+            throw new SecurityException(\sprintf('Invalid host name %s', $host));
         }
         $resolvedIp = gethostbyname($host);
 
         if ($resolvedIp === $host) {
-            throw new SecurityException(sprintf('Could not resolve host: %s', $host));
+            throw new SecurityException(\sprintf('Could not resolve host: %s', $host));
         }
 
         return $resolvedIp;

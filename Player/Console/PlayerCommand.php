@@ -145,7 +145,7 @@ final class PlayerCommand extends Command
             }
 
             $blackfire = new Client($clientConfiguration);
-            $blackfire->getConfiguration()->setUserAgentSuffix(sprintf('Blackfire Player/%s', Player::version()));
+            $blackfire->getConfiguration()->setUserAgentSuffix(\sprintf('Blackfire Player/%s', Player::version()));
 
             $this->blackfireSdkAdapter = new BlackfireSdkAdapter($blackfire);
         }
@@ -160,11 +160,11 @@ final class PlayerCommand extends Command
             $errorMessagePattern = 'Missing required "%s" configuration. Either configure it using "%s" environment variable or in your .blackfire.ini file';
 
             if (!$clientId) {
-                throw new \InvalidArgumentException(sprintf($errorMessagePattern, 'client_id', 'BLACKFIRE_CLIENT_ID'));
+                throw new \InvalidArgumentException(\sprintf($errorMessagePattern, 'client_id', 'BLACKFIRE_CLIENT_ID'));
             }
 
             if (!$clientToken) {
-                throw new \InvalidArgumentException(sprintf($errorMessagePattern, 'client_token', 'BLACKFIRE_CLIENT_TOKEN'));
+                throw new \InvalidArgumentException(\sprintf($errorMessagePattern, 'client_token', 'BLACKFIRE_CLIENT_TOKEN'));
             }
 
             $this->blackfireHttpClient = HttpClient::create([
@@ -172,7 +172,7 @@ final class PlayerCommand extends Command
                 'auth_basic' => [$clientId, $clientToken],
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'User-Agent' => sprintf('Blackfire Player/%s', Player::version()),
+                    'User-Agent' => \sprintf('Blackfire Player/%s', Player::version()),
                     'X-Request-Id' => $this->transactionId,
                 ],
             ]);
@@ -357,7 +357,7 @@ final class PlayerCommand extends Command
     {
         $env = getenv($envVar);
         if (!$env) {
-            throw new \InvalidArgumentException(sprintf('Missing required "%s" environment variable', $envVar));
+            throw new \InvalidArgumentException(\sprintf('Missing required "%s" environment variable', $envVar));
         }
 
         return $env;

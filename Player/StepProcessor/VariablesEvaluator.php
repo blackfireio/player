@@ -45,7 +45,7 @@ class VariablesEvaluator
                 }
                 $scenarioContext->setVariableValue($name, $data);
             } catch (ExpressionSyntaxError $e) {
-                throw new VariableErrorException(sprintf('Syntax Error in "%s": %s', $expression, $e->getMessage()));
+                throw new VariableErrorException(\sprintf('Syntax Error in "%s": %s', $expression, $e->getMessage()));
             }
         }
     }

@@ -25,7 +25,7 @@ class UploadFile
         private readonly string $name,
     ) {
         if (!is_readable($filename)) {
-            throw new InvalidArgumentException(sprintf('File "%s" does not exist or is not readable.', $filename));
+            throw new InvalidArgumentException(\sprintf('File "%s" does not exist or is not readable.', $filename));
         }
     }
 

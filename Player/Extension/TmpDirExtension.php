@@ -32,7 +32,7 @@ final class TmpDirExtension implements ScenarioExtensionInterface
 
     public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
-        $tmpDir = sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
+        $tmpDir = \sprintf('%s/blackfire-tmp-dir/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $this->fs->mkdir($tmpDir);
         $scenarioContext->setExtraValue(self::EXTRA_VALUE_KEY, $tmpDir);
     }

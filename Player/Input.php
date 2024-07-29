@@ -32,7 +32,7 @@ final class Input
         $this->lines = $this->splitInput($input);
 
         if ($this->isEof()) {
-            throw new SyntaxErrorException(sprintf('You must define at least one step in file %s.', $file));
+            throw new SyntaxErrorException(\sprintf('You must define at least one step in file %s.', $file));
         }
     }
 
@@ -83,10 +83,10 @@ final class Input
     public function getContextString(): string
     {
         if ($this->file) {
-            return sprintf('in %s at line %d', $this->file, $this->lineno);
+            return \sprintf('in %s at line %d', $this->file, $this->lineno);
         }
 
-        return sprintf('at line %d', $this->lineno);
+        return \sprintf('at line %d', $this->lineno);
     }
 
     private function findNextLine(): int
@@ -131,7 +131,7 @@ final class Input
                     ++$lineno;
 
                     if (\strlen($indent) && !str_starts_with($line, $indent)) {
-                        throw new SyntaxErrorException(sprintf('Incorrect indentation in multi-lines string at line %d.', $lineno));
+                        throw new SyntaxErrorException(\sprintf('Incorrect indentation in multi-lines string at line %d.', $lineno));
                     }
 
                     if (preg_match('/^(\s*)"""$/', $line, $matchesEnd)) { // end multi-lines
@@ -201,11 +201,11 @@ final class Input
         }
 
         if (preg_match('/^ +/', $line)) {
-            throw new SyntaxErrorException(sprintf('Indentation must use spaces in groups of four in file %s.', $this->getContextString()));
+            throw new SyntaxErrorException(\sprintf('Indentation must use spaces in groups of four in file %s.', $this->getContextString()));
         }
 
         if (preg_match('/^[ \t]+/', $line)) {
-            throw new SyntaxErrorException(sprintf('Indentation cannot contain mixed spaces and tabs in file %s.', $this->getContextString()));
+            throw new SyntaxErrorException(\sprintf('Indentation cannot contain mixed spaces and tabs in file %s.', $this->getContextString()));
         }
 
         return $indent;
@@ -213,6 +213,6 @@ final class Input
 
     private function escapeValue(string $val): string
     {
-        return sprintf("'%s'", strtr($val, ["\n" => '\n', "'" => "\\'"]));
+        return \sprintf("'%s'", strtr($val, ["\n" => '\n', "'" => "\\'"]));
     }
 }

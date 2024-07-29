@@ -49,7 +49,7 @@ final class FollowExtension implements NextStepExtensionInterface
 
         $follow->blackfire($step->getBlackfire());
         $follow->followRedirects('true');
-        $follow->name(var_export(sprintf('Auto-following redirect to %s', $response->headers['location'][0]), true));
+        $follow->name(var_export(\sprintf('Auto-following redirect to %s', $response->headers['location'][0]), true));
 
         yield $follow;
     }

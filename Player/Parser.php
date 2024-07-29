@@ -87,18 +87,18 @@ class Parser
         }
 
         if (!is_file($file)) {
-            throw new InvalidArgumentException(sprintf('File "%s" does not exist.', $file));
+            throw new InvalidArgumentException(\sprintf('File "%s" does not exist.', $file));
         }
 
         $extension = pathinfo($file, \PATHINFO_EXTENSION);
         if ('yml' === $extension || 'yaml' === $extension) {
             $input = (new YamlParser())->parseFile($file);
             if (!isset($input['scenarios'])) {
-                throw new InvalidArgumentException(sprintf('File "%s" should have a "scenarios" entry but none was found.', $file));
+                throw new InvalidArgumentException(\sprintf('File "%s" should have a "scenarios" entry but none was found.', $file));
             }
             $input = $input['scenarios'];
         } elseif ('bkf' !== $extension) {
-            throw new InvalidArgumentException(sprintf('Cannot load file "%s" because it does not have the right extension. Expected "bkf", got "%s".', $file, $extension));
+            throw new InvalidArgumentException(\sprintf('Cannot load file "%s" because it does not have the right extension. Expected "bkf", got "%s".', $file, $extension));
         } else {
             $input = file_get_contents($file);
         }
@@ -162,7 +162,7 @@ class Parser
                 return $root;
             }
             if ($nextIndent > $expectedIndent) {
-                throw new SyntaxErrorException(sprintf('Indentation too wide %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('Indentation too wide %s.', $input->getContextString()));
             }
 
             $step = $this->parseStep($input, $expectedIndent);
@@ -184,11 +184,11 @@ class Parser
         $line = $input->getNextLine();
 
         if ($input->getIndent() !== $expectedIndent) {
-            throw new SyntaxErrorException(sprintf('Indentation is wrong %s.', $input->getContextString()));
+            throw new SyntaxErrorException(\sprintf('Indentation is wrong %s.', $input->getContextString()));
         }
 
         if (!preg_match('/^('.self::REGEX_NAME.')(?:\s+(.+)$|$)/', $line, $matches)) {
-            throw new SyntaxErrorException(sprintf('Unable to parse "%s" %s.', $line, $input->getContextString()));
+            throw new SyntaxErrorException(\sprintf('Unable to parse "%s" %s.', $line, $input->getContextString()));
         }
 
         $keyword = $matches[1];
@@ -196,15 +196,15 @@ class Parser
 
         if ('load' === $keyword) {
             if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('A "load" can only be defined at root %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "load" can only be defined at root %s.', $input->getContextString()));
             }
 
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "load" takes a file pattern as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "load" takes a file pattern as a required argument %s.', $input->getContextString()));
             }
 
             if (!preg_match('{^("|\')(.+?)\1$}', $arguments, $matches)) {
-                throw new SyntaxErrorException(sprintf('"load" takes a quoted string as an argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('"load" takes a quoted string as an argument %s.', $input->getContextString()));
             }
 
             $inputFile = realpath((string) $input->getFile());
@@ -214,7 +214,7 @@ class Parser
 
             if (!$finder->hasResults()) {
                 dd($finder);
-                throw new InvalidArgumentException(sprintf('File "%s" does not exist in "%s".', $matches[2], $baseDir));
+                throw new InvalidArgumentException(\sprintf('File "%s" does not exist in "%s".', $matches[2], $baseDir));
             }
 
             $scenarios = new ScenarioSet();
@@ -233,11 +233,11 @@ class Parser
 
         if (self::KEYWORD_ENDPOINT === $keyword) {
             if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('An "%s" can only be defined at root %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('An "%s" can only be defined at root %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
             }
 
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('An "%s" takes a URL as a required argument %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('An "%s" takes a URL as a required argument %s.', self::KEYWORD_ENDPOINT, $input->getContextString()));
             }
 
             $this->globalVariables[self::KEYWORD_ENDPOINT] = $arguments;
@@ -245,11 +245,11 @@ class Parser
             $step = new EmptyStep();
         } elseif ('name' === $keyword) {
             if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('A "name" can only be defined at root %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "name" can only be defined at root %s.', $input->getContextString()));
             }
 
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $this->name = $arguments;
@@ -257,7 +257,7 @@ class Parser
             $step = new EmptyStep();
         } elseif ('scenario' === $keyword) {
             if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('A "scenario" can only be defined at root %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "scenario" can only be defined at root %s.', $input->getContextString()));
             }
 
             $step = new Scenario($arguments, $input->getFile(), $input->getLine());
@@ -267,11 +267,11 @@ class Parser
             return $step;
         } elseif ('group' === $keyword) {
             if ($expectedIndent > 0) {
-                throw new SyntaxErrorException(sprintf('A "group" can only be defined at root %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "group" can only be defined at root %s.', $input->getContextString()));
             }
 
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "group" takes a name as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "group" takes a name as a required argument %s.', $input->getContextString()));
             }
 
             $step = new BlockStep($input->getFile(), $input->getLine());
@@ -283,7 +283,7 @@ class Parser
             return $step;
         } elseif ('block' === $keyword) {
             if (null !== $arguments) {
-                throw new SyntaxErrorException(sprintf('A "block" does not take any argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "block" does not take any argument %s.', $input->getContextString()));
             }
 
             $step = new BlockStep($input->getFile(), $input->getLine());
@@ -293,29 +293,29 @@ class Parser
             return $step;
         } elseif ('visit' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "visit" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "visit" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new VisitStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('click' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "click" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "click" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new ClickStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('submit' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "submit" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "submit" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new SubmitStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
         } elseif ('include' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('An "include" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('An "include" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             if (!isset($this->groups[$arguments])) {
-                throw new LogicException(sprintf('Block "%s" does not exist.', $arguments));
+                throw new LogicException(\sprintf('Block "%s" does not exist.', $arguments));
             }
 
             $step = clone $this->groups[$arguments];
@@ -332,19 +332,19 @@ class Parser
             return $step;
         } elseif ('follow' === $keyword) {
             if (null !== $arguments) {
-                throw new SyntaxErrorException(sprintf('A "follow" does not take any argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "follow" does not take any argument %s.', $input->getContextString()));
             }
 
             $step = new FollowStep($input->getFile(), $input->getLine());
         } elseif ('reload' === $keyword) {
             if (null !== $arguments) {
-                throw new SyntaxErrorException(sprintf('A "reload" does not take any argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "reload" does not take any argument %s.', $input->getContextString()));
             }
 
             $step = new ReloadStep($input->getFile(), $input->getLine());
         } elseif ('when' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('An "when" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('An "when" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new ConditionStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
@@ -361,7 +361,7 @@ class Parser
             return $step;
         } elseif ('while' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('An "while" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('An "while" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             $step = new WhileStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
@@ -378,13 +378,13 @@ class Parser
             return $step;
         } elseif ('with' === $keyword) {
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('An "with" takes an expression as a required argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('An "with" takes an expression as a required argument %s.', $input->getContextString()));
             }
 
             // valueName in values
             // keyName, valueName in values
             if (!preg_match('/^(.+)\s+in\s+(.+)$/', $arguments, $matches)) {
-                throw new SyntaxErrorException(sprintf('A "with" step value must be like "url in urls" %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "with" step value must be like "url in urls" %s.', $input->getContextString()));
             }
 
             $values = $matches[2];
@@ -424,25 +424,25 @@ class Parser
             return $step;
         } elseif ('set' === $keyword) {
             if ($expectedIndent > 0) {
-                throw new LogicException(sprintf('A "set" can only be defined before steps %s.', $input->getContextString()));
+                throw new LogicException(\sprintf('A "set" can only be defined before steps %s.', $input->getContextString()));
             }
             if (null === $arguments) {
-                throw new SyntaxErrorException(sprintf('A "set" takes an argument %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('A "set" takes an argument %s.', $input->getContextString()));
             }
 
             if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
-                throw new SyntaxErrorException(sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
             }
 
             if (\array_key_exists($matches[1], $this->globalVariables)) {
-                throw new LogicException(sprintf('You cannot redeclare the global variable "%s" %s', $matches[1], $input->getContextString()));
+                throw new LogicException(\sprintf('You cannot redeclare the global variable "%s" %s', $matches[1], $input->getContextString()));
             }
 
             $this->globalVariables[$matches[1]] = $matches[2];
 
             return new EmptyStep($input->getFile(), $input->getLine());
         } else {
-            throw new SyntaxErrorException(sprintf('Unknown keyword "%s" %s.', $keyword, $input->getContextString()));
+            throw new SyntaxErrorException(\sprintf('Unknown keyword "%s" %s.', $keyword, $input->getContextString()));
         }
 
         $this->parseStepConfig($input, $step, $expectedIndent + 1);
@@ -461,7 +461,7 @@ class Parser
             }
 
             if ($nextIndent > $expectedIndent) {
-                throw new SyntaxErrorException(sprintf('Indentation too wide %s.', $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('Indentation too wide %s.', $input->getContextString()));
             }
 
             if (!$step instanceof ConfigurableStep) {
@@ -477,7 +477,7 @@ class Parser
                     return;
                 }
 
-                throw new SyntaxErrorException(sprintf('Unable to parse "%s" %s.', $line, $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('Unable to parse "%s" %s.', $line, $input->getContextString()));
             }
 
             $keyword = $matches[1];
@@ -485,64 +485,64 @@ class Parser
 
             if ('name' === $keyword) {
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "name" takes an expression as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->name($this->checkExpression($input, $arguments));
             } elseif ('expect' === $keyword) {
                 if (!$step instanceof Step) {
-                    throw new LogicException(sprintf('"expect" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
+                    throw new LogicException(\sprintf('"expect" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('An "expect" takes an expectation as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('An "expect" takes an expectation as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->expect($this->checkExpression($input, $arguments));
             } elseif ('assert' === $keyword) {
                 if (!$step instanceof Step) {
-                    throw new LogicException(sprintf('"assert" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
+                    throw new LogicException(\sprintf('"assert" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('An "assert" takes an assertion as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('An "assert" takes an assertion as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->assert($arguments);
             } elseif ('set' === $keyword) {
                 if (!$step instanceof Step && !$step instanceof BlockStep) {
-                    throw new LogicException(sprintf('"set" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
+                    throw new LogicException(\sprintf('"set" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "set" takes a name and a value as required arguments %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "set" takes a name and a value as required arguments %s.', $input->getContextString()));
                 }
 
                 if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
-                    throw new SyntaxErrorException(sprintf('Unable to parse "set" arguments "%s" %s.', $arguments, $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('Unable to parse "set" arguments "%s" %s.', $arguments, $input->getContextString()));
                 }
 
                 if ($step->has($matches[1])) {
-                    throw new LogicException(sprintf('You cannot redeclare the variable "%s" %s', $matches[1], $input->getContextString()));
+                    throw new LogicException(\sprintf('You cannot redeclare the variable "%s" %s', $matches[1], $input->getContextString()));
                 }
 
                 $this->variables[$matches[1]] = $matches[1];
                 $step->set($matches[1], $this->checkExpression($input, $matches[2]));
             } elseif ('header' === $keyword) {
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "header" takes an header as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "header" takes an header as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->header($this->checkExpression($input, $arguments));
             } elseif ('auth' === $keyword) {
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "auth" takes a string of format "username:password" as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "auth" takes a string of format "username:password" as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->auth($this->checkExpression($input, $arguments));
             } elseif ('wait' === $keyword) {
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "wait" takes an expression as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "wait" takes an expression as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->wait($this->checkExpression($input, $arguments));
@@ -558,55 +558,55 @@ class Parser
                 $step->warmup(null !== $arguments ? $this->checkExpression($input, $arguments) : 'true');
             } elseif ('body' === $keyword) {
                 if (!$step instanceof VisitStep && !$step instanceof SubmitStep) {
-                    throw new LogicException(sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
+                    throw new LogicException(\sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "body" takes a string as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "body" takes a string as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->body($this->checkExpression($input, $arguments));
             } elseif ('param' === $keyword) {
                 if (!$step instanceof VisitStep && !$step instanceof SubmitStep) {
-                    throw new LogicException(sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
+                    throw new LogicException(\sprintf('"param" is only available for "visit" or "submit" steps %s.', $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "param" takes a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "param" takes a required argument %s.', $input->getContextString()));
                 }
 
                 if (!preg_match('/^([^\s]+)\s+(.+)$/', $arguments, $matches)) {
-                    throw new SyntaxErrorException(sprintf('Unable to parse "param" arguments "%s" %s.', $arguments, $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('Unable to parse "param" arguments "%s" %s.', $arguments, $input->getContextString()));
                 }
 
                 $step->param($matches[1], $this->checkExpression($input, $matches[2]));
             } elseif ('method' === $keyword) {
                 if (!$step instanceof VisitStep) {
-                    throw new LogicException(sprintf('"method" is only available for "visit" steps %s.', $input->getContextString()));
+                    throw new LogicException(\sprintf('"method" is only available for "visit" steps %s.', $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "method" takes an HTTP verb as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "method" takes an HTTP verb as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->method($this->checkExpression($input, $arguments));
             } elseif ('endpoint' === $keyword) {
                 if (!$step instanceof BlockStep) {
-                    throw new LogicException(sprintf('"endpoint" is only available for "scenario", "group", or "block" steps %s.', $input->getContextString()));
+                    throw new LogicException(\sprintf('"endpoint" is only available for "scenario", "group", or "block" steps %s.', $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('An "endpoint" takes a URL as a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('An "endpoint" takes a URL as a required argument %s.', $input->getContextString()));
                 }
 
                 $step->endpoint($this->checkExpression($input, $arguments));
             } elseif ('dump' === $keyword) {
                 if (!$step instanceof Step) {
-                    throw new LogicException(sprintf('"dump" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
+                    throw new LogicException(\sprintf('"dump" is not available for step "%s" %s.', $this->formatStepType($step), $input->getContextString()));
                 }
 
                 if (null === $arguments) {
-                    throw new SyntaxErrorException(sprintf('A "dump" takes a required argument %s.', $input->getContextString()));
+                    throw new SyntaxErrorException(\sprintf('A "dump" takes a required argument %s.', $input->getContextString()));
                 }
 
                 $step->setDumpValuesName(explode(' ', $arguments));
@@ -616,7 +616,7 @@ class Parser
 
                 return;
             } else {
-                throw new SyntaxErrorException(sprintf('Unknown keyword "%s" %s.', $keyword, $input->getContextString()));
+                throw new SyntaxErrorException(\sprintf('Unknown keyword "%s" %s.', $keyword, $input->getContextString()));
             }
         }
     }
@@ -644,7 +644,7 @@ class Parser
 
             // Detect an undefined variable to provide a more accurate error
             if (preg_match('/Variable "[^"]+" is not valid/', $e->getMessage())) {
-                throw new ExpressionSyntaxErrorException(sprintf('%s
+                throw new ExpressionSyntaxErrorException(\sprintf('%s
 
 Did you forget to declare it?
 You can declare it in your file using the "set" option, or with the "--variable" CLI option.
@@ -652,7 +652,7 @@ If the Player is run through a Blackfire server, you can declare it in the "Vari
 ', $e->getMessage()));
             }
 
-            throw new ExpressionSyntaxErrorException(sprintf('Expression syntax error: %s %s.', $error, $input->getContextString()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error: %s %s.', $error, $input->getContextString()));
         }
 
         return $expression;

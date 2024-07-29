@@ -45,7 +45,7 @@ class SubmitStepProcessor implements StepProcessorInterface
     public function process(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): iterable
     {
         if (!$this->supports($step, $stepContext, $scenarioContext)) {
-            throw new \LogicException(sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
+            throw new \LogicException(\sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
         }
 
         if (!$scenarioContext->hasPreviousResponse()) {
@@ -56,7 +56,7 @@ class SubmitStepProcessor implements StepProcessorInterface
         $form = $this->expressionEvaluator->evaluateExpression($selector, $stepContext, $scenarioContext);
 
         if (!\count($form)) {
-            throw new CrawlException(sprintf('Unable to submit form as button "%s" does not exist.', $selector));
+            throw new CrawlException(\sprintf('Unable to submit form as button "%s" does not exist.', $selector));
         }
 
         /** @var string[][] $headers */
@@ -74,7 +74,7 @@ class SubmitStepProcessor implements StepProcessorInterface
                     if (isset($formValues[$name])) {
                         $formValue = $formValues[$name];
                         if (!$formValue instanceof UploadFile) {
-                            throw new LogicException(sprintf('The form field "%s" is of type "file" but you did not use the "file()" function.', $name));
+                            throw new LogicException(\sprintf('The form field "%s" is of type "file" but you did not use the "file()" function.', $name));
                         }
                         $values[$name] = DataPart::fromPath($formValue->getFilename(), $formValue->getName());
                     }

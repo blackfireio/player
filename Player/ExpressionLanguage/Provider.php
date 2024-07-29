@@ -53,7 +53,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
             new ExpressionFunction('link', $compiler, function (array $arguments, string $selector) {
                 if (null === $arguments['_crawler']) {
-                    throw new LogicException(sprintf('Unable to get link "%s" as the page is not crawlable.', $selector));
+                    throw new LogicException(\sprintf('Unable to get link "%s" as the page is not crawlable.', $selector));
                 }
                 $this->expectScalarForFunction('link', $selector);
 
@@ -62,7 +62,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
             new ExpressionFunction('button', $compiler, function (array $arguments, string $selector) {
                 if (null === $arguments['_crawler']) {
-                    throw new LogicException(sprintf('Unable to submit on selector "%s" as the page is not crawlable.', $selector));
+                    throw new LogicException(\sprintf('Unable to submit on selector "%s" as the page is not crawlable.', $selector));
                 }
                 $this->expectScalarForFunction('button', $selector);
 
@@ -86,7 +86,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
                 if (!UploadFile::isAbsolutePath($filename)) {
                     if (!isset($arguments['_working_dir'])) {
-                        throw new LogicException(sprintf('Unable to handle relative file "%s" as the working directory is unknown.', $filename));
+                        throw new LogicException(\sprintf('Unable to handle relative file "%s" as the working directory is unknown.', $filename));
                     }
 
                     $filename = $arguments['_working_dir'].$filename;
@@ -174,13 +174,13 @@ class Provider implements ExpressionFunctionProviderInterface
                 if ($arr1 instanceof \Traversable) {
                     $arr1 = iterator_to_array($arr1);
                 } elseif (!\is_array($arr1)) {
-                    throw new InvalidArgumentException(sprintf('The merge function only works with arrays or "Traversable", got "%s" as first argument.', \gettype($arr1)));
+                    throw new InvalidArgumentException(\sprintf('The merge function only works with arrays or "Traversable", got "%s" as first argument.', \gettype($arr1)));
                 }
 
                 if ($arr2 instanceof \Traversable) {
                     $arr2 = iterator_to_array($arr2);
                 } elseif (!\is_array($arr2)) {
-                    throw new InvalidArgumentException(sprintf('The merge function only works with arrays or "Traversable", got "%s" as second argument.', \gettype($arr2)));
+                    throw new InvalidArgumentException(\sprintf('The merge function only works with arrays or "Traversable", got "%s" as second argument.', \gettype($arr2)));
                 }
 
                 return array_merge($arr1, $arr2);
@@ -234,7 +234,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 $ret = @preg_match($regex, $str, $matches);
 
                 if (false === $ret) {
-                    throw new InvalidArgumentException(sprintf('Regex "%s" is not valid: %s.', $regex, error_get_last()['message']));
+                    throw new InvalidArgumentException(\sprintf('Regex "%s" is not valid: %s.', $regex, error_get_last()['message']));
                 }
 
                 return isset($matches[1]) ? $matches[1] : null;
@@ -242,7 +242,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
             new ExpressionFunction('css', $compiler, function (array $arguments, string $selector) {
                 if (null === $arguments['_crawler']) {
-                    throw new LogicException(sprintf('Unable to get the "%s" CSS selector as the page is not crawlable.', $selector));
+                    throw new LogicException(\sprintf('Unable to get the "%s" CSS selector as the page is not crawlable.', $selector));
                 }
                 $this->expectScalarForFunction('css', $selector);
 
@@ -251,7 +251,7 @@ class Provider implements ExpressionFunctionProviderInterface
 
             new ExpressionFunction('xpath', $compiler, function (array $arguments, string $selector) {
                 if (null === $arguments['_crawler']) {
-                    throw new LogicException(sprintf('Unable to get "%s" XPATH selector as the page is not crawlable.', $selector));
+                    throw new LogicException(\sprintf('Unable to get "%s" XPATH selector as the page is not crawlable.', $selector));
                 }
                 $this->expectScalarForFunction('xpath', $selector);
 
@@ -266,7 +266,7 @@ class Provider implements ExpressionFunctionProviderInterface
                         $data = Json::decode((string) $arguments['_response']->getBody());
                     }
                 } catch (\Throwable $e) {
-                    throw new LogicException(sprintf(' Unable to get the "%s" JSON path as the Response body does not seem to be JSON.', $selector));
+                    throw new LogicException(\sprintf(' Unable to get the "%s" JSON path as the Response body does not seem to be JSON.', $selector));
                 }
 
                 return JmesPath::search($selector, $data);
@@ -281,7 +281,7 @@ class Provider implements ExpressionFunctionProviderInterface
     private function expectScalarForFunction(string $function, mixed $value): void
     {
         if (!\is_scalar($value)) {
-            throw new LogicException(sprintf('Unable evaluate %s, expecting a string as argument to "%s()"', $function, $function));
+            throw new LogicException(\sprintf('Unable evaluate %s, expecting a string as argument to "%s()"', $function, $function));
         }
     }
 }

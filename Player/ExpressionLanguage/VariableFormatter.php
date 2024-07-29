@@ -39,7 +39,7 @@ class VariableFormatter
                     $str = '{';
 
                     foreach ($value as $key => $v) {
-                        $str .= sprintf('%s: %s, ', Json::encode((string) $key), $this->formatResult($v));
+                        $str .= \sprintf('%s: %s, ', Json::encode((string) $key), $this->formatResult($v));
                     }
 
                     return rtrim($str, ', ').'}';
@@ -48,7 +48,7 @@ class VariableFormatter
                 $str = '[';
 
                 foreach ($value as $v) {
-                    $str .= sprintf('%s, ', $this->formatResult($v));
+                    $str .= \sprintf('%s, ', $this->formatResult($v));
                 }
 
                 return rtrim($str, ', ').']';
@@ -73,6 +73,6 @@ class VariableFormatter
             return $value->html();
         }
 
-        return sprintf('(object) "%s"', $value::class);
+        return \sprintf('(object) "%s"', $value::class);
     }
 }

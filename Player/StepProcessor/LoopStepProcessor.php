@@ -38,12 +38,12 @@ class LoopStepProcessor implements StepProcessorInterface
     public function process(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): iterable
     {
         if (!$this->supports($step, $stepContext, $scenarioContext)) {
-            throw new \LogicException(sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
+            throw new \LogicException(\sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
         }
 
         $iterator = $this->expressionEvaluator->evaluateExpression($step->getValues(), $stepContext, $scenarioContext);
         if (!\is_array($iterator) && !$iterator instanceof \Traversable) {
-            throw new LogicException(sprintf('Result of expression "%s" is not iterable in step "%s".', $step->getValues(), $step::class));
+            throw new LogicException(\sprintf('Result of expression "%s" is not iterable in step "%s".', $step->getValues(), $step::class));
         }
 
         $child = $step->getLoopStep();

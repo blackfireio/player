@@ -23,7 +23,7 @@ class UriResolver
     {
         if (!$baseUri) {
             if (null === parse_url($uri, \PHP_URL_SCHEME)) {
-                throw new CrawlException(sprintf('Unable to crawl a non-absolute URI (/%s). Did you forget to set an "endpoint"?', $uri));
+                throw new CrawlException(\sprintf('Unable to crawl a non-absolute URI (/%s). Did you forget to set an "endpoint"?', $uri));
             }
 
             return $uri;

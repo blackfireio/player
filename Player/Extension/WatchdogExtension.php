@@ -54,11 +54,11 @@ final class WatchdogExtension implements StepExtensionInterface
         ++$stepCounter;
 
         if ($stepCounter > $this->stepLimit) {
-            throw new \RuntimeException(sprintf('Number of requests per step exceeded ("%d")', $this->stepLimit));
+            throw new \RuntimeException(\sprintf('Number of requests per step exceeded ("%d")', $this->stepLimit));
         }
 
         if (++$totalCounter > $this->totalLimit) {
-            throw new \RuntimeException(sprintf('Number of requests per scenario exceeded ("%d")', $this->stepLimit));
+            throw new \RuntimeException(\sprintf('Number of requests per scenario exceeded ("%d")', $this->stepLimit));
         }
 
         $scenarioContext->setExtraValue($stepCounterKey, $stepCounter);

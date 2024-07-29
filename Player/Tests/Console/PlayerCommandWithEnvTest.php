@@ -110,22 +110,22 @@ class PlayerCommandWithEnvTest extends TestCase
 
         foreach ($dirs as $dir) {
             foreach (['index.php', 'output-next.txt', 'scenario.bkf'] as $file) {
-                $file = sprintf('%s/%s', $dir->getPathname(), $file);
+                $file = \sprintf('%s/%s', $dir->getPathname(), $file);
                 if (!file_exists($file)) {
-                    throw new \Exception(sprintf('The fixture file "%s" does not exist.', $file));
+                    throw new \Exception(\sprintf('The fixture file "%s" does not exist.', $file));
                 }
             }
 
-            $reportFile = sprintf('%s/output-next-full-report.txt', $dir->getPathname());
-            $cliOptions = sprintf('%s/cli-options.php', $dir->getPathname());
-            $exitCodeFile = sprintf('%s/exit-code.txt', $dir->getPathname());
-            $stubbedSdkAdapterFile = sprintf('%s/stubbedSdkAdapter.php', $dir->getPathname());
+            $reportFile = \sprintf('%s/output-next-full-report.txt', $dir->getPathname());
+            $cliOptions = \sprintf('%s/cli-options.php', $dir->getPathname());
+            $exitCodeFile = \sprintf('%s/exit-code.txt', $dir->getPathname());
+            $stubbedSdkAdapterFile = \sprintf('%s/stubbedSdkAdapter.php', $dir->getPathname());
 
             $envName = 'Blackfire Test';
 
             yield $dir->getBasename() => [
-                sprintf('%s/scenario.bkf', $dir->getPathname()),
-                file_get_contents(sprintf('%s/output-next.txt', $dir->getPathname())),
+                \sprintf('%s/scenario.bkf', $dir->getPathname()),
+                file_get_contents(\sprintf('%s/output-next.txt', $dir->getPathname())),
                 file_exists($stubbedSdkAdapterFile) ? require $stubbedSdkAdapterFile : new StubbedSdkAdapter($envName),
                 $envName,
                 [

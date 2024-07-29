@@ -21,7 +21,7 @@ class Json
         try {
             return json_decode($json, true, 512, \JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
-            throw new \InvalidArgumentException(sprintf('Error while decoding JSON: "%s".', $e->getMessage()), $e->getCode(), $e);
+            throw new \InvalidArgumentException(\sprintf('Error while decoding JSON: "%s".', $e->getMessage()), $e->getCode(), $e);
         }
     }
 
@@ -30,7 +30,7 @@ class Json
         try {
             return json_encode($value, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES | $options);
         } catch (\Exception $e) {
-            throw new \InvalidArgumentException(sprintf('Unable to encode data into JSON: "%s".', $e->getMessage()), $e->getCode(), $e);
+            throw new \InvalidArgumentException(\sprintf('Unable to encode data into JSON: "%s".', $e->getMessage()), $e->getCode(), $e);
         }
     }
 }

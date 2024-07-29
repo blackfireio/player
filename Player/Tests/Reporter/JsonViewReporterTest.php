@@ -66,7 +66,7 @@ scenario Test 1
 EOF;
         $build = new Build('4b4fee4b-af1b-460b-8db2-4ab8edb5b62c');
         $scenarioSet = $parser->parse($scenarioSetBase);
-        $scenarioSet->getExtraBag()->set(sprintf('blackfire_build:%s', 'Blackfire Test'), $build);
+        $scenarioSet->getExtraBag()->set(\sprintf('blackfire_build:%s', 'Blackfire Test'), $build);
         $scenarioSet->setStatus(BuildStatus::IN_PROGRESS);
         yield 'error 500 on in-progress build should silent error' => [
             $scenarioSet,
@@ -75,7 +75,7 @@ EOF;
 
         $build = new Build('cc085ed3-3b9a-4889-932d-abae6d5dad30');
         $scenarioSet = $parser->parse($scenarioSetBase);
-        $scenarioSet->getExtraBag()->set(sprintf('blackfire_build:%s', 'Blackfire Test'), $build);
+        $scenarioSet->getExtraBag()->set(\sprintf('blackfire_build:%s', 'Blackfire Test'), $build);
         $scenarioSet->setStatus(BuildStatus::DONE);
         yield 'error 500 on done build should throw' => [
             $scenarioSet,

@@ -42,7 +42,7 @@ class VisitStepProcessor implements StepProcessorInterface
     public function process(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): iterable
     {
         if (!$this->supports($step, $stepContext, $scenarioContext)) {
-            throw new \LogicException(sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
+            throw new \LogicException(\sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
         }
 
         $uri = $this->expressionEvaluator->evaluateExpression($step->getUri(), $stepContext, $scenarioContext);

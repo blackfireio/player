@@ -76,7 +76,7 @@ class ConfigurableStep extends AbstractStep
 
     public function samples(string|null $samples): self
     {
-        @trigger_error(sprintf('The method "%s" is deprecated since player 2.6 and will be removed in 3.0.', __METHOD__), \E_USER_DEPRECATED);
+        @trigger_error(\sprintf('The method "%s" is deprecated since player 2.6 and will be removed in 3.0.', __METHOD__), \E_USER_DEPRECATED);
 
         $this->samples = $samples;
 
@@ -137,7 +137,7 @@ class ConfigurableStep extends AbstractStep
 
     public function getSamples(): string|null
     {
-        @trigger_error(sprintf('The method "%s" is deprecated since player 2.6 and will be removed in 3.0.', __METHOD__), \E_USER_DEPRECATED);
+        @trigger_error(\sprintf('The method "%s" is deprecated since player 2.6 and will be removed in 3.0.', __METHOD__), \E_USER_DEPRECATED);
 
         return null !== $this->samples ? 1 : null;
     }

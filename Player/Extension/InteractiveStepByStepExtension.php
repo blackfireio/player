@@ -39,7 +39,7 @@ class InteractiveStepByStepExtension implements StepExtensionInterface
 
     public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        $question = new ConfirmationQuestion(sprintf('Going to execute %s(%s). Press [Enter] to continue...', $step->getName(), $step->getType()), true);
+        $question = new ConfirmationQuestion(\sprintf('Going to execute %s(%s). Press [Enter] to continue...', $step->getName(), $step->getType()), true);
         $variables = $scenarioContext->getVariableValues($stepContext, true);
         $maxItemsPerArray = 3;
         $rows = [];
@@ -48,7 +48,7 @@ class InteractiveStepByStepExtension implements StepExtensionInterface
             $value = match (true) {
                 str_starts_with($type, 'resource') => get_resource_type($type),
                 'object' === $type => $value::class,
-                'array' === $type => sprintf('%d items with keys "%s" %s', \count($value), implode('", "', \array_slice(array_keys($value), 0, $maxItemsPerArray)), \count($value) > $maxItemsPerArray ? '...(truncated)' : ''),
+                'array' === $type => \sprintf('%d items with keys "%s" %s', \count($value), implode('", "', \array_slice(array_keys($value), 0, $maxItemsPerArray)), \count($value) > $maxItemsPerArray ? '...(truncated)' : ''),
                 'unknown type' === $type => '',
                 default => $value
             };

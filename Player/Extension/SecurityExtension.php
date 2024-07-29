@@ -33,7 +33,7 @@ final class SecurityExtension implements StepExtensionInterface
         $request = $step->getRequest();
         $scheme = parse_url($request->uri, \PHP_URL_SCHEME);
         if (!\in_array($scheme, ['http', 'https'], true)) {
-            throw new SecurityException(sprintf('Invalid protocol ("%s").', $scheme));
+            throw new SecurityException(\sprintf('Invalid protocol ("%s").', $scheme));
         }
     }
 

@@ -80,7 +80,7 @@ class AbstractStep
 
     public function __toString()
     {
-        return sprintf("└ %s\n", static::class);
+        return \sprintf("└ %s\n", static::class);
     }
 
     public function name(string|null $name): static
