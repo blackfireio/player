@@ -33,7 +33,7 @@ class ValueBag
     public function get(string $name): mixed
     {
         if (!\array_key_exists($name, $this->values)) {
-            throw new ValueException(sprintf('Variable "%s" is not defined.', $name));
+            throw new ValueException(\sprintf('Variable "%s" is not defined.', $name));
         }
 
         return $this->values[$name];

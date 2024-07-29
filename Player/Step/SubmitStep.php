@@ -32,7 +32,7 @@ class SubmitStep extends Step
 
     public function __toString()
     {
-        return sprintf("└ %s: %s\n", static::class, $this->selector);
+        return \sprintf("└ %s: %s\n", static::class, $this->selector);
     }
 
     public function param(string $key, string $value): void

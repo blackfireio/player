@@ -56,9 +56,9 @@ class JsonViewReporter
                             'json_view' => $jsonView,
                         ],
                     ]);
-                    throw new ApiCallException(sprintf('%d: %s', $statusCode, 'Failed to send the last jsonview'), $statusCode, $e);
+                    throw new ApiCallException(\sprintf('%d: %s', $statusCode, 'Failed to send the last jsonview'), $statusCode, $e);
                 }
-                $this->output->writeln(sprintf('<warning> </>%s', $e->getMessage()));
+                $this->output->writeln(\sprintf('<warning> </>%s', $e->getMessage()));
             }
         }
     }

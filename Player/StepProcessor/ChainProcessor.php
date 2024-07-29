@@ -50,7 +50,7 @@ class ChainProcessor implements StepProcessorInterface
         }
 
         if (!$one) {
-            throw new LogicException(sprintf('Unsupported step "%s".', get_debug_type($step)));
+            throw new LogicException(\sprintf('Unsupported step "%s".', get_debug_type($step)));
         }
     }
 }

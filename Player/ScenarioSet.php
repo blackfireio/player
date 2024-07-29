@@ -48,7 +48,7 @@ class ScenarioSet implements \IteratorAggregate
         $str = '';
         $ind = 0;
         foreach ($this->scenarios as $scenario) {
-            $str .= sprintf(">>> Scenario %d <<<\n", ++$ind);
+            $str .= \sprintf(">>> Scenario %d <<<\n", ++$ind);
             $str .= $scenario."\n";
         }
 
@@ -72,7 +72,7 @@ class ScenarioSet implements \IteratorAggregate
     public function add(Scenario $scenario): void
     {
         if (null !== $scenario->getKey() && isset($this->keys[$scenario->getKey()])) {
-            throw new LogicException(sprintf('Scenario key "%s" is already defined.', $scenario->getKey()));
+            throw new LogicException(\sprintf('Scenario key "%s" is already defined.', $scenario->getKey()));
         }
 
         $this->scenarios[] = $scenario;

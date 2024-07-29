@@ -46,19 +46,19 @@ class PlayerCommandTest extends TestCase
 
         foreach ($dirs as $dir) {
             foreach (['index.php', 'output-next.txt', 'scenario.bkf'] as $file) {
-                $file = sprintf('%s/%s', $dir->getPathname(), $file);
+                $file = \sprintf('%s/%s', $dir->getPathname(), $file);
                 if (!file_exists($file)) {
-                    throw new \Exception(sprintf('The fixture file "%s" does not exist.', $file));
+                    throw new \Exception(\sprintf('The fixture file "%s" does not exist.', $file));
                 }
             }
 
-            $reportFile = sprintf('%s/output-next-full-report.txt', $dir->getPathname());
-            $cliOptions = sprintf('%s/cli-options.php', $dir->getPathname());
-            $exitCodeFile = sprintf('%s/exit-code.txt', $dir->getPathname());
+            $reportFile = \sprintf('%s/output-next-full-report.txt', $dir->getPathname());
+            $cliOptions = \sprintf('%s/cli-options.php', $dir->getPathname());
+            $exitCodeFile = \sprintf('%s/exit-code.txt', $dir->getPathname());
 
             yield $dir->getBasename().' (next)' => [
-                sprintf('%s/scenario.bkf', $dir->getPathname()),
-                file_get_contents(sprintf('%s/output-next.txt', $dir->getPathname())),
+                \sprintf('%s/scenario.bkf', $dir->getPathname()),
+                file_get_contents(\sprintf('%s/output-next.txt', $dir->getPathname())),
                 [
                     'expected_exit_code' => file_exists($exitCodeFile) ? (int) (file_get_contents($exitCodeFile)) : 0,
                     'report_file' => file_exists($reportFile) ? file_get_contents($reportFile) : null,

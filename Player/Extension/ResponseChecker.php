@@ -35,15 +35,15 @@ class ResponseChecker
                 $parsedExpression = $this->language->parse($expression, array_keys($variables));
                 $result = $this->language->evaluate($parsedExpression, $variables);
             } catch (ExpressionSyntaxError $e) {
-                throw new ExpectationErrorException(sprintf('Expectation syntax error in "%s": %s', $expression, $e->getMessage()));
+                throw new ExpectationErrorException(\sprintf('Expectation syntax error in "%s": %s', $expression, $e->getMessage()));
             } catch (\InvalidArgumentException $iae) {
-                throw new ExpectationFailureException(sprintf('Expectation "%s" failed.', $expression), [['expression' => $expression, 'result' => $iae->getMessage()]], previous: $iae);
+                throw new ExpectationFailureException(\sprintf('Expectation "%s" failed.', $expression), [['expression' => $expression, 'result' => $iae->getMessage()]], previous: $iae);
             }
 
             if (null === $result || false === $result || 0 === $result) {
                 $results = $this->language->extractResults($parsedExpression, $variables);
 
-                throw new ExpectationFailureException(sprintf('Expectation "%s" failed.', $expression), $results);
+                throw new ExpectationFailureException(\sprintf('Expectation "%s" failed.', $expression), $results);
             }
         }
     }

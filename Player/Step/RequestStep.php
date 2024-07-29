@@ -34,7 +34,7 @@ class RequestStep extends ConfigurableStep implements StepInitiatorInterface
 
     public function __toString()
     {
-        return sprintf("└ %s: %s %s\n", static::class, $this->request->method, $this->request->uri);
+        return \sprintf("└ %s: %s %s\n", static::class, $this->request->method, $this->request->uri);
     }
 
     public function getRequest(): Request

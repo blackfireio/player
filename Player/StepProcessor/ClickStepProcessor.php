@@ -42,7 +42,7 @@ class ClickStepProcessor implements StepProcessorInterface
     public function process(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): iterable
     {
         if (!$this->supports($step, $stepContext, $scenarioContext)) {
-            throw new \LogicException(sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
+            throw new \LogicException(\sprintf('Cannot handle steps of type "%s".', get_debug_type($step)));
         }
 
         if (!$scenarioContext->hasPreviousResponse()) {
@@ -56,7 +56,7 @@ class ClickStepProcessor implements StepProcessorInterface
             throw new CrawlException('You can only click on links as returned by the link() function.');
         }
         if (!\count($link)) {
-            throw new CrawlException(sprintf('Unable to click as link "%s" does not exist.', $selector));
+            throw new CrawlException(\sprintf('Unable to click as link "%s" does not exist.', $selector));
         }
         $link = $link->link();
 

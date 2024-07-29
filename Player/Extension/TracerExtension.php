@@ -40,7 +40,7 @@ final class TracerExtension implements ScenarioSetExtensionInterface, ScenarioEx
         private readonly OutputInterface $output,
         private readonly Filesystem $fs,
     ) {
-        $this->dir = sprintf('%s/blackfire-player-trace/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
+        $this->dir = \sprintf('%s/blackfire-player-trace/%s/%s', sys_get_temp_dir(), date('y-m-d-H-m-s'), bin2hex(random_bytes(5)));
         $this->fs->remove($this->dir);
     }
 
@@ -55,7 +55,7 @@ final class TracerExtension implements ScenarioSetExtensionInterface, ScenarioEx
             $key = ++$this->scenarioIndex;
         }
         $this->currentDir = $this->dir.'/'.$key;
-        $target = sprintf('%s/scenario.txt', $this->currentDir);
+        $target = \sprintf('%s/scenario.txt', $this->currentDir);
         $this->fs->mkdir(\dirname($target));
 
         $this->fs->dumpFile($target, (string) $scenario);
@@ -99,12 +99,12 @@ final class TracerExtension implements ScenarioSetExtensionInterface, ScenarioEx
 
     public function afterScenarioSet(ScenarioSet $scenarios, int $concurrency, ScenarioSetResult $scenarioSetResult): void
     {
-        $this->output->writeln(sprintf('<comment>Traces under %s</>', $this->dir));
+        $this->output->writeln(\sprintf('<comment>Traces under %s</>', $this->dir));
     }
 
     private function getDirectory(): string
     {
-        $target = sprintf('%s/%d', $this->currentDir, $this->stepCount);
+        $target = \sprintf('%s/%d', $this->currentDir, $this->stepCount);
         $this->fs->mkdir($target);
 
         return $target;

@@ -33,7 +33,7 @@ class VisitStep extends Step
 
     public function __toString()
     {
-        return sprintf("└ %s: %s %s\n", static::class, $this->method ?: 'GET', $this->uri);
+        return \sprintf("└ %s: %s %s\n", static::class, $this->method ?: 'GET', $this->uri);
     }
 
     public function method(string $method): void

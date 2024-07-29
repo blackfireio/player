@@ -71,7 +71,7 @@ class BuildApi
 
     public function updateBuild(Build $build, string $jsonView): void
     {
-        $response = $this->blackfireHttpClient->request('POST', sprintf('/api/v3/builds/%s/update', $build->uuid), [
+        $response = $this->blackfireHttpClient->request('POST', \sprintf('/api/v3/builds/%s/update', $build->uuid), [
             'body' => $jsonView,
         ]);
 

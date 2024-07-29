@@ -26,18 +26,18 @@ class ValidateCommandTest extends TestCase
 
         foreach ($dirs as $dir) {
             foreach (['output.txt', 'output-json.txt', 'scenario.bkf'] as $file) {
-                $file = sprintf('%s/%s', $dir->getPathname(), $file);
+                $file = \sprintf('%s/%s', $dir->getPathname(), $file);
                 if (!file_exists($file)) {
-                    throw new \Exception(sprintf('The fixture file "%s" does not exist.', $file));
+                    throw new \Exception(\sprintf('The fixture file "%s" does not exist.', $file));
                 }
             }
 
             yield $dir->getBasename() => [
-                sprintf('%s/scenario.bkf', $dir->getPathname()),
-                sprintf('%s/output.txt', $dir->getPathname()),
-                sprintf('%s/output-err.txt', $dir->getPathname()),
-                sprintf('%s/output-json.txt', $dir->getPathname()),
-                sprintf('%s/output-json-err.txt', $dir->getPathname()),
+                \sprintf('%s/scenario.bkf', $dir->getPathname()),
+                \sprintf('%s/output.txt', $dir->getPathname()),
+                \sprintf('%s/output-err.txt', $dir->getPathname()),
+                \sprintf('%s/output-json.txt', $dir->getPathname()),
+                \sprintf('%s/output-json-err.txt', $dir->getPathname()),
             ];
         }
     }

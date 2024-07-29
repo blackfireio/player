@@ -104,7 +104,7 @@ class VisitStepProcessorTest extends TestCase
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
 
         $step = new VisitStep('"http://localhost"');
-        $step->header(sprintf('"%s: %s"', $headerName, $headerValue));
+        $step->header(\sprintf('"%s: %s"', $headerName, $headerValue));
         $stepContext = new StepContext();
         $stepContext->update($step, []);
 

@@ -217,7 +217,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         $config = new ProfileConfiguration();
 
         $path = parse_url($request->uri, \PHP_URL_PATH) ?: '/';
-        $config->setTitle($this->language->evaluate($step->getName() ?: Json::encode(sprintf('%s resource', $path)), $context->getVariableValues($stepContext, true)));
+        $config->setTitle($this->language->evaluate($step->getName() ?: Json::encode(\sprintf('%s resource', $path)), $context->getVariableValues($stepContext, true)));
 
         $query = parse_url($request->uri, \PHP_URL_QUERY);
         if ($query) {
@@ -227,7 +227,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
         $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
         if (!$build) {
-            throw new RuntimeException(sprintf('Could not find build for env %s in the ScenarioSet', $env));
+            throw new RuntimeException(\sprintf('Could not find build for env %s in the ScenarioSet', $env));
         }
 
         $config->setIntention('build');
@@ -261,14 +261,14 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             foreach ($profile->getTests() as $test) {
                 foreach ($test->getFailures() as $failure) {
                     $hasFailingAssertion = true;
-                    $step->addFailingAssertion(sprintf('Assertion failed: %s', $failure));
+                    $step->addFailingAssertion(\sprintf('Assertion failed: %s', $failure));
                 }
             }
 
             if (!$hasFailingAssertion) { // It is a recommendation report
                 foreach ($profile->getRecommendations() as $test) {
                     foreach ($test->getFailures() as $failure) {
-                        $step->addFailingAssertion(sprintf('Assertion failed: %s', $failure));
+                        $step->addFailingAssertion(\sprintf('Assertion failed: %s', $failure));
                     }
                 }
             }
@@ -339,7 +339,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
 
             // Warmup requests
             $warmupStep
-                ->name(Json::encode(sprintf('[Warmup] %s', trim($step->getName() ?? 'anonymous', '"'))))
+                ->name(Json::encode(\sprintf('[Warmup] %s', trim($step->getName() ?? 'anonymous', '"'))))
                 ->blackfire('false')
             ;
 
@@ -349,7 +349,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         // raw perf request
         $referencePerfStep = (new RequestStep($request, $step))
             ->warmup('false')
-            ->name(Json::encode(sprintf('[Reference] %s', trim($step->getName() ?? 'anonymous', '"'))))
+            ->name(Json::encode(\sprintf('[Reference] %s', trim($step->getName() ?? 'anonymous', '"'))))
             ->blackfire('false')
         ;
 

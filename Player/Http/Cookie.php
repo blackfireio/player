@@ -47,7 +47,7 @@ final class Cookie
      */
     public function __toString(): string
     {
-        $cookie = sprintf('%s=%s', $this->name, $this->value);
+        $cookie = \sprintf('%s=%s', $this->name, $this->value);
 
         if (null !== $this->expires) {
             $dateTime = \DateTimeImmutable::createFromFormat('U', $this->expires, new \DateTimeZone('GMT'));
@@ -79,7 +79,7 @@ final class Cookie
         $parts = explode(';', $cookie);
 
         if (!str_contains($parts[0], '=')) {
-            throw new \InvalidArgumentException(sprintf('The cookie string "%s" is not valid.', $parts[0]));
+            throw new \InvalidArgumentException(\sprintf('The cookie string "%s" is not valid.', $parts[0]));
         }
 
         [$name, $value] = explode('=', array_shift($parts), 2);
@@ -95,7 +95,7 @@ final class Cookie
 
         if (null !== $url) {
             if ((false === $urlParts = parse_url($url)) || !isset($urlParts['host'])) {
-                throw new \InvalidArgumentException(sprintf('The URL "%s" is not valid.', $url));
+                throw new \InvalidArgumentException(\sprintf('The URL "%s" is not valid.', $url));
             }
 
             $values['domain'] = $urlParts['host'];

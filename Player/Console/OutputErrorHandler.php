@@ -54,9 +54,9 @@ final class OutputErrorHandler
             } else {
                 $output = $event->getOutput();
                 if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
-                    $output->writeln(sprintf('<error>%s</error>', $event->getError()->getMessage()));
+                    $output->writeln(\sprintf('<error>%s</error>', $event->getError()->getMessage()));
                     if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG) {
-                        $output->writeln(sprintf('<error>%s</error>', $event->getError()->getTraceAsString()));
+                        $output->writeln(\sprintf('<error>%s</error>', $event->getError()->getTraceAsString()));
                     }
                 }
             }

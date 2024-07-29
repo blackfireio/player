@@ -44,7 +44,7 @@ class BlockStep extends ConfigurableStep
 
     public function __toString()
     {
-        $str = sprintf("└ %s%s\n", static::class, $this->getName() ? sprintf(' %s', $this->getName()) : '');
+        $str = \sprintf("└ %s%s\n", static::class, $this->getName() ? \sprintf(' %s', $this->getName()) : '');
         $str .= $this->blockToString($this->blockStep);
 
         return $str;
@@ -113,7 +113,7 @@ class BlockStep extends ConfigurableStep
         do {
             $lines = array_filter(explode("\n", (string) $next));
             foreach ($lines as $line) {
-                $str .= sprintf("%s %s\n", $pipe ? '|' : ' ', $line);
+                $str .= \sprintf("%s %s\n", $pipe ? '|' : ' ', $line);
             }
         } while ($next = $next->getNext());
 

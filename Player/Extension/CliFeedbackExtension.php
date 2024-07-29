@@ -55,13 +55,13 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
 
     public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
     {
-        $msg = sprintf('Blackfire Player %s', Player::version());
+        $msg = \sprintf('Blackfire Player %s', Player::version());
 
         $this->concurrency = ($concurrency > 1);
         if ($this->concurrency) {
-            $msg .= sprintf(' - concurrency %d', $concurrency);
+            $msg .= \sprintf(' - concurrency %d', $concurrency);
         }
-        $this->output->writeln(sprintf('<fg=blue>%s</>', $msg));
+        $this->output->writeln(\sprintf('<fg=blue>%s</>', $msg));
 
         $this->scenarioCount = 0;
         $this->stepCount = 0;
@@ -75,7 +75,7 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
         $this->stepDeep = 0;
 
         $this->output->writeln('');
-        $this->output->writeln(sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?: $scenarioContext->getExtraValue('_index')));
+        $this->output->writeln(\sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?: $scenarioContext->getExtraValue('_index')));
     }
 
     public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
@@ -94,14 +94,14 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
         $indent = $this->stepDeep > 0 ? str_repeat('  ', $this->stepDeep) : '';
         if ($step instanceof RequestStep) {
             $request = $step->getRequest();
-            $name = sprintf('%s %s', $request->method, $request->uri);
+            $name = \sprintf('%s %s', $request->method, $request->uri);
             if (!$this->debug && (\strlen($name) - 3) > $this->terminalWidth) {
                 $name = substr($name, 0, $this->terminalWidth - 3).'...';
             }
         } elseif ($name = $step->getName()) {
-            $name = sprintf('<title>%s%s </>', $indent, $name);
+            $name = \sprintf('<title>%s%s </>', $indent, $name);
         } else {
-            $name = sprintf('%s[%s %d]', $indent, $step->getType(), $this->stepIndex);
+            $name = \sprintf('%s[%s %d]', $indent, $step->getType(), $this->stepIndex);
         }
 
         $this->debug($this->linePrefix($scenarioContext).$name."\n");
@@ -124,20 +124,20 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
         $dumpValues = $step->getDumpValuesName();
         $response = $scenarioContext->hasPreviousResponse() ? $scenarioContext->getLastResponse() : null;
         if ($response && \in_array('request', $dumpValues, true)) {
-            $this->output->write(sprintf("<debug>request:</>\n%s\n", $response->request->toString()));
+            $this->output->write(\sprintf("<debug>request:</>\n%s\n", $response->request->toString()));
         }
         if ($response && \in_array('response', $dumpValues, true)) {
-            $this->output->write(sprintf("<debug>response:</>\n%s\n", $response->toString()));
+            $this->output->write(\sprintf("<debug>response:</>\n%s\n", $response->toString()));
         }
         foreach ($dumpValues as $varName) {
             if ('request' === $varName || 'response' === $varName) {
                 continue;
             }
             if (\array_key_exists($varName, $variables)) {
-                $this->output->write(sprintf('<debug>%s:</> ', $varName));
+                $this->output->write(\sprintf('<debug>%s:</> ', $varName));
                 $this->dump($variables[$varName]);
             } else {
-                throw new \InvalidArgumentException(sprintf('Could not dump "%s" as the variable is not defined.', $varName));
+                throw new \InvalidArgumentException(\sprintf('Could not dump "%s" as the variable is not defined.', $varName));
             }
         }
 
@@ -179,7 +179,7 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
 
         // render the current build URL, if any
         if ($build && $build->url) {
-            $this->output->writeln(sprintf('Blackfire Report at <comment>%s</>', $build->url));
+            $this->output->writeln(\sprintf('Blackfire Report at <comment>%s</>', $build->url));
         }
     }
 
@@ -187,11 +187,11 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
     {
         $this->output->writeln('');
 
-        $summary = sprintf('Scenarios <detail> %d </> - Steps <detail> %d </>', $this->scenarioCount, $this->stepCount);
+        $summary = \sprintf('Scenarios <detail> %d </> - Steps <detail> %d </>', $this->scenarioCount, $this->stepCount);
         if ($scenarioSetResult->isErrored()) {
-            $this->output->writeln(sprintf('<failure> KO </> %s - Failures <failure> %d </>', $summary, $this->failureCount));
+            $this->output->writeln(\sprintf('<failure> KO </> %s - Failures <failure> %d </>', $summary, $this->failureCount));
         } else {
-            $this->output->writeln(sprintf('<success> OK </> %s', $summary));
+            $this->output->writeln(\sprintf('<success> OK </> %s', $summary));
         }
     }
 
@@ -205,23 +205,23 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
 
         $name = $step->getName();
         if ($name) {
-            $ctx .= sprintf(' <title> %s </>', $name);
+            $ctx .= \sprintf(' <title> %s </>', $name);
         }
 
         if ($step->getFile()) {
-            $ctx .= sprintf(' defined in <title>%s</> at line <title> %d </>', $step->getFile(), $step->getLine());
+            $ctx .= \sprintf(' defined in <title>%s</> at line <title> %d </>', $step->getFile(), $step->getLine());
         } elseif ($step->getLine()) {
-            $ctx .= sprintf(' defined at line <title>%d</>', $step->getLine());
+            $ctx .= \sprintf(' defined at line <title>%d</>', $step->getLine());
         }
 
-        $this->output->writeln(sprintf('<failure> </> %s', $ctx));
+        $this->output->writeln(\sprintf('<failure> </> %s', $ctx));
 
         foreach ($errors as $error) {
             $lines = explode("\n", $error);
 
-            $this->output->writeln(sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
+            $this->output->writeln(\sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
             foreach ($lines as $line) {
-                $this->output->writeln(sprintf('<failure> </>   %s', $line));
+                $this->output->writeln(\sprintf('<failure> </>   %s', $line));
             }
         }
     }
@@ -272,14 +272,14 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
     private function printExpectationsFailure(ExpectationFailureException $exception): void
     {
         foreach ($exception->getResults() as $result) {
-            $this->output->writeln(sprintf('<failure> </>   └ %s = %s', $result['expression'], $result['result']));
+            $this->output->writeln(\sprintf('<failure> </>   └ %s = %s', $result['expression'], $result['result']));
         }
     }
 
     private function linePrefix(ScenarioContext $scenarioContext): string
     {
         if ($this->concurrency) {
-            return sprintf('<fg=blue>Scenario</> <title> %s </> ', $scenarioContext->getName() ?: $scenarioContext->getExtraValue('_index'));
+            return \sprintf('<fg=blue>Scenario</> <title> %s </> ', $scenarioContext->getName() ?: $scenarioContext->getExtraValue('_index'));
         }
 
         return '';

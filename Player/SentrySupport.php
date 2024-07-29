@@ -43,13 +43,13 @@ class SentrySupport
         });
 
         if ($envVar = getenv('BLACKFIRE_BUILD_UUID')) {
-            self::addBreadcrumb(sprintf('Starting build uuid "%s"', $envVar));
+            self::addBreadcrumb(\sprintf('Starting build uuid "%s"', $envVar));
         }
         if ($envVar = getenv('BLACKFIRE_ENDPOINT')) {
-            self::addBreadcrumb(sprintf('Running on endpoint %s', $envVar));
+            self::addBreadcrumb(\sprintf('Running on endpoint %s', $envVar));
         }
         if ($envVar = getenv('BLACKFIRE_CLIENT_ID')) {
-            self::addBreadcrumb(sprintf('Using client id %s', $envVar));
+            self::addBreadcrumb(\sprintf('Using client id %s', $envVar));
         }
         if ($envVar = getenv('BLACKFIRE_PLAYER_SCENARIO')) {
             self::addBreadcrumb('Running scenario', ['scenario' => $envVar]);

@@ -82,9 +82,9 @@ class StepGeneratorTest extends TestCase
             [$expectedStepName, $expectedInputValues, $expectedOutputValues] = $expectations[$count];
             ++$count;
 
-            $this->assertEquals($expectedStepName, $step->getName(), sprintf('Names does not match (iteration %d)', $count));
+            $this->assertEquals($expectedStepName, $step->getName(), \sprintf('Names does not match (iteration %d)', $count));
 
-            self::assertArraySubset($expectedInputValues, $scenarioContext->getVariableValues($stepContext, true), message: sprintf('Failed asserting the input value bag (iteration %d)', $count));
+            self::assertArraySubset($expectedInputValues, $scenarioContext->getVariableValues($stepContext, true), message: \sprintf('Failed asserting the input value bag (iteration %d)', $count));
 
             foreach ($generator->process($step, $stepContext, $scenarioContext) as $childStep) {
                 $handleStep(
@@ -97,7 +97,7 @@ class StepGeneratorTest extends TestCase
             // mimic the variables resolution performed in PlayerNext main loop
             $variablesEvaluator->evaluate($step, $stepContext, $scenarioContext);
 
-            self::assertArraySubset($expectedOutputValues, $scenarioContext->getVariableValues($stepContext, true), message: sprintf('Failed asserting the output value bag (iteration %d)', $count));
+            self::assertArraySubset($expectedOutputValues, $scenarioContext->getVariableValues($stepContext, true), message: \sprintf('Failed asserting the output value bag (iteration %d)', $count));
         };
 
         $handleStep(
