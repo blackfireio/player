@@ -14,9 +14,10 @@ $finder = PhpCsFixer\Finder::create()
 ;
 
 return (new PhpCsFixer\Config())
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setFinder($finder)
     ->setRiskyAllowed(true)
-    ->setRules(array(
+    ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'no_useless_return' => true,
@@ -29,5 +30,5 @@ return (new PhpCsFixer\Config())
         'phpdoc_separation' => ['groups' => [['ORM\\*'], ['Assert\\*', 'Assert'], ['SymfonySerializer\\*']]],
         'nullable_type_declaration' => ['syntax' => 'union'],
         'header_comment' => ['header' => $header],
-    ))
+    ])
 ;
