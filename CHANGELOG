@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* v2.6.10 (2024-07-31)
+
+  - Update dependencies
+
 * v2.6.9 (2024-07-26)
 
   - Upgrade to Symfony 7.1
