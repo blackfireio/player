@@ -50,7 +50,7 @@ class InteractiveStepByStepExtension implements StepExtensionInterface
                 'object' === $type => $value::class,
                 'array' === $type => \sprintf('%d items with keys "%s" %s', \count($value), implode('", "', \array_slice(array_keys($value), 0, $maxItemsPerArray)), \count($value) > $maxItemsPerArray ? '...(truncated)' : ''),
                 'unknown type' === $type => '',
-                default => $value
+                default => $value,
             };
 
             $rows[] = [$key, $type, $value];

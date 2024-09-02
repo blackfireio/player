@@ -22,7 +22,7 @@ use Blackfire\Player\Step\StepContext;
 final class ExpectationExtension implements StepExtensionInterface
 {
     public function __construct(
-        private readonly ResponseChecker $responseChecker
+        private readonly ResponseChecker $responseChecker,
     ) {
     }
 
