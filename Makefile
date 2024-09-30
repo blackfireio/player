@@ -98,10 +98,10 @@ phive-install: build-docker-image
 ifdef CI
 	@echo -e "--- [make phive] \033[33mInstalling phive dependencies\033[0m"
 endif
-	@$(PHP) phive --home ./.phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
+	@$(PHP) php -dmemory_limit=-1 /usr/local/bin/phive --home ./.phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
 
 phive-update: build-docker-image
-	@$(PHP) phive --home ./.phive update
+	@$(PHP) php -dmemory_limit=-1 /usr/local/bin/phive --home ./.phive update
 
 help:
 	@grep -hE '(^[a-zA-Z_-]+:.*?##.*$$)|(^###)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
