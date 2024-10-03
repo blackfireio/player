@@ -213,7 +213,6 @@ class Parser
             $finder->files()->in($baseDir)->path(Glob::toRegex($matches[2]));
 
             if (!$finder->hasResults()) {
-                dd($finder);
                 throw new InvalidArgumentException(\sprintf('File "%s" does not exist in "%s".', $matches[2], $baseDir));
             }
 
