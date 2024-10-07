@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.6.16 (2024-10-07)
+
+  - Update dependencies
+  - Remove debug trace in player
+
 * v2.6.15 (2024-09-30)
 
   - Update dependencies
