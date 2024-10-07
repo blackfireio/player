@@ -1,6 +1,6 @@
-ARG COMPOSER_VERSION=2.7.7    # https://hub.docker.com/_/composer/tags
-ARG PHIVE_VERSION=0.15.2      # https://github.com/phar-io/phive/releases
-ARG PHPEXTINST_VERSION=2.3.2  # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG COMPOSER_VERSION=2.8.0    # https://hub.docker.com/_/composer/tags
+ARG PHIVE_VERSION=0.15.3      # https://github.com/phar-io/phive/releases
+ARG PHPEXTINST_VERSION=2.5.2  # https://github.com/mlocati/docker-php-extension-installer/releases
 ARG UUID_VERSION=1.2.0        # https://pecl.php.net/package/uuid
 
 FROM composer:${COMPOSER_VERSION} as build_composer
