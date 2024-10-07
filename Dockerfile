@@ -3,13 +3,13 @@ ARG COMPOSER_VERSION=2.8.0    # https://hub.docker.com/_/composer/tags
 ARG PHPEXTINST_VERSION=2.5.2  # https://github.com/mlocati/docker-php-extension-installer/releases
 ARG UUID_VERSION=1.2.0        # https://pecl.php.net/package/uuid
 
-FROM php:${PHP_VERSION}-alpine as build_installer
+FROM php:${PHP_VERSION}-alpine AS build_installer
 ARG PHPEXTINST_VERSION
 
 RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHPEXTINST_VERSION}/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions
 
-FROM composer:${COMPOSER_VERSION} as build_composer
+FROM composer:${COMPOSER_VERSION} AS build_composer
 WORKDIR /app
 
 COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
@@ -21,7 +21,7 @@ COPY composer.json composer.lock /app/
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-FROM alpine as sources
+FROM alpine AS sources
 
 WORKDIR /app
 
