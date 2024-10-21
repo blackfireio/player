@@ -101,6 +101,10 @@ ifdef CI
 endif
 	@$(PHP) php -dmemory_limit=-1 /usr/local/bin/phive --home ./.phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
 
+phive-status: ## In case you need to get the phive tools GPG keys
+	@$(PHP) phive status
+.PHONY: phive-status
+
 phive-update: build-docker-image
 	@$(PHP) php -dmemory_limit=-1 /usr/local/bin/phive --home ./.phive update
 
