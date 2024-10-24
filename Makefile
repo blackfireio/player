@@ -6,7 +6,7 @@ php_image = blackfire/player-test:$(image_hash)
 
 # https://github.com/box-project/box/releases
 box_version = 4.6.2
-box_image = blackfire/php-internal:8.3-v1.0.47
+box_image = blackfire/php-internal:8.3-v1.0.48
 
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
