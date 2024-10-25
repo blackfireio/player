@@ -1,9 +1,9 @@
-ARG PHP_VERSION=8.3.12        # https://hub.docker.com/_/php/tags?page=1&name=8.3
+ARG PHP_VERSION=8.3.13-alpine # https://hub.docker.com/_/php/tags?page=1&name=8.3
 ARG COMPOSER_VERSION=2.8.1    # https://hub.docker.com/_/composer/tags
 ARG PHPEXTINST_VERSION=2.5.2  # https://github.com/mlocati/docker-php-extension-installer/releases
 ARG UUID_VERSION=1.2.0        # https://pecl.php.net/package/uuid
 
-FROM php:${PHP_VERSION}-alpine AS build_installer
+FROM php:${PHP_VERSION} AS build_installer
 ARG PHPEXTINST_VERSION
 
 RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHPEXTINST_VERSION}/install-php-extensions && \
@@ -30,7 +30,7 @@ COPY ./. /app/
 
 RUN rm composer.json composer.lock
 
-FROM php:${PHP_VERSION}-alpine
+FROM php:${PHP_VERSION}
 ARG UUID_VERSION \
     BLACKFIRE_PLAYER_VERSION
 
