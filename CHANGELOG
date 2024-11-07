@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.6.22 (2024-11-07)
+
+  - Update dependencies
+  - ensure step is marked as errored when profile could not be performed as expected
+
 * v2.6.21 (2024-11-04)
 
   - Internal releasing changes
