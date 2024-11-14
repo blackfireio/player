@@ -10,8 +10,9 @@ box_image = blackfire/php-internal:8.3-v1.0.50
 
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
-
-PHP=@docker run --rm -it -e "PHP_CS_FIXER_IGNORE_ENV=1" -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ $(php_image)
+BASE_PHP=@docker run --rm -e "PHP_CS_FIXER_IGNORE_ENV=1" -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ -i
+PHP= $(BASE_PHP) $(php_image)
+PHP_TTY=$(BASE_PHP) -t $(php_image)
 BOX=@docker run --rm -v $(PWD):/app -w /app $(box_image)
 
 ##
@@ -49,7 +50,7 @@ endif
 .PHONY: phpstan
 
 shell: ## Starts a shell in container
-	@$(PHP) bash
+	@$(PHP_TTY) bash
 
 package-test: build-docker-image $(BOX_BIN) install ## Tests the phar release
 	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging
