@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* v2.6.23 (2024-11-25)
+
+  - Upgrade docker image to php 8.4
+  - Update dependencies
+  - Internal releasing changes
+
 * v2.6.22 (2024-11-07)
 
   - Update dependencies
