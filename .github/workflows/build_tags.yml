@@ -8,6 +8,39 @@ on:
 concurrency: prod
 
 jobs:
+  phar:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Get version tag
+        id: git_tag
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> "$GITHUB_ENV"
+      -
+        name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, uuid
+          tools: box:4.6.2
+      -
+        name: Build blackfire-player.phar
+        run: box compile -c box.json
+      -
+        name: Write player version in blackfire-player.version
+        run: echo ${{env.VERSION}} >> blackfire-player.version
+      -
+        name: Push blackfire-player.phar to S3
+        run: |
+          aws s3 cp blackfire-player.version s3://get.blackfire.io/blackfire-player.version
+          aws s3 cp blackfire-player.phar s3://get.blackfire.io/blackfire-player-${{ env.VERSION }}.phar
+          aws s3 cp blackfire-player.phar s3://get.blackfire.io/blackfire-player-latest.phar
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'eu-west-1'
   docker:
     runs-on: ubuntu-latest
     steps:
