@@ -23,7 +23,9 @@ jobs:
           tools: box:4.6.2
       -
         name: Build blackfire-player.phar
-        run: box compile -c box.json
+        run: |
+          composer install --no-interaction --prefer-dist
+          box compile -c box.json
       -
         name: Push blackfire-player.phar to S3
         run: |

@@ -27,7 +27,9 @@ jobs:
           tools: box:4.6.2
       -
         name: Build blackfire-player.phar
-        run: box compile -c box.json
+        run: |
+          composer install --no-interaction --prefer-dist
+          box compile -c box.json
       -
         name: Write player version in blackfire-player.version
         run: echo ${{env.VERSION}} >> blackfire-player.version
