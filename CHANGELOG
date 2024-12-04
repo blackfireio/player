@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* v2.6.24 (2024-12-04)
+
+  - Internal releasing changes
+  - Upgrade to Symfony 7.2
+  - Update dependencies
+
 * v2.6.23 (2024-11-25)
 
   - Upgrade docker image to php 8.4
