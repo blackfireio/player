@@ -28,7 +28,6 @@ class VariableResolver
     {
         $resolved = [];
         while ($toResolve) {
-            $lastException = null;
             $succeed = false;
             foreach ($toResolve as $key => $value) {
                 try {
@@ -44,7 +43,7 @@ class VariableResolver
                 }
             }
 
-            if (false === $succeed && $lastException) {
+            if (false === $succeed && isset($lastException)) {
                 throw $lastException;
             }
         }
