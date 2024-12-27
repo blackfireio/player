@@ -21,10 +21,6 @@ use Blackfire\Player\Step\StepContext;
  */
 class BlockStepProcessor implements StepProcessorInterface
 {
-    public function __construct()
-    {
-    }
-
     public function supports(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): bool
     {
         return $step instanceof BlockStep;
