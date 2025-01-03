@@ -44,6 +44,8 @@ GET http://localhost:8399/scoped-basic-auth-credentials-not-leaked/index.php
                         ],
                         "is_blackfire_enabled": true,
                         "uuid": "%x-%x-%x-%x-%x",
+                        "started_at": %d,
+                        "finished_at": %d,
                         "file": "%s/Player/Tests/Console/../fixtures-run/scoped-basic-auth-credentials-not-leaked/scenario.bkf",
                         "line": 6,
                         "type": "visit",
@@ -54,6 +56,8 @@ GET http://localhost:8399/scoped-basic-auth-credentials-not-leaked/index.php
                                 "follow_redirects": "false",
                                 "is_blackfire_enabled": true,
                                 "uuid": "%x-%x-%x-%x-%x",
+                                "started_at": %d,
+                                "finished_at": %d,
                                 "type": "request"
                             }
                         ]
@@ -61,6 +65,8 @@ GET http://localhost:8399/scoped-basic-auth-credentials-not-leaked/index.php
                 ],
                 "name": "scoped-basic-auth-credentials-not-leaked",
                 "uuid": "%x-%x-%x-%x-%x",
+                "started_at": %d,
+                "finished_at": %d,
                 "file": "%s/Player/Tests/Console/../fixtures-run/scoped-basic-auth-credentials-not-leaked/scenario.bkf",
                 "line": 1
             }

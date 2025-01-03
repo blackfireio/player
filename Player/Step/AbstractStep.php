@@ -58,6 +58,10 @@ class AbstractStep
 
     private string $uuid;
 
+    private int|null $startedAt = null;
+
+    private int|null $finishedAt = null;
+
     public function __construct(
         private readonly string|null $file = null,
         private readonly int|null $line = null,
@@ -261,11 +265,29 @@ class AbstractStep
     public function setStatus(BuildStatus $status): void
     {
         $this->status = $status;
+        switch ($status) {
+            case BuildStatus::DONE:
+                $this->finishedAt = $this->getTimingAsMs();
+                break;
+            case BuildStatus::IN_PROGRESS:
+                $this->startedAt = $this->getTimingAsMs();
+                break;
+        }
     }
 
     public function getStatus(): string
     {
         return $this->status->value;
+    }
+
+    public function getStartedAt(): int|null
+    {
+        return $this->startedAt;
+    }
+
+    public function getFinishedAt(): int|null
+    {
+        return $this->finishedAt;
     }
 
     public function addGeneratedStep(ConfigurableStep $step): void
@@ -291,5 +313,10 @@ class AbstractStep
     public function getInstanceId(): string|null
     {
         return spl_object_id($this);
+    }
+
+    private function getTimingAsMs(): int
+    {
+        return floor(microtime(true) * 1000);
     }
 }

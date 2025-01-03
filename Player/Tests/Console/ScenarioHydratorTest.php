@@ -98,6 +98,8 @@ Blackfire\Player\ScenarioSet {
       -deprecations: []
       -generatedSteps: []
       -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      -startedAt: null
+      -finishedAt: null
       -file: null
       -line: 8
       -auth: null
@@ -120,6 +122,8 @@ Blackfire\Player\ScenarioSet {
           -deprecations: []
           -generatedSteps: []
           -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+          -startedAt: null
+          -finishedAt: null
           -file: null
           -line: 12
           -auth: null
@@ -148,6 +152,8 @@ Blackfire\Player\ScenarioSet {
         -deprecations: []
         -generatedSteps: []
         -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        -startedAt: null
+        -finishedAt: null
         -file: null
         -line: 11
         -auth: null
@@ -187,6 +193,8 @@ Blackfire\Player\ScenarioSet {
       -deprecations: []
       -generatedSteps: []
       -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      -startedAt: null
+      -finishedAt: null
       -file: null
       -line: 14
       -auth: null
@@ -208,6 +216,8 @@ Blackfire\Player\ScenarioSet {
         -deprecations: []
         -generatedSteps: []
         -uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        -startedAt: null
+        -finishedAt: null
         -file: null
         -line: 17
         -auth: null
