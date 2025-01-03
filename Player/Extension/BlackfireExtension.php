@@ -32,6 +32,7 @@ use Blackfire\Player\Step\RequestStep;
 use Blackfire\Player\Step\Step;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\StepInitiatorInterface;
+use Blackfire\Profile;
 use Blackfire\Profile\Configuration as ProfileConfiguration;
 
 /**
@@ -210,8 +211,9 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             }
 
             $parentStep = $step->getInitiator();
+            $profile = $this->blackfire->getProfile($uuid);
             $parentStep->setBlackfireProfileUuid($uuid);
-            $this->assertProfile($parentStep, $uuid);
+            $this->assertProfile($parentStep, $profile);
         }
     }
 
@@ -249,10 +251,8 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         return $config;
     }
 
-    private function assertProfile(Step $step, string $blackfireProfileUuid): void
+    private function assertProfile(Step $step, Profile $profile): void
     {
-        $profile = $this->blackfire->getProfile($blackfireProfileUuid);
-
         if ($profile->isErrored()) {
             if ($profile->getTests()) {
                 throw new ExpectationErrorException('At least one assertion is invalid.');
