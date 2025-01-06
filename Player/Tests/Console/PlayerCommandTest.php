@@ -194,12 +194,16 @@ EOS;
                             "Unable to crawl a non-absolute URI (/). Did you forget to set an \"endpoint\"?"
                         ],
                         "uuid": "%x-%x-%x-%x-%x",
+                        "started_at": %d,
+                        "finished_at": %d,
                         "line": 3,
                         "type": "visit"
                     }
                 ],
                 "name": "Test",
                 "uuid": "%x-%x-%x-%x-%x",
+                "started_at": %d,
+                "finished_at": %d,
                 "line": 1
             }
         ]

@@ -52,6 +52,8 @@ GET http://0:8399/scraping/index.php?id=8399
                         },
                         "is_blackfire_enabled": true,
                         "uuid": "%x-%x-%x-%x-%x",
+                        "started_at": %d,
+                        "finished_at": %d,
                         "file": "%s/Player/Tests/Console/../fixtures-run/scraping/scenario.bkf",
                         "line": 6,
                         "type": "visit",
@@ -62,6 +64,8 @@ GET http://0:8399/scraping/index.php?id=8399
                                 "follow_redirects": "false",
                                 "is_blackfire_enabled": true,
                                 "uuid": "%x-%x-%x-%x-%x",
+                                "started_at": %d,
+                                "finished_at": %d,
                                 "type": "request"
                             }
                         ]
@@ -69,6 +73,8 @@ GET http://0:8399/scraping/index.php?id=8399
                 ],
                 "name": "scraping",
                 "uuid": "%x-%x-%x-%x-%x",
+                "started_at": %d,
+                "finished_at": %d,
                 "file": "%s/Player/Tests/Console/../fixtures-run/scraping/scenario.bkf",
                 "line": 1
             }
