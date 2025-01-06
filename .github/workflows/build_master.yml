@@ -76,5 +76,6 @@ jobs:
           build-args: |
             BLACKFIRE_PLAYER_VERSION="${{ env.COMPOSER_ROOT_VERSION }}@${{ github.sha }}"
           push: true
+          pull: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}

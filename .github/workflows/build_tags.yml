@@ -86,5 +86,6 @@ jobs:
           build-args: |
             BLACKFIRE_PLAYER_VERSION=${{ env.VERSION }}
           push: true
+          pull: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
