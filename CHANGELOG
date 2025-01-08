@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+* v2.6.26 (2025-01-08)
+
+  - Collect step processing duration
+
 * v2.6.25 (2024-12-23)
 
   - Update dependencies
