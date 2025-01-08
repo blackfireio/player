@@ -156,6 +156,8 @@ class ScenarioSetSerializer
             'errors' => true,
             'deprecations' => true,
             'initiator_uuid' => true,
+            'created_at' => true,
+            'finished_at' => true,
         ]);
 
         if (isset($step['steps'])) {
