@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "blackfire/php-sdk",
-            "version": "v2.5.4",
+            "version": "v2.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blackfireio/php-sdk.git",
-                "reference": "4b46450f30ef50bcde331d6c360b9f3a3a42bfe6"
+                "reference": "3a7d6d01d4a237f33304ba0aea38b065e06d908e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/4b46450f30ef50bcde331d6c360b9f3a3a42bfe6",
-                "reference": "4b46450f30ef50bcde331d6c360b9f3a3a42bfe6",
+                "url": "https://api.github.com/repos/blackfireio/php-sdk/zipball/3a7d6d01d4a237f33304ba0aea38b065e06d908e",
+                "reference": "3a7d6d01d4a237f33304ba0aea38b065e06d908e",
                 "shasum": ""
             },
             "require": {
@@ -29,19 +29,19 @@
                 "friends-of-behat/mink-browserkit-driver": "^1.4",
                 "friends-of-behat/mink-extension": "^2.5",
                 "friends-of-behat/symfony-extension": "^2",
-                "guzzlehttp/psr7": "^1.6",
-                "illuminate/console": "^8.81",
-                "illuminate/queue": "^8.81",
-                "illuminate/support": "^8.81",
-                "laravel/octane": "^1.2",
+                "guzzlehttp/psr7": "^1.6 || ^2.0",
+                "illuminate/console": "^8.81 || ^9.0 || ^10.0 || ^11.0",
+                "illuminate/queue": "^8.81 || ^9.0 || ^10.0 || ^11.0",
+                "illuminate/support": "^8.81 || ^9.0 || ^10.0 || ^11.0",
+                "laravel/octane": "^1.2 || ^2.0",
                 "phpunit/phpunit": "^9.5",
-                "psr/http-message": "^1.0",
-                "symfony/browser-kit": "^5.1",
-                "symfony/framework-bundle": "^5.1",
-                "symfony/http-client": "^5.1",
-                "symfony/messenger": "^5.1",
-                "symfony/panther": "^1.0",
-                "symfony/phpunit-bridge": "^5.2"
+                "psr/http-message": "^1.0 || ^2.0",
+                "symfony/browser-kit": "^5.1 || ^6.0 || ^7.0",
+                "symfony/framework-bundle": "^5.1 || ^6.0 || ^7.0",
+                "symfony/http-client": "^5.1 || ^6.0 || ^7.0",
+                "symfony/messenger": "^5.1 || ^6.0 || ^7.0",
+                "symfony/panther": "^1.0 || ^2.0",
+                "symfony/phpunit-bridge": "^5.2 || ^6.0 || ^7.0"
             },
             "suggest": {
                 "ext-blackfire": "The C version of the Blackfire probe",
@@ -78,22 +78,22 @@
             ],
             "support": {
                 "issues": "https://github.com/blackfireio/php-sdk/issues",
-                "source": "https://github.com/blackfireio/php-sdk/tree/v2.5.4"
+                "source": "https://github.com/blackfireio/php-sdk/tree/v2.5.5"
             },
-            "time": "2024-09-18T06:59:27+00:00"
+            "time": "2024-12-23T09:51:54+00:00"
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.5.4",
+            "version": "1.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "bc0593537a463e55cadf45fd938d23b75095b7e1"
+                "reference": "08c50d5ec4c6ced7d0271d2862dec8c1033283e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/bc0593537a463e55cadf45fd938d23b75095b7e1",
-                "reference": "bc0593537a463e55cadf45fd938d23b75095b7e1",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/08c50d5ec4c6ced7d0271d2862dec8c1033283e6",
+                "reference": "08c50d5ec4c6ced7d0271d2862dec8c1033283e6",
                 "shasum": ""
             },
             "require": {
@@ -140,7 +140,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.5.4"
+                "source": "https://github.com/composer/ca-bundle/tree/1.5.5"
             },
             "funding": [
                 {
@@ -156,7 +156,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-11-27T15:35:25+00:00"
+            "time": "2025-01-08T16:17:16+00:00"
         },
         {
             "name": "fakerphp/faker",
