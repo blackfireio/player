@@ -60,7 +60,16 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
             return ($this->profileFactory)($uuid);
         }
 
-        return new Profile(fn () => ['report' => ['state' => 'successful']], $uuid);
+        return new Profile(fn () => [
+            'report' => [
+                'state' => 'successful',
+            ],
+            '_links' => [
+                'graph_url' => [
+                    'href' => \sprintf('https://app.blackfire.io/profiles/%s/graph', $uuid),
+                ],
+            ],
+        ], $uuid);
     }
 
     public function startBuild(string|null $env = null, array $options = []): Build

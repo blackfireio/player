@@ -212,6 +212,9 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
 
             $parentStep = $step->getInitiator();
             $profile = $this->blackfire->getProfile($uuid);
+            // Initialize profile data by calling getUrl()
+            $profile->getUrl();
+
             $parentStep->setBlackfireProfileUuid($uuid);
             $this->assertProfile($parentStep, $profile);
         }

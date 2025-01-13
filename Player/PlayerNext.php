@@ -14,6 +14,7 @@ namespace Blackfire\Player;
 use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Extension\ExceptionExtensionInterface;
 use Blackfire\Player\Extension\NextStepExtensionInterface;
+use Blackfire\Player\Extension\ProcessedException;
 use Blackfire\Player\Extension\ScenarioExtensionInterface;
 use Blackfire\Player\Extension\ScenarioSetExtensionInterface;
 use Blackfire\Player\Extension\StepExtensionInterface;
@@ -122,10 +123,8 @@ class PlayerNext
             );
         } catch (\Throwable $e) {
             $exception = $e;
-            foreach ($this->getSortedExtensions() as $extension) {
-                if ($extension instanceof ExceptionExtensionInterface) {
-                    $extension->failStep($this->currentStep, $e);
-                }
+            if ($e instanceof ProcessedException) {
+                $exception = $e->getPrevious();
             }
         }
 
@@ -211,6 +210,16 @@ class PlayerNext
                     }
                 }
             }
+        } catch (ProcessedException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            foreach ($this->getSortedExtensions() as $extension) {
+                if ($extension instanceof ExceptionExtensionInterface) {
+                    $extension->failStep($this->currentStep, $exception);
+                }
+            }
+
+            throw new ProcessedException($exception->getMessage(), $exception->getCode(), $exception);
         } finally {
             $step->setStatus(BuildStatus::DONE);
 

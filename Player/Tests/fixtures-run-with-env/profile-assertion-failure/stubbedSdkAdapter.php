@@ -26,6 +26,11 @@ return new StubbedSdkAdapter('Blackfire Test', function (string $uuid) {
                 ],
             ],
         ],
+        '_links' => [
+            'graph_url' => [
+                'href' => sprintf('https://app.blackfire.io/profiles/%s/graph', $uuid),
+            ],
+        ],
     ], $uuid);
 }
 );

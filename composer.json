@@ -19,7 +19,7 @@
         "ext-filter": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "blackfire/php-sdk": "^2.1 ",
+        "blackfire/php-sdk": "^2.5",
         "fakerphp/faker": "^1.10",
         "maltyxx/images-generator": "^1.0",
         "mtdowling/jmespath.php": "^2.2",
