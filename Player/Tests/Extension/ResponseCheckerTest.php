@@ -42,7 +42,7 @@ class ResponseCheckerTest extends TestCase
         $this->responseChecker->check($expectations, $variables);
     }
 
-    public function checkSuccessProvider()
+    public static function checkSuccessProvider()
     {
         yield 'simple assertions' => [
             [
@@ -85,7 +85,7 @@ class ResponseCheckerTest extends TestCase
         $this->fail('No exception were thrown, one expected');
     }
 
-    public function checkFailuresProvider()
+    public static function checkFailuresProvider()
     {
         yield 'comparing two json response properties whose values are different' => [
             [

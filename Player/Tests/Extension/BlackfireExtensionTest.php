@@ -93,7 +93,7 @@ class BlackfireExtensionTest extends TestCase
         }
     }
 
-    public function beforeRequestProvider()
+    public static function beforeRequestProvider()
     {
         $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan');
         $defaultScenarioSetExtraValues = [];
@@ -103,7 +103,7 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             function (Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
+                self::assertNull($step->getBlackfireProfileUuid());
             },
         ];
 
@@ -121,7 +121,7 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             function (Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
+                self::assertNull($step->getBlackfireProfileUuid());
             },
         ];
 
@@ -139,7 +139,7 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             function (Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
+                self::assertNull($step->getBlackfireProfileUuid());
             },
         ];
 
@@ -166,11 +166,11 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             function (Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
+                self::assertNull($step->getBlackfireProfileUuid());
             },
             function (ScenarioContext $scenarioContext) {
-                $this->assertNull($scenarioContext->getExtraValue('blackfire_ref_step'));
-                $this->assertNull($scenarioContext->getExtraValue('blackfire_ref_stats'));
+                self::assertNull($scenarioContext->getExtraValue('blackfire_ref_step'));
+                self::assertNull($scenarioContext->getExtraValue('blackfire_ref_stats'));
             },
         ];
     }
@@ -197,7 +197,7 @@ class BlackfireExtensionTest extends TestCase
         $extension->beforeStep(new RequestStep($request, $step), $stepContext, $scenarioContext);
     }
 
-    public function beforeRequestFailureProvider()
+    public static function beforeRequestFailureProvider()
     {
         $defaultScenarioSetExtraValues = [];
         $step = new VisitStep('https://app-under-test.lan');
@@ -260,7 +260,7 @@ class BlackfireExtensionTest extends TestCase
         $scenarioContextAssertions($scenarioContext, $step);
     }
 
-    public function afterResponseProvider()
+    public static function afterResponseProvider()
     {
         $stats = [
             'total_time' => 0.04079,
@@ -279,9 +279,9 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             function (ScenarioContext $scenarioContext, Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
-                $this->assertNull($scenarioContext->getExtraValue('blackfire_retry'));
-                $this->assertNull($scenarioContext->getExtraValue('blackfire_progress'));
+                self::assertNull($step->getBlackfireProfileUuid());
+                self::assertNull($scenarioContext->getExtraValue('blackfire_retry'));
+                self::assertNull($scenarioContext->getExtraValue('blackfire_progress'));
             },
         ];
 
@@ -298,9 +298,9 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             function (ScenarioContext $scenarioContext, Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
-                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
-                $this->assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
+                self::assertNull($step->getBlackfireProfileUuid());
+                self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                self::assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
             },
         ];
 
@@ -317,9 +317,9 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             function (ScenarioContext $scenarioContext, Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
-                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
-                $this->assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
+                self::assertNull($step->getBlackfireProfileUuid());
+                self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                self::assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
             },
         ];
 
@@ -336,9 +336,9 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             function (ScenarioContext $scenarioContext, Step $step) {
-                $this->assertEquals('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
-                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
-                $this->assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
+                self::assertEquals('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
+                self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                self::assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
             },
         ];
 
@@ -355,9 +355,9 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             function (ScenarioContext $scenarioContext, Step $step) {
-                $this->assertEquals('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
-                $this->assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
-                $this->assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
+                self::assertEquals('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
+                self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
+                self::assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
             },
         ];
 
@@ -376,14 +376,14 @@ class BlackfireExtensionTest extends TestCase
             $response,
             $defaultScenarioSetExtraValues,
             function (ScenarioContext $scenarioContext, Step $step) {
-                $this->assertNull($step->getBlackfireProfileUuid());
-                $this->assertEquals(1, $scenarioContext->getExtraValue('blackfire_retry'));
-                $this->assertEquals(40, $scenarioContext->getExtraValue('blackfire_progress'));
+                self::assertNull($step->getBlackfireProfileUuid());
+                self::assertEquals(1, $scenarioContext->getExtraValue('blackfire_retry'));
+                self::assertEquals(40, $scenarioContext->getExtraValue('blackfire_progress'));
             },
         ];
     }
 
-    public function afterResponseFailureProvider()
+    public static function afterResponseFailureProvider()
     {
         $stats = [
             'total_time' => 0.04079,
@@ -449,7 +449,7 @@ class BlackfireExtensionTest extends TestCase
         $this->assertEquals($expectedSteps, $normalizedStepsOutput);
     }
 
-    public function getPreviousStepsProvider()
+    public static function getPreviousStepsProvider()
     {
         $visitStepWith5Warmups = new VisitStep('https://app.lan');
         $visitStepWith5Warmups->blackfire('true');
@@ -601,7 +601,7 @@ class BlackfireExtensionTest extends TestCase
         $this->assertJsonStringEqualsJsonString(Json::encode($serializedExpectedSteps), Json::encode($serializedStepsOutput));
     }
 
-    public function getNextStepsProvider()
+    public static function getNextStepsProvider()
     {
         $stats = [
             'total_time' => 0.04079,

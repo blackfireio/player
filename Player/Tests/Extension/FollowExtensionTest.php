@@ -50,7 +50,7 @@ class FollowExtensionTest extends TestCase
         $this->assertDumpEquals($this->getDump($expectedNextSteps), $nextStepsAsArray);
     }
 
-    public function provideGetNextStepsCases()
+    public static function provideGetNextStepsCases()
     {
         $step = new VisitStep('https://app.lan');
         $stepContext = new StepContext();

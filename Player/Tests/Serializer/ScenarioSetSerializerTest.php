@@ -44,7 +44,7 @@ class ScenarioSetSerializerTest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectedFile, $serialized);
     }
 
-    public function provideScenarioAndSerializations()
+    public static function provideScenarioAndSerializations()
     {
         yield [__DIR__.'/fixtures/test1.bkf', __DIR__.'/fixtures/test1.json'];
         yield [__DIR__.'/fixtures/test2.bkf', __DIR__.'/fixtures/test2.json'];
@@ -75,7 +75,7 @@ class ScenarioSetSerializerTest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectedFile, $serialized);
     }
 
-    public function provideScenarioAndSerializationsAndBuilds()
+    public static function provideScenarioAndSerializationsAndBuilds()
     {
         yield 'scenario env arent evaluated yet should appear' => [
             __DIR__.'/fixtures/test5.bkf',
@@ -132,7 +132,7 @@ class ScenarioSetSerializerTest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectedFile, $serialized);
     }
 
-    public function provideSerializeForJsonView()
+    public static function provideSerializeForJsonView()
     {
         yield 'scenario with steps having failures and exceptions' => [
             __DIR__.'/fixtures/serialized_for_jsonview_with_failures_and_exceptions.bkf',

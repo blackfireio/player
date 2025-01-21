@@ -28,7 +28,7 @@ class VariableFormatterTest extends TestCase
         $this->assertEquals($expectedString, $actual);
     }
 
-    public function getFormatResultData()
+    public static function getFormatResultData()
     {
         yield [null, 'null'];
         yield [true, 'true'];

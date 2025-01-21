@@ -102,7 +102,7 @@ class PlayerCommandWithEnvTest extends TestCase
         }
     }
 
-    public function providePlayerWithEnvTests()
+    public static function providePlayerWithEnvTests()
     {
         $dirs = Finder::create()
             ->in(__DIR__.'/../'.self::FIXTURES_DIR)

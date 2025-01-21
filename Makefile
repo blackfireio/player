@@ -68,7 +68,7 @@ php-cs-fix: bin/tools/php-cs-fixer vendor/autoload.php ## Analyze and fix PHP co
 	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php
 .PHONY: php-cs-fix
 
-phpstan: bin/tools/phpstan vendor/autoload.php phpunit-setup ## Analyze PHP code with phpstan
+phpstan: bin/tools/phpstan vendor/autoload.php ## Analyze PHP code with phpstan
 	@$(call section_start, $@, "Running PHPStan", false)
 
 	@$(PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse Player -c phpstan.neon -l 1
@@ -99,6 +99,9 @@ clean:
 	rm -rf vendor $(PHAR_DIST)
 .PHONY: clean
 
+composer-update:
+	@$(PHP) composer update --no-interaction $(options)
+
 composer-install: vendor/autoload.php
 
 vendor/autoload.php: composer.lock
@@ -109,22 +112,14 @@ vendor/autoload.php: composer.lock
 
 	@$(call section_end, $@)
 
-phpunit: vendor/autoload.php phpunit-setup ## Run phpunit
+phpunit: vendor/autoload.php ## Run phpunit
 	$(eval args ?= )
 	@$(call section_start, $@, "Running PHPUnit", false)
 
-	@$(PHP) ./vendor/bin/simple-phpunit $(args)
+	@$(PHP) ./vendor/bin/phpunit $(args)
 
 	@$(call section_end, $@)
 .PHONY: phpunit
-
-phpunit-setup: vendor/autoload.php ## Setup phpunit
-	@$(call section_start, $@, "Installing PHPUnit")
-
-	@$(PHP) vendor/bin/simple-phpunit --version 2>&1>/dev/null
-
-	@$(call section_end, $@)
-.PHONY: phpunit-setup
 
 phive: bin/tools/phpstan bin/tools/php-cs-fixer
 .PHONY: phive

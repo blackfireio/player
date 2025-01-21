@@ -18,7 +18,7 @@ use Symfony\Component\Process\Process;
 
 class ValidateCommandTest extends TestCase
 {
-    public function providePlayerTests()
+    public static function providePlayerTests()
     {
         $dirs = Finder::create()
             ->in(__DIR__.'/../fixtures-validate')

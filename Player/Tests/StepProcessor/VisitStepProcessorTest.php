@@ -115,7 +115,7 @@ class VisitStepProcessorTest extends TestCase
         $this->assertSame($headerValue, $nextStep->getRequest()->headers[strtolower($headerName)][0]);
     }
 
-    public function provideForTestProcessPreserveHeaders(): iterable
+    public static function provideForTestProcessPreserveHeaders(): iterable
     {
         yield 'Authorization header' => ['Authorization', 'Bearer foo:bar'];
         yield 'Content-Type header' => ['Content-Type', 'application/custom'];

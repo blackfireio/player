@@ -52,7 +52,7 @@ class JsonViewReporterTest extends TestCase
         $this->assertNull($reporter->report($scenarioSet));
     }
 
-    public function reportErrorsProvider()
+    public static function reportErrorsProvider()
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSetBase = <<<'EOF'

@@ -118,7 +118,7 @@ EOF
         $this->assertEquals($expectedScenario, $scenario->getWarmup());
     }
 
-    public function warmupConfigProvider()
+    public static function warmupConfigProvider()
     {
         yield [<<<'EOF'
 scenario
@@ -188,7 +188,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $scenarioSet);
     }
 
-    public function provideDocExamples()
+    public static function provideDocExamples()
     {
         yield [<<<'EOF'
 scenario
@@ -475,7 +475,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
-    public function variableDeclarationProvider()
+    public static function variableDeclarationProvider()
     {
         // Valid
 
@@ -536,7 +536,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
-    public function stepConfigProvider()
+    public static function stepConfigProvider()
     {
         // Valid
 

@@ -38,7 +38,7 @@ class PlayerCommandTest extends TestCase
         self::stopServer();
     }
 
-    public function providePlayerTests()
+    public static function providePlayerTests()
     {
         $dirs = Finder::create()
             ->in(__DIR__.'/../'.self::FIXTURES_DIR)

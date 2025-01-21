@@ -109,7 +109,7 @@ class StepGeneratorTest extends TestCase
         $this->assertEquals(\count($expectations), $count);
     }
 
-    public function provideScenarios()
+    public static function provideScenarios()
     {
         yield [<<<'BKF'
 scenario

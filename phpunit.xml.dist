@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" colors="true" bootstrap="vendor/autoload.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+         cacheDirectory=".phpunit.result.cache"
+         executionOrder="depends,defects"
+         shortenArraysForExportThreshold="10"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         failOnDeprecation="false"
+>
     <php>
-        <ini name="error_reporting" value="-1"/>
-        <env name="BLACKFIRE_WS_PORT" value="8399"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=999999&amp;quiet[]=indirect"/>
-        <env name="COLUMNS" value="80"/>
         <env name="BLACKFIRE_CLIENT_ID" value="12341234-12341234"/>
         <env name="BLACKFIRE_CLIENT_TOKEN" value="token-12341234123412341234123412341234123412341234"/>
         <env name="BLACKFIRE_BASIC_AUTH_USERNAME" value="admin"/>
         <env name="BLACKFIRE_BASIC_AUTH_PASSWORD" value="admin"/>
-        <server name="SYMFONY_PHPUNIT_VERSION" value="9" />
     </php>
 
     <testsuites>
-        <testsuite name="Blackfire Player Test Suite">
-            <directory>./Player/Tests/</directory>
+        <testsuite name="default">
+            <directory>Player/Tests</directory>
         </testsuite>
     </testsuites>
 
-    <coverage>
+    <source ignoreIndirectDeprecations="true" restrictNotices="true" restrictWarnings="true">
         <include>
-            <directory>Player</directory>
+            <directory>src</directory>
         </include>
-        <exclude>
-            <directory>Player/Tests/</directory>
-            <directory>./vendor/</directory>
-        </exclude>
-    </coverage>
+    </source>
 </phpunit>

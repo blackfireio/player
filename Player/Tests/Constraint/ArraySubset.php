@@ -12,6 +12,7 @@
 namespace Blackfire\Player\Tests\Constraint;
 
 use PHPUnit\Framework\Constraint\Constraint;
+use PHPUnit\Util\Exporter;
 use SebastianBergmann\Comparator\ComparisonFailure;
 
 /**
@@ -55,7 +56,7 @@ final class ArraySubset extends Constraint
 
     public function toString(): string
     {
-        return 'has the subset '.$this->exporter()->export($this->subset);
+        return 'has the subset '.Exporter::export($this->subset);
     }
 
     protected function failureDescription($other): string

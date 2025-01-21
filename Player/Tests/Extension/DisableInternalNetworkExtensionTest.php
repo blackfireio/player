@@ -46,7 +46,7 @@ class DisableInternalNetworkExtensionTest extends TestCase
         $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createMock(ScenarioContext::class));
     }
 
-    public function provideInvalidUri()
+    public static function provideInvalidUri()
     {
         yield ['http://127.0.0.1', 'Forbidden host IP'];
         yield ['http://10.12.8.5/index.php', 'Forbidden host IP'];
@@ -69,9 +69,11 @@ class DisableInternalNetworkExtensionTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public function provideValidUri()
+    public static function provideValidUri()
     {
         yield ['http://54.75.240.245'];
         yield ['http://34.232.230.241/index.php'];
     }
 }
+
+DnsMock::register(DisableInternalNetworkExtension::class);

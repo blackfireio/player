@@ -39,7 +39,7 @@ class BlackfireEnvResolverTest extends TestCase
         $this->assertEquals($expectedResult, $output);
     }
 
-    public function resolveAnEnvironmentProvider()
+    public static function resolveAnEnvironmentProvider()
     {
         yield 'resolves the step environment without default env' => [
             null,
@@ -94,7 +94,7 @@ class BlackfireEnvResolverTest extends TestCase
         $this->assertEquals($expectedResult, $output);
     }
 
-    public function precedenceProvider()
+    public static function precedenceProvider()
     {
         // as stepContextes are created from the parent, if we have a non-null blackfire on the parent, we'll have a blackfire on the current step.
         yield 'resolves the blackfire-env property takes priority on the CLI when no blackfire step is defined' => [
@@ -130,7 +130,7 @@ class BlackfireEnvResolverTest extends TestCase
         $resolver->resolve($stepContext, $scenarioContext, $step);
     }
 
-    public function errorsProvider()
+    public static function errorsProvider()
     {
         yield 'no env were found but step resolves true' => [
             null,
@@ -158,7 +158,7 @@ class BlackfireEnvResolverTest extends TestCase
         $this->assertEquals($expectedResult, $output);
     }
 
-    public function deprecationsProvider()
+    public static function deprecationsProvider()
     {
         yield 'shows deprecation when blackfire resolves an environment name' => [
             'blackfire dev',
