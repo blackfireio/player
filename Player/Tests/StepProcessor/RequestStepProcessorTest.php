@@ -27,7 +27,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class RequestStepProcessorTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
         $processor = $this->createProcessor([

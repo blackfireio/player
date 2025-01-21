@@ -14,6 +14,8 @@ namespace Blackfire\Player;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
+use function Sentry\captureException;
+
 /**
  * @internal
  */
@@ -31,15 +33,11 @@ class VariableResolver
             $succeed = false;
             foreach ($toResolve as $key => $value) {
                 try {
-                    if (null === $value || '' === $value) {
-                        $resolved[$key] = $value;
-                    } else {
-                        $resolved[$key] = $this->language->evaluate($value, $resolved + $variables);
-                    }
+                    $resolved[$key] = null === $value || '' === $value ? $value : $this->language->evaluate($value, $resolved + $variables);
                     unset($toResolve[$key]);
                     $succeed = true;
                 } catch (SyntaxError $lastException) {
-                    \Sentry\captureException($lastException);
+                    captureException($lastException);
                 }
             }
 

@@ -16,13 +16,13 @@ namespace Blackfire\Player\Http;
  *
  * @internal
  */
-final class Cookie
+final readonly class Cookie implements \Stringable
 {
     /**
      * Handles dates as defined by RFC 2616 section 3.3.1, and also some other
      * non-standard, but common formats.
      */
-    private const DATE_FORMATS = [
+    private const array DATE_FORMATS = [
         'D, d M Y H:i:s T',
         'D, d-M-y H:i:s T',
         'D, d-M-Y H:i:s T',
@@ -33,12 +33,12 @@ final class Cookie
     ];
 
     private function __construct(
-        private readonly string $name,
-        private readonly string $value,
-        private readonly string|null $expires,
-        private readonly string $path,
-        private readonly string $domain,
-        private readonly bool $secure,
+        private string $name,
+        private string $value,
+        private string|null $expires,
+        private string $path,
+        private string $domain,
+        private bool $secure,
     ) {
     }
 
@@ -58,7 +58,7 @@ final class Cookie
             $cookie .= '; domain='.$this->domain;
         }
 
-        if ($this->path) {
+        if ('' !== $this->path) {
             $cookie .= '; path='.$this->path;
         }
 
@@ -107,12 +107,16 @@ final class Cookie
 
             if ('secure' === strtolower($part)) {
                 // Ignore the secure flag if the original URI is not given or is not HTTPS
-                if (!$url || !isset($urlParts['scheme']) || 'https' !== $urlParts['scheme']) {
+                if (null === $url) {
                     continue;
                 }
-
+                if (!isset($urlParts['scheme'])) {
+                    continue;
+                }
+                if ('https' !== $urlParts['scheme']) {
+                    continue;
+                }
                 $values['secure'] = true;
-
                 continue;
             }
 
@@ -125,7 +129,7 @@ final class Cookie
             }
         }
 
-        return new static(
+        return new self(
             $values['name'],
             $values['value'],
             $values['expires'],

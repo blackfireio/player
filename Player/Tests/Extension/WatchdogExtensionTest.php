@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 
 class WatchdogExtensionTest extends TestCase
 {
-    public function testStepLimitResetWhenStepIsExpectedOne()
+    public function testStepLimitResetWhenStepIsExpectedOne(): void
     {
         $extension = new WatchdogExtension(1, 10);
 
@@ -50,7 +50,7 @@ class WatchdogExtensionTest extends TestCase
         $this->assertEquals(2, $scenarioContext->getExtraValue('_watchdog_total_counter'));
     }
 
-    public function testStepLimitExceededThrowsException()
+    public function testStepLimitExceededThrowsException(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Number of requests per step exceeded ("1")');
@@ -77,7 +77,7 @@ class WatchdogExtensionTest extends TestCase
         $extension->beforeStep($next, $stepContext, $scenarioContext);
     }
 
-    public function testTotalLimitExceededThrowsException()
+    public function testTotalLimitExceededThrowsException(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Number of requests per scenario exceeded ("1")');
@@ -101,7 +101,7 @@ class WatchdogExtensionTest extends TestCase
         $extension->beforeStep($next, $stepContext, $scenarioContext);
     }
 
-    public function testStepWithInitiatorIncrementsInitiatorStepCounter()
+    public function testStepWithInitiatorIncrementsInitiatorStepCounter(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Number of requests per step exceeded ("6")');
@@ -130,7 +130,7 @@ class WatchdogExtensionTest extends TestCase
         $this->doInitiateStep($step, $extension, $scenarioContext);
     }
 
-    public function testIgnoresBlockStep()
+    public function testIgnoresBlockStep(): void
     {
         $extension = new WatchdogExtension(10, 40);
 
@@ -160,7 +160,7 @@ class WatchdogExtensionTest extends TestCase
         $this->assertEquals(20, $scenarioContext->getExtraValue('_watchdog_total_counter'));
     }
 
-    private function doInitiateStep(Step $step, WatchdogExtension $extension, ScenarioContext $scenarioContext)
+    private function doInitiateStep(Step $step, WatchdogExtension $extension, ScenarioContext $scenarioContext): void
     {
         $generatedStep = new FollowStep(null, null, $step);
         $generatedStepContext = new StepContext();

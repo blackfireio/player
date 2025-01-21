@@ -12,6 +12,9 @@
 namespace Blackfire\Player\ExpressionLanguage;
 
 use Symfony\Component\ExpressionLanguage\Node;
+use Symfony\Component\ExpressionLanguage\Node\FunctionNode;
+use Symfony\Component\ExpressionLanguage\Node\GetAttrNode;
+use Symfony\Component\ExpressionLanguage\Node\NameNode;
 use Symfony\Component\ExpressionLanguage\ParsedExpression;
 
 /**
@@ -19,7 +22,7 @@ use Symfony\Component\ExpressionLanguage\ParsedExpression;
  */
 class ExtractResultsVisitor
 {
-    private const IGNORED_FUNCTIONS = [
+    private const array IGNORED_FUNCTIONS = [
         'constant',
         'link',
         'css',
@@ -50,9 +53,9 @@ class ExtractResultsVisitor
         $subExpressions = array_merge(...$subExpressions);
 
         if (
-            $node instanceof Node\NameNode && (!$parentNode instanceof Node\GetAttrNode)
-            || $node instanceof Node\GetAttrNode
-            || $node instanceof Node\FunctionNode && !\in_array($node->attributes['name'], self::IGNORED_FUNCTIONS, true)
+            $node instanceof NameNode && (!$parentNode instanceof GetAttrNode)
+            || $node instanceof GetAttrNode
+            || $node instanceof FunctionNode && !\in_array($node->attributes['name'], self::IGNORED_FUNCTIONS, true)
         ) {
             $subExpressions[] = [
                 'expression' => $node->dump(),

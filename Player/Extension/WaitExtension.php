@@ -24,10 +24,10 @@ use Blackfire\Player\Step\StepContext;
  *
  * @internal
  */
-final class WaitExtension implements StepExtensionInterface
+final readonly class WaitExtension implements StepExtensionInterface
 {
     public function __construct(
-        private readonly ExpressionLanguage $language,
+        private ExpressionLanguage $language,
     ) {
     }
 
@@ -41,7 +41,7 @@ final class WaitExtension implements StepExtensionInterface
             return;
         }
 
-        if (!$wait = $stepContext->getWait()) {
+        if (null === $wait = $stepContext->getWait()) {
             return;
         }
 

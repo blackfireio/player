@@ -16,13 +16,9 @@ namespace Blackfire\Player\Exception;
  */
 class ExpectationFailureException extends LogicException
 {
-    private array $results;
-
-    public function __construct(string|null $message = null, array $results = [], int $code = 0, \Exception|null $previous = null)
+    public function __construct(string|null $message = null, private readonly array $results = [], int $code = 0, \Exception|null $previous = null)
     {
         parent::__construct($message, $code, $previous);
-
-        $this->results = $results;
     }
 
     public function getResults(): array

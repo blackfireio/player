@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 
 class BlockStepProcessorTest extends TestCase
 {
-    public function testProcessBlock()
+    public function testProcessBlock(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -46,7 +46,7 @@ class BlockStepProcessorTest extends TestCase
         $this->assertSame([$visitStep1, $visitStep2], $nextSteps);
     }
 
-    public function testProcessGroup()
+    public function testProcessGroup(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -64,7 +64,7 @@ class BlockStepProcessorTest extends TestCase
         $this->assertSame([$visitStep1, $visitStep2], $nextSteps);
     }
 
-    public function testProcessScenario()
+    public function testProcessScenario(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -85,7 +85,7 @@ class BlockStepProcessorTest extends TestCase
     private function createProcessor(): StepProcessorInterface
     {
         $language = new ExpressionLanguage(null, [new Provider()]);
-        $expressionEvaluator = new ExpressionEvaluator($language);
+        new ExpressionEvaluator($language);
 
         return new ChainProcessor([
             new BlockStepProcessor(),

@@ -18,14 +18,13 @@ use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\VisitStep;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class BlackfireEnvResolverTest extends TestCase
 {
-    /**
-     * @dataProvider resolveAnEnvironmentProvider
-     */
-    public function testResolveAnEnvironment(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult)
+    #[DataProvider('resolveAnEnvironmentProvider')]
+    public function testResolveAnEnvironment(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult): void
     {
         [
             $resolver,
@@ -39,7 +38,7 @@ class BlackfireEnvResolverTest extends TestCase
         $this->assertEquals($expectedResult, $output);
     }
 
-    public static function resolveAnEnvironmentProvider()
+    public static function resolveAnEnvironmentProvider(): \Generator
     {
         yield 'resolves the step environment without default env' => [
             null,
@@ -77,10 +76,8 @@ class BlackfireEnvResolverTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider precedenceProvider
-     */
-    public function testResolveAnEnvironmentPrecedence(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult)
+    #[DataProvider('precedenceProvider')]
+    public function testResolveAnEnvironmentPrecedence(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult): void
     {
         [
             $resolver,
@@ -94,7 +91,7 @@ class BlackfireEnvResolverTest extends TestCase
         $this->assertEquals($expectedResult, $output);
     }
 
-    public static function precedenceProvider()
+    public static function precedenceProvider(): \Generator
     {
         // as stepContextes are created from the parent, if we have a non-null blackfire on the parent, we'll have a blackfire on the current step.
         yield 'resolves the blackfire-env property takes priority on the CLI when no blackfire step is defined' => [
@@ -112,10 +109,8 @@ class BlackfireEnvResolverTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider errorsProvider()
-     */
-    public function testResolveThrowsAnError(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment)
+    #[DataProvider('errorsProvider')]
+    public function testResolveThrowsAnError(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment): void
     {
         [
             $resolver,
@@ -130,7 +125,7 @@ class BlackfireEnvResolverTest extends TestCase
         $resolver->resolve($stepContext, $scenarioContext, $step);
     }
 
-    public static function errorsProvider()
+    public static function errorsProvider(): \Generator
     {
         yield 'no env were found but step resolves true' => [
             null,
@@ -140,10 +135,8 @@ class BlackfireEnvResolverTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider deprecationsProvider
-     */
-    public function testDeprecationWarning(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult, array $expectedDeprecations)
+    #[DataProvider('deprecationsProvider')]
+    public function testDeprecationWarning(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult, array $expectedDeprecations): void
     {
         [
             $resolver,
@@ -158,7 +151,7 @@ class BlackfireEnvResolverTest extends TestCase
         $this->assertEquals($expectedResult, $output);
     }
 
-    public static function deprecationsProvider()
+    public static function deprecationsProvider(): \Generator
     {
         yield 'shows deprecation when blackfire resolves an environment name' => [
             'blackfire dev',
@@ -185,7 +178,7 @@ class BlackfireEnvResolverTest extends TestCase
         $resolver = new BlackfireEnvResolver($defaultEnv, $language);
 
         $step = new VisitStep('https://app.dev.bkf');
-        if ($stepBlackfire) {
+        if (null !== $stepBlackfire) {
             $step->blackfire($stepBlackfire);
         }
         $stepContext = new StepContext();

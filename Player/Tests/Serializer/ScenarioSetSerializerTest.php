@@ -18,12 +18,13 @@ use Blackfire\Player\Json;
 use Blackfire\Player\Parser;
 use Blackfire\Player\Scenario;
 use Blackfire\Player\Serializer\ScenarioSetSerializer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ScenarioSetSerializerTest extends TestCase
 {
-    /** @dataProvider provideScenarioAndSerializations */
-    public function testSerialization(string $scenarioFile, string $expectedFile)
+    #[DataProvider('provideScenarioAndSerializations')]
+    public function testSerialization(string $scenarioFile, string $expectedFile): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(file_get_contents($scenarioFile));
@@ -44,7 +45,7 @@ class ScenarioSetSerializerTest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectedFile, $serialized);
     }
 
-    public static function provideScenarioAndSerializations()
+    public static function provideScenarioAndSerializations(): \Generator
     {
         yield [__DIR__.'/fixtures/test1.bkf', __DIR__.'/fixtures/test1.json'];
         yield [__DIR__.'/fixtures/test2.bkf', __DIR__.'/fixtures/test2.json'];
@@ -52,8 +53,8 @@ class ScenarioSetSerializerTest extends TestCase
         yield [__DIR__.'/fixtures/test4.bkf', __DIR__.'/fixtures/test4.json'];
     }
 
-    /** @dataProvider provideScenarioAndSerializationsAndBuilds */
-    public function testSerializationWhileProcessing(string $scenarioFile, string $expectedFile, callable $scenarioSetDecorator, Build $build)
+    #[DataProvider('provideScenarioAndSerializationsAndBuilds')]
+    public function testSerializationWhileProcessing(string $scenarioFile, string $expectedFile, callable $scenarioSetDecorator, Build $build): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(file_get_contents($scenarioFile));
@@ -75,12 +76,12 @@ class ScenarioSetSerializerTest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectedFile, $serialized);
     }
 
-    public static function provideScenarioAndSerializationsAndBuilds()
+    public static function provideScenarioAndSerializationsAndBuilds(): \Generator
     {
         yield 'scenario env arent evaluated yet should appear' => [
             __DIR__.'/fixtures/test5.bkf',
             __DIR__.'/fixtures/test5_1.json',
-            function ($scenarioSet) {
+            function ($scenarioSet): void {
             },
             new Build('1111-2222-3333-4444'),
         ];
@@ -88,7 +89,7 @@ class ScenarioSetSerializerTest extends TestCase
         yield 'scenarios whose env belong to the build should appear' => [
             __DIR__.'/fixtures/test5.bkf',
             __DIR__.'/fixtures/test5_1.json',
-            function ($scenarioSet) {
+            function ($scenarioSet): void {
                 $scenarios = iterator_to_array($scenarioSet);
                 $scenarios[0]->setBlackfireBuildUuid('1111-2222-3333-4444');
             },
@@ -98,7 +99,7 @@ class ScenarioSetSerializerTest extends TestCase
         yield 'scenario belonging to another build are hidden' => [
             __DIR__.'/fixtures/test5.bkf',
             __DIR__.'/fixtures/test5_2.json',
-            function ($scenarioSet) {
+            function ($scenarioSet): void {
                 $scenarios = iterator_to_array($scenarioSet);
                 $scenarios[0]->setBlackfireBuildUuid('1111-2222-3333-4444');
                 $scenarios[1]->setBlackfireBuildUuid('9999-9999-9999-9999');
@@ -107,10 +108,8 @@ class ScenarioSetSerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideSerializeForJsonView
-     */
-    public function testSerializeForJsonView(string $scenarioFile, string $expectedFile, callable $scenarioSetDecorator, Build $build)
+    #[DataProvider('provideSerializeForJsonView')]
+    public function testSerializeForJsonView(string $scenarioFile, string $expectedFile, callable $scenarioSetDecorator, Build $build): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(file_get_contents($scenarioFile));
@@ -132,12 +131,12 @@ class ScenarioSetSerializerTest extends TestCase
         $this->assertJsonStringEqualsJsonFile($expectedFile, $serialized);
     }
 
-    public static function provideSerializeForJsonView()
+    public static function provideSerializeForJsonView(): \Generator
     {
         yield 'scenario with steps having failures and exceptions' => [
             __DIR__.'/fixtures/serialized_for_jsonview_with_failures_and_exceptions.bkf',
             __DIR__.'/fixtures/serialized_for_jsonview_with_failures_and_exceptions.json',
-            function ($scenarioSet) {
+            function ($scenarioSet): void {
                 /** @var Scenario[] $scenarios */
                 $scenarios = iterator_to_array($scenarioSet);
                 $firstScenarioSteps = $scenarios[0]->getSteps();

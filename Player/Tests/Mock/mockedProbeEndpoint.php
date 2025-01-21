@@ -21,7 +21,7 @@ function buildBkfResponseHeader(): string
     ]);
 }
 
-function mockedProbeEndpoint(callable $responseFactory)
+function mockedProbeEndpoint(callable $responseFactory): void
 {
     $headers = getAllHeaders();
 
@@ -47,7 +47,7 @@ function mockedProbeEndpoint(callable $responseFactory)
 
     if (isset($headers[HEADER_BLACKFIRE_QUERY])) {
         // parse the blackfire query header
-        parse_str($headers[HEADER_BLACKFIRE_QUERY], $blackfireQuery);
+        parse_str((string) $headers[HEADER_BLACKFIRE_QUERY], $blackfireQuery);
 
         // compute a blackfire response header
         $blackfireResponse = buildBkfResponseHeader();

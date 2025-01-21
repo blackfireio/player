@@ -82,7 +82,7 @@ final class Input
 
     public function getContextString(): string
     {
-        if ($this->file) {
+        if (null !== $this->file) {
             return \sprintf('in %s at line %d', $this->file, $this->lineno);
         }
 
@@ -123,7 +123,7 @@ final class Input
         while (null !== $line = array_shift($input)) {
             ++$lineno;
 
-            if (preg_match('/^(\s*)"""(i)?$/', $line, $matches)) { // Start multi-lines
+            if (1 === preg_match('/^(\s*)"""(i)?$/', $line, $matches)) { // Start multi-lines
                 $modifiers = str_split(ltrim($line, ' "'), 1);
                 $indent = $matches[1];
                 $val = '';
@@ -134,13 +134,12 @@ final class Input
                         throw new SyntaxErrorException(\sprintf('Incorrect indentation in multi-lines string at line %d.', $lineno));
                     }
 
-                    if (preg_match('/^(\s*)"""$/', $line, $matchesEnd)) { // end multi-lines
-                        if ($matchesEnd[1] === $indent) {
-                            if ('' !== $val) {
-                                $val = substr($val, 0, -1);
-                            }
-                            break;
+                    // end multi-lines
+                    if (1 === preg_match('/^(\s*)"""$/', $line, $matchesEnd) && $matchesEnd[1] === $indent) {
+                        if ('' !== $val) {
+                            $val = substr($val, 0, -1);
                         }
+                        break;
                     }
 
                     $val .= substr($line, \strlen($indent))."\n";
@@ -157,7 +156,7 @@ final class Input
             }
 
             // skip empty lines and comments
-            if (preg_match('/^\s*(#|$)/', $line)) {
+            if (1 === preg_match('/^\s*(#|$)/', $line)) {
                 continue;
             }
 
@@ -166,17 +165,17 @@ final class Input
 
             // line continuations
             $current = $lineno;
-            while (preg_match('{\\\s*$}', $line)) {
+            while (preg_match('{\\\s*$}', (string) $line)) {
                 while (null !== $line = array_shift($input)) {
                     ++$lineno;
 
                     // skip empty lines and comments
-                    if (!preg_match('/^\s*(#|$)/', $line)) {
+                    if (0 === preg_match('/^\s*(#|$)/', $line)) {
                         break;
                     }
                 }
 
-                $lines[$current] .= ' '.trim($line, " \t\0\x0B\\");
+                $lines[$current] .= ' '.trim((string) $line, " \t\0\x0B\\");
             }
         }
 
@@ -190,21 +189,21 @@ final class Input
         $line = $this->lines[$lineno];
         $indent = 0;
 
-        if (preg_match('/^((?:    )+)(.+)$/', $line, $matches)) {
+        if (1 === preg_match('/^((?:    )+)(.+)$/', $line, $matches)) {
             // spaces in groups of 4
             $indent = \strlen($matches[1]) / 4;
             $line = $matches[2];
-        } elseif (preg_match('/^(\t)+(.+)$/', $line, $matches)) {
+        } elseif (1 === preg_match('/^(\t)+(.+)$/', $line, $matches)) {
             // tabs
             $indent = \strlen($matches[1]);
             $line = $matches[2];
         }
 
-        if (preg_match('/^ +/', $line)) {
+        if (1 === preg_match('/^ +/', $line)) {
             throw new SyntaxErrorException(\sprintf('Indentation must use spaces in groups of four in file %s.', $this->getContextString()));
         }
 
-        if (preg_match('/^[ \t]+/', $line)) {
+        if (1 === preg_match('/^[ \t]+/', $line)) {
             throw new SyntaxErrorException(\sprintf('Indentation cannot contain mixed spaces and tabs in file %s.', $this->getContextString()));
         }
 

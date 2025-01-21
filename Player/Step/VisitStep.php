@@ -31,9 +31,9 @@ class VisitStep extends Step
         parent::__construct($file, $line);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return \sprintf("└ %s: %s %s\n", static::class, $this->method ?: 'GET', $this->uri);
+        return \sprintf("└ %s: %s %s\n", static::class, $this->method ?? 'GET', $this->uri);
     }
 
     public function method(string $method): void

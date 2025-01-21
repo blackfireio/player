@@ -14,7 +14,6 @@ namespace Blackfire\Player\Extension;
 use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\StepContext;
-use Blackfire\Player\VariableResolver;
 use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,7 +29,6 @@ class InteractiveStepByStepExtension implements StepExtensionInterface
         private readonly HelperInterface $helper,
         private readonly InputInterface $input,
         private readonly OutputInterface $output,
-        private readonly VariableResolver $variableResolver,
     ) {
         if ($input->getOption('concurrency') > 1) {
             throw new \InvalidArgumentException('Cannot use the step option with concurrency mode > 1');
@@ -56,7 +54,7 @@ class InteractiveStepByStepExtension implements StepExtensionInterface
             $rows[] = [$key, $type, $value];
         }
 
-        usort($rows, static fn (array $rowA, array $rowB) => $rowA[0] <=> $rowB[0]);
+        usort($rows, static fn (array $rowA, array $rowB): int => $rowA[0] <=> $rowB[0]);
 
         $table = new Table($this->output);
         $table

@@ -13,6 +13,7 @@ namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\Application;
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
@@ -24,7 +25,7 @@ class PlayerCommandTest extends TestCase
 {
     use MockServerTrait;
 
-    private const FIXTURES_DIR = 'fixtures-run';
+    private const string FIXTURES_DIR = 'fixtures-run';
     private static string $port;
 
     public static function setUpBeforeClass(): void
@@ -68,8 +69,8 @@ class PlayerCommandTest extends TestCase
         }
     }
 
-    /** @dataProvider providePlayerTests */
-    public function testPlayer($file, $expectedOutput, array $testOptions)
+    #[DataProvider('providePlayerTests')]
+    public function testPlayer($file, string|bool $expectedOutput, array $testOptions): void
     {
         $expectedExitCode = $testOptions['expected_exit_code'];
         $expectedReportOutput = $testOptions['report_file'];
@@ -112,7 +113,7 @@ class PlayerCommandTest extends TestCase
         }
     }
 
-    public function testErrorStdIn()
+    public function testErrorStdIn(): void
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '--json'], __DIR__.'/../../../bin');
@@ -138,7 +139,7 @@ EOD;
         $this->assertStringContainsString($expectedErrorOutput, $process->getErrorOutput());
     }
 
-    public function testNoEndpoint()
+    public function testNoEndpoint(): void
     {
         $script = <<<EOS
 scenario
@@ -215,7 +216,7 @@ EOS;
         $this->assertStringContainsString('Unable to crawl a non-absolute URI (/). Did you forget to set an "endpoint"?', $process->getErrorOutput());
     }
 
-    public function testErrorInRealWorld()
+    public function testErrorInRealWorld(): void
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'run', '../Player/Tests/fixtures-validate/scenario.json', '--no-ansi', '--json'], __DIR__.'/../../../bin');

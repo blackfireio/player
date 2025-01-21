@@ -55,7 +55,7 @@ class ClickStepProcessor implements StepProcessorInterface
         if (!$link instanceof Crawler) {
             throw new CrawlException('You can only click on links as returned by the link() function.');
         }
-        if (!\count($link)) {
+        if (0 === \count($link)) {
             throw new CrawlException(\sprintf('Unable to click as link "%s" does not exist.', $selector));
         }
         $link = $link->link();
@@ -63,7 +63,7 @@ class ClickStepProcessor implements StepProcessorInterface
         yield new RequestStep(
             new Request(
                 $link->getMethod(),
-                $this->uriResolver->resolveUri($this->expressionEvaluator->evaluateExpression($stepContext->getEndpoint(), $stepContext, $scenarioContext), $link->getUri()),
+                $this->uriResolver->resolveUri($this->expressionEvaluator->evaluateExpression($stepContext->getEndpoint(), $stepContext, $scenarioContext) ?? '', $link->getUri()),
                 $this->expressionEvaluator->evaluateHeaders($stepContext, $scenarioContext)
             ),
             $step,

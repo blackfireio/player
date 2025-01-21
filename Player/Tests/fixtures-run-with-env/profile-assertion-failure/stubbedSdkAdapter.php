@@ -12,25 +12,23 @@
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
 use Blackfire\Profile;
 
-return new StubbedSdkAdapter('Blackfire Test', function (string $uuid) {
-    return new Profile(static fn () => [
-        'report' => [
-            'state' => 'failure',
-            'tests' => [
-                [
-                    'name' => 'Pages should be light',
-                    'state' => 'failing',
-                    'failures' => [
-                        'metrics.output.network_out < 220KB',
-                    ],
+return new StubbedSdkAdapter('Blackfire Test', fn (string $uuid): Profile => new Profile(static fn (): array => [
+    'report' => [
+        'state' => 'failure',
+        'tests' => [
+            [
+                'name' => 'Pages should be light',
+                'state' => 'failing',
+                'failures' => [
+                    'metrics.output.network_out < 220KB',
                 ],
             ],
         ],
-        '_links' => [
-            'graph_url' => [
-                'href' => sprintf('https://app.blackfire.io/profiles/%s/graph', $uuid),
-            ],
+    ],
+    '_links' => [
+        'graph_url' => [
+            'href' => sprintf('https://app.blackfire.io/profiles/%s/graph', $uuid),
         ],
-    ], $uuid);
-}
+    ],
+], $uuid)
 );

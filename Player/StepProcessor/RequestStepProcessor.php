@@ -65,7 +65,7 @@ class RequestStepProcessor implements StepProcessorInterface
         foreach ($this->cookieJar->allValues($request->uri) as $name => $value) {
             $cookies[] = $name.'='.$value;
         }
-        if ($cookies) {
+        if ([] !== $cookies) {
             $headers = $options['headers'];
             $headers['cookie'] = implode('; ', $cookies);
             $options['headers'] = $headers;

@@ -59,7 +59,7 @@ class ScenarioSetSerializer
 
     public function normalize(ScenarioSet $scenarioSet, Build|null $build = null): array
     {
-        if ($build) {
+        if (null !== $build) {
             $filteredScenarios = array_values(
                 array_filter(
                     $scenarioSet->getScenarios(),
@@ -183,7 +183,7 @@ class ScenarioSetSerializer
             return $string;
         }
 
-        if ((str_starts_with($string, '\'') && str_ends_with($string, '\'')) || (str_starts_with($string, '"') && str_ends_with($string, '"'))) {
+        if ((str_starts_with($string, "'") && str_ends_with($string, "'")) || (str_starts_with($string, '"') && str_ends_with($string, '"'))) {
             return substr($string, 1, -1);
         }
 

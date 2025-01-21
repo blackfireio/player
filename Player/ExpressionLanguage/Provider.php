@@ -38,18 +38,16 @@ class Provider implements ExpressionFunctionProviderInterface
         FakerGenerator|null $faker = null,
         private readonly bool $sandbox = false,
     ) {
-        $this->faker = null !== $faker ? $faker : FakerFactory::create();
+        $this->faker = $faker ?? FakerFactory::create();
         $this->faker->addProvider(new ImagesGeneratorProvider($this->faker));
     }
 
     public function getFunctions(): array
     {
-        $compiler = function () { return ''; };
+        $compiler = (fn (): string => '');
 
         return [
-            new ExpressionFunction('url', $compiler, function (array $arguments, string $url) {
-                return $url;
-            }),
+            new ExpressionFunction('url', $compiler, fn (array $arguments, string $url): string => $url),
 
             new ExpressionFunction('link', $compiler, function (array $arguments, string $selector) {
                 if (null === $arguments['_crawler']) {
@@ -69,14 +67,14 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_crawler']->selectButton($selector);
             }),
 
-            new ExpressionFunction('file', $compiler, function (array $arguments, string $filename, string|null $name = null) {
+            new ExpressionFunction('file', $compiler, function (array $arguments, string $filename, string|null $name = null): UploadFile {
                 if ($this->sandbox) {
                     if (UploadFile::isAbsolutePath($filename)) {
                         $extra = $arguments['_extra'];
                         if (!$extra->has(TmpDirExtension::EXTRA_VALUE_KEY)) {
                             throw new LogicException('The "file" provider is not supported when the "TmpDirExtension" is disabled in the sandbox mode.');
                         }
-                        if (!str_starts_with($filename, $extra->get(TmpDirExtension::EXTRA_VALUE_KEY))) {
+                        if (!str_starts_with($filename, (string) $extra->get(TmpDirExtension::EXTRA_VALUE_KEY))) {
                             throw new SecurityException('The "file" provider does not support absolute file paths in the sandbox mode (use the "fake()" function instead).');
                         }
                     } else {
@@ -92,10 +90,10 @@ class Provider implements ExpressionFunctionProviderInterface
                     $filename = $arguments['_working_dir'].$filename;
                 }
 
-                return new UploadFile($filename, $name ?: basename($filename));
+                return new UploadFile($filename, $name ?? basename($filename));
             }),
 
-            new ExpressionFunction('current_url', $compiler, function (array $arguments) {
+            new ExpressionFunction('current_url', $compiler, function (array $arguments): string {
                 if (null === $arguments['_crawler']) {
                     throw new LogicException('Unable to get the current URL as the page is not crawlable.');
                 }
@@ -111,7 +109,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getStatusCode();
             }),
 
-            new ExpressionFunction('headers', $compiler, function (array $arguments) {
+            new ExpressionFunction('headers', $compiler, function (array $arguments): array {
                 $headers = [];
                 if ($arguments['_response'] instanceof Response) {
                     foreach ($arguments['_response']->headers as $key => $value) {
@@ -126,7 +124,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $headers;
             }),
 
-            new ExpressionFunction('body', $compiler, function (array $arguments) {
+            new ExpressionFunction('body', $compiler, function (array $arguments): string {
                 if ($arguments['_response'] instanceof Response) {
                     return $arguments['_response']->body;
                 }
@@ -154,15 +152,11 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getHeader($name)[0];
             }),
 
-            new ExpressionFunction('trim', $compiler, function (array $arguments, string $scalar) {
-                return trim($scalar);
-            }),
+            new ExpressionFunction('trim', $compiler, fn (array $arguments, string $scalar): string => trim($scalar)),
 
-            new ExpressionFunction('unique', $compiler, function (array $arguments, array $arr) {
-                return array_unique($arr);
-            }),
+            new ExpressionFunction('unique', $compiler, fn (array $arguments, array $arr): array => array_unique($arr)),
 
-            new ExpressionFunction('join', $compiler, function (array $arguments, mixed $value, string $glue) {
+            new ExpressionFunction('join', $compiler, function (array $arguments, mixed $value, string $glue): string {
                 if ($value instanceof \Traversable) {
                     $value = iterator_to_array($value, false);
                 }
@@ -170,7 +164,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return implode($glue, (array) $value);
             }),
 
-            new ExpressionFunction('merge', $compiler, function (array $arguments, mixed $arr1, mixed $arr2) {
+            new ExpressionFunction('merge', $compiler, function (array $arguments, mixed $arr1, mixed $arr2): array {
                 if ($arr1 instanceof \Traversable) {
                     $arr1 = iterator_to_array($arr1);
                 } elseif (!\is_array($arr1)) {
@@ -189,7 +183,7 @@ class Provider implements ExpressionFunctionProviderInterface
             new ExpressionFunction('fake', $compiler, function (array $arguments, string|null $provider = null/* , $othersArgs ... */) {
                 $arguments = \func_get_args();
 
-                if (!$provider) {
+                if (null === $provider) {
                     throw new InvalidArgumentException('Missing first argument (provider) for the fake function.');
                 }
 
@@ -222,7 +216,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $ret;
             }),
 
-            new ExpressionFunction('regex', $compiler, function (array $arguments, string $regex, string|null $str = null) {
+            new ExpressionFunction('regex', $compiler, function (array $arguments, string $regex, string|null $str = null): string|null {
                 if (null === $str) {
                     if ($arguments['_response'] instanceof Response) {
                         $str = $arguments['_response']->body;
@@ -237,7 +231,7 @@ class Provider implements ExpressionFunctionProviderInterface
                     throw new InvalidArgumentException(\sprintf('Regex "%s" is not valid: %s.', $regex, error_get_last()['message']));
                 }
 
-                return isset($matches[1]) ? $matches[1] : null;
+                return $matches[1] ?? null;
             }),
 
             new ExpressionFunction('css', $compiler, function (array $arguments, string $selector) {
@@ -265,16 +259,14 @@ class Provider implements ExpressionFunctionProviderInterface
                     } else {
                         $data = Json::decode((string) $arguments['_response']->getBody());
                     }
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                     throw new LogicException(\sprintf(' Unable to get the "%s" JSON path as the Response body does not seem to be JSON.', $selector));
                 }
 
                 return JmesPath::search($selector, $data);
             }),
 
-            new ExpressionFunction('transform', $compiler, function (array $arguments, string $selector, mixed $data) {
-                return JmesPath::search($selector, $data);
-            }),
+            new ExpressionFunction('transform', $compiler, fn (array $arguments, string $selector, mixed $data) => JmesPath::search($selector, $data)),
         ];
     }
 

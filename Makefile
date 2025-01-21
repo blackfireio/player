@@ -11,9 +11,12 @@ box_image = blackfire/php-internal:8.3-v1.0.62
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
 BASE_PHP=@docker run --rm -e "PHP_CS_FIXER_IGNORE_ENV=1" -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ -i
-PHP= $(BASE_PHP) $(php_image)
-PHP_TTY=$(BASE_PHP) -t $(php_image)
 BOX=@docker run --rm -v $(PWD):/app -w /app $(box_image)
+ifdef CI
+	PHP= $(BASE_PHP) $(php_image)
+else
+	PHP= $(BASE_PHP) -t $(php_image)
+endif
 
 ifdef BUILDKITE
 define section_start
@@ -68,6 +71,12 @@ php-cs-fix: bin/tools/php-cs-fixer vendor/autoload.php ## Analyze and fix PHP co
 	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php
 .PHONY: php-cs-fix
 
+rector-fix: vendor/bin/rector vendor/autoload.php ## Analyze and fix PHP code with rector
+	@$(PHP) php -dmemory_limit=-1 ./vendor/bin/rector
+.PHONY: rector-fix
+
+vendor/bin/rector: vendor/autoload.php
+
 phpstan: bin/tools/phpstan vendor/autoload.php ## Analyze PHP code with phpstan
 	@$(call section_start, $@, "Running PHPStan", false)
 
@@ -77,7 +86,7 @@ phpstan: bin/tools/phpstan vendor/autoload.php ## Analyze PHP code with phpstan
 .PHONY: phpstan
 
 shell: ## Starts a shell in container
-	@$(PHP_TTY) bash
+	@$(PHP) bash
 
 package-test: $(BOX_BIN) vendor/autoload.php ## Tests the phar release
 	@# The box.no-git.json configuration file disables git placeholder, avoiding git calls during packaging

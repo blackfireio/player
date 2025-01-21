@@ -24,7 +24,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ProviderTest extends TestCase
 {
-    public function testItHasFunctions()
+    public function testItHasFunctions(): void
     {
         $provider = new Provider();
 
@@ -37,7 +37,7 @@ class ProviderTest extends TestCase
         $this->assertInstanceOf(UploadFile::class, $res);
     }
 
-    public function testSandboxModeFileRelativeFile()
+    public function testSandboxModeFileRelativeFile(): void
     {
         $provider = new Provider(null, true);
         $language = new ExpressionLanguage(null, [$provider]);
@@ -47,7 +47,7 @@ class ProviderTest extends TestCase
         $language->evaluate('file("file", "name")', ['_working_dir' => __DIR__.'/']);
     }
 
-    public function testSandboxModeFileAbsoluteFile()
+    public function testSandboxModeFileAbsoluteFile(): void
     {
         $provider = new Provider(null, true);
         $language = new ExpressionLanguage(null, [$provider]);
@@ -66,7 +66,7 @@ class ProviderTest extends TestCase
         }
     }
 
-    public function testSandboxModeFakerImageProvider()
+    public function testSandboxModeFakerImageProvider(): void
     {
         $faker = new Generator();
         $faker->addProvider(new SafeFakerImageProvider($faker));
@@ -87,7 +87,7 @@ class ProviderTest extends TestCase
         }
     }
 
-    public function testSandboxModeFakerFileProvider()
+    public function testSandboxModeFakerFileProvider(): void
     {
         $provider = new Provider(null, true);
         $language = new ExpressionLanguage(null, [$provider]);
@@ -97,7 +97,7 @@ class ProviderTest extends TestCase
         $language->evaluate('fake("file", "a")');
     }
 
-    public function testNonExistentFileThrowsAnException()
+    public function testNonExistentFileThrowsAnException(): void
     {
         $provider = new Provider(null, false);
         $language = new ExpressionLanguage(null, [$provider]);

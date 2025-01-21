@@ -33,12 +33,11 @@ class WhileStep extends BlockStep
         $this->whileStep = $whileStep;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $str = \sprintf("└ %s: %s\n", static::class, $this->condition);
-        $str .= $this->blockToString($this->whileStep);
 
-        return $str;
+        return $str.$this->blockToString($this->whileStep);
     }
 
     public function getCondition(): string

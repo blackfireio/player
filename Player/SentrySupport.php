@@ -15,6 +15,13 @@ use Sentry\Breadcrumb;
 use Sentry\EventHint;
 use Sentry\EventId;
 use Sentry\Severity;
+use Sentry\State\Scope;
+
+use function Sentry\addBreadcrumb;
+use function Sentry\captureException;
+use function Sentry\captureMessage;
+use function Sentry\configureScope;
+use function Sentry\init;
 
 /**
  * @internal
@@ -23,13 +30,13 @@ class SentrySupport
 {
     public static function init(string $transactionId): void
     {
-        if (!$dsn = getenv('BLACKFIRE_PLAYER_SENTRY_DSN')) {
+        if ('' === $dsn = (string) getenv('BLACKFIRE_PLAYER_SENTRY_DSN')) {
             return;
         }
 
         $version = Player::version();
 
-        \Sentry\init([
+        init([
             'dsn' => $dsn,
             'max_breadcrumbs' => 50,
             'release' => $version,
@@ -38,7 +45,7 @@ class SentrySupport
             'max_value_length' => 4096,
         ]);
 
-        \Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($transactionId) {
+        configureScope(function (Scope $scope) use ($transactionId): void {
             $scope->setTag('transaction_id', $transactionId);
         });
 
@@ -58,7 +65,7 @@ class SentrySupport
 
     public static function addBreadcrumb(string $message, array $metadata = []): void
     {
-        \Sentry\addBreadcrumb(Breadcrumb::fromArray([
+        addBreadcrumb(Breadcrumb::fromArray([
             'level' => Breadcrumb::LEVEL_INFO,
             'category' => 'blackfire',
             'message' => $message,
@@ -66,13 +73,13 @@ class SentrySupport
         ]));
     }
 
-    public static function captureException(\Throwable $throwable, array $eventHint = [])
+    public static function captureException(\Throwable $throwable, array $eventHint = []): void
     {
-        \Sentry\captureException($throwable, EventHint::fromArray($eventHint));
+        captureException($throwable, EventHint::fromArray($eventHint));
     }
 
     public static function captureMessage(string $message, Severity|null $level = null, EventHint|null $hint = null): EventId|null
     {
-        return \Sentry\captureMessage($message, $level, $hint);
+        return captureMessage($message, $level, $hint);
     }
 }

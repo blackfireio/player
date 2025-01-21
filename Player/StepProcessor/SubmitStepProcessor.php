@@ -55,7 +55,7 @@ class SubmitStepProcessor implements StepProcessorInterface
         $selector = $step->getSelector();
         $form = $this->expressionEvaluator->evaluateExpression($selector, $stepContext, $scenarioContext);
 
-        if (!\count($form)) {
+        if (0 === \count($form)) {
             throw new CrawlException(\sprintf('Unable to submit form as button "%s" does not exist.', $selector));
         }
 
@@ -83,7 +83,7 @@ class SubmitStepProcessor implements StepProcessorInterface
                 $formData = new FormDataPart($values);
                 $formHeaders = $formData->getPreparedHeaders()->all();
                 foreach ($formHeaders as $formHeader) {
-                    $headers[strtolower($formHeader->getName())] = [$formHeader->getBodyAsString()];
+                    $headers[strtolower((string) $formHeader->getName())] = [$formHeader->getBodyAsString()];
                 }
 
                 $body = static fn () => yield from $formData->bodyToIterable();
@@ -103,7 +103,7 @@ class SubmitStepProcessor implements StepProcessorInterface
         yield new RequestStep(
             new Request(
                 $form->getMethod(),
-                $this->uriResolver->resolveUri($this->expressionEvaluator->evaluateExpression($stepContext->getEndpoint(), $stepContext, $scenarioContext), $form->getUri()),
+                $this->uriResolver->resolveUri($this->expressionEvaluator->evaluateExpression($stepContext->getEndpoint(), $stepContext, $scenarioContext) ?? '', $form->getUri()),
                 $headers,
                 $body
             ),

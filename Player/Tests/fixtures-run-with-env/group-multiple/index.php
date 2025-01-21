@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-require_once '../../Mock/mockedProbeEndpoint.php';
+require_once __DIR__.'/../../Mock/mockedProbeEndpoint.php';
 
-mockedProbeEndpoint(function () {
+mockedProbeEndpoint(function (): void {
     $counter = (int) ($_COOKIE['counter'] ?? 0);
     ++$counter;
     header('Set-Cookie: counter='.$counter);

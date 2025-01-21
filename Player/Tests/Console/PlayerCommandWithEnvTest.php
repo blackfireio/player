@@ -15,6 +15,7 @@ use Blackfire\Player\Console\Application;
 use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
 use Blackfire\Player\Tests\Http\JsonViewLoggerHttpClient;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Finder\Finder;
@@ -25,7 +26,7 @@ class PlayerCommandWithEnvTest extends TestCase
 {
     use MockServerTrait;
 
-    private const FIXTURES_DIR = 'fixtures-run-with-env';
+    private const string FIXTURES_DIR = 'fixtures-run-with-env';
     protected static string $port;
 
     private JsonViewLoggerHttpClient $jsonViewLoggerHttpClient;
@@ -48,8 +49,8 @@ class PlayerCommandWithEnvTest extends TestCase
         @unlink(sys_get_temp_dir().'/probe_mock_state.json');
     }
 
-    /** @dataProvider providePlayerWithEnvTests */
-    public function testPlayerWithEnvironment($file, $expectedOutput, StubbedSdkAdapter $sdkAdapter, string $envName, array $testOptions)
+    #[DataProvider('providePlayerWithEnvTests')]
+    public function testPlayerWithEnvironment($file, string|bool $expectedOutput, StubbedSdkAdapter $sdkAdapter, string $envName, array $testOptions): void
     {
         $expectedExitCode = $testOptions['expected_exit_code'];
         $expectedReportOutput = $testOptions['report_file'];

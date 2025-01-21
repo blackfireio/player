@@ -43,7 +43,7 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
     private bool $concurrency = false;
     private array $debugLines = [];
 
-    private bool $debug;
+    private readonly bool $debug;
 
     public function __construct(
         private readonly OutputInterface $output,
@@ -75,7 +75,7 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
         $this->stepDeep = 0;
 
         $this->output->writeln('');
-        $this->output->writeln(\sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?: $scenarioContext->getExtraValue('_index')));
+        $this->output->writeln(\sprintf('<fg=blue>Scenario</> <title> %s </>', $scenario->getName() ?? $scenarioContext->getExtraValue('_index')));
     }
 
     public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
@@ -98,7 +98,7 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
             if (!$this->debug && (\strlen($name) - 3) > $this->terminalWidth) {
                 $name = substr($name, 0, $this->terminalWidth - 3).'...';
             }
-        } elseif ($name = $step->getName()) {
+        } elseif (null !== $name = $step->getName()) {
             $name = \sprintf('<title>%s%s </>', $indent, $name);
         } else {
             $name = \sprintf('%s[%s %d]', $indent, $step->getType(), $this->stepIndex);
@@ -123,14 +123,17 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
         $variables = $scenarioContext->getVariableValues($stepContext, true);
         $dumpValues = $step->getDumpValuesName();
         $response = $scenarioContext->hasPreviousResponse() ? $scenarioContext->getLastResponse() : null;
-        if ($response && \in_array('request', $dumpValues, true)) {
+        if (null !== $response && \in_array('request', $dumpValues, true)) {
             $this->output->write(\sprintf("<debug>request:</>\n%s\n", $response->request->toString()));
         }
-        if ($response && \in_array('response', $dumpValues, true)) {
+        if (null !== $response && \in_array('response', $dumpValues, true)) {
             $this->output->write(\sprintf("<debug>response:</>\n%s\n", $response->toString()));
         }
         foreach ($dumpValues as $varName) {
-            if ('request' === $varName || 'response' === $varName) {
+            if ('request' === $varName) {
+                continue;
+            }
+            if ('response' === $varName) {
                 continue;
             }
             if (\array_key_exists($varName, $variables)) {
@@ -203,21 +206,20 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
 
         $ctx = $step instanceof Scenario ? 'Failure on scenario' : 'Failure on step';
 
-        $name = $step->getName();
-        if ($name) {
+        if (null !== $name = $step->getName()) {
             $ctx .= \sprintf(' <title> %s </>', $name);
         }
 
-        if ($step->getFile()) {
+        if (null !== $step->getFile()) {
             $ctx .= \sprintf(' defined in <title>%s</> at line <title> %d </>', $step->getFile(), $step->getLine());
-        } elseif ($step->getLine()) {
+        } elseif (null !== $step->getLine()) {
             $ctx .= \sprintf(' defined at line <title>%d</>', $step->getLine());
         }
 
         $this->output->writeln(\sprintf('<failure> </> %s', $ctx));
 
         foreach ($errors as $error) {
-            $lines = explode("\n", $error);
+            $lines = explode("\n", (string) $error);
 
             $this->output->writeln(\sprintf('<failure> </> └ <failure>%s</>', array_shift($lines)));
             foreach ($lines as $line) {
@@ -279,7 +281,7 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
     private function linePrefix(ScenarioContext $scenarioContext): string
     {
         if ($this->concurrency) {
-            return \sprintf('<fg=blue>Scenario</> <title> %s </> ', $scenarioContext->getName() ?: $scenarioContext->getExtraValue('_index'));
+            return \sprintf('<fg=blue>Scenario</> <title> %s </> ', $scenarioContext->getName() ?? $scenarioContext->getExtraValue('_index'));
         }
 
         return '';

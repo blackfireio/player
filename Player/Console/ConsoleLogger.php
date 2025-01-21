@@ -19,7 +19,7 @@ use Symfony\Component\Console\Logger\ConsoleLogger as BaseConsoleLogger;
  */
 final class ConsoleLogger extends BaseConsoleLogger
 {
-    private const ERROR_LEVELS = [
+    private const array ERROR_LEVELS = [
         LogLevel::EMERGENCY => 1,
         LogLevel::ALERT => 1,
         LogLevel::CRITICAL => 1,

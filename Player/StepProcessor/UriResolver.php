@@ -19,9 +19,9 @@ use Symfony\Component\DomCrawler\UriResolver as SymfonyUriResolver;
  */
 class UriResolver
 {
-    public function resolveUri(string|null $baseUri, string $uri): string
+    public function resolveUri(string $baseUri, string $uri): string
     {
-        if (!$baseUri) {
+        if ('' === $baseUri) {
             if (null === parse_url($uri, \PHP_URL_SCHEME)) {
                 throw new CrawlException(\sprintf('Unable to crawl a non-absolute URI (/%s). Did you forget to set an "endpoint"?', $uri));
             }
@@ -38,24 +38,24 @@ class UriResolver
     {
         $pass = $parsed['pass'] ?? null;
         $user = $parsed['user'] ?? null;
-        $userinfo = null !== $pass ? "$user:$pass" : $user;
+        $userinfo = null !== $pass ? \sprintf('%s:%s', $user, $pass) : $user;
 
         $port = $parsed['port'] ?? 0;
         $scheme = $parsed['scheme'] ?? '';
         $query = $parsed['query'] ?? '';
         $fragment = $parsed['fragment'] ?? '';
         $authority = (
-            (null !== $userinfo ? "$userinfo@" : '').
+            (null !== $userinfo ? $userinfo.'@' : '').
             ($parsed['host'] ?? '').
-            ($port ? ":$port" : '')
+            ($port ? ':'.$port : '')
         );
 
         return
-            (\strlen($scheme) > 0 ? "$scheme:" : '').
-            (\strlen($authority) > 0 ? "//$authority" : '').
+            (\strlen((string) $scheme) > 0 ? $scheme.':' : '').
+            (\strlen($authority) > 0 ? '//'.$authority : '').
             ($parsed['path'] ?? '').
-            (\strlen($query) > 0 ? "?$query" : '').
-            (\strlen($fragment) > 0 ? "#$fragment" : '')
+            (\strlen((string) $query) > 0 ? '?'.$query : '').
+            (\strlen((string) $fragment) > 0 ? '#'.$fragment : '')
         ;
     }
 }

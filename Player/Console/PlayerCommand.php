@@ -77,22 +77,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class PlayerCommand extends Command
 {
-    public const EXIT_CODE_EXPECTATION_ERROR = 64;
-    public const EXIT_CODE_SCENARIO_ERROR = 65;
-    public const EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
-    public const EXIT_CODE_BLACKFIRE_NETWORK_ERROR = 67;
-
-    private HttpClientInterface|null $blackfireHttpClient;
-    private BlackfireSdkAdapterInterface|null $blackfireSdkAdapter;
-    private string $transactionId;
+    public const int EXIT_CODE_EXPECTATION_ERROR = 64;
+    public const int EXIT_CODE_SCENARIO_ERROR = 65;
+    public const int EXIT_CODE_SCENARIO_ERROR_NON_FATAL = 66;
+    public const int EXIT_CODE_BLACKFIRE_NETWORK_ERROR = 67;
 
     public function __construct(
-        HttpClientInterface|null $blackfireHttpClient, BlackfireSdkAdapterInterface|null $blackfireSdkAdapter, string $transactionId)
+        private HttpClientInterface|null $blackfireHttpClient, private BlackfireSdkAdapterInterface|null $blackfireSdkAdapter, private readonly string $transactionId)
     {
-        $this->blackfireHttpClient = $blackfireHttpClient;
-        $this->blackfireSdkAdapter = $blackfireSdkAdapter;
-        $this->transactionId = $transactionId;
-
         parent::__construct();
     }
 
@@ -134,7 +126,7 @@ final class PlayerCommand extends Command
         }
 
         // The Blackfire SDK Adapter is always null in production. We only inject one for testing purpose.
-        if (!$this->blackfireSdkAdapter) {
+        if (null === $this->blackfireSdkAdapter) {
             $clientConfiguration = null;
             if (null !== $configFile = $input->getOption('config')) {
                 $clientConfiguration = ClientConfiguration::createFromFile($configFile);
@@ -156,7 +148,7 @@ final class PlayerCommand extends Command
             'endpoint' => $endpoint,
         ] = $this->getConfig($this->blackfireSdkAdapter);
 
-        if (!$this->blackfireHttpClient) {
+        if (null === $this->blackfireHttpClient) {
             $errorMessagePattern = 'Missing required "%s" configuration. Either configure it using "%s" environment variable or in your .blackfire.ini file';
 
             if (!$clientId) {
@@ -189,7 +181,7 @@ final class PlayerCommand extends Command
             stream_copy_to_stream($stdin, $copy);
             $input->setArgument('file', $copy);
         } else {
-            $extension = pathinfo($input->getArgument('file'), \PATHINFO_EXTENSION);
+            $extension = pathinfo((string) $input->getArgument('file'), \PATHINFO_EXTENSION);
             if ('yml' === $extension || 'yaml' === $extension) {
                 $sandbox = true;
             }
@@ -213,7 +205,7 @@ final class PlayerCommand extends Command
             $this->getEnvOrDefault('BLACKFIRE_BASIC_AUTH_PASSWORD'),
         ]);
 
-        if (!empty($authBasic) && $input->getOption('endpoint')) {
+        if ([] !== $authBasic && $input->getOption('endpoint')) {
             $httpClient = ScopingHttpClient::forBaseUri($httpClient, $input->getOption('endpoint'), [
                 ...$httpClientOptions,
                 'auth_basic' => $authBasic,
@@ -245,7 +237,7 @@ final class PlayerCommand extends Command
         );
 
         if ($input->getOption('step')) {
-            $player->addExtension(new InteractiveStepByStepExtension($this->getHelper('question'), $input, $output, $variableResolver), 2048);
+            $player->addExtension(new InteractiveStepByStepExtension($this->getHelper('question'), $input, $output), 2048);
         }
 
         $player->addExtension(new TmpDirExtension($filesystem));
@@ -346,18 +338,8 @@ final class PlayerCommand extends Command
     private function getEnvOrDefault(string $envVar, string|null $default = null): string|null
     {
         $env = getenv($envVar);
-        if (!$env) {
-            $env = $default;
-        }
-
-        return $env;
-    }
-
-    private function getEnvOrThrow(string $envVar): string
-    {
-        $env = getenv($envVar);
-        if (!$env) {
-            throw new \InvalidArgumentException(\sprintf('Missing required "%s" environment variable', $envVar));
+        if ('' === (string) $env) {
+            return $default;
         }
 
         return $env;

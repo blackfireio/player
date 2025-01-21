@@ -22,7 +22,7 @@ use Blackfire\Player\Step\StepContext;
  */
 readonly class BlackfireEnvResolver
 {
-    private const DEPRECATION_ENV_RESOLVING = 'Resolving an environment at the scenario level using the "blackfire" property is deprecated. Please use `--blackfire-env` instead.';
+    private const string DEPRECATION_ENV_RESOLVING = 'Resolving an environment at the scenario level using the "blackfire" property is deprecated. Please use `--blackfire-env` instead.';
 
     public function __construct(
         private string|null $defaultEnv,

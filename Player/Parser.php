@@ -44,7 +44,7 @@ class Parser
 {
     public const REGEX_NAME = '[a-zA-Z_\x7f-\xff][\-a-zA-Z0-9_\x7f-\xff]*';
 
-    private const KEYWORD_ENDPOINT = 'endpoint';
+    private const string KEYWORD_ENDPOINT = 'endpoint';
 
     private bool $inAGroup;
     /** @var string[] */
@@ -187,7 +187,7 @@ class Parser
             throw new SyntaxErrorException(\sprintf('Indentation is wrong %s.', $input->getContextString()));
         }
 
-        if (!preg_match('/^('.self::REGEX_NAME.')(?:\s+(.+)$|$)/', $line, $matches)) {
+        if (0 === preg_match('/^('.self::REGEX_NAME.')(?:\s+(.+)$|$)/', $line, $matches)) {
             throw new SyntaxErrorException(\sprintf('Unable to parse "%s" %s.', $line, $input->getContextString()));
         }
 
@@ -203,12 +203,12 @@ class Parser
                 throw new SyntaxErrorException(\sprintf('A "load" takes a file pattern as a required argument %s.', $input->getContextString()));
             }
 
-            if (!preg_match('{^("|\')(.+?)\1$}', $arguments, $matches)) {
+            if (0 === preg_match('{^("|\')(.+?)\1$}', $arguments, $matches)) {
                 throw new SyntaxErrorException(\sprintf('"load" takes a quoted string as an argument %s.', $input->getContextString()));
             }
 
             $inputFile = realpath((string) $input->getFile());
-            $baseDir = $input->getFile() ? \dirname($inputFile) : realpath(getcwd());
+            $baseDir = null !== $input->getFile() ? \dirname($inputFile) : realpath(getcwd());
             $finder = new Finder();
             $finder->files()->in($baseDir)->path(Glob::toRegex($matches[2]));
 
@@ -349,7 +349,7 @@ class Parser
             $step = new ConditionStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
             $childStep = $this->parseSteps($input, $expectedIndent + 1);
-            if (!$childStep->getNext()) {
+            if (null === $childStep->getNext()) {
                 $step->setIfStep($childStep);
             } else {
                 $blockStep = new BlockStep();
@@ -366,7 +366,7 @@ class Parser
             $step = new WhileStep($this->checkExpression($input, $arguments), $input->getFile(), $input->getLine());
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
             $childStep = $this->parseSteps($input, $expectedIndent + 1);
-            if (!$childStep->getNext()) {
+            if (null === $childStep->getNext()) {
                 $step->setWhileStep($childStep);
             } else {
                 $blockStep = new BlockStep();
@@ -382,7 +382,7 @@ class Parser
 
             // valueName in values
             // keyName, valueName in values
-            if (!preg_match('/^(.+)\s+in\s+(.+)$/', $arguments, $matches)) {
+            if (0 === preg_match('/^(.+)\s+in\s+(.+)$/', $arguments, $matches)) {
                 throw new SyntaxErrorException(\sprintf('A "with" step value must be like "url in urls" %s.', $input->getContextString()));
             }
 
@@ -404,7 +404,7 @@ class Parser
             $step = new LoopStep($this->checkExpression($input, $values), $keyName, $valueName, $input->getFile(), $input->getLine());
             $this->parseStepConfig($input, $step, $expectedIndent + 1, true);
             $childStep = $this->parseSteps($input, $expectedIndent + 1);
-            if (!$childStep->getNext()) {
+            if (null === $childStep->getNext()) {
                 $step->setLoopStep($childStep);
             } else {
                 $blockStep = new BlockStep();
@@ -429,7 +429,7 @@ class Parser
                 throw new SyntaxErrorException(\sprintf('A "set" takes an argument %s.', $input->getContextString()));
             }
 
-            if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
+            if (0 === preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
                 throw new SyntaxErrorException(\sprintf('Unable to parse "expect" arguments "%s" %s.', $arguments, $input->getContextString()));
             }
 
@@ -469,7 +469,7 @@ class Parser
 
             $line = $input->getNextLine();
 
-            if (!preg_match('/^('.self::REGEX_NAME.')(?:\s+(.+)$|$)/', $line, $matches)) {
+            if (0 === preg_match('/^('.self::REGEX_NAME.')(?:\s+(.+)$|$)/', $line, $matches)) {
                 if ($ignoreInvalid) {
                     $input->rewindLine();
 
@@ -517,7 +517,7 @@ class Parser
                     throw new SyntaxErrorException(\sprintf('A "set" takes a name and a value as required arguments %s.', $input->getContextString()));
                 }
 
-                if (!preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
+                if (0 === preg_match('/^('.self::REGEX_NAME.')\s+(.+)$/', $arguments, $matches)) {
                     throw new SyntaxErrorException(\sprintf('Unable to parse "set" arguments "%s" %s.', $arguments, $input->getContextString()));
                 }
 
@@ -574,7 +574,7 @@ class Parser
                     throw new SyntaxErrorException(\sprintf('A "param" takes a required argument %s.', $input->getContextString()));
                 }
 
-                if (!preg_match('/^([^\s]+)\s+(.+)$/', $arguments, $matches)) {
+                if (0 === preg_match('/^([^\s]+)\s+(.+)$/', $arguments, $matches)) {
                     throw new SyntaxErrorException(\sprintf('Unable to parse "param" arguments "%s" %s.', $arguments, $input->getContextString()));
                 }
 

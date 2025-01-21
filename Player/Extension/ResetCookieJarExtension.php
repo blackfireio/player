@@ -19,7 +19,7 @@ use Blackfire\Player\ScenarioResult;
 class ResetCookieJarExtension implements ScenarioExtensionInterface
 {
     public function __construct(
-        private CookieJar $cookieJar,
+        private readonly CookieJar $cookieJar,
     ) {
     }
 

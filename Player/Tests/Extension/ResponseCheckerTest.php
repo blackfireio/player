@@ -19,30 +19,28 @@ use Blackfire\Player\Http\CrawlerFactory;
 use Blackfire\Player\Http\Request;
 use Blackfire\Player\Http\Response;
 use Blackfire\Player\Json;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ResponseCheckerTest extends TestCase
 {
-    private ExpressionLanguage $language;
     private ResponseChecker $responseChecker;
 
     protected function setUp(): void
     {
-        $this->language = new ExpressionLanguage(null, [new Provider()]);
-        $this->responseChecker = new ResponseChecker($this->language);
+        $language = new ExpressionLanguage(null, [new Provider()]);
+        $this->responseChecker = new ResponseChecker($language);
     }
 
-    /**
-     * @dataProvider checkSuccessProvider()
-     */
-    public function testCheckSuccess(array $expectations, array $variables)
+    #[DataProvider('checkSuccessProvider')]
+    public function testCheckSuccess(array $expectations, array $variables): void
     {
         $this->expectNotToPerformAssertions();
 
         $this->responseChecker->check($expectations, $variables);
     }
 
-    public static function checkSuccessProvider()
+    public static function checkSuccessProvider(): \Generator
     {
         yield 'simple assertions' => [
             [
@@ -69,10 +67,8 @@ class ResponseCheckerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider checkFailuresProvider()
-     */
-    public function testCheckFailure(array $expectations, array $variables, array $expectedResolvedExpressions)
+    #[DataProvider('checkFailuresProvider')]
+    public function testCheckFailure(array $expectations, array $variables, array $expectedResolvedExpressions): void
     {
         try {
             $this->responseChecker->check($expectations, $variables);
@@ -85,7 +81,7 @@ class ResponseCheckerTest extends TestCase
         $this->fail('No exception were thrown, one expected');
     }
 
-    public static function checkFailuresProvider()
+    public static function checkFailuresProvider(): \Generator
     {
         yield 'comparing two json response properties whose values are different' => [
             [

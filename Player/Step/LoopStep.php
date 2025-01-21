@@ -35,12 +35,11 @@ class LoopStep extends BlockStep
         $this->loopStep = $loopStep;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $str = \sprintf("└ %s: %s, %s in %s\n", static::class, $this->keyName, $this->valueName, $this->values);
-        $str .= $this->blockToString($this->loopStep);
 
-        return $str;
+        return $str.$this->blockToString($this->loopStep);
     }
 
     public function getValues(): string

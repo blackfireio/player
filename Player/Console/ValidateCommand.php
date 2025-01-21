@@ -28,7 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 final class ValidateCommand extends Command
 {
-    public const EXIT_CODE_FAILURE = 64;
+    public const int EXIT_CODE_FAILURE = 64;
 
     protected function configure(): void
     {
@@ -81,7 +81,7 @@ final class ValidateCommand extends Command
             ]));
         } elseif ($result->isSuccess()) {
             $output->writeln('<info>The scenarios are valid.</>');
-            if ($missingVariables = $result->getMissingVariables()) {
+            if ([] !== $missingVariables = $result->getMissingVariables()) {
                 $io = new SymfonyStyle($input, $output);
                 $io->note(array_merge(['You need to define the following variables using the `--variable` option:'], $missingVariables));
             }
@@ -89,7 +89,7 @@ final class ValidateCommand extends Command
             $output->writeln('<info>The scenarios are not valid:</>');
 
             foreach ($result->getErrors() as $error) {
-                $output->writeln(" - $error");
+                $output->writeln(' - '.$error);
             }
 
             return self::EXIT_CODE_FAILURE;

@@ -30,7 +30,7 @@ class SubmitStep extends Step
         parent::__construct($file, $line);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return \sprintf("└ %s: %s\n", static::class, $this->selector);
     }

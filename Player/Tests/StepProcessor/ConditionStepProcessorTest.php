@@ -36,7 +36,7 @@ class ConditionStepProcessorTest extends TestCase
         $this->resetStepUuidOnDump();
     }
 
-    public function testProcessTrue()
+    public function testProcessTrue(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -56,7 +56,7 @@ class ConditionStepProcessorTest extends TestCase
         $this->assertDumpEquals($expectedBlockStepDump, $nextSteps);
     }
 
-    public function testProcessFalse()
+    public function testProcessFalse(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());

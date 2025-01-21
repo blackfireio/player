@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-$i = isset($_GET['i']) ? $_GET['i'] : 0;
+$i = $_GET['i'] ?? 0;
 
 if ($i >= 4) {
     echo 'OK';

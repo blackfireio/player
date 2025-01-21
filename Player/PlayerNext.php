@@ -62,12 +62,12 @@ class PlayerNext
 
         $fibers = [];
         foreach ($scenarioSet as $index => $scenario) {
-            $fibers[uniqid('', true)] = new \Fiber(fn () => $this->handleScenario($index, $scenario, $scenarioSet));
+            $fibers[uniqid('', true)] = new \Fiber(fn (): ScenarioResult => $this->handleScenario($index, $scenario, $scenarioSet));
         }
 
         $runningFibers = 0;
         $concurrency = max($concurrency, 1);
-        while (!empty($fibers)) {
+        while ([] !== $fibers) {
             $loopStart = microtime(true);
             foreach ($fibers as $key => $fiber) {
                 if (!$fiber->isStarted()) {
@@ -180,7 +180,7 @@ class PlayerNext
 
                 $this->handleStep(
                     $childStep,
-                    $this->stepContextFactory->createStepContext($childStep, $stepContext, $scenarioContext),
+                    $this->stepContextFactory->createStepContext($childStep, $stepContext),
                     $scenarioContext,
                     $scenarioSet
                 );

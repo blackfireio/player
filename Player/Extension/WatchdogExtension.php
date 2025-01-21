@@ -22,11 +22,11 @@ use Blackfire\Player\Step\StepInitiatorInterface;
  *
  * @internal
  */
-final class WatchdogExtension implements StepExtensionInterface
+final readonly class WatchdogExtension implements StepExtensionInterface
 {
     public function __construct(
-        private readonly int $stepLimit = 50,
-        private readonly int $totalLimit = 1000,
+        private int $stepLimit = 50,
+        private int $totalLimit = 1000,
     ) {
     }
 

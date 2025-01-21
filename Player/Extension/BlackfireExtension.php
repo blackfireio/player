@@ -40,19 +40,19 @@ use Blackfire\Profile\Configuration as ProfileConfiguration;
  *
  * @internal
  */
-final class BlackfireExtension implements NextStepExtensionInterface, StepExtensionInterface, ScenarioSetExtensionInterface
+final readonly class BlackfireExtension implements NextStepExtensionInterface, StepExtensionInterface, ScenarioSetExtensionInterface
 {
-    public const MAX_RETRY = 10;
+    public const int MAX_RETRY = 10;
 
-    public const HEADER_BLACKFIRE_QUERY = 'x-blackfire-query';
-    public const HEADER_BLACKFIRE_PROFILE_UUID = 'x-blackfire-profile-uuid';
-    public const HEADER_BLACKFIRE_RESPONSE = 'x-blackfire-response';
+    public const string HEADER_BLACKFIRE_QUERY = 'x-blackfire-query';
+    public const string HEADER_BLACKFIRE_PROFILE_UUID = 'x-blackfire-profile-uuid';
+    public const string HEADER_BLACKFIRE_RESPONSE = 'x-blackfire-response';
 
     public function __construct(
-        private readonly ExpressionLanguage $language,
-        private readonly BlackfireEnvResolver $blackfireEnvResolver,
-        private readonly BuildApi $buildApi,
-        private readonly BlackfireSdkAdapterInterface $blackfire,
+        private ExpressionLanguage $language,
+        private BlackfireEnvResolver $blackfireEnvResolver,
+        private BuildApi $buildApi,
+        private BlackfireSdkAdapterInterface $blackfire,
     ) {
     }
 
@@ -64,7 +64,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
 
         $request = $step->getRequest();
 
-        if (!$this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step)) {
+        if (false === $this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step)) {
             return;
         }
 
@@ -204,10 +204,8 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             }
 
             // Request is over. Read the profile
-            if (!$step->getInitiator()->getName() && null !== $crawler = CrawlerFactory::create($response, $response->request->uri)) {
-                if (\count($c = $crawler->filter('title'))) {
-                    $this->blackfire->updateProfile($uuid, $c->first()->text());
-                }
+            if (null === $step->getInitiator()->getName() && null !== ($crawler = CrawlerFactory::create($response, $response->request->uri)) && \count($c = $crawler->filter('title'))) {
+                $this->blackfire->updateProfile($uuid, $c->first()->text());
             }
 
             $parentStep = $step->getInitiator();
@@ -225,7 +223,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         $config = new ProfileConfiguration();
 
         $path = parse_url($request->uri, \PHP_URL_PATH) ?: '/';
-        $config->setTitle($this->language->evaluate($step->getName() ?: Json::encode(\sprintf('%s resource', $path)), $context->getVariableValues($stepContext, true)));
+        $config->setTitle($this->language->evaluate($step->getName() ?? Json::encode(\sprintf('%s resource', $path)), $context->getVariableValues($stepContext, true)));
 
         $query = parse_url($request->uri, \PHP_URL_QUERY);
         if ($query) {
@@ -234,7 +232,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
 
         $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
         $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
-        if (!$build) {
+        if (null === $build) {
             throw new RuntimeException(\sprintf('Could not find build for env %s in the ScenarioSet', $env));
         }
 
@@ -260,9 +258,9 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             if ($profile->getTests()) {
                 throw new ExpectationErrorException('At least one assertion is invalid.');
             }
-
             throw new ExpectationErrorException('None of your assertions apply to this scenario.');
-        } elseif (!$profile->isSuccessful()) {
+        }
+        if (!$profile->isSuccessful()) {
             $hasFailingAssertion = false;
             foreach ($profile->getTests() as $test) {
                 foreach ($test->getFailures() as $failure) {
@@ -270,7 +268,6 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
                     $step->addFailingAssertion(\sprintf('Assertion failed: %s', $failure));
                 }
             }
-
             if (!$hasFailingAssertion) { // It is a recommendation report
                 foreach ($profile->getRecommendations() as $test) {
                     foreach ($test->getFailures() as $failure) {
@@ -295,7 +292,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
             $progress = (int) $values['progress'];
 
             if ($progress < $prevProgress) {
-                throw new LogicException('Profiling progress is inconsistent (progress is going backward). That happens for instance when the project\'s infrastructure is behind a load balancer. Please read https://docs.blackfire.io/up-and-running/reverse-proxies#configuration-load-balancer');
+                throw new LogicException("Profiling progress is inconsistent (progress is going backward). That happens for instance when the project's infrastructure is behind a load balancer. Please read https://docs.blackfire.io/up-and-running/reverse-proxies#configuration-load-balancer");
             }
             if ($progress === $prevProgress) {
                 $retry = $scenarioContext->getExtraValue('blackfire_retry', 0);
@@ -312,7 +309,7 @@ final class BlackfireExtension implements NextStepExtensionInterface, StepExtens
         }
 
         $wait = isset($values['wait']) ? (int) $values['wait'] : 0;
-        if ($wait) {
+        if (0 !== $wait) {
             usleep(min($wait, 10000) * 1000);
         }
 

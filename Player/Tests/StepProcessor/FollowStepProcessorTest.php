@@ -34,11 +34,11 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class FollowStepProcessorTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('', ['http_code' => 301, 'response_headers' => ['Location' => '/follow']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('GET', $method);
                 $this->assertSame('http://localhost/follow', $url);
 
@@ -61,12 +61,12 @@ class FollowStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessWithBody()
+    public function testProcessWithBody(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
             new MockResponse('', ['http_code' => 307, 'response_headers' => ['Location' => '/follow']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('content-type: application/x-www-form-urlencoded', $options['normalized_headers']['content-type'][0]);
                 $this->assertSame('http://localhost/follow', $url);
@@ -97,12 +97,12 @@ class FollowStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessWithFile()
+    public function testProcessWithFile(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"><input type="file" name="image"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
             new MockResponse('', ['http_code' => 307, 'response_headers' => ['Location' => '/follow']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('http://localhost/follow', $url);
                 $this->assertStringStartsWith('content-type: multipart/form-data; boundary=', $options['normalized_headers']['content-type'][0]);
@@ -142,16 +142,16 @@ class FollowStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessResetBlackfireQuery()
+    public function testProcessResetBlackfireQuery(): void
     {
         $processor = $this->createProcessor([
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('x-blackfire-query: foo', $options['normalized_headers']['x-blackfire-query'][0]);
                 $this->assertSame('x-blackfire-profile-uuid: bar', $options['normalized_headers']['x-blackfire-profile-uuid'][0]);
 
                 return new MockResponse('', ['http_code' => 301, 'response_headers' => ['Location' => '/follow']]);
             },
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertArrayNotHasKey('x-blackfire-query', $options['normalized_headers']);
                 $this->assertArrayNotHasKey('x-blackfire-profile-uuid', $options['normalized_headers']);
 
@@ -182,11 +182,11 @@ class FollowStepProcessorTest extends TestCase
         $this->assertNull($scenarioContext->getLastResponse()->request->headers['x-blackfire-query'][0] ?? null);
     }
 
-    public function testProcessFilterCredentials()
+    public function testProcessFilterCredentials(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('', ['http_code' => 301, 'response_headers' => ['Location' => '/follow']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('referer: http://localhost', $options['normalized_headers']['referer'][0]);
 
                 return new MockResponse('', ['http_code' => 201]);

@@ -21,7 +21,7 @@ class JsonViewLoggerHttpClient implements HttpClientInterface
 {
     use AsyncDecoratorTrait;
 
-    private array|null $lastJsonView;
+    private array|null $lastJsonView = null;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,

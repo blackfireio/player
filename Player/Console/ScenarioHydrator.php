@@ -41,7 +41,7 @@ class ScenarioHydrator
         }
 
         foreach ($input->getOption('variable') as $variable) {
-            [$key, $value] = explode('=', $variable, 2);
+            [$key, $value] = explode('=', (string) $variable, 2);
             $variables[$key] = $this->escapeValue($value);
         }
 

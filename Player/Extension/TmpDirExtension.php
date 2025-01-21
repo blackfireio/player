@@ -21,12 +21,12 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @internal
  */
-final class TmpDirExtension implements ScenarioExtensionInterface
+final readonly class TmpDirExtension implements ScenarioExtensionInterface
 {
-    public const EXTRA_VALUE_KEY = 'tmp_dir';
+    public const string EXTRA_VALUE_KEY = 'tmp_dir';
 
     public function __construct(
-        private readonly Filesystem $fs,
+        private Filesystem $fs,
     ) {
     }
 

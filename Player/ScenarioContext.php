@@ -23,12 +23,12 @@ class ScenarioContext
 {
     private Response|null $lastResponse = null;
     private Crawler|null $crawler = null;
-    private ValueBag $valueBag;
-    private ValueBag $extraBag;
+    private readonly ValueBag $valueBag;
+    private readonly ValueBag $extraBag;
 
     public function __construct(
         private readonly string|null $name,
-        private ScenarioSet|null $scenarioSet,
+        private readonly ScenarioSet|null $scenarioSet,
     ) {
         $this->valueBag = new ValueBag();
         $this->extraBag = new ValueBag();

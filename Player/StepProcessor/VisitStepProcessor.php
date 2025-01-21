@@ -50,7 +50,7 @@ class VisitStepProcessor implements StepProcessorInterface
             throw new CrawlException('It looks like you used "visit" and "link" together. You should use "click" instead');
         }
 
-        $uri = ltrim($uri, '/');
+        $uri = ltrim((string) $uri, '/');
         $method = $this->expressionEvaluator->evaluateExpression($step->getMethod(), $stepContext, $scenarioContext) ?: 'GET';
         $headers = $this->expressionEvaluator->evaluateHeaders($stepContext, $scenarioContext);
         if (null === $body = $step->getBody()) {
@@ -68,7 +68,7 @@ class VisitStepProcessor implements StepProcessorInterface
         yield new RequestStep(
             new Request(
                 $method,
-                $this->uriResolver->resolveUri($this->expressionEvaluator->evaluateExpression($stepContext->getEndpoint(), $stepContext, $scenarioContext), $uri),
+                $this->uriResolver->resolveUri($this->expressionEvaluator->evaluateExpression($stepContext->getEndpoint(), $stepContext, $scenarioContext) ?? '', $uri),
                 $headers,
                 $body
             ),

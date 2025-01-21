@@ -128,7 +128,7 @@ class ConfigurableStep extends AbstractStep
     #[SerializedName('is_blackfire_enabled')]
     public function isBlackfireEnabled(): bool|null
     {
-        if (!$this->getType()) {
+        if (null === $this->getType()) {
             return null;
         }
 

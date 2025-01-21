@@ -29,7 +29,7 @@ class ExpressionEvaluator
 
     public function evaluateExpression(string|null $expression, StepContext $stepContext, ScenarioContext $scenarioContext, bool $trim = true): mixed
     {
-        if (!$expression) {
+        if ('' === (string) $expression) {
             return $expression;
         }
         try {
@@ -48,7 +48,7 @@ class ExpressionEvaluator
         $headers = [];
         foreach ($stepContext->getHeaders() as $header) {
             $header = $this->evaluateExpression($header, $stepContext, $scenarioContext);
-            [$name, $value] = explode(':', $header, 2);
+            [$name, $value] = explode(':', (string) $header, 2);
             $name = strtolower($name);
             $value = ltrim($value);
 
@@ -64,7 +64,7 @@ class ExpressionEvaluator
         if (null !== $auth = $stepContext->getAuth()) {
             $auth = $this->evaluateExpression($auth, $stepContext, $scenarioContext);
             if ('false' !== $auth && !empty($auth)) {
-                [$username, $password] = explode(':', $auth);
+                [$username, $password] = explode(':', (string) $auth);
                 $password = ltrim($password);
 
                 $headers['authorization'] = [\sprintf('Basic %s', base64_encode(\sprintf('%s:%s', $username, $password)))];

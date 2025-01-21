@@ -79,11 +79,13 @@ class BuildApi
         // as we might run the player in concurrent mode using fibers, we need to mark the fiber suspended to allow
         // asynchronous response processing
         foreach ($this->blackfireHttpClient->stream($response, 0.01) as $chunk) {
-            if ($chunk->isTimeout()) {
-                if (\Fiber::getCurrent()) {
-                    \Fiber::suspend();
-                }
+            if (!$chunk->isTimeout()) {
+                continue;
             }
+            if (null === \Fiber::getCurrent()) {
+                continue;
+            }
+            \Fiber::suspend();
         }
     }
 }

@@ -20,13 +20,8 @@ use Blackfire\Profile\Request;
 
 class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
 {
-    private Profile|\Closure|null $profileFactory;
-
-    public function __construct(
-        private readonly string $envName,
-        Profile|\Closure|null $profileFactory = null,
-    ) {
-        $this->profileFactory = $profileFactory;
+    public function __construct(private readonly string $envName, private readonly Profile|\Closure|null $profileFactory = null)
+    {
     }
 
     public function getConfiguration(): ClientConfiguration
@@ -60,7 +55,7 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
             return ($this->profileFactory)($uuid);
         }
 
-        return new Profile(fn () => [
+        return new Profile(fn (): array => [
             'report' => [
                 'state' => 'successful',
             ],

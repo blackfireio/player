@@ -36,7 +36,7 @@ class WhileStepProcessorTest extends TestCase
         $this->resetStepUuidOnDump();
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());

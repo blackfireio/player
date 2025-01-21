@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-require_once '../../Mock/mockedProbeEndpoint.php';
+require_once __DIR__.'/../../Mock/mockedProbeEndpoint.php';
 
-mockedProbeEndpoint(function () {
-    $i = isset($_GET['i']) ? $_GET['i'] : 0;
+mockedProbeEndpoint(function (): void {
+    $i = $_GET['i'] ?? 0;
 
     if ($i >= 4) {
         echo 'OK';

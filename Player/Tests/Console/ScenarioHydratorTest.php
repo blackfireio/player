@@ -16,6 +16,7 @@ use Blackfire\Player\Console\ScenarioHydrator;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\ParserFactory;
+use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Tests\VarDumper;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,7 @@ use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 class ScenarioHydratorTest extends TestCase
 {
-    public function testItLoads()
+    public function testItLoads(): void
     {
         $bkf = <<<EOF
 name "BKF Scenarios"
@@ -253,10 +254,10 @@ EOEXPECTED;
         $this->assertSame($expected, $this->getVarDumperDump($scenarios));
     }
 
-    private function getVarDumperDump($data)
+    private function getVarDumperDump(ScenarioSet $data): string
     {
         $casters = [
-            AbstractStep::class => self::uuidCaster(...),
+            AbstractStep::class => static fn (AbstractStep $object, array $array, Stub $stub, bool $isNested, int $filter = 0): array => self::uuidCaster($array),
         ];
 
         $h = fopen('php://memory', 'r+');
@@ -271,7 +272,7 @@ EOEXPECTED;
         return rtrim($data);
     }
 
-    private static function uuidCaster(AbstractStep $object, array $array, Stub $stub, bool $isNested, int $filter = 0)
+    private static function uuidCaster(array $array): array
     {
         $array["\x00Blackfire\Player\Step\AbstractStep\x00uuid"] = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 

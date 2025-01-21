@@ -36,7 +36,7 @@ class LoopStepProcessorTest extends TestCase
         $this->resetStepUuidOnDump();
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $processor = $this->createProcessor();
         $stepContext = new StepContext();

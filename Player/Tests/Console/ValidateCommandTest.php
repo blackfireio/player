@@ -11,6 +11,7 @@
 
 namespace Blackfire\Player\Tests\Console;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\PhpExecutableFinder;
@@ -42,8 +43,8 @@ class ValidateCommandTest extends TestCase
         }
     }
 
-    /** @dataProvider providePlayerTests */
-    public function testValidate($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath)
+    #[DataProvider('providePlayerTests')]
+    public function testValidate($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath): void
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', $file], __DIR__.'/../../../bin');
@@ -60,7 +61,7 @@ class ValidateCommandTest extends TestCase
         $this->assertStringMatchesFormat(file_get_contents($jsonErrorOutputPath), $process->getErrorOutput());
     }
 
-    public function testErrorInRealWorld()
+    public function testErrorInRealWorld(): void
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', '../Player/Tests/fixtures-validate/scenario.json', '--json'], __DIR__.'/../../../bin');
@@ -80,8 +81,8 @@ class ValidateCommandTest extends TestCase
         $this->assertSame($expectedOutput, $process->getOutput());
     }
 
-    /** @dataProvider providePlayerTests */
-    public function testValidateStdIn($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath)
+    #[DataProvider('providePlayerTests')]
+    public function testValidateStdIn($file, $outputPath, $errorOutputPath, $jsonOutputPath, $jsonErrorOutputPath): void
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', '--json'], __DIR__.'/../../../bin');
@@ -100,7 +101,7 @@ class ValidateCommandTest extends TestCase
         $this->assertStringMatchesFormat(file_get_contents($errorOutputPath), $process->getErrorOutput());
     }
 
-    public function testErrorStdIn()
+    public function testErrorStdIn(): void
     {
         $finder = new PhpExecutableFinder();
         $process = new Process([$finder->find(), 'blackfire-player.php', 'validate', '--no-ansi', '--json'], __DIR__.'/../../../bin');

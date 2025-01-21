@@ -33,7 +33,7 @@ final class StepContext
 
     public function update(ConfigurableStep $step, array $variables): void
     {
-        $this->workingDir = $step->getFile() ? rtrim(\dirname($step->getFile()), '/').'/' : null;
+        $this->workingDir = null !== $step->getFile() ? rtrim(\dirname($step->getFile()), '/').'/' : null;
 
         if (null !== $step->getWait()) {
             $this->wait = $step->getWait();
@@ -99,12 +99,12 @@ final class StepContext
 
     public function isFollowingRedirects(): string
     {
-        return null === $this->followRedirects ? 'false' : $this->followRedirects;
+        return $this->followRedirects ?? 'false';
     }
 
     public function isJson(): string
     {
-        return null === $this->json ? 'false' : $this->json;
+        return $this->json ?? 'false';
     }
 
     public function getEndpoint(): string|null
@@ -127,7 +127,7 @@ final class StepContext
 
     public function getWarmup(): string
     {
-        return null === $this->warmup ? 'true' : $this->warmup;
+        return $this->warmup ?? 'true';
     }
 
     public function getWorkingDir(): string|null

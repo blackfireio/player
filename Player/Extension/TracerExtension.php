@@ -51,7 +51,7 @@ final class TracerExtension implements ScenarioSetExtensionInterface, ScenarioEx
 
     public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
-        if (!$key = $scenario->getKey()) {
+        if (null === $key = $scenario->getKey()) {
             $key = ++$this->scenarioIndex;
         }
         $this->currentDir = $this->dir.'/'.$key;

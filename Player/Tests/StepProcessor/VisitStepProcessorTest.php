@@ -23,11 +23,12 @@ use Blackfire\Player\StepProcessor\ExpressionEvaluator;
 use Blackfire\Player\StepProcessor\StepProcessorInterface;
 use Blackfire\Player\StepProcessor\UriResolver;
 use Blackfire\Player\StepProcessor\VisitStepProcessor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class VisitStepProcessorTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
         $processor = $this->createProcessor();
@@ -40,7 +41,7 @@ class VisitStepProcessorTest extends TestCase
         $this->assertInstanceOf(RequestStep::class, $nextStep);
     }
 
-    public function testProcessWithRawBody()
+    public function testProcessWithRawBody(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -57,7 +58,7 @@ class VisitStepProcessorTest extends TestCase
         $this->assertSame('', $nextStep->getRequest()->headers['content-type'][0]);
     }
 
-    public function testProcessWithFormBody()
+    public function testProcessWithFormBody(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -78,7 +79,7 @@ class VisitStepProcessorTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $nextStep->getRequest()->body);
     }
 
-    public function testProcessWithJsonBody()
+    public function testProcessWithJsonBody(): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
@@ -97,8 +98,8 @@ class VisitStepProcessorTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $nextStep->getRequest()->body);
     }
 
-    /** @dataProvider provideForTestProcessPreserveHeaders */
-    public function testProcessPreserveHeaders(string $headerName, string $headerValue)
+    #[DataProvider('provideForTestProcessPreserveHeaders')]
+    public function testProcessPreserveHeaders(string $headerName, string $headerValue): void
     {
         $processor = $this->createProcessor();
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());

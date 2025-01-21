@@ -24,6 +24,7 @@ use Blackfire\Player\Step\FollowStep;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\VisitStep;
 use Blackfire\Player\Tests\Caster\ResetStepUuidDumpTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\VarDumper\Test\VarDumperTestTrait;
 
@@ -37,10 +38,8 @@ class FollowExtensionTest extends TestCase
         $this->resetStepUuidOnDump();
     }
 
-    /**
-     * @dataProvider provideGetNextStepsCases
-     */
-    public function testGetNextSteps(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext, array $expectedNextSteps)
+    #[DataProvider('provideGetNextStepsCases')]
+    public function testGetNextSteps(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext, array $expectedNextSteps): void
     {
         $language = new ExpressionLanguage(null, [new Provider()]);
         $extension = new FollowExtension($language);
@@ -50,7 +49,7 @@ class FollowExtensionTest extends TestCase
         $this->assertDumpEquals($this->getDump($expectedNextSteps), $nextStepsAsArray);
     }
 
-    public static function provideGetNextStepsCases()
+    public static function provideGetNextStepsCases(): \Generator
     {
         $step = new VisitStep('https://app.lan');
         $stepContext = new StepContext();

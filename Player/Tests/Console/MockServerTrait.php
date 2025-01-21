@@ -21,13 +21,13 @@ trait MockServerTrait
 
     public static function getRunningServer(string $fixturesDir, string|null $port = null): Process
     {
-        $port = $port ?? '8399';
+        $port ??= '8399';
 
-        if (self::$server && !self::$server->isTerminated() && self::$server->isRunning()) {
+        if (null !== self::$server && !self::$server->isTerminated() && self::$server->isRunning()) {
             return self::$server;
         }
 
-        if (self::$server) {
+        if (null !== self::$server) {
             self::$server->stop(0);
         }
 
@@ -51,7 +51,7 @@ trait MockServerTrait
 
     public static function stopServer(): void
     {
-        if (self::$server) {
+        if (null !== self::$server) {
             self::$server->stop(0);
         }
 

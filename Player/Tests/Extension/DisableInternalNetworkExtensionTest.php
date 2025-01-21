@@ -18,18 +18,16 @@ use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\RequestStep;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\VisitStep;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\PhpUnit\DnsMock;
 
-/**
- * @group dns-sensitive
- */
+#[Group('dns-sensitive')]
 class DisableInternalNetworkExtensionTest extends TestCase
 {
-    /**
-     * @dataProvider provideInvalidUri
-     */
-    public function testBeforeRequestWithInvalidUri($uri, $exceptionMessage)
+    #[DataProvider('provideInvalidUri')]
+    public function testBeforeRequestWithInvalidUri(string $uri, string $exceptionMessage): void
     {
         $this->expectException(SecurityException::class);
         $this->expectExceptionMessage($exceptionMessage);
@@ -46,7 +44,7 @@ class DisableInternalNetworkExtensionTest extends TestCase
         $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createMock(ScenarioContext::class));
     }
 
-    public static function provideInvalidUri()
+    public static function provideInvalidUri(): \Generator
     {
         yield ['http://127.0.0.1', 'Forbidden host IP'];
         yield ['http://10.12.8.5/index.php', 'Forbidden host IP'];
@@ -54,10 +52,8 @@ class DisableInternalNetworkExtensionTest extends TestCase
         yield ['http://notresolvable.com/', 'Could not resolve host: notresolvable.com'];
     }
 
-    /**
-     * @dataProvider provideValidUri
-     */
-    public function testBeforeRequestWithValidUri($uri)
+    #[DataProvider('provideValidUri')]
+    public function testBeforeRequestWithValidUri(string $uri): void
     {
         $extension = new DisableInternalNetworkExtension();
         $request = new HttpRequest('GET', $uri);
@@ -69,7 +65,7 @@ class DisableInternalNetworkExtensionTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
-    public static function provideValidUri()
+    public static function provideValidUri(): \Generator
     {
         yield ['http://54.75.240.245'];
         yield ['http://34.232.230.241/index.php'];

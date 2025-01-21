@@ -20,7 +20,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
  *
  * @internal
  */
-class AbstractStep
+class AbstractStep implements \Stringable
 {
     #[Ignore]
     protected AbstractStep|null $next = null;
@@ -77,12 +77,12 @@ class AbstractStep
 
         $this->uuid = uuid_create(\UUID_TYPE_RANDOM);
 
-        if ($this->next) {
+        if (null !== $this->next) {
             $this->next = clone $this->next;
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return \sprintf("└ %s\n", static::class);
     }
@@ -108,7 +108,7 @@ class AbstractStep
 
     public function getName(): string|null
     {
-        return $this->name ?: null;
+        return '' === (string) $this->name ? null : $this->name;
     }
 
     public function getFile(): string|null
@@ -142,7 +142,7 @@ class AbstractStep
     #[Ignore]
     public function hasFailingExpectation(): bool
     {
-        return \count($this->failingExpectations) > 0;
+        return [] !== $this->failingExpectations;
     }
 
     public function addFailingAssertion(string $reason): void
@@ -153,7 +153,7 @@ class AbstractStep
     #[Ignore]
     public function hasFailingAssertion(): bool
     {
-        return \count($this->failingAssertions) > 0;
+        return [] !== $this->failingAssertions;
     }
 
     public function addError(string $reason): void
@@ -164,7 +164,7 @@ class AbstractStep
     #[Ignore]
     public function hasError(): bool
     {
-        return \count($this->errors) > 0;
+        return [] !== $this->errors;
     }
 
     /**
@@ -197,7 +197,7 @@ class AbstractStep
     #[Ignore]
     public function getLast(): self|null
     {
-        if (!$this->next) {
+        if (null === $this->next) {
             return $this;
         }
 
@@ -212,6 +212,10 @@ class AbstractStep
 
         if (str_ends_with($type, 'Step')) {
             $type = strtolower(substr($type, 0, -4));
+        }
+
+        if ('' === $type) {
+            return null;
         }
 
         return strtolower($type);
@@ -239,7 +243,7 @@ class AbstractStep
             foreach ($failingExpectation['results'] as $result) {
                 $truncatedResults[] = [
                     'expression' => $result['expression'],
-                    'result' => \strlen($result['result']) > 30 ? substr($result['result'], 0, 30).'... (truncated)' : $result['result'],
+                    'result' => \strlen((string) $result['result']) > 30 ? substr((string) $result['result'], 0, 30).'... (truncated)' : $result['result'],
                 ];
             }
 
@@ -310,7 +314,7 @@ class AbstractStep
     }
 
     #[SerializedName('iid')]
-    public function getInstanceId(): string|null
+    public function getInstanceId(): int
     {
         return spl_object_id($this);
     }

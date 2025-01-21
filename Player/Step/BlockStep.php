@@ -37,17 +37,16 @@ class BlockStep extends ConfigurableStep
     {
         parent::__clone();
 
-        if ($this->blockStep) {
+        if (null !== $this->blockStep) {
             $this->blockStep = clone $this->blockStep;
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        $str = \sprintf("└ %s%s\n", static::class, $this->getName() ? \sprintf(' %s', $this->getName()) : '');
-        $str .= $this->blockToString($this->blockStep);
+        $str = \sprintf("└ %s%s\n", static::class, null !== $this->getName() ? \sprintf(' %s', $this->getName()) : '');
 
-        return $str;
+        return $str.$this->blockToString($this->blockStep);
     }
 
     #[SerializedName('steps')]
@@ -58,7 +57,7 @@ class BlockStep extends ConfigurableStep
 
     public function getSteps(): iterable
     {
-        if (!$this->getBlockStep()) {
+        if (null === $this->getBlockStep()) {
             return;
         }
 
@@ -104,7 +103,7 @@ class BlockStep extends ConfigurableStep
 
     protected function blockToString(AbstractStep|null $step): string
     {
-        if (!$step) {
+        if (null === $step) {
             return '';
         }
         $str = '';

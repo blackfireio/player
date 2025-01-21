@@ -18,7 +18,7 @@ use Blackfire\Player\Exception\InvalidArgumentException;
  *
  * @internal
  */
-class UploadFile
+class UploadFile implements \Stringable
 {
     public function __construct(
         private readonly string $filename,
@@ -29,7 +29,7 @@ class UploadFile
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string) file_get_contents($this->filename);
     }

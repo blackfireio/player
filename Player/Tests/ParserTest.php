@@ -23,11 +23,12 @@ use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
 use Blackfire\Player\Step\VisitStep;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-    public function testParsingSeparatedScenario()
+    public function testParsingSeparatedScenario(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -51,7 +52,7 @@ EOF
         $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
         $this->assertEquals([
             'env' => '"prod"',
-            'endpoint' => '\'http://toto.com\'',
+            'endpoint' => "'http://toto.com'",
         ], $scenario->getVariables());
 
         /** @var Scenario $scenario */
@@ -61,7 +62,7 @@ EOF
         $this->assertEquals(['endpoint' => ''], $scenario->getVariables());
     }
 
-    public function testParsingGlobalConfiguration()
+    public function testParsingGlobalConfiguration(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -81,17 +82,17 @@ EOF
         );
         $this->assertCount(2, $scenarioSet);
 
-        $this->assertEquals([
+        $this->assertSame([
             'env' => '"prod"',
-            'endpoint' => '\'http://toto.com\'',
+            'endpoint' => "'http://toto.com'",
         ], $parser->getGlobalVariables());
 
         /** @var Scenario $scenario */
         $scenario = $scenarioSet->getIterator()[0];
         $this->assertEquals('Test 1', $scenario->getKey());
         $this->assertInstanceOf(VisitStep::class, $scenario->getBlockStep());
-        $this->assertEquals(['endpoint' => '\'http://toto.com\''], $scenario->getVariables());
-        $this->assertEquals([
+        $this->assertEquals(['endpoint' => "'http://toto.com'"], $scenario->getVariables());
+        $this->assertSame([
             '"Accept-Language: en-US"',
         ], $scenario->getBlockStep()->getHeaders());
 
@@ -99,13 +100,11 @@ EOF
         $scenario = $scenarioSet->getIterator()[1];
         $this->assertEquals('Test2', $scenario->getKey());
         $this->assertInstanceOf(ReloadStep::class, $scenario->getBlockStep());
-        $this->assertEquals(['endpoint' => '\'http://toto.com\''], $scenario->getVariables());
+        $this->assertEquals(['endpoint' => "'http://toto.com'"], $scenario->getVariables());
     }
 
-    /**
-     * @dataProvider warmupConfigProvider
-     */
-    public function testWarmupStepConfig($content, $expectedStep, $expectedScenario = null)
+    #[DataProvider('warmupConfigProvider')]
+    public function testWarmupStepConfig(string $content, string|null $expectedStep, string|null $expectedScenario = null): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse($content);
@@ -118,7 +117,7 @@ EOF
         $this->assertEquals($expectedScenario, $scenario->getWarmup());
     }
 
-    public static function warmupConfigProvider()
+    public static function warmupConfigProvider(): \Generator
     {
         yield [<<<'EOF'
 scenario
@@ -177,10 +176,8 @@ EOF
         ];
     }
 
-    /**
-     * @dataProvider provideDocExamples
-     */
-    public function testDocExamples($input)
+    #[DataProvider('provideDocExamples')]
+    public function testDocExamples(string $input): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse($input);
@@ -188,7 +185,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $scenarioSet);
     }
 
-    public static function provideDocExamples()
+    public static function provideDocExamples(): \Generator
     {
         yield [<<<'EOF'
 scenario
@@ -461,10 +458,8 @@ EOF
         ];
     }
 
-    /**
-     * @dataProvider variableDeclarationProvider
-     */
-    public function testVariableCannotBeRedeclared($exceptionMessage, $scenario)
+    #[DataProvider('variableDeclarationProvider')]
+    public function testVariableCannotBeRedeclared(bool|string $exceptionMessage, string $scenario): void
     {
         if ($exceptionMessage) {
             $this->expectException(LogicException::class);
@@ -475,7 +470,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
-    public static function variableDeclarationProvider()
+    public static function variableDeclarationProvider(): \Generator
     {
         // Valid
 
@@ -522,10 +517,8 @@ EOF
         ];
     }
 
-    /**
-     * @dataProvider stepConfigProvider
-     */
-    public function testStepConfig($exceptionMessage, $scenario)
+    #[DataProvider('stepConfigProvider')]
+    public function testStepConfig(bool|string $exceptionMessage, string $scenario): void
     {
         if ($exceptionMessage) {
             $this->expectException(\Exception::class);
@@ -536,7 +529,7 @@ EOF
         $this->assertInstanceOf(ScenarioSet::class, $parser->parse($scenario));
     }
 
-    public static function stepConfigProvider()
+    public static function stepConfigProvider(): \Generator
     {
         // Valid
 
@@ -571,7 +564,7 @@ EOF
         ];
     }
 
-    public function testCannotLoadFileWithBadExtension()
+    public function testCannotLoadFileWithBadExtension(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessageMatches('#Cannot load file ".*/Player/Tests/ParserTest.php" because it does not have the right extension. Expected "bkf", got "php".#');
@@ -580,7 +573,7 @@ EOF
         $parser->load(__FILE__);
     }
 
-    public function testLoadBlackfireBkfViaStdin()
+    public function testLoadBlackfireBkfViaStdin(): void
     {
         $s = fopen(__DIR__.'/fixtures-run/simple/scenario.bkf', 'r');
         $copy = fopen('php://memory', 'r+b');
@@ -590,21 +583,21 @@ EOF
         $this->assertCount(1, $scenarios->getIterator());
     }
 
-    public function testLoadBlackfireBkfViaFile()
+    public function testLoadBlackfireBkfViaFile(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarios = $parser->load(__DIR__.'/fixtures-run/simple/scenario.bkf');
         $this->assertCount(1, $scenarios->getIterator());
     }
 
-    public function testLoadBlackfireYamlViaFile()
+    public function testLoadBlackfireYamlViaFile(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarios = $parser->load(__DIR__.'/fixtures/yaml/.blackfire.yaml');
         $this->assertCount(1, $scenarios->getIterator());
     }
 
-    public function testLineContinuation()
+    public function testLineContinuation(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -634,7 +627,7 @@ EOF
         $this->assertEquals("'{ first: \"premier\",\\n second: \"deuxieme\" }'", $scenario->getBlockStep()->getBody());
     }
 
-    public function testMultiLines()
+    public function testMultiLines(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -668,7 +661,7 @@ EOF
         $this->assertEquals($expected, $scenario->getBlockStep()->getBody());
     }
 
-    public function testMultiLinesInterpolationNotEnabled()
+    public function testMultiLinesInterpolationNotEnabled(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -690,7 +683,7 @@ EOF
         $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
     }
 
-    public function testMultiLinesInterpolation()
+    public function testMultiLinesInterpolation(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -708,7 +701,7 @@ EOF
         $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
     }
 
-    public function testMultiLinesEscapingInterpolation()
+    public function testMultiLinesEscapingInterpolation(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -723,7 +716,7 @@ EOF
         $this->assertEquals($expected, $scenarioSet->getVariables()['multi']);
     }
 
-    public function testMultiLinesInvalidIndentation()
+    public function testMultiLinesInvalidIndentation(): void
     {
         $this->expectException(SyntaxErrorException::class);
         $this->expectExceptionMessage('Incorrect indentation in multi-lines string at line 8.');
@@ -743,7 +736,7 @@ EOF
         );
     }
 
-    public function testUndefinedVariableThrowsAnException()
+    public function testUndefinedVariableThrowsAnException(): void
     {
         $this->expectException(ExpressionSyntaxErrorException::class);
         $this->expectExceptionMessage(<<<'EOF'
@@ -766,7 +759,7 @@ EOF
         );
     }
 
-    public function testDetectMissingVariables()
+    public function testDetectMissingVariables(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]), [], true);
         $parser->parse(<<<'EOF'
@@ -777,10 +770,10 @@ scenario Test 1
 EOF
         );
 
-        $this->assertEquals(['env'], $parser->getMissingVariables());
+        $this->assertSame(['env'], $parser->getMissingVariables());
     }
 
-    public function testMultiLinesWithoutInterpolatedVariables()
+    public function testMultiLinesWithoutInterpolatedVariables(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -805,7 +798,7 @@ EOF
         $this->assertEmpty($parser->getMissingVariables());
     }
 
-    public function testMultiLinesWithInterpolatedVariables()
+    public function testMultiLinesWithInterpolatedVariables(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse(<<<'EOF'
@@ -830,7 +823,7 @@ EOF
         $this->assertEmpty($parser->getMissingVariables());
     }
 
-    public function testMissingInterpolatedVariables()
+    public function testMissingInterpolatedVariables(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]), [], true);
         $parser->parse(<<<'EOF'
@@ -846,10 +839,10 @@ scenario Test 1
 EOF
         );
 
-        $this->assertEquals(['login', 'password'], $parser->getMissingVariables());
+        $this->assertSame(['login', 'password'], $parser->getMissingVariables());
     }
 
-    public function testMissingNotinterpolatedVariables()
+    public function testMissingNotinterpolatedVariables(): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]), [], true);
         $parser->parse(<<<'EOF'
@@ -864,6 +857,6 @@ scenario Test 1
         """
 EOF
         );
-        $this->assertEquals([], $parser->getMissingVariables());
+        $this->assertSame([], $parser->getMissingVariables());
     }
 }

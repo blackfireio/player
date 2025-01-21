@@ -37,7 +37,7 @@ final class DisableInternalNetworkExtension implements StepExtensionInterface
 
         $request = $step->getRequest();
         $host = parse_url($request->uri, \PHP_URL_HOST);
-        if (!$host) {
+        if ('' === (string) $host) {
             throw new \InvalidArgumentException(\sprintf('Unable to parse host from uri "%s"', $request->uri));
         }
 

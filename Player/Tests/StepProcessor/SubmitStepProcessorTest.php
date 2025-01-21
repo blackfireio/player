@@ -32,11 +32,11 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class SubmitStepProcessorTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('content-type: application/x-www-form-urlencoded', $options['normalized_headers']['content-type'][0]);
                 $this->assertSame('http://localhost/form', $url);
@@ -61,11 +61,11 @@ class SubmitStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessWithBody()
+    public function testProcessWithBody(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('http://localhost/form', $url);
                 $this->assertSame('content-type: ', $options['normalized_headers']['content-type'][0]); // step configuration takes precedence over real form
@@ -93,11 +93,11 @@ class SubmitStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessWithParameters()
+    public function testProcessWithParameters(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('http://localhost/form', $url);
                 $this->assertSame('content-type: application/x-www-form-urlencoded', $options['normalized_headers']['content-type'][0]);
@@ -124,11 +124,11 @@ class SubmitStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessWithJson()
+    public function testProcessWithJson(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('http://localhost/form', $url);
                 $this->assertSame('content-type: application/json', $options['normalized_headers']['content-type'][0]);
@@ -156,11 +156,11 @@ class SubmitStepProcessorTest extends TestCase
         $this->assertSame(201, $scenarioContext->getLastResponse()->statusCode);
     }
 
-    public function testProcessWithFile()
+    public function testProcessWithFile(): void
     {
         $processor = $this->createProcessor([
             new MockResponse('<form action="/form" method="POST"><input type="text" name="field" value="val"><input type="file" name="image"></form>', ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('POST', $method);
                 $this->assertSame('http://localhost/form', $url);
                 $this->assertStringStartsWith('content-type: multipart/form-data; boundary=', $options['normalized_headers']['content-type'][0]);

@@ -12,23 +12,22 @@
 namespace Blackfire\Player\Tests\ExpressionLanguage;
 
 use Blackfire\Player\ExpressionLanguage\VariableFormatter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class VariableFormatterTest extends TestCase
 {
-    /**
-     * @dataProvider getFormatResultData
-     */
-    public function testFormatResult($value, $expectedString)
+    #[DataProvider('getFormatResultData')]
+    public function testFormatResult(bool|int|string|\stdClass|array|null $value, string $expectedString): void
     {
         $formatter = new VariableFormatter();
 
         $actual = $formatter->formatResult($value);
 
-        $this->assertEquals($expectedString, $actual);
+        $this->assertSame($expectedString, $actual);
     }
 
-    public static function getFormatResultData()
+    public static function getFormatResultData(): \Generator
     {
         yield [null, 'null'];
         yield [true, 'true'];

@@ -37,7 +37,7 @@ class JsonViewReporter
     {
         $builds = array_filter(
             $scenarioSet->getExtraBag()->all(),
-            static fn (int|string $key) => \is_string($key) && str_starts_with($key, 'blackfire_build:'),
+            static fn (int|string $key): bool => \is_string($key) && str_starts_with($key, 'blackfire_build:'),
             \ARRAY_FILTER_USE_KEY
         );
 

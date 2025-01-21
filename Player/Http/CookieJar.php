@@ -38,7 +38,7 @@ class CookieJar
         $cookies = [];
 
         foreach ($setCookies as $cookie) {
-            foreach (explode(',', $cookie) as $i => $part) {
+            foreach (explode(',', (string) $cookie) as $i => $part) {
                 if (0 === $i || preg_match('/^(?P<token>\s*[0-9A-Za-z!#\$%\&\'\*\+\-\.^_`\|~]+)=/', $part)) {
                     $cookies[] = ltrim($part);
                 } else {
@@ -69,7 +69,7 @@ class CookieJar
         $parts = array_replace(['path' => '/'], parse_url($uri));
         $cookies = [];
         foreach ($this->cookieJar as $domain => $pathCookies) {
-            if ($domain) {
+            if ('' !== $domain) {
                 $domain = '.'.ltrim($domain, '.');
                 if (!str_ends_with('.'.$parts['host'], $domain)) {
                     continue;

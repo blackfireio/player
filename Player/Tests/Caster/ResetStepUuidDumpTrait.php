@@ -16,7 +16,7 @@ use Symfony\Component\VarDumper\Cloner\Stub;
 
 trait ResetStepUuidDumpTrait
 {
-    public function resetStepUuidOnDump()
+    public function resetStepUuidOnDump(): void
     {
         $casters = [
             AbstractStep::class => static function (AbstractStep $object, array $array, Stub $stub, bool $isNested, int $filter = 0): array {

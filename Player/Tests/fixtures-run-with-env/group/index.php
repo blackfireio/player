@@ -9,8 +9,8 @@
  * file that was distributed with this source code.
  */
 
-require_once '../../Mock/mockedProbeEndpoint.php';
+require_once __DIR__.'/../../Mock/mockedProbeEndpoint.php';
 
-mockedProbeEndpoint(function () {
+mockedProbeEndpoint(function (): void {
     echo 'ok';
 });

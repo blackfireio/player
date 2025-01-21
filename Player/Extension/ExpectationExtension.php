@@ -19,10 +19,10 @@ use Blackfire\Player\Step\StepContext;
 /**
  * @internal
  */
-final class ExpectationExtension implements StepExtensionInterface
+final readonly class ExpectationExtension implements StepExtensionInterface
 {
     public function __construct(
-        private readonly ResponseChecker $responseChecker,
+        private ResponseChecker $responseChecker,
     ) {
     }
 

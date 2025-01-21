@@ -20,12 +20,12 @@ use Symfony\Component\Serializer\Attribute\Ignore;
  *
  * @internal
  */
-class ScenarioSet implements \IteratorAggregate
+class ScenarioSet implements \IteratorAggregate, \Stringable
 {
     /** @var bool[] */
     #[Ignore]
     private array $keys = [];
-    private ValueBag $extraBag;
+    private readonly ValueBag $extraBag;
     private string|null $name = null;
     /** @var string[] */
     private array $variables = [];
@@ -43,7 +43,7 @@ class ScenarioSet implements \IteratorAggregate
         $this->extraBag = new ValueBag();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $str = '';
         $ind = 0;

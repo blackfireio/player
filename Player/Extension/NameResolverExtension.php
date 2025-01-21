@@ -29,17 +29,17 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
  *
  * @internal
  */
-final class NameResolverExtension implements ScenarioSetExtensionInterface, ScenarioExtensionInterface, StepExtensionInterface
+final readonly class NameResolverExtension implements ScenarioSetExtensionInterface, ScenarioExtensionInterface, StepExtensionInterface
 {
     public function __construct(
-        private readonly ExpressionLanguage $language,
-        private readonly VariableResolver $variableResolver,
+        private ExpressionLanguage $language,
+        private VariableResolver $variableResolver,
     ) {
     }
 
     public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
     {
-        if (!$scenarios->getName()) {
+        if (null === $scenarios->getName()) {
             return;
         }
 
@@ -59,7 +59,7 @@ final class NameResolverExtension implements ScenarioSetExtensionInterface, Scen
 
     public function beforeScenario(Scenario $scenario, ScenarioContext $scenarioContext): void
     {
-        if (!$scenario->getName()) {
+        if (null === $scenario->getName()) {
             return;
         }
 
@@ -79,7 +79,7 @@ final class NameResolverExtension implements ScenarioSetExtensionInterface, Scen
 
     public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        if (!$step->getName()) {
+        if (null === $step->getName()) {
             return;
         }
 

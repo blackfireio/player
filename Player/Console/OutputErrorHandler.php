@@ -28,7 +28,7 @@ final class OutputErrorHandler
 
         $application->setDispatcher($dispatcher);
 
-        $dispatcher->addListener(ConsoleEvents::ERROR, function (ConsoleErrorEvent $event) {
+        $dispatcher->addListener(ConsoleEvents::ERROR, function (ConsoleErrorEvent $event): void {
             if ($event->getInput()->hasOption('json') && $event->getInput()->getOption('json')) {
                 $extra = ['errors' => []];
 

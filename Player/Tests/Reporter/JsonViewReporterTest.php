@@ -22,6 +22,7 @@ use Blackfire\Player\Reporter\JsonViewReporter;
 use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Serializer\ScenarioSetSerializer;
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -29,10 +30,8 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class JsonViewReporterTest extends TestCase
 {
-    /**
-     * @dataProvider reportErrorsProvider()
-     */
-    public function testReportThrowsOnlyWhenFailingToSendLastJsonView(ScenarioSet $scenarioSet, bool $exceptionExpected)
+    #[DataProvider('reportErrorsProvider')]
+    public function testReportThrowsOnlyWhenFailingToSendLastJsonView(ScenarioSet $scenarioSet, bool $exceptionExpected): void
     {
         $scenarioSetSerializer = new ScenarioSetSerializer();
 
@@ -45,14 +44,14 @@ class JsonViewReporterTest extends TestCase
         $buildApi = new BuildApi(new StubbedSdkAdapter('Blackfire Test'), $httpClient);
         $reporter = new JsonViewReporter($scenarioSetSerializer, $buildApi, new NullOutput());
 
-        if (true === $exceptionExpected) {
+        if ($exceptionExpected) {
             $this->expectException(ApiCallException::class);
         }
 
         $this->assertNull($reporter->report($scenarioSet));
     }
 
-    public static function reportErrorsProvider()
+    public static function reportErrorsProvider(): \Generator
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSetBase = <<<'EOF'

@@ -13,16 +13,14 @@ const MOCK_STATE_FILENAME = 'probe_mock_state.json';
 
 function readMockState(string $mockStateLocation): array
 {
-    $mockState = [
+    if (file_exists($mockStateLocation)) {
+        return json_decode(file_get_contents($mockStateLocation), true);
+    }
+
+    return [
         'location' => $mockStateLocation,
         'endpoints' => [],
     ];
-
-    if (file_exists($mockStateLocation)) {
-        $mockState = json_decode(file_get_contents($mockStateLocation), true);
-    }
-
-    return $mockState;
 }
 
 function clearMockState(): void

@@ -40,7 +40,7 @@ final class Application extends BaseApplication
         $lines = ['[ERROR]'];
 
         $terminal = new Terminal();
-        $width = $terminal->getWidth() ? $terminal->getWidth() - 1 : \PHP_INT_MAX;
+        $width = 0 !== $terminal->getWidth() ? $terminal->getWidth() - 1 : \PHP_INT_MAX;
 
         foreach (preg_split('/\r?\n/', $e->getMessage()) as $line) {
             foreach ($this->splitStringByWidth($line, $width - 4) as $line) {
@@ -56,7 +56,7 @@ final class Application extends BaseApplication
         $output->writeln($formatter->formatBlock($lines, 'error', true), OutputInterface::VERBOSITY_QUIET);
         $output->writeln('', OutputInterface::VERBOSITY_QUIET);
 
-        if (!\Phar::running() && $output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
+        if ('' !== \Phar::running() && $output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
             parent::renderThrowable($e, $output);
         }
     }
@@ -91,7 +91,7 @@ final class Application extends BaseApplication
             }
         }
 
-        $lines[] = \count($lines) ? str_pad($line, $width) : $line;
+        $lines[] = [] !== $lines ? str_pad($line, $width) : $line;
 
         mb_convert_variables($encoding, 'utf8', $lines);
 

@@ -22,10 +22,10 @@ use Blackfire\Player\Step\StepContext;
  *
  * @internal
  */
-final class FollowExtension implements NextStepExtensionInterface
+final readonly class FollowExtension implements NextStepExtensionInterface
 {
     public function __construct(
-        private readonly ExpressionLanguage $language,
+        private ExpressionLanguage $language,
     ) {
     }
 

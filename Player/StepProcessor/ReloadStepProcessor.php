@@ -23,10 +23,6 @@ use Blackfire\Player\Step\StepContext;
  */
 class ReloadStepProcessor implements StepProcessorInterface
 {
-    public function __construct(
-    ) {
-    }
-
     public function supports(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): bool
     {
         return $step instanceof ReloadStep;

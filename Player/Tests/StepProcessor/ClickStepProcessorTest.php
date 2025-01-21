@@ -32,14 +32,14 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class ClickStepProcessorTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
         $processor = $this->createProcessor([
             new MockResponse(
                 '<a href="/link">click me</a>',
                 ['http_code' => 200, 'response_headers' => ['Content-Type' => 'text/html']]
             ),
-            function (string $method, string $url, array $options = []) {
+            function (string $method, string $url, array $options = []): MockResponse {
                 $this->assertSame('http://localhost/link', $url);
 
                 return new MockResponse('', ['http_code' => 201]);

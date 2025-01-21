@@ -36,14 +36,15 @@ use Blackfire\Player\StepProcessor\VisitStepProcessor;
 use Blackfire\Player\StepProcessor\WhileStepProcessor;
 use Blackfire\Player\Tests\Constraint\ArraySubset;
 use Blackfire\Player\VariableResolver;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 class StepGeneratorTest extends TestCase
 {
-    /** @dataProvider provideScenarios */
-    public function testGetIteratorIteratesOverAScenenarioWithLoops(string $rawScenarioSet, array $expectations)
+    #[DataProvider('provideScenarios')]
+    public function testGetIteratorIteratesOverAScenenarioWithLoops(string $rawScenarioSet, array $expectations): void
     {
         $parser = new Parser(new ExpressionLanguage(null, [new LanguageProvider()]));
         $scenarioSet = $parser->parse($rawScenarioSet);
@@ -54,7 +55,7 @@ class StepGeneratorTest extends TestCase
         $variablesEvaluator = new VariablesEvaluator($language);
         $stepContextFactory = new StepContextFactory($variableResolver);
 
-        $httpClient = new MockHttpClient(static fn () => new MockResponse('<a class="btn" href="/test">link</a>', ['response_headers' => ['Content-Type' => 'text/html']]));
+        $httpClient = new MockHttpClient(static fn (): MockResponse => new MockResponse('<a class="btn" href="/test">link</a>', ['response_headers' => ['Content-Type' => 'text/html']]));
         $expressionEvaluator = new ExpressionEvaluator($language);
         $uriResolver = new UriResolver();
         $generator = new ChainProcessor([
@@ -74,7 +75,7 @@ class StepGeneratorTest extends TestCase
         $scenario = $scenarioSet->getScenarios()[0];
 
         $count = 0;
-        $handleStep = function (AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext) use (&$handleStep, $stepContextFactory, $expectations, &$count, $generator, $variablesEvaluator) {
+        $handleStep = function (AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext) use (&$handleStep, $stepContextFactory, $expectations, &$count, $generator, $variablesEvaluator): void {
             if (!isset($expectations[$count])) {
                 $this->fail('too many iterations');
             }
@@ -84,12 +85,12 @@ class StepGeneratorTest extends TestCase
 
             $this->assertEquals($expectedStepName, $step->getName(), \sprintf('Names does not match (iteration %d)', $count));
 
-            self::assertArraySubset($expectedInputValues, $scenarioContext->getVariableValues($stepContext, true), message: \sprintf('Failed asserting the input value bag (iteration %d)', $count));
+            $this->assertArraySubset($expectedInputValues, $scenarioContext->getVariableValues($stepContext, true), message: \sprintf('Failed asserting the input value bag (iteration %d)', $count));
 
             foreach ($generator->process($step, $stepContext, $scenarioContext) as $childStep) {
                 $handleStep(
                     $childStep,
-                    $stepContextFactory->createStepContext($childStep, $stepContext, $scenarioContext),
+                    $stepContextFactory->createStepContext($childStep, $stepContext),
                     $scenarioContext,
                 );
             }
@@ -97,19 +98,19 @@ class StepGeneratorTest extends TestCase
             // mimic the variables resolution performed in PlayerNext main loop
             $variablesEvaluator->evaluate($step, $stepContext, $scenarioContext);
 
-            self::assertArraySubset($expectedOutputValues, $scenarioContext->getVariableValues($stepContext, true), message: \sprintf('Failed asserting the output value bag (iteration %d)', $count));
+            $this->assertArraySubset($expectedOutputValues, $scenarioContext->getVariableValues($stepContext, true), message: \sprintf('Failed asserting the output value bag (iteration %d)', $count));
         };
 
         $handleStep(
             $scenario,
-            $stepContextFactory->createStepContext($scenario, new StepContext(), $scenarioContext),
+            $stepContextFactory->createStepContext($scenario, new StepContext()),
             $scenarioContext,
         );
 
-        $this->assertEquals(\count($expectations), $count);
+        $this->assertSame(\count($expectations), $count);
     }
 
-    public static function provideScenarios()
+    public static function provideScenarios(): \Generator
     {
         yield [<<<'BKF'
 scenario
@@ -234,10 +235,10 @@ BKF,
         ];
     }
 
-    private static function assertArraySubset(iterable $subset, iterable $array, bool $checkForObjectIdentity = false, string $message = ''): void
+    private function assertArraySubset(iterable $subset, iterable $array, bool $checkForObjectIdentity = false, string $message = ''): void
     {
         $constraint = new ArraySubset($subset, $checkForObjectIdentity);
 
-        static::assertThat($array, $constraint, $message);
+        $this->assertThat($array, $constraint, $message);
     }
 }

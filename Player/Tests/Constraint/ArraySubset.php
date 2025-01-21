@@ -31,11 +31,7 @@ final class ArraySubset extends Constraint
         $other = $this->toArray($other);
         $this->subset = $this->toArray($this->subset);
         $patched = array_replace_recursive($other, $this->subset);
-        if ($this->strict) {
-            $result = $other === $patched;
-        } else {
-            $result = $other == $patched;
-        }
+        $result = $this->strict ? $other === $patched : $other === $patched;
         if ($returnResult) {
             return $result;
         }

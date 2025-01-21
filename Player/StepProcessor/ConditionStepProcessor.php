@@ -44,10 +44,8 @@ class ConditionStepProcessor implements StepProcessorInterface
             if ($child = $step->getIfStep()) {
                 yield clone $child;
             }
-        } else {
-            if ($child = $step->getElseStep()) {
-                yield clone $child;
-            }
+        } elseif ($child = $step->getElseStep()) {
+            yield clone $child;
         }
     }
 }
