@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.6.28 (2025-01-22)
+
+  - Update dependencies
+  - Internal releasing changes
+
 * v2.6.27 (2025-01-13)
 
   - Improve profiling errors reporting
