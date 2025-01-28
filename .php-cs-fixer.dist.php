@@ -10,6 +10,7 @@ file that was distributed with this source code.
 EOF;
 
 $finder = PhpCsFixer\Finder::create()
+    ->exclude('Tests/Mock')
     ->in(__DIR__.'/Player')
 ;
 

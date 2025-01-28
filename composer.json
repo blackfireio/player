@@ -44,7 +44,6 @@
         "phpunit/phpunit": "^11.0",
         "rector/rector": "^2.0",
         "symfony/process": "7.2.*",
-        "symfony/phpunit-bridge": "7.2.*",
         "symfony/var-dumper": "7.2.*"
     },
     "replace": {
