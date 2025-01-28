@@ -11,7 +11,6 @@
          failOnDeprecation="false"
 >
     <php>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=999999&amp;quiet[]=indirect"/>
         <env name="BLACKFIRE_CLIENT_ID" value="12341234-12341234"/>
         <env name="BLACKFIRE_CLIENT_TOKEN" value="token-12341234123412341234123412341234123412341234"/>
         <env name="BLACKFIRE_BASIC_AUTH_USERNAME" value="admin"/>

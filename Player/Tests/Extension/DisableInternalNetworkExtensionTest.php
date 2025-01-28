@@ -18,10 +18,10 @@ use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\Step\RequestStep;
 use Blackfire\Player\Step\StepContext;
 use Blackfire\Player\Step\VisitStep;
+use Blackfire\Player\Tests\Mock\DnsMock;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\PhpUnit\DnsMock;
 
 #[Group('dns-sensitive')]
 class DisableInternalNetworkExtensionTest extends TestCase
