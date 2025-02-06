@@ -11,6 +11,7 @@ use Rector\CodingStyle\Rector\ClassMethod\NewlineBeforeNewAssignSetRector;
 use Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector;
 use Rector\Config\RectorConfig;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
@@ -76,4 +77,7 @@ return RectorConfig::configure()
         // injected by rectorPreset preset
         DeclareStrictTypesRector::class,
         FinalizeTestCaseClassRector::class,
+
+        // injected by phpunitCodeQuality preset
+        AssertEmptyNullableObjectToAssertInstanceofRector::class,
     ]);
