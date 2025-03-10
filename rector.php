@@ -14,6 +14,7 @@ use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRecto
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
+use Rector\Symfony\CodeQuality\Rector\Class_\InlineClassRoutePrefixRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 
 return RectorConfig::configure()
@@ -79,5 +80,6 @@ return RectorConfig::configure()
         FinalizeTestCaseClassRector::class,
 
         // injected by phpunitCodeQuality preset
+        InlineClassRoutePrefixRector::class,
         AssertEmptyNullableObjectToAssertInstanceofRector::class,
     ]);
