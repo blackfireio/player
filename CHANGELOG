@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* v2.6.31 (2025-03-25)
+
+  - Internal releasing changes
+  - Update dependencies
+  - Upgrade player-dev to php 8.4
+
 * v2.6.30 (2025-03-03)
 
   - Update dependencies
