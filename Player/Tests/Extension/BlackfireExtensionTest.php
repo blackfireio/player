@@ -146,7 +146,7 @@ class BlackfireExtensionTest extends TestCase
         $step = new VisitStep('https://app-under-test.lan');
         $step->blackfire('"my env"');
         $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
-            BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234&profile_title=%7B%22blackfire-metadata%22%3A%7B%22timers%22%3A%7B%22total%22%3A2%2C%22name_lookup%22%3A2%2C%22connect%22%3A2%2C%22pre_transfer%22%3A2%2C%22start_transfer%22%3A2%7D%7D%7D'],
+            BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234&profile_title=%7B%22blackfire-metadata%22%3A%7B%22timers%22%3A%7B%22total%22%3A2%2C%22name_lookup%22%3A2%2C%22connect%22%3A2%2C%22pre_transfer%22%3A2%2C%22start_transfer%22%3A2%2C%22post_transfer%22%3A2%7D%7D%7D'],
             BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
             'cookie' => ['my=cookie; __blackfire=NO_CACHE'],
         ]);
@@ -158,6 +158,7 @@ class BlackfireExtensionTest extends TestCase
                 'connect' => 2,
                 'pre_transfer' => 2,
                 'start_transfer' => 2,
+                'post_transfer' => 2,
             ],
         ];
         yield 'configures X-Blackfire-Query with ref stats when they exists' => [

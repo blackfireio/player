@@ -97,6 +97,7 @@ class RequestStepProcessor implements StepProcessorInterface
             'connect' => $responseInfo['connect_time'] ?? null,
             'pre_transfer' => $responseInfo['pretransfer_time'] ?? null,
             'start_transfer' => $responseInfo['starttransfer_time'] ?? null,
+            'post_transfer' => isset($responseInfo['posttransfer_time_us']) ? ($responseInfo['posttransfer_time_us'] / 1000000) : null,
         ];
 
         $response = new Response($request, $httpResponse->getStatusCode(), $httpResponse->getHeaders(false), $httpResponse->getContent(false), $stats);
