@@ -10,6 +10,7 @@ use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
 use Rector\CodingStyle\Rector\ClassMethod\NewlineBeforeNewAssignSetRector;
 use Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector;
 use Rector\Config\RectorConfig;
+use Rector\Php84\Rector\MethodCall\NewMethodCallWithoutParenthesesRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
@@ -63,6 +64,9 @@ return RectorConfig::configure()
     ->withSkip([
         // injected by php83 preset
         AddOverrideAttributeToOverriddenMethodsRector::class,
+
+        // injected by php84 preset
+        NewMethodCallWithoutParenthesesRector::class,
 
         // injected by codeQuality preset
         DisallowedEmptyRuleFixerRector::class,
