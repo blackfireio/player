@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* v2.6.32 (2025-03-31)
+
+  - Update dependencies
+  - Add post transfer to build statistics
+  - Internal releasing changes
+
 * v2.6.31 (2025-03-25)
 
   - Internal releasing changes
