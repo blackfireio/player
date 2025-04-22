@@ -65,7 +65,7 @@ class BlackfireExtensionTest extends TestCase
     }
 
     #[DataProvider('beforeRequestProvider')]
-    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, callable $stepAssertions, callable|null $scenarioContextAssertions = null): void
+    public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, array|null $expectedCookies, callable $stepAssertions, callable|null $scenarioContextAssertions = null): void
     {
         $extension = $this->getBlackfireExtension();
 
@@ -85,7 +85,28 @@ class BlackfireExtensionTest extends TestCase
 
         $extension->beforeStep(new RequestStep($request, $step), $stepContext, $scenarioContext);
 
+        if (null !== $expectedCookies) {
+            $this->assertArrayHasKey('cookie', $request->headers);
+            $cookies = explode('; ', $request->headers['cookie'][0]);
+            // ensure there's a __blackfire=NO_CACHE cookie
+            // we'll compare the expected cookies against all the request cookies except this one (as it contains random values)
+            $normalizedCookies = [];
+            $noCacheCookieFound = false;
+            foreach ($cookies as $cookie) {
+                if (str_starts_with($cookie, '__blackfire=NO_CACHE')) {
+                    $noCacheCookieFound = true;
+                } else {
+                    $normalizedCookies[] = $cookie;
+                }
+            }
+
+            $this->assertTrue($noCacheCookieFound);
+            $this->assertEquals($expectedCookies, $normalizedCookies);
+            unset($request->headers['cookie']);
+        }
+
         $this->assertEquals($expectedRequest, $request);
+
         $stepAssertions($step);
 
         if (null !== $scenarioContextAssertions) {
@@ -102,6 +123,7 @@ class BlackfireExtensionTest extends TestCase
             new HttpRequest('GET', 'https://app-under-test.lan'),
             $defaultScenarioSetExtraValues,
             $expectedRequest,
+            null,
             function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
@@ -112,7 +134,6 @@ class BlackfireExtensionTest extends TestCase
         $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
             BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234'],
             BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
-            'cookie' => ['__blackfire=NO_CACHE'],
         ]);
         $defaultScenarioSetExtraValues = [];
         yield 'append the X-Blackfire-Query header when needed' => [
@@ -120,6 +141,7 @@ class BlackfireExtensionTest extends TestCase
             new HttpRequest('GET', 'https://app-under-test.lan'),
             $defaultScenarioSetExtraValues,
             $expectedRequest,
+            [],
             function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
@@ -130,7 +152,6 @@ class BlackfireExtensionTest extends TestCase
         $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
             BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234'],
             BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
-            'cookie' => ['my=cookie; __blackfire=NO_CACHE'],
         ]);
         $defaultScenarioSetExtraValues = [];
         yield 'updates the Cookie header when it already exists' => [
@@ -138,6 +159,7 @@ class BlackfireExtensionTest extends TestCase
             new HttpRequest('GET', 'https://app-under-test.lan', ['cookie' => ['my=cookie']]),
             $defaultScenarioSetExtraValues,
             $expectedRequest,
+            ['my=cookie'],
             function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
@@ -148,7 +170,6 @@ class BlackfireExtensionTest extends TestCase
         $expectedRequest = new HttpRequest('GET', 'https://app-under-test.lan', [
             BlackfireExtension::HEADER_BLACKFIRE_QUERY => ['1234&profile_title=%7B%22blackfire-metadata%22%3A%7B%22timers%22%3A%7B%22total%22%3A2%2C%22name_lookup%22%3A2%2C%22connect%22%3A2%2C%22pre_transfer%22%3A2%2C%22start_transfer%22%3A2%2C%22post_transfer%22%3A2%7D%7D%7D'],
             BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID => ['1111-2222-3333-4444'],
-            'cookie' => ['my=cookie; __blackfire=NO_CACHE'],
         ]);
         $defaultScenarioSetExtraValues = [
             'blackfire_ref_step' => new VisitStep('https://app-under-test.lan'),
@@ -166,6 +187,7 @@ class BlackfireExtensionTest extends TestCase
             new HttpRequest('GET', 'https://app-under-test.lan', ['cookie' => ['my=cookie']]),
             $defaultScenarioSetExtraValues,
             $expectedRequest,
+            ['my=cookie'],
             function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },

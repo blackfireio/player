@@ -147,10 +147,12 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
             $config = $this->createBuildProfileConfig($step->getInitiator(), $stepContext, $scenarioContext, $request);
             $profileRequest = $this->blackfire->createRequest($config);
 
+            $blackfireNoCacheCookie = \sprintf('__blackfire=NO_CACHE%f', mt_rand() / mt_getrandmax());
+
             if (isset($request->headers['cookie'])) {
-                $request->headers['cookie'] = [$request->headers['cookie'][0].'; __blackfire=NO_CACHE'];
+                $request->headers['cookie'] = [\sprintf('%s; %s', $request->headers['cookie'][0], $blackfireNoCacheCookie)];
             } else {
-                $request->headers['cookie'] = ['__blackfire=NO_CACHE'];
+                $request->headers['cookie'] = [$blackfireNoCacheCookie];
             }
 
             $query = $profileRequest->getToken();
