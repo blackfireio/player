@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+* v2.6.34 (2025-04-23)
+
+  - apply random value to cookie __blackfire=NO_CACHE when profiling
+  - Update dependencies
+
 * v2.6.33 (2025-04-17)
 
   - Internal releasing changes
