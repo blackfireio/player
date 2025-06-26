@@ -26,25 +26,25 @@
         "nyholm/psr7": "^1.6",
         "psr/log": "^3.0",
         "sentry/sentry": "^4.0",
-        "symfony/console": "7.2.*",
-        "symfony/css-selector": "7.2.*",
-        "symfony/dom-crawler": "7.2.*",
-        "symfony/event-dispatcher": "7.2.*",
-        "symfony/expression-language": "7.2.*",
-        "symfony/filesystem": "7.2.*",
+        "symfony/console": "7.3.*",
+        "symfony/css-selector": "7.3.*",
+        "symfony/dom-crawler": "7.3.*",
+        "symfony/event-dispatcher": "7.3.*",
+        "symfony/expression-language": "7.3.*",
+        "symfony/filesystem": "7.3.*",
         "symfony/finder": "^7.0",
-        "symfony/http-client": "7.2.*",
-        "symfony/mime": "7.2.*",
+        "symfony/http-client": "7.3.*",
+        "symfony/mime": "7.3.*",
         "symfony/polyfill-uuid": "^1.28",
-        "symfony/property-access": "7.2.*",
-        "symfony/serializer": "7.2.*",
-        "symfony/yaml": "7.2.*"
+        "symfony/property-access": "7.3.*",
+        "symfony/serializer": "7.3.*",
+        "symfony/yaml": "7.3.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.0",
         "rector/rector": "^2.0",
-        "symfony/process": "7.2.*",
-        "symfony/var-dumper": "7.2.*"
+        "symfony/process": "7.3.*",
+        "symfony/var-dumper": "7.3.*"
     },
     "replace": {
         "symfony/polyfill-ctype": "*",
