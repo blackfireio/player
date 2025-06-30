@@ -1,6 +1,6 @@
 ARG COMPOSER_VERSION=2.8.9    # https://hub.docker.com/_/composer/tags
 ARG PHIVE_VERSION=0.16.0      # https://github.com/phar-io/phive/releases
-ARG PHPEXTINST_VERSION=2.7.34  # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG PHPEXTINST_VERSION=2.8.2  # https://github.com/mlocati/docker-php-extension-installer/releases
 ARG UUID_VERSION=1.3.0        # https://pecl.php.net/package/uuid
 
 FROM composer:${COMPOSER_VERSION} AS build_composer
@@ -27,8 +27,8 @@ RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/
     chmod +x /usr/local/bin/install-php-extensions
 
 RUN install-php-extensions \
-    mbstring-stable \
-    intl-stable \
+    mbstring \
+    intl \
     uuid-${UUID_VERSION}
 
 RUN curl -fsLo phive.phar "https://github.com/phar-io/phive/releases/download/${PHIVE_VERSION}/phive-${PHIVE_VERSION}.phar" && \
