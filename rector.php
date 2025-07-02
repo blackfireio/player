@@ -32,7 +32,7 @@ return RectorConfig::configure()
         importShortClasses: false, // do not enable, it changes `\Datetime` (and co.) into `use` statement
         removeUnusedImports: false, // do not enable, it removed imports that are used in comments
     )
-    ->withPhpSets(php83: true)
+    ->withPhpSets(php84: true)
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
@@ -60,6 +60,12 @@ return RectorConfig::configure()
         jms: false, // do not enable, we don't use jms
         sensiolabs: false, // do not enable, we don't use sensiolabs
         behat: false, // do not enable, we don't use behat
+    )
+    ->withComposerBased(
+        twig: true,
+        doctrine: true,
+        phpunit: true,
+        symfony: true,
     )
     ->withSkip([
         // injected by php83 preset
