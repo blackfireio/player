@@ -123,8 +123,7 @@ EOF
 scenario
     visit url('/blog/')
         warmup
-EOF
-            ,
+EOF,
             'true',
         ];
 
@@ -132,8 +131,7 @@ EOF
 scenario
     visit url('/blog/')
         warmup true
-EOF
-            ,
+EOF,
             'true',
         ];
 
@@ -141,8 +139,7 @@ EOF
 scenario
     visit url('/blog/')
         warmup false
-EOF
-            ,
+EOF,
             'false',
         ];
 
@@ -150,8 +147,7 @@ EOF
 scenario
     visit url('/blog/')
         warmup 8
-EOF
-            ,
+EOF,
             '8',
         ];
 
@@ -159,8 +155,7 @@ EOF
 scenario
     visit url('/blog/')
         warmup 1 + 4
-EOF
-            ,
+EOF,
             '1 + 4',
         ];
 
@@ -169,8 +164,7 @@ scenario
     warmup true
 
     visit url('/blog/')
-EOF
-            ,
+EOF,
             null,
             'true',
         ];
