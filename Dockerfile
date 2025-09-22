@@ -1,5 +1,5 @@
 ARG PHP_VERSION=8.4.12-alpine  # https://hub.docker.com/_/php/tags?page=1&name=8.4
-ARG COMPOSER_VERSION=2.8.11    # https://hub.docker.com/_/composer/tags
+ARG COMPOSER_VERSION=2.8.12    # https://hub.docker.com/_/composer/tags
 ARG PHPEXTINST_VERSION=2.9.7  # https://github.com/mlocati/docker-php-extension-installer/releases
 ARG UUID_VERSION=1.3.0        # https://pecl.php.net/package/uuid
 
