@@ -62,7 +62,7 @@ setup: build $(BOX_BIN) composer-install ## Create and initialize containers
 php-cs: bin/tools/php-cs-fixer vendor/autoload.php ## Just analyze PHP code with php-cs-fixer
 	@$(call section_start, $@, "Running PHP-CS-Fixer", false)
 
-	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run
+	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff
 
 	@$(call section_end, $@)
 .PHONY: php-cs
