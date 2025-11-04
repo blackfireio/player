@@ -42,7 +42,6 @@ return RectorConfig::configure()
         naming: false, // do not enable, it changes variable name and break auto-wiring
         instanceOf: true,
         earlyReturn: true,
-        strictBooleans: true,
         carbon: false, // do not enable, it replaces time functions with \Carbon lib
         rectorPreset: true,
         phpunitCodeQuality: true,
