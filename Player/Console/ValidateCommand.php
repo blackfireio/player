@@ -36,10 +36,10 @@ final class ValidateCommand extends Command
             ->setName('validate')
             ->setDefinition([
                 new InputArgument('file', InputArgument::OPTIONAL, 'The file defining the scenarios'),
-                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs result as JSON', null),
-                new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use', null),
-                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
+                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs result as JSON'),
+                new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint'),
+                new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
+                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value'),
             ])
             ->setDescription('Validate scenario files')
             ->setHelp('Read https://docs.blackfire.io/builds-cookbooks/player to learn about all supported options.')

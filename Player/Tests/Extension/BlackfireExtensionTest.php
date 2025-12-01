@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -470,7 +472,7 @@ class BlackfireExtensionTest extends TestCase
         $visitStepWith5Warmups->blackfire('true');
         $visitStepWith5Warmups->name('"Visit page"');
         $visitStepWith5Warmups->method('"GET"');
-        $visitStepWith5Warmups->warmup(5);
+        $visitStepWith5Warmups->warmup('5');
         yield 'VisitStep with GET request and 5 warmups' => [
             $visitStepWith5Warmups,
             [
@@ -523,7 +525,7 @@ class BlackfireExtensionTest extends TestCase
         $visitStepHeadMethodWith5Warmups->blackfire('true');
         $visitStepHeadMethodWith5Warmups->name('"Visit page"');
         $visitStepHeadMethodWith5Warmups->method('"HEAD"');
-        $visitStepHeadMethodWith5Warmups->warmup(5);
+        $visitStepHeadMethodWith5Warmups->warmup('5');
         yield 'VisitStep with HEAD request and 5 warmups' => [
             $visitStepHeadMethodWith5Warmups,
             [
@@ -553,7 +555,7 @@ class BlackfireExtensionTest extends TestCase
         $visitStepWith2WarmupsAndPostRequest->blackfire('true');
         $visitStepWith2WarmupsAndPostRequest->name('"Visit page"');
         $visitStepWith2WarmupsAndPostRequest->method('"POST"');
-        $visitStepWith2WarmupsAndPostRequest->warmup(2);
+        $visitStepWith2WarmupsAndPostRequest->warmup('2');
         // no warmup are expected here as it is a POST request without having set sample > 1
         yield 'VisitStep with POST request and 2 warmups' => [
             $visitStepWith2WarmupsAndPostRequest,
@@ -564,7 +566,7 @@ class BlackfireExtensionTest extends TestCase
         $visitStepWithoutBlackfire = new VisitStep('https://app.lan');
         $visitStepWithoutBlackfire->blackfire('false');
         $visitStepWithoutBlackfire->name('"Visit page"');
-        $visitStepWithoutBlackfire->warmup(2);
+        $visitStepWithoutBlackfire->warmup('2');
         yield 'VisitStep without blackfire' => [
             $visitStepWithoutBlackfire,
             [],
@@ -667,18 +669,18 @@ class BlackfireExtensionTest extends TestCase
     {
         $blackfireConfig = new ClientConfiguration();
 
-        $profileRequest = $this->getMockBuilder(ProfileRequest::class)->disableOriginalConstructor()->getMock();
+        $profileRequest = $this->createMock(ProfileRequest::class);
         $profileRequest->method('getToken')->willReturn('1234');
         $profileRequest->method('getUuid')->willReturn('1111-2222-3333-4444');
 
-        $profile = $this->getMockBuilder(Profile::class)->disableOriginalConstructor()->getMock();
+        $profile = $this->createMock(Profile::class);
         $profile->method('isErrored')->willReturn(false);
         $profile->method('isSuccessful')->willReturn(true);
 
-        $build = $this->getMockBuilder(SdkBuild::class)->disableOriginalConstructor()->getMock();
+        $build = $this->createMock(SdkBuild::class);
         $build->method('getUuid')->willReturn('4444-3333-2222-1111');
 
-        $blackfire = $this->getMockBuilder(Client::class)->getMock();
+        $blackfire = $this->createMock(Client::class);
         $blackfire->method('getConfiguration')->willReturn($blackfireConfig);
         $blackfire->method('createRequest')->willReturn($profileRequest);
         $blackfire->method('getProfile')->willReturn($profile);

@@ -51,11 +51,11 @@ class UriResolver
         );
 
         return
-            (\strlen((string) $scheme) > 0 ? $scheme.':' : '').
-            (\strlen($authority) > 0 ? '//'.$authority : '').
+            ('' !== (string) $scheme ? $scheme.':' : '').
+            ('' !== $authority ? '//'.$authority : '').
             ($parsed['path'] ?? '').
-            (\strlen((string) $query) > 0 ? '?'.$query : '').
-            (\strlen((string) $fragment) > 0 ? '#'.$fragment : '')
+            ('' !== (string) $query ? '?'.$query : '').
+            ('' !== (string) $fragment ? '#'.$fragment : '')
         ;
     }
 }

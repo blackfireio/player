@@ -66,7 +66,7 @@ class FollowStepProcessor implements StepProcessorInterface
         // not forcing RFC compliance, but rather emulating what all browsers
         // would do.
         $statusCode = $previousResponse->statusCode;
-        if (303 == $statusCode || ($statusCode <= 302 && ($previousRequest->options['body'] ?? $previousRequest->options['json'] ?? null))) {
+        if (303 === $statusCode || ($statusCode <= 302 && ($previousRequest->options['body'] ?? $previousRequest->options['json'] ?? null))) {
             $modify['method'] = 'GET';
             $modify['body'] = null;
             unset($modify['headers']['content-type']);

@@ -7,10 +7,16 @@ use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
 use Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector;
 use Rector\CodingStyle\Rector\Assign\SplitDoubleAssignRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
+use Rector\CodingStyle\Rector\ClassLike\NewlineBetweenClassLikeStmtsRector;
 use Rector\CodingStyle\Rector\ClassMethod\NewlineBeforeNewAssignSetRector;
 use Rector\CodingStyle\Rector\Stmt\NewlineAfterStatementRector;
 use Rector\Config\RectorConfig;
+use Rector\Php84\Rector\Foreach_\ForeachToArrayAnyRector;
+use Rector\Php84\Rector\Foreach_\ForeachToArrayFindKeyRector;
+use Rector\Php84\Rector\Foreach_\ForeachToArrayAllRector;
+use Rector\Php84\Rector\Foreach_\ForeachToArrayFindRector;
 use Rector\Php84\Rector\MethodCall\NewMethodCallWithoutParenthesesRector;
+use Rector\Php84\Rector\FuncCall\AddEscapeArgumentRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
@@ -72,6 +78,11 @@ return RectorConfig::configure()
 
         // injected by php84 preset
         NewMethodCallWithoutParenthesesRector::class,
+        ForeachToArrayAnyRector::class,
+        ForeachToArrayFindKeyRector::class,
+        ForeachToArrayAllRector::class,
+        ForeachToArrayFindRector::class,
+        AddEscapeArgumentRector::class,
 
         // injected by codeQuality preset
         DisallowedEmptyRuleFixerRector::class,
@@ -83,6 +94,7 @@ return RectorConfig::configure()
         NewlineAfterStatementRector::class,
         NewlineBeforeNewAssignSetRector::class,
         SplitDoubleAssignRector::class,
+        NewlineBetweenClassLikeStmtsRector::class,
 
         // injected by rectorPreset preset
         DeclareStrictTypesRector::class,

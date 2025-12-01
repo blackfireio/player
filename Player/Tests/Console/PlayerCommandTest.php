@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -39,7 +41,7 @@ class PlayerCommandTest extends TestCase
         self::stopServer();
     }
 
-    public static function providePlayerTests()
+    public static function providePlayerTests(): \Iterator
     {
         $dirs = Finder::create()
             ->in(__DIR__.'/../'.self::FIXTURES_DIR)
@@ -89,7 +91,7 @@ class PlayerCommandTest extends TestCase
         ], $cliOptions));
 
         $output = $tester->getDisplay();
-        $output = implode("\n", array_map('rtrim', explode("\n", $output)));
+        $output = implode("\n", array_map(rtrim(...), explode("\n", $output)));
         $expectedOutput = str_replace('{{ PORT }}', self::$port, $expectedOutput);
         $expectedOutput = str_replace('{{ SCENARIO_FILE }}', $file, $expectedOutput);
 
@@ -108,7 +110,7 @@ class PlayerCommandTest extends TestCase
             ]);
 
             $output = $tester->getDisplay();
-            $output = implode("\n", array_map('rtrim', explode("\n", $output)));
+            $output = implode("\n", array_map(rtrim(...), explode("\n", $output)));
             $this->assertStringMatchesFormat($expectedReportOutput, $output);
         }
     }
@@ -243,8 +245,8 @@ EOS;
 
 EOD;
 
-        $oneLineExpected = implode(' ', array_filter(array_map('trim', explode("\n", $expectedErrorOutput))));
-        $oneLineOutput = implode(' ', array_filter(array_map('trim', explode("\n", $process->getErrorOutput()))));
+        $oneLineExpected = implode(' ', array_filter(array_map(trim(...), explode("\n", $expectedErrorOutput))));
+        $oneLineOutput = implode(' ', array_filter(array_map(trim(...), explode("\n", $process->getErrorOutput()))));
 
         $this->assertSame($expectedOutput, $process->getOutput());
         $this->assertStringContainsString($oneLineExpected, $oneLineOutput);

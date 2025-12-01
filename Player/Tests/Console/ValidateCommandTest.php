@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -19,7 +21,7 @@ use Symfony\Component\Process\Process;
 
 class ValidateCommandTest extends TestCase
 {
-    public static function providePlayerTests()
+    public static function providePlayerTests(): \Iterator
     {
         $dirs = Finder::create()
             ->in(__DIR__.'/../fixtures-validate')
