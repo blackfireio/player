@@ -16,7 +16,7 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class LoopStep extends BlockStep
+class LoopStep extends BlockStep implements \Stringable
 {
     private AbstractStep|null $loopStep = null;
 

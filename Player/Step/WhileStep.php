@@ -16,7 +16,7 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class WhileStep extends BlockStep
+class WhileStep extends BlockStep implements \Stringable
 {
     private AbstractStep|null $whileStep = null;
 

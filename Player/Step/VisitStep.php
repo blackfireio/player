@@ -16,7 +16,7 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class VisitStep extends Step
+class VisitStep extends Step implements \Stringable
 {
     private string|null $method = null;
     /** @var string[] */

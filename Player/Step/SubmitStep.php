@@ -16,7 +16,7 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class SubmitStep extends Step
+class SubmitStep extends Step implements \Stringable
 {
     /** @var string[] */
     private array $parameters = [];

@@ -16,7 +16,7 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class ConditionStep extends BlockStep
+class ConditionStep extends BlockStep implements \Stringable
 {
     private AbstractStep|null $ifStep = null;
     private AbstractStep|null $elseStep = null;

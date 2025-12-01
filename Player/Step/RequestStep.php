@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 /**
  * @internal
  */
-class RequestStep extends ConfigurableStep implements StepInitiatorInterface
+class RequestStep extends ConfigurableStep implements \Stringable, StepInitiatorInterface
 {
     use StepInitiatorTrait;
 

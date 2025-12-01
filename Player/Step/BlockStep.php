@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
  *
  * @internal
  */
-class BlockStep extends ConfigurableStep
+class BlockStep extends ConfigurableStep implements \Stringable
 {
     #[Ignore]
     private AbstractStep|null $blockStep = null;

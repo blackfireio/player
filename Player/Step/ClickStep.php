@@ -16,7 +16,7 @@ namespace Blackfire\Player\Step;
  *
  * @internal
  */
-class ClickStep extends Step
+class ClickStep extends Step implements \Stringable
 {
     public function __construct(
         private readonly string $selector,
