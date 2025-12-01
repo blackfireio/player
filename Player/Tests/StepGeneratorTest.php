@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -12,7 +14,6 @@
 namespace Blackfire\Player\Tests;
 
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
-use Blackfire\Player\ExpressionLanguage\Provider;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Http\CookieJar;
 use Blackfire\Player\Parser;
@@ -50,7 +51,7 @@ class StepGeneratorTest extends TestCase
         $scenarioSet = $parser->parse($rawScenarioSet);
 
         $scenarioContext = new ScenarioContext('"foo"', $scenarioSet);
-        $language = new ExpressionLanguage(null, [new Provider()]);
+        $language = new ExpressionLanguage(null, [new LanguageProvider()]);
         $variableResolver = new VariableResolver($language);
         $variablesEvaluator = new VariablesEvaluator($language);
         $stepContextFactory = new StepContextFactory($variableResolver);

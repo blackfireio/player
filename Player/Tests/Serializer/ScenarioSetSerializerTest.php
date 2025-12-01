@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -176,7 +178,7 @@ class ScenarioSetSerializerTest extends TestCase
         return $newJsonView;
     }
 
-    private function filterStepUuid($step): array
+    private function filterStepUuid(array $step): array
     {
         $this->assertArrayHasKey('uuid', $step);
         unset($step['uuid']);

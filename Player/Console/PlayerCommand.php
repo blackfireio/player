@@ -94,17 +94,17 @@ final class PlayerCommand extends Command
             ->setName('run')
             ->setDefinition([
                 new InputArgument('file', InputArgument::OPTIONAL, 'The file defining the scenarios'),
-                new InputOption('config', '', InputOption::VALUE_OPTIONAL, 'The configuration file to retrieve configuration from', null),
+                new InputOption('config', '', InputOption::VALUE_OPTIONAL, 'The configuration file to retrieve configuration from'),
                 new InputOption('concurrency', 'c', InputOption::VALUE_REQUIRED, 'The number of clients to create', 1),
-                new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint', null),
-                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON', null),
-                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value', null),
-                new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk', null),
-                new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network', null),
-                new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode', null),
-                new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification', null),
+                new InputOption('endpoint', '', InputOption::VALUE_REQUIRED, 'Override the scenario endpoint'),
+                new InputOption('json', '', InputOption::VALUE_NONE, 'Outputs execution report as JSON'),
+                new InputOption('variable', '', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Declare or override a variable value'),
+                new InputOption('tracer', '', InputOption::VALUE_NONE, 'Store debug information on disk'),
+                new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network'),
+                new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode'),
+                new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification'),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
-                new InputOption('step', '', InputOption::VALUE_NONE, 'Interactive execution. Ask user validation before every step.', null),
+                new InputOption('step', '', InputOption::VALUE_NONE, 'Interactive execution. Ask user validation before every step.'),
             ])
             ->setDescription('Runs scenario files')
             ->setHelp('Read https://docs.blackfire.io/builds-cookbooks/player to learn about all supported options.')

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -70,7 +72,7 @@ class PlayerCommandWithEnvTest extends TestCase
         ], $cliOptions));
 
         $output = $tester->getDisplay();
-        $output = implode("\n", array_map('rtrim', explode("\n", $output)));
+        $output = implode("\n", array_map(rtrim(...), explode("\n", $output)));
         $expectedOutput = str_replace('{{ PORT }}', self::$port, $expectedOutput);
         $expectedOutput = str_replace('{{ SCENARIO_FILE }}', $file, $expectedOutput);
 
@@ -98,12 +100,12 @@ class PlayerCommandWithEnvTest extends TestCase
             ]);
 
             $output = $tester->getDisplay();
-            $output = implode("\n", array_map('rtrim', explode("\n", $output)));
+            $output = implode("\n", array_map(rtrim(...), explode("\n", $output)));
             $this->assertStringMatchesFormat($expectedReportOutput, $output);
         }
     }
 
-    public static function providePlayerWithEnvTests()
+    public static function providePlayerWithEnvTests(): \Iterator
     {
         $dirs = Finder::create()
             ->in(__DIR__.'/../'.self::FIXTURES_DIR)
