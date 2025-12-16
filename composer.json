@@ -37,7 +37,7 @@
         "symfony/mime": "7.3.*",
         "symfony/polyfill-uuid": "^1.28",
         "symfony/property-access": "7.3.*",
-        "symfony/serializer": "7.3.*",
+        "symfony/serializer": "8.0.*",
         "symfony/yaml": "7.3.*"
     },
     "require-dev": {
