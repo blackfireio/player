@@ -30,7 +30,7 @@
         "symfony/css-selector": "8.0.*",
         "symfony/dom-crawler": "8.0.*",
         "symfony/event-dispatcher": "7.4.*",
-        "symfony/expression-language": "7.4.*",
+        "symfony/expression-language": "8.0.*",
         "symfony/filesystem": "8.0.*",
         "symfony/finder": "8.0.*",
         "symfony/http-client": "7.4.*",
