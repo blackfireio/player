@@ -27,7 +27,7 @@
         "psr/log": "^3.0",
         "sentry/sentry": "^4.0",
         "symfony/console": "7.4.*",
-        "symfony/css-selector": "7.4.*",
+        "symfony/css-selector": "8.0.*",
         "symfony/dom-crawler": "8.0.*",
         "symfony/event-dispatcher": "7.4.*",
         "symfony/expression-language": "7.4.*",
