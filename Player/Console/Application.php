@@ -30,8 +30,8 @@ final class Application extends BaseApplication
     {
         parent::__construct('Blackfire Player', Player::version());
 
-        $this->add(new PlayerCommand($blackfireHttpClient, $blackfireSdk, $transactionId));
-        $this->add(new ValidateCommand());
+        $this->addCommand(new PlayerCommand($blackfireHttpClient, $blackfireSdk, $transactionId));
+        $this->addCommand(new ValidateCommand());
     }
 
     public function renderThrowable(\Throwable $e, OutputInterface $output): void
