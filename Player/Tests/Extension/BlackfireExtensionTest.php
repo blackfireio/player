@@ -495,7 +495,7 @@ class BlackfireExtensionTest extends TestCase
                     'name' => '"[Reference] Visit page"',
                 ],
             ],
-            new HttpRequest('GET', 'https://app.lan'), [],
+            new HttpRequest('GET', 'https://app.lan'),
         ];
 
         $visitStepDefaultWarmup = new VisitStep('https://app.lan');
@@ -518,7 +518,7 @@ class BlackfireExtensionTest extends TestCase
                     'name' => '"[Reference] Visit page"',
                 ],
             ],
-            new HttpRequest('GET', 'https://app.lan'), [],
+            new HttpRequest('GET', 'https://app.lan'),
         ];
 
         $visitStepHeadMethodWith5Warmups = new VisitStep('https://app.lan');
@@ -548,7 +548,7 @@ class BlackfireExtensionTest extends TestCase
                     'name' => '"[Reference] Visit page"',
                 ],
             ],
-            new HttpRequest('HEAD', 'https://app.lan'), [],
+            new HttpRequest('HEAD', 'https://app.lan'),
         ];
 
         $visitStepWith2WarmupsAndPostRequest = new VisitStep('https://app.lan');
@@ -560,7 +560,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'VisitStep with POST request and 2 warmups' => [
             $visitStepWith2WarmupsAndPostRequest,
             [],
-            new HttpRequest('POST', 'https://app.lan'), [],
+            new HttpRequest('POST', 'https://app.lan'),
         ];
 
         $visitStepWithoutBlackfire = new VisitStep('https://app.lan');
@@ -570,7 +570,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'VisitStep without blackfire' => [
             $visitStepWithoutBlackfire,
             [],
-            new HttpRequest('POST', 'https://app.lan'), [],
+            new HttpRequest('POST', 'https://app.lan'),
         ];
     }
 

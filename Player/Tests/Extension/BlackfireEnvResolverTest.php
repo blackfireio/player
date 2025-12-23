@@ -133,7 +133,6 @@ class BlackfireEnvResolverTest extends TestCase
             null,
             'true',
             null,
-            true,
         ];
     }
 
