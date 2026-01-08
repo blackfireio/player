@@ -8,6 +8,8 @@
          shortenArraysForExportThreshold="10"
          beStrictAboutOutputDuringTests="true"
          displayDetailsOnPhpunitDeprecations="true"
+         displayDetailsOnPhpunitNotices="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
          failOnDeprecation="false"
 >
     <php>
