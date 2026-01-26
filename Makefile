@@ -18,17 +18,7 @@ else
 	PHP= $(BASE_PHP) -t $(php_image)
 endif
 
-ifdef BUILDKITE
-define section_start
-	$(eval $@_TASK = $(1))
-	$(eval $@_LABEL = $(2))
-	$(eval $@_COLLAPSED := $(if $(3), $(3), true))
-	$(eval $@_NAME := $(if $(4), $(4), $(1)))
-	@echo -e "$(if $(filter true, $($@_COLLAPSED)),"---","+++") [make ${$@_TASK}] \033[33m${$@_LABEL}\033[0m"
-endef
-define section_end
-endef
-else ifdef GITLAB_CI
+ifdef GITLAB_CI
 define section_start
 	$(eval $@_TASK = $(1))
 	$(eval $@_LABEL = $(2))
