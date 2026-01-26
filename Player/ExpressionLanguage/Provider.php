@@ -44,10 +44,10 @@ class Provider implements ExpressionFunctionProviderInterface
 
     public function getFunctions(): array
     {
-        $compiler = (fn (): string => '');
+        $compiler = (static fn (): string => '');
 
         return [
-            new ExpressionFunction('url', $compiler, fn (array $arguments, string $url): string => $url),
+            new ExpressionFunction('url', $compiler, static fn (array $arguments, string $url): string => $url),
 
             new ExpressionFunction('link', $compiler, function (array $arguments, string $selector) {
                 if (null === $arguments['_crawler']) {
@@ -93,7 +93,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return new UploadFile($filename, $name ?? basename($filename));
             }),
 
-            new ExpressionFunction('current_url', $compiler, function (array $arguments): string {
+            new ExpressionFunction('current_url', $compiler, static function (array $arguments): string {
                 if (null === $arguments['_crawler']) {
                     throw new LogicException('Unable to get the current URL as the page is not crawlable.');
                 }
@@ -101,7 +101,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return (string) $arguments['_crawler']->getUri();
             }),
 
-            new ExpressionFunction('status_code', $compiler, function (array $arguments) {
+            new ExpressionFunction('status_code', $compiler, static function (array $arguments) {
                 if ($arguments['_response'] instanceof Response) {
                     return $arguments['_response']->statusCode;
                 }
@@ -109,7 +109,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getStatusCode();
             }),
 
-            new ExpressionFunction('headers', $compiler, function (array $arguments): array {
+            new ExpressionFunction('headers', $compiler, static function (array $arguments): array {
                 $headers = [];
                 if ($arguments['_response'] instanceof Response) {
                     foreach ($arguments['_response']->headers as $key => $value) {
@@ -124,7 +124,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $headers;
             }),
 
-            new ExpressionFunction('body', $compiler, function (array $arguments): string {
+            new ExpressionFunction('body', $compiler, static function (array $arguments): string {
                 if ($arguments['_response'] instanceof Response) {
                     return $arguments['_response']->body;
                 }
@@ -152,11 +152,11 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_response']->getHeader($name)[0];
             }),
 
-            new ExpressionFunction('trim', $compiler, fn (array $arguments, string $scalar): string => trim($scalar)),
+            new ExpressionFunction('trim', $compiler, static fn (array $arguments, string $scalar): string => trim($scalar)),
 
-            new ExpressionFunction('unique', $compiler, fn (array $arguments, array $arr): array => array_unique($arr)),
+            new ExpressionFunction('unique', $compiler, static fn (array $arguments, array $arr): array => array_unique($arr)),
 
-            new ExpressionFunction('join', $compiler, function (array $arguments, mixed $value, string $glue): string {
+            new ExpressionFunction('join', $compiler, static function (array $arguments, mixed $value, string $glue): string {
                 if ($value instanceof \Traversable) {
                     $value = iterator_to_array($value, false);
                 }
@@ -164,7 +164,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return implode($glue, (array) $value);
             }),
 
-            new ExpressionFunction('merge', $compiler, function (array $arguments, mixed $arr1, mixed $arr2): array {
+            new ExpressionFunction('merge', $compiler, static function (array $arguments, mixed $arr1, mixed $arr2): array {
                 if ($arr1 instanceof \Traversable) {
                     $arr1 = iterator_to_array($arr1);
                 } elseif (!\is_array($arr1)) {
@@ -216,7 +216,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $ret;
             }),
 
-            new ExpressionFunction('regex', $compiler, function (array $arguments, string $regex, string|null $str = null): string|null {
+            new ExpressionFunction('regex', $compiler, static function (array $arguments, string $regex, string|null $str = null): string|null {
                 if (null === $str) {
                     if ($arguments['_response'] instanceof Response) {
                         $str = $arguments['_response']->body;
@@ -252,7 +252,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return $arguments['_crawler']->filterXPath($selector);
             }),
 
-            new ExpressionFunction('json', $compiler, function (array $arguments, string $selector) {
+            new ExpressionFunction('json', $compiler, static function (array $arguments, string $selector) {
                 try {
                     if ($arguments['_response'] instanceof Response) {
                         $data = Json::decode($arguments['_response']->body);
@@ -266,7 +266,7 @@ class Provider implements ExpressionFunctionProviderInterface
                 return JmesPath::search($selector, $data);
             }),
 
-            new ExpressionFunction('transform', $compiler, fn (array $arguments, string $selector, mixed $data) => JmesPath::search($selector, $data)),
+            new ExpressionFunction('transform', $compiler, static fn (array $arguments, string $selector, mixed $data) => JmesPath::search($selector, $data)),
         ];
     }
 

@@ -11,7 +11,7 @@
 
 require_once __DIR__.'/../../Mock/mockedProbeEndpoint.php';
 
-mockedProbeEndpoint(function (): void {
+mockedProbeEndpoint(static function (): void {
     $counter = (int) ($_COOKIE['counter'] ?? 0);
     ++$counter;
     header('Set-Cookie: counter='.$counter);

@@ -11,4 +11,4 @@
 
 require_once __DIR__.'/../../Mock/mockedProbeEndpoint.php';
 
-mockedProbeEndpoint(function (): void {});
+mockedProbeEndpoint(static function (): void {});

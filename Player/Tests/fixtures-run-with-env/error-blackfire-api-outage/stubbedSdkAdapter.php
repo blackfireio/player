@@ -12,6 +12,6 @@
 use Blackfire\Player\Exception\ApiCallException;
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
 
-return new StubbedSdkAdapter('Blackfire Test', function (string $uuid): void {
+return new StubbedSdkAdapter('Blackfire Test', static function (string $uuid): void {
     throw new ApiCallException('404: Error while fetching profile from the API.', 404);
 });

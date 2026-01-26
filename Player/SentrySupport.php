@@ -45,7 +45,7 @@ class SentrySupport
             'max_value_length' => 4096,
         ]);
 
-        configureScope(function (Scope $scope) use ($transactionId): void {
+        configureScope(static function (Scope $scope) use ($transactionId): void {
             $scope->setTag('transaction_id', $transactionId);
         });
 

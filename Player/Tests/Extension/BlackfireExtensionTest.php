@@ -126,7 +126,7 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             null,
-            function (Step $step): void {
+            static function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
         ];
@@ -144,7 +144,7 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             [],
-            function (Step $step): void {
+            static function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
         ];
@@ -162,7 +162,7 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             ['my=cookie'],
-            function (Step $step): void {
+            static function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
         ];
@@ -190,10 +190,10 @@ class BlackfireExtensionTest extends TestCase
             $defaultScenarioSetExtraValues,
             $expectedRequest,
             ['my=cookie'],
-            function (Step $step): void {
+            static function (Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
             },
-            function (ScenarioContext $scenarioContext): void {
+            static function (ScenarioContext $scenarioContext): void {
                 self::assertNull($scenarioContext->getExtraValue('blackfire_ref_step'));
                 self::assertNull($scenarioContext->getExtraValue('blackfire_ref_stats'));
             },
@@ -297,7 +297,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'do nothing without X-Blackfire-Profile-Uuid response header' => [
             $response,
             $defaultScenarioSetExtraValues,
-            function (ScenarioContext $scenarioContext, Step $step): void {
+            static function (ScenarioContext $scenarioContext, Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
                 self::assertNull($scenarioContext->getExtraValue('blackfire_retry'));
                 self::assertNull($scenarioContext->getExtraValue('blackfire_progress'));
@@ -316,7 +316,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'updates ScenarioContext if sampling should continue' => [
             $response,
             $defaultScenarioSetExtraValues,
-            function (ScenarioContext $scenarioContext, Step $step): void {
+            static function (ScenarioContext $scenarioContext, Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
                 self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
                 self::assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
@@ -335,7 +335,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'updates ScenarioContext current progress if response headers contains a progress value' => [
             $response,
             $defaultScenarioSetExtraValues,
-            function (ScenarioContext $scenarioContext, Step $step): void {
+            static function (ScenarioContext $scenarioContext, Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
                 self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
                 self::assertEquals(30, $scenarioContext->getExtraValue('blackfire_progress'));
@@ -354,7 +354,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'updates ScenarioContext current progress if response headers continue value isnt set' => [
             $response,
             $defaultScenarioSetExtraValues,
-            function (ScenarioContext $scenarioContext, Step $step): void {
+            static function (ScenarioContext $scenarioContext, Step $step): void {
                 self::assertSame('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
                 self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
                 self::assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
@@ -373,7 +373,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'updates ScenarioContext current progress if response headers continue value equals false' => [
             $response,
             $defaultScenarioSetExtraValues,
-            function (ScenarioContext $scenarioContext, Step $step): void {
+            static function (ScenarioContext $scenarioContext, Step $step): void {
                 self::assertSame('d2a963a1-3c1d-44b9-9e86-553f1e30c279', $step->getBlackfireProfileUuid());
                 self::assertEquals(0, $scenarioContext->getExtraValue('blackfire_retry'));
                 self::assertEquals(-1, $scenarioContext->getExtraValue('blackfire_progress'));
@@ -394,7 +394,7 @@ class BlackfireExtensionTest extends TestCase
         yield 'updates ScenarioContext current retry if no progress were made since previous request' => [
             $response,
             $defaultScenarioSetExtraValues,
-            function (ScenarioContext $scenarioContext, Step $step): void {
+            static function (ScenarioContext $scenarioContext, Step $step): void {
                 self::assertNull($step->getBlackfireProfileUuid());
                 self::assertEquals(1, $scenarioContext->getExtraValue('blackfire_retry'));
                 self::assertEquals(40, $scenarioContext->getExtraValue('blackfire_progress'));
