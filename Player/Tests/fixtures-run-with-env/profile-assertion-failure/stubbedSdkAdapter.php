@@ -12,7 +12,7 @@
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
 use Blackfire\Profile;
 
-return new StubbedSdkAdapter('Blackfire Test', fn (string $uuid): Profile => new Profile(static fn (): array => [
+return new StubbedSdkAdapter('Blackfire Test', static fn (string $uuid): Profile => new Profile(static fn (): array => [
     'report' => [
         'state' => 'failure',
         'tests' => [

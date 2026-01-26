@@ -83,7 +83,7 @@ class ScenarioSetSerializerTest extends TestCase
         yield 'scenario env arent evaluated yet should appear' => [
             __DIR__.'/fixtures/test5.bkf',
             __DIR__.'/fixtures/test5_1.json',
-            function ($scenarioSet): void {
+            static function ($scenarioSet): void {
             },
             new Build('1111-2222-3333-4444'),
         ];
@@ -91,7 +91,7 @@ class ScenarioSetSerializerTest extends TestCase
         yield 'scenarios whose env belong to the build should appear' => [
             __DIR__.'/fixtures/test5.bkf',
             __DIR__.'/fixtures/test5_1.json',
-            function ($scenarioSet): void {
+            static function ($scenarioSet): void {
                 $scenarios = iterator_to_array($scenarioSet);
                 $scenarios[0]->setBlackfireBuildUuid('1111-2222-3333-4444');
             },
@@ -101,7 +101,7 @@ class ScenarioSetSerializerTest extends TestCase
         yield 'scenario belonging to another build are hidden' => [
             __DIR__.'/fixtures/test5.bkf',
             __DIR__.'/fixtures/test5_2.json',
-            function ($scenarioSet): void {
+            static function ($scenarioSet): void {
                 $scenarios = iterator_to_array($scenarioSet);
                 $scenarios[0]->setBlackfireBuildUuid('1111-2222-3333-4444');
                 $scenarios[1]->setBlackfireBuildUuid('9999-9999-9999-9999');
@@ -138,7 +138,7 @@ class ScenarioSetSerializerTest extends TestCase
         yield 'scenario with steps having failures and exceptions' => [
             __DIR__.'/fixtures/serialized_for_jsonview_with_failures_and_exceptions.bkf',
             __DIR__.'/fixtures/serialized_for_jsonview_with_failures_and_exceptions.json',
-            function ($scenarioSet): void {
+            static function ($scenarioSet): void {
                 /** @var Scenario[] $scenarios */
                 $scenarios = iterator_to_array($scenarioSet);
                 $firstScenarioSteps = $scenarios[0]->getSteps();
