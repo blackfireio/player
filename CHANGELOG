@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* 2026.3.0 (2026-03-10)
+
+  - Update dependencies
+  - Switch versioning to calver
+  - Internal releasing changes
+
 * 2026.2.0 (2026-02-23)
 
   - Update dependencies
