@@ -38,7 +38,7 @@ class PlayerNext
 
     public function __construct(
         private readonly StepContextFactory $stepContextFactory,
-        private readonly JsonViewReporter $reporter,
+        private readonly JsonViewReporter|null $reporter,
         private readonly StepProcessorInterface $stepProcessor,
         private readonly VariablesEvaluator $variablesEvaluator,
     ) {
@@ -169,7 +169,7 @@ class PlayerNext
                 }
             }
 
-            $this->reporter->report($scenarioSet);
+            $this->reporter?->report($scenarioSet);
 
             foreach ($this->stepProcessor->process($step, $stepContext, $scenarioContext) as $childStep) {
                 if (!$childStep instanceof ConfigurableStep) {
@@ -225,7 +225,7 @@ class PlayerNext
 
             $this->variablesEvaluator->evaluate($step, $stepContext, $scenarioContext);
 
-            $this->reporter->report($scenarioSet);
+            $this->reporter?->report($scenarioSet);
         }
     }
 
