@@ -2,7 +2,11 @@
     "name": "blackfire/player",
     "type": "project",
     "description": "A powerful web crawler and web scraper with Blackfire support",
-    "keywords": ["scraper", "crawler", "blackfire"],
+    "keywords": [
+        "scraper",
+        "crawler",
+        "blackfire"
+    ],
     "homepage": "https://blackfire.io/player",
     "license": "MIT",
     "authors": [
@@ -58,8 +62,8 @@
         "symfony/polyfill-php83": "*"
     },
     "autoload": {
-        "psr-4" : {
-            "Blackfire\\Player\\" : "Player"
+        "psr-4": {
+            "Blackfire\\Player\\": "Player"
         },
         "exclude-from-classmap": [
             "/Tests/"
