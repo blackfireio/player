@@ -51,7 +51,7 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
     public function __construct(
         private ExpressionLanguage $language,
         private BlackfireEnvResolver $blackfireEnvResolver,
-        private BuildApi $buildApi,
+        private BuildApi|null $buildApi,
         private BlackfireSdkAdapterInterface $blackfire,
     ) {
     }
@@ -113,6 +113,9 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
     public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
         if ($step instanceof Scenario) {
+            if (null === $this->buildApi) {
+                return;
+            }
             $env = $this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step);
             if (false === $env) {
                 return;
@@ -144,7 +147,7 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
                 return;
             }
 
-            $config = $this->createBuildProfileConfig($step->getInitiator(), $stepContext, $scenarioContext, $request);
+            $config = $this->createProfileConfig($step->getInitiator(), $stepContext, $scenarioContext, $request);
             $profileRequest = $this->blackfire->createRequest($config);
 
             $blackfireNoCacheCookie = \sprintf('__blackfire=NO_CACHE%f', mt_rand() / mt_getrandmax());
@@ -220,7 +223,7 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
         }
     }
 
-    private function createBuildProfileConfig(Step $step, StepContext $stepContext, ScenarioContext $context, Request $request): ProfileConfiguration
+    private function createProfileConfig(Step $step, StepContext $stepContext, ScenarioContext $context, Request $request): ProfileConfiguration
     {
         $config = new ProfileConfiguration();
 
@@ -232,14 +235,17 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
             $path .= '?'.$query;
         }
 
-        $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
-        $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
-        if (null === $build) {
-            throw new RuntimeException(\sprintf('Could not find build for env %s in the ScenarioSet', $env));
+        if (null !== $this->buildApi) {
+            $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
+            $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
+            if (null === $build) {
+                throw new RuntimeException(\sprintf('Could not find build for env %s in the ScenarioSet', $env));
+            }
+            $config->setBuildUuid($build->uuid);
         }
 
+        // Having intention=build prevent the profile to be listable
         $config->setIntention('build');
-        $config->setBuildUuid($build->uuid);
 
         $config->setRequestInfo([
             'method' => $request->method,

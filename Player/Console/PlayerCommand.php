@@ -20,6 +20,7 @@ use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireEnvResolver;
 use Blackfire\Player\Extension\BlackfireExtension;
+use Blackfire\Player\Extension\BlackfireReportExtension;
 use Blackfire\Player\Extension\CliFeedbackExtension;
 use Blackfire\Player\Extension\DisableInternalNetworkExtension;
 use Blackfire\Player\Extension\ExpectationExtension;
@@ -105,6 +106,7 @@ final class PlayerCommand extends Command
                 new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification'),
                 new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
                 new InputOption('step', '', InputOption::VALUE_NONE, 'Interactive execution. Ask user validation before every step.'),
+                new InputOption('report', '', InputOption::VALUE_NONE, 'Display profiles reports in the console output.'),
             ])
             ->setDescription('Runs scenario files')
             ->setHelp('Read https://docs.blackfire.io/builds-cookbooks/player to learn about all supported options.')
@@ -170,7 +172,11 @@ final class PlayerCommand extends Command
             ]);
         }
 
+        $report = $input->getOption('report');
         $json = $input->getOption('json');
+        if ($report && $json) {
+            throw new \InvalidArgumentException('The flags --report and --json are mutually excludive. Just one or the other, but not both');
+        }
         $sslNoVerify = $input->getOption('ssl-no-verify');
         $concurrency = $input->getOption('concurrency');
         $sandbox = $input->getOption('sandbox');
@@ -219,7 +225,7 @@ final class PlayerCommand extends Command
         $blackfireEnvResolver = new BlackfireEnvResolver($input->getOption('blackfire-env'), $language);
         $player = new PlayerNext(
             new StepContextFactory(new VariableResolver($language)),
-            new JsonViewReporter($scenarioSerializer, $buildApi, $output),
+            $report ? null : new JsonViewReporter($scenarioSerializer, $buildApi, $output),
             new ChainProcessor([
                 new VisitStepProcessor($expressionEvaluator, $uriResolver),
                 new ClickStepProcessor($expressionEvaluator, $uriResolver),
@@ -252,7 +258,7 @@ final class PlayerCommand extends Command
         $player->addExtension(new BlackfireExtension(
             $language,
             $blackfireEnvResolver,
-            $buildApi,
+            $report ? null : $buildApi,
             $this->blackfireSdkAdapter,
         ), 510);
         $player->addExtension(new CliFeedbackExtension(
@@ -260,6 +266,12 @@ final class PlayerCommand extends Command
             new Dumper($output),
             (new Terminal())->getWidth())
         );
+        if ($report) {
+            $player->addExtension(new BlackfireReportExtension(
+                $this->blackfireSdkAdapter,
+                $output,
+            ));
+        }
         if ($input->getOption('tracer')) {
             $player->addExtension(new TracerExtension($output, $filesystem));
         }
