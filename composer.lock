@@ -3212,11 +3212,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.40",
+            "version": "2.1.42",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9b2c7aeb83a75d8680ea5e7c9b7fca88052b766b",
-                "reference": "9b2c7aeb83a75d8680ea5e7c9b7fca88052b766b",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1279e1ce86ba768f0780c9d889852b4e02ff40d0",
+                "reference": "1279e1ce86ba768f0780c9d889852b4e02ff40d0",
                 "shasum": ""
             },
             "require": {
@@ -3261,7 +3261,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-23T15:04:35+00:00"
+            "time": "2026-03-17T14:58:32+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -4123,16 +4123,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "9.0.1",
+            "version": "9.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "e26e9a944bd9d27b3a38a82fc2093d440951bfbe"
+                "reference": "c4a2dc54b1a24e13ef1839cbb5947b967cbae853"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/e26e9a944bd9d27b3a38a82fc2093d440951bfbe",
-                "reference": "e26e9a944bd9d27b3a38a82fc2093d440951bfbe",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/c4a2dc54b1a24e13ef1839cbb5947b967cbae853",
+                "reference": "c4a2dc54b1a24e13ef1839cbb5947b967cbae853",
                 "shasum": ""
             },
             "require": {
@@ -4147,7 +4147,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "9.0-dev"
+                    "dev-main": "9.1-dev"
                 }
             },
             "autoload": {
@@ -4175,7 +4175,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/environment/issues",
                 "security": "https://github.com/sebastianbergmann/environment/security/policy",
-                "source": "https://github.com/sebastianbergmann/environment/tree/9.0.1"
+                "source": "https://github.com/sebastianbergmann/environment/tree/9.1.0"
             },
             "funding": [
                 {
@@ -4195,7 +4195,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-15T07:13:02+00:00"
+            "time": "2026-03-22T06:31:50+00:00"
         },
         {
             "name": "sebastian/exporter",
