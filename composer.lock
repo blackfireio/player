@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "435d13e7b2afda5397bb3ce55e1313a5",
+    "content-hash": "c8a0dff2f34e84a7919ef297e96f416d",
     "packages": [
         {
             "name": "blackfire/php-sdk",
@@ -393,65 +393,6 @@
                 "source": "https://github.com/Jean85/pretty-package-versions/tree/2.1.1"
             },
             "time": "2025-03-19T14:43:43+00:00"
-        },
-        {
-            "name": "maltyxx/images-generator",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/maltyxx/images-generator.git",
-                "reference": "309be2f5e908882d53c83df900b92f1fd0769aa0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/maltyxx/images-generator/zipball/309be2f5e908882d53c83df900b92f1fd0769aa0",
-                "reference": "309be2f5e908882d53c83df900b92f1fd0769aa0",
-                "shasum": ""
-            },
-            "require": {
-                "fakerphp/faker": "^1.10",
-                "php": ">=7.1"
-            },
-            "conflict": {
-                "bheller/images-generator": "*"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.4",
-                "squizlabs/php_codesniffer": "^3.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Maltyxx\\ImagesGenerator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Yoann Vanitou"
-                },
-                {
-                    "name": "Bruce Heller",
-                    "email": "bheller@bheller.com",
-                    "homepage": "http://www.bheller.com"
-                }
-            ],
-            "description": "Generator of placeholder images for Faker",
-            "homepage": "https://github.com/maltyxx/images-generator",
-            "keywords": [
-                "data",
-                "faker",
-                "fixtures",
-                "images-generator",
-                "imagesgenerator"
-            ],
-            "support": {
-                "source": "https://github.com/maltyxx/images-generator/tree/1.0.1"
-            },
-            "time": "2022-02-23T15:50:15+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",

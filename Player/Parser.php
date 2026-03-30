@@ -648,10 +648,10 @@ class Parser
 Did you forget to declare it?
 You can declare it in your file using the "set" option, or with the "--variable" CLI option.
 If the Player is run through a Blackfire server, you can declare it in the "Variables" panel of the "Builds" tab.
-', $e->getMessage()));
+', $e->getMessage()), $e->getCode(), $e);
             }
 
-            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error: %s %s.', $error, $input->getContextString()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error: %s %s.', $error, $input->getContextString()), $e->getCode(), $e);
         }
 
         return $expression;

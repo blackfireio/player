@@ -47,7 +47,7 @@ final readonly class NameResolverExtension implements ScenarioSetExtensionInterf
             $variables = $this->variableResolver->resolve($scenarios->getVariables());
             $name = $this->language->evaluate($scenarios->getName(), $variables);
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $scenarios->getName(), $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $scenarios->getName(), $e->getMessage()), $e->getCode(), $e);
         }
 
         $scenarios->name(Json::encode((string) $name));
@@ -67,7 +67,7 @@ final readonly class NameResolverExtension implements ScenarioSetExtensionInterf
             $variables = $this->variableResolver->resolve($scenario->getVariables());
             $name = $this->language->evaluate($scenario->getName(), $variables);
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $scenario->getName(), $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $scenario->getName(), $e->getMessage()), $e->getCode(), $e);
         }
 
         $scenario->name(Json::encode((string) $name));
@@ -86,7 +86,7 @@ final readonly class NameResolverExtension implements ScenarioSetExtensionInterf
         try {
             $name = $this->language->evaluate($step->getName(), $scenarioContext->getVariableValues($stepContext, true));
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $step->getName(), $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $step->getName(), $e->getMessage()), $e->getCode(), $e);
         }
 
         $step->name(Json::encode((string) $name));

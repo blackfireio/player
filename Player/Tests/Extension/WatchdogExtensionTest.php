@@ -16,6 +16,7 @@ namespace Blackfire\Player\Tests\Extension;
 use Blackfire\Player\Extension\WatchdogExtension;
 use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\ScenarioSet;
+use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\FollowStep;
 use Blackfire\Player\Step\Step;
@@ -45,6 +46,7 @@ class WatchdogExtensionTest extends TestCase
         $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_total_counter'));
 
         $next = $step->getNext();
+        $this->assertInstanceOf(AbstractStep::class, $next);
         $extension->beforeStep($next, $stepContext, $scenarioContext);
         $extension->afterStep($next, $stepContext, $scenarioContext);
 
@@ -100,6 +102,7 @@ class WatchdogExtensionTest extends TestCase
         $this->assertEquals(1, $scenarioContext->getExtraValue('_watchdog_total_counter'));
 
         $next = $step->getNext();
+        $this->assertInstanceOf(AbstractStep::class, $next);
         $extension->beforeStep($next, $stepContext, $scenarioContext);
     }
 

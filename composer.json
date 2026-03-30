@@ -25,7 +25,6 @@
         "ext-mbstring": "*",
         "blackfire/php-sdk": "^2.5",
         "fakerphp/faker": "^1.10",
-        "maltyxx/images-generator": "^1.0",
         "mtdowling/jmespath.php": "^2.2",
         "nyholm/psr7": "^1.6",
         "psr/log": "^3.0",

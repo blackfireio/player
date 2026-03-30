@@ -48,7 +48,7 @@ final readonly class WaitExtension implements StepExtensionInterface
         try {
             $delay = $this->language->evaluate($wait, $scenarioContext->getVariableValues($stepContext, true));
         } catch (ExpressionSyntaxErrorException $e) {
-            throw new InvalidArgumentException(\sprintf('Wait syntax error in "%s": %s', $wait, $e->getMessage()));
+            throw new InvalidArgumentException(\sprintf('Wait syntax error in "%s": %s', $wait, $e->getMessage()), $e->getCode(), $e);
         }
 
         $end = microtime(true) + ($delay / 1_000);

@@ -15,13 +15,13 @@ use Blackfire\Player\Exception\InvalidArgumentException;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\Exception\SecurityException;
+use Blackfire\Player\ExpressionLanguage\Generator\ImagesGeneratorProvider;
 use Blackfire\Player\Extension\TmpDirExtension;
 use Blackfire\Player\Http\Response;
 use Blackfire\Player\Json;
 use Faker\Factory as FakerFactory;
 use Faker\Generator as FakerGenerator;
 use JmesPath\Env as JmesPath;
-use Maltyxx\ImagesGenerator\ImagesGeneratorProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 

@@ -43,7 +43,7 @@ class DisableInternalNetworkExtensionTest extends TestCase
 
         $visitStep = new VisitStep($uri);
 
-        $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createMock(ScenarioContext::class));
+        $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createStub(ScenarioContext::class));
     }
 
     public static function provideInvalidUri(): \Generator
@@ -62,7 +62,7 @@ class DisableInternalNetworkExtensionTest extends TestCase
 
         $visitStep = new VisitStep($uri);
 
-        $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createMock(ScenarioContext::class));
+        $extension->beforeStep(new RequestStep($request, $visitStep), new StepContext(), $this->createStub(ScenarioContext::class));
 
         $this->expectNotToPerformAssertions();
     }

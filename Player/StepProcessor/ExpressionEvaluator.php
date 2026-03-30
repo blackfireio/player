@@ -35,7 +35,7 @@ class ExpressionEvaluator
         try {
             return $this->language->evaluate($expression, $scenarioContext->getVariableValues($stepContext, $trim));
         } catch (SyntaxError $e) {
-            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $expression, $e->getMessage()));
+            throw new ExpressionSyntaxErrorException(\sprintf('Expression syntax error in "%s": %s', $expression, $e->getMessage()), $e->getCode(), $e);
         }
     }
 
