@@ -23,7 +23,6 @@ use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\Symfony\CodeQuality\Rector\Class_\InlineClassRoutePrefixRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
-use Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -89,7 +88,6 @@ return RectorConfig::configure()
         DisallowedEmptyRuleFixerRector::class,
         FlipTypeControlToUseExclusiveTypeRector::class,
         SimplifyIfReturnBoolRector::class,
-        SafeDeclareStrictTypesRector::class,
 
         // injected by codingStyle preset
         CatchExceptionNameMatchingTypeRector::class,
