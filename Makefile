@@ -5,7 +5,7 @@ image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
 php_image = blackfire/player-test:$(image_hash)
 
 # https://github.com/box-project/box/releases
-box_version = 4.6.10
+box_version = 4.7.0
 box_image = registry.lab.plat.farm/platformsh/observability/blackfire/subtree-docker/php-internal:8.4-2026.3.2
 
 BOX_BIN=bin/tools/box-$(box_version).phar
