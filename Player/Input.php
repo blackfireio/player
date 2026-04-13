@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -191,7 +193,7 @@ final class Input
 
         if (1 === preg_match('/^((?:    )+)(.+)$/', $line, $matches)) {
             // spaces in groups of 4
-            $indent = \strlen($matches[1]) / 4;
+            $indent = (int) (\strlen($matches[1]) / 4);
             $line = $matches[2];
         } elseif (1 === preg_match('/^(\t)+(.+)$/', $line, $matches)) {
             // tabs
