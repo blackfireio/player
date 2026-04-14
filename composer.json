@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.5",
         "ext-ctype": "*",
         "ext-filter": "*",
         "ext-intl": "*",
@@ -38,7 +38,6 @@
         "symfony/finder": "8.0.*",
         "symfony/http-client": "8.0.*",
         "symfony/mime": "8.0.*",
-        "symfony/polyfill-uuid": "^1.28",
         "symfony/property-access": "8.0.*",
         "symfony/serializer": "8.0.*",
         "symfony/yaml": "8.0.*"
@@ -58,7 +57,10 @@
         "symfony/polyfill-php72": "*",
         "symfony/polyfill-php81": "*",
         "symfony/polyfill-php82": "*",
-        "symfony/polyfill-php83": "*"
+        "symfony/polyfill-php83": "*",
+        "symfony/polyfill-php84": "*",
+        "symfony/polyfill-php85": "*",
+        "symfony/polyfill-uuid": "*"
     },
     "autoload": {
         "psr-4": {
@@ -70,7 +72,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.4.1"
+            "php": "8.5.0"
         },
         "preferred-install": {
             "*": "dist"

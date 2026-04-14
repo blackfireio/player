@@ -67,9 +67,7 @@ EOF;
 
         $expected = <<<EOEXPECTED
 Blackfire\Player\ScenarioSet {
-  -keys: [
-    "" => true
-  ]
+  -keys: []
   -extraBag: Blackfire\Player\ValueBag {
     -values: []
   }

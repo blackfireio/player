@@ -77,7 +77,9 @@ class ScenarioSet implements \IteratorAggregate, \Stringable
 
         $this->scenarios[] = $scenario;
 
-        $this->keys[$scenario->getKey()] = true;
+        if (null !== $scenario->getKey()) {
+            $this->keys[$scenario->getKey()] = true;
+        }
     }
 
     public function name(string|null $name): void
