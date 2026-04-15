@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -31,7 +33,7 @@ class VariableFormatter
             return 'null';
         }
         if (is_numeric($value)) {
-            return $value;
+            return (string) $value;
         }
         if (\is_array($value)) {
             if (!array_is_list($value)) {

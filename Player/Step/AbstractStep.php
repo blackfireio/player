@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Blackfire Player package.
  *
@@ -321,6 +323,6 @@ class AbstractStep implements \Stringable
 
     private function getTimingAsMs(): int
     {
-        return floor(microtime(true) * 1000);
+        return (int) floor(microtime(true) * 1000);
     }
 }

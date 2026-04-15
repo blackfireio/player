@@ -22,7 +22,6 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAsse
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\Symfony\CodeQuality\Rector\Class_\InlineClassRoutePrefixRector;
-use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -97,7 +96,6 @@ return RectorConfig::configure()
         NewlineBetweenClassLikeStmtsRector::class,
 
         // injected by rectorPreset preset
-        DeclareStrictTypesRector::class,
         FinalizeTestCaseClassRector::class,
 
         // injected by phpunitCodeQuality preset
