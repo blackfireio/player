@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+* 2026.4.1 (2026-04-21)
+
+  - Update dependencies
+  - Upgrade player to php 8.5
+  - Add safe strict type declarations
+  - Internal releasing changes
+
 * 2026.4.0 (2026-04-01)
 
   - Update dependencies
