@@ -7,7 +7,7 @@ php_image = blackfire/player-test:$(image_hash)
 # https://github.com/box-project/box/releases
 # keep in sync with .github/workflows/build_tags.yml and .github/workflows/build_master.yml
 box_version = 4.7.0
-box_image = registry.lab.plat.farm/platformsh/observability/blackfire/subtree-docker/php-internal:8.5-2026.4.1
+box_image = registry.lab.plat.farm/platformsh/observability/blackfire/subtree-docker/php-internal:8.5-2026.4.2
 
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
