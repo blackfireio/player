@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Blackfire\Player\Step;
 
-use Blackfire\Player\Enum\BuildStatus;
+use Blackfire\Player\Enum\StepStatus;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
@@ -28,7 +28,7 @@ class AbstractStep implements \Stringable
     protected AbstractStep|null $next = null;
     #[Ignore]
     protected string|null $blackfireProfileUuid = null;
-    protected BuildStatus $status = BuildStatus::TODO;
+    protected StepStatus $status = StepStatus::TODO;
 
     private string|null $name = null;
 
@@ -73,7 +73,7 @@ class AbstractStep implements \Stringable
 
     public function __clone()
     {
-        if (BuildStatus::TODO !== $this->status) {
+        if (StepStatus::TODO !== $this->status) {
             throw new \RuntimeException('Cannot clone a Processing Step');
         }
 
@@ -227,7 +227,7 @@ class AbstractStep implements \Stringable
     public function getSerializedBlackfireProfileUuid(): string|null
     {
         // we want to send the profile UUID only once it has been processed
-        if (BuildStatus::DONE === $this->status) {
+        if (StepStatus::DONE === $this->status) {
             return $this->blackfireProfileUuid;
         }
 
@@ -268,14 +268,14 @@ class AbstractStep implements \Stringable
         $this->blackfireProfileUuid = $blackfireProfileUuid;
     }
 
-    public function setStatus(BuildStatus $status): void
+    public function setStatus(StepStatus $status): void
     {
         $this->status = $status;
         switch ($status) {
-            case BuildStatus::DONE:
+            case StepStatus::DONE:
                 $this->finishedAt = $this->getTimingAsMs();
                 break;
-            case BuildStatus::IN_PROGRESS:
+            case StepStatus::IN_PROGRESS:
                 $this->startedAt = $this->getTimingAsMs();
                 break;
         }
@@ -298,7 +298,7 @@ class AbstractStep implements \Stringable
 
     public function addGeneratedStep(ConfigurableStep $step): void
     {
-        if (BuildStatus::TODO === $this->status) {
+        if (StepStatus::TODO === $this->status) {
             throw new \RuntimeException('Can not add a add a generated child step to a not-processing Step');
         }
 

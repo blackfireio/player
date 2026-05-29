@@ -14,19 +14,13 @@ declare(strict_types=1);
 namespace Blackfire\Player\Extension;
 
 use Blackfire\Player\Adapter\BlackfireSdkAdapterInterface;
-use Blackfire\Player\Build\Build;
-use Blackfire\Player\BuildApi;
 use Blackfire\Player\Exception\ExpectationErrorException;
 use Blackfire\Player\Exception\LogicException;
-use Blackfire\Player\Exception\RuntimeException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\Http\CrawlerFactory;
 use Blackfire\Player\Http\Request;
 use Blackfire\Player\Json;
-use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioContext;
-use Blackfire\Player\ScenarioSet;
-use Blackfire\Player\ScenarioSetResult;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\ReloadStep;
@@ -42,7 +36,7 @@ use Blackfire\Profile\Configuration as ProfileConfiguration;
  *
  * @internal
  */
-final readonly class BlackfireExtension implements NextStepExtensionInterface, StepExtensionInterface, ScenarioSetExtensionInterface
+final readonly class BlackfireExtension implements NextStepExtensionInterface, StepExtensionInterface
 {
     public const int MAX_RETRY = 10;
 
@@ -53,7 +47,6 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
     public function __construct(
         private ExpressionLanguage $language,
         private BlackfireEnvResolver $blackfireEnvResolver,
-        private BuildApi|null $buildApi,
         private BlackfireSdkAdapterInterface $blackfire,
     ) {
     }
@@ -114,25 +107,6 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
 
     public function beforeStep(AbstractStep $step, StepContext $stepContext, ScenarioContext $scenarioContext): void
     {
-        if ($step instanceof Scenario) {
-            if (null === $this->buildApi) {
-                return;
-            }
-            $env = $this->blackfireEnvResolver->resolve($stepContext, $scenarioContext, $step);
-            if (false === $env) {
-                return;
-            }
-
-            // now let's find the build for that env. If it doesn't exists, create it
-            $build = $this->buildApi->getOrCreate($env, $scenarioContext->getScenarioSet());
-            $scenarioContext->setExtraValue('build', $build);
-
-            // now assign the build UUID to the step
-            $step->setBlackfireBuildUuid($build->uuid);
-
-            return;
-        }
-
         if ($step instanceof RequestStep) {
             $request = $step->getRequest();
 
@@ -235,15 +209,6 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
         $query = parse_url($request->uri, \PHP_URL_QUERY);
         if ($query) {
             $path .= '?'.$query;
-        }
-
-        if (null !== $this->buildApi) {
-            $env = $this->blackfireEnvResolver->resolve($stepContext, $context, $step);
-            $build = $this->findEnvBuildFromExtraBag($env, $context->getScenarioSet());
-            if (null === $build) {
-                throw new RuntimeException(\sprintf('Could not find build for env %s in the ScenarioSet', $env));
-            }
-            $config->setBuildUuid($build->uuid);
         }
 
         // Having intention=build prevent the profile to be listable
@@ -369,43 +334,5 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
         $scenarioContext->setExtraValue('blackfire_ref_step', $referencePerfStep);
 
         yield $referencePerfStep;
-    }
-
-    public function beforeScenarioSet(ScenarioSet $scenarios, int $concurrency): void
-    {
-        if (!\is_string($scenarios->getName())) {
-            return;
-        }
-
-        $scenarios->getExtraBag()->set('blackfire_build_name', trim($scenarios->getName(), '"'));
-    }
-
-    public function afterScenarioSet(ScenarioSet $scenarios, int $concurrency, ScenarioSetResult $scenarioSetResult): void
-    {
-        $bag = $scenarios->getExtraBag();
-
-        if (!$this->blackfire->getConfiguration()->getEnv()) {
-            return;
-        }
-
-        /** @var Build[] $builds */
-        $builds = array_filter(
-            $bag->all(),
-            static fn (int|string $key): bool => \is_string($key) && str_starts_with($key, 'blackfire_build:'),
-            \ARRAY_FILTER_USE_KEY
-        );
-
-        foreach ($builds as $key => $build) {
-            $bag->remove($key);
-        }
-    }
-
-    private function findEnvBuildFromExtraBag(string $env, ScenarioSet $scenarios): Build|null
-    {
-        $bag = $scenarios->getExtraBag();
-
-        $buildKey = 'blackfire_build:'.$env;
-
-        return $bag->has($buildKey) ? $bag->get($buildKey) : null;
     }
 }

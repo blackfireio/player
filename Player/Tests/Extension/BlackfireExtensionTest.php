@@ -13,13 +13,10 @@ declare(strict_types=1);
 
 namespace Blackfire\Player\Tests\Extension;
 
-use Blackfire\Build\Build as SdkBuild;
 use Blackfire\Client;
 use Blackfire\ClientConfiguration;
 use Blackfire\Player\Adapter\BlackfireSdkAdapter;
-use Blackfire\Player\Build\Build;
-use Blackfire\Player\BuildApi;
-use Blackfire\Player\Enum\BuildStatus;
+use Blackfire\Player\Enum\StepStatus;
 use Blackfire\Player\Exception\LogicException;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;
@@ -28,7 +25,6 @@ use Blackfire\Player\Extension\BlackfireExtension;
 use Blackfire\Player\Http\Request as HttpRequest;
 use Blackfire\Player\Http\Response as HttpResponse;
 use Blackfire\Player\Json;
-use Blackfire\Player\Scenario;
 use Blackfire\Player\ScenarioContext;
 use Blackfire\Player\ScenarioSet;
 use Blackfire\Player\Step\AbstractStep;
@@ -42,30 +38,9 @@ use Blackfire\Profile\Request as ProfileRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\MockHttpClient;
 
 class BlackfireExtensionTest extends TestCase
 {
-    public function testBeforeStepAppendsBuildUuidToScenario(): void
-    {
-        $step = new Scenario('scenario');
-        $step->blackfire('"My Env"');
-
-        $extension = $this->getBlackfireExtension();
-
-        $stepContext = new StepContext();
-        $stepContext->update($step, []);
-
-        $scenarioSet = new ScenarioSet();
-        $scenarioSet->getExtraBag()->set('blackfire_build_name', 'the build name');
-
-        $scenarioContext = new ScenarioContext('"foo"', $scenarioSet);
-
-        $extension->beforeStep($step, $stepContext, $scenarioContext);
-
-        $this->assertSame('4444-3333-2222-1111', $step->getBlackfireBuildUuid());
-    }
-
     #[DataProvider('beforeRequestProvider')]
     public function testBeforeRequest(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, HttpRequest $expectedRequest, array|null $expectedCookies, callable $stepAssertions, callable|null $scenarioContextAssertions = null): void
     {
@@ -75,9 +50,6 @@ class BlackfireExtensionTest extends TestCase
         $stepContext->update($step, []);
 
         $scenarioSet = new ScenarioSet();
-        $scenarioSet->getExtraBag()->set('blackfire_build_name', 'the build name');
-        $build = new Build('21f93c3e-267c-47c9-a85b-df0c2f1d0b4f');
-        $scenarioSet->getExtraBag()->set('blackfire_build:my env', $build);
 
         $scenarioContext = new ScenarioContext('"foo"', $scenarioSet);
 
@@ -242,7 +214,7 @@ class BlackfireExtensionTest extends TestCase
         $step = new VisitStep('https://app-under-test.lan');
         $stepContext = new StepContext();
         $stepContext->update($step, []);
-        $step->setStatus(BuildStatus::IN_PROGRESS);
+        $step->setStatus(StepStatus::IN_PROGRESS);
 
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
         $scenarioContext->setLastResponse($response);
@@ -265,7 +237,7 @@ class BlackfireExtensionTest extends TestCase
         $step = new VisitStep('https://app-under-test.lan');
         $stepContext = new StepContext();
         $stepContext->update($step, []);
-        $step->setStatus(BuildStatus::IN_PROGRESS);
+        $step->setStatus(StepStatus::IN_PROGRESS);
 
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
         $scenarioContext->setLastResponse($response);
@@ -582,7 +554,6 @@ class BlackfireExtensionTest extends TestCase
         return new BlackfireExtension(
             $language,
             new BlackfireEnvResolver($defaultEnv, $language),
-            new BuildApi($blackfireSdkClient, new MockHttpClient()),
             $blackfireSdkClient
         );
     }
@@ -677,14 +648,10 @@ class BlackfireExtensionTest extends TestCase
         $profile->method('isErrored')->willReturn(false);
         $profile->method('isSuccessful')->willReturn(true);
 
-        $build = $this->createMock(SdkBuild::class);
-        $build->method('getUuid')->willReturn('4444-3333-2222-1111');
-
         $blackfire = $this->createMock(Client::class);
         $blackfire->method('getConfiguration')->willReturn($blackfireConfig);
         $blackfire->method('createRequest')->willReturn($profileRequest);
         $blackfire->method('getProfile')->willReturn($profile);
-        $blackfire->method('startBuild')->willReturn($build);
 
         return $blackfire;
     }

@@ -167,49 +167,12 @@ EOS;
             }
         }
     ],
-    "message": "Build encountered a fatal error",
+    "message": "Player encountered a fatal error",
     "code": 65,
     "success": true,
     "input": {
         "path": "php://stdin",
         "content": "scenario\n    name \"Test\"\n    visit \"/\"\n        expect status_code() == 200"
-    },
-    "blackfire_build": {
-        "version": %f,
-        "name": null,
-        "variables": [],
-        "endpoint": "",
-        "blackfire_environment": null,
-        "status": "done",
-        "scenarios": [
-            {
-                "status": "done",
-                "variables": [],
-                "steps": [
-                    {
-                        "uri": "\"/\"",
-                        "status": "done",
-                        "expectations": [
-                            "status_code() == 200"
-                        ],
-                        "is_blackfire_enabled": true,
-                        "errors": [
-                            "Unable to crawl a non-absolute URI (/). Did you forget to set an \"endpoint\"?"
-                        ],
-                        "uuid": "%x-%x-%x-%x-%x",
-                        "started_at": %d,
-                        "finished_at": %d,
-                        "line": 3,
-                        "type": "visit"
-                    }
-                ],
-                "name": "Test",
-                "uuid": "%x-%x-%x-%x-%x",
-                "started_at": %d,
-                "finished_at": %d,
-                "line": 1
-            }
-        ]
     }
 }
 ';

@@ -17,7 +17,6 @@ use Blackfire\Client;
 use Blackfire\ClientConfiguration;
 use Blackfire\Player\Adapter\BlackfireSdkAdapter;
 use Blackfire\Player\Adapter\BlackfireSdkAdapterInterface;
-use Blackfire\Player\BuildApi;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider as LanguageProvider;
 use Blackfire\Player\Extension\BlackfireEnvResolver;
@@ -41,9 +40,7 @@ use Blackfire\Player\Http\CookieJar;
 use Blackfire\Player\ParserFactory;
 use Blackfire\Player\Player;
 use Blackfire\Player\PlayerNext;
-use Blackfire\Player\Reporter\JsonViewReporter;
 use Blackfire\Player\ScenarioSetResult;
-use Blackfire\Player\Serializer\ScenarioSetSerializer;
 use Blackfire\Player\StepProcessor\BlockStepProcessor;
 use Blackfire\Player\StepProcessor\ChainProcessor;
 use Blackfire\Player\StepProcessor\ClickStepProcessor;
@@ -198,7 +195,6 @@ final class PlayerCommand extends Command
         $cookieJar = new CookieJar();
         $uriResolver = new UriResolver();
         $filesystem = new Filesystem();
-        $scenarioSerializer = new ScenarioSetSerializer();
 
         $httpClientOptions = [
             'max_redirects' => 0,
@@ -221,13 +217,11 @@ final class PlayerCommand extends Command
         }
 
         $language = new ExpressionLanguage(null, [new LanguageProvider(null, $sandbox)]);
-        $buildApi = new BuildApi($this->blackfireSdkAdapter, $this->blackfireHttpClient);
         $expressionEvaluator = new ExpressionEvaluator($language);
         $variableResolver = new VariableResolver($language);
         $blackfireEnvResolver = new BlackfireEnvResolver($input->getOption('blackfire-env'), $language);
         $player = new PlayerNext(
             new StepContextFactory(new VariableResolver($language)),
-            $report ? null : new JsonViewReporter($scenarioSerializer, $buildApi, $output),
             new ChainProcessor([
                 new VisitStepProcessor($expressionEvaluator, $uriResolver),
                 new ClickStepProcessor($expressionEvaluator, $uriResolver),
@@ -260,7 +254,6 @@ final class PlayerCommand extends Command
         $player->addExtension(new BlackfireExtension(
             $language,
             $blackfireEnvResolver,
-            $report ? null : $buildApi,
             $this->blackfireSdkAdapter,
         ), 510);
         $player->addExtension(new CliFeedbackExtension(
@@ -285,14 +278,14 @@ final class PlayerCommand extends Command
         $results = $player->run($scenarios, $concurrency);
 
         $exitCode = 0;
-        $message = 'Build run successfully';
+        $message = 'Player run successfully';
 
         if ($results->isBlackfireNetworkError()) {
             $exitCode = self::EXIT_CODE_BLACKFIRE_NETWORK_ERROR;
-            $message = 'Build encountered an error while reaching the Blackfire APIs';
+            $message = 'Player encountered an error while reaching the Blackfire APIs';
         } elseif ($results->isFatalError()) {
             $exitCode = self::EXIT_CODE_SCENARIO_ERROR;
-            $message = 'Build encountered a fatal error';
+            $message = 'Player encountered a fatal error';
         } elseif ($results->isExpectationError()) {
             $exitCode = self::EXIT_CODE_EXPECTATION_ERROR;
             $message = 'Some expectation failed';
@@ -325,7 +318,6 @@ final class PlayerCommand extends Command
                 'code' => $exitCode,
                 'success' => true,
                 'input' => $extraInput,
-                'blackfire_build' => $scenarioSerializer->normalize($scenarios),
             ]));
         }
 

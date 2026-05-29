@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Blackfire\Player;
 
-use Blackfire\Player\Enum\BuildStatus;
+use Blackfire\Player\Enum\StepStatus;
 use Blackfire\Player\Exception\LogicException;
 use Symfony\Component\Serializer\Attribute\Ignore;
 
@@ -33,7 +33,7 @@ class ScenarioSet implements \IteratorAggregate, \Stringable
     private array $variables = [];
     private int $version = 0;
 
-    private BuildStatus $status = BuildStatus::IN_PROGRESS;
+    private StepStatus $status = StepStatus::IN_PROGRESS;
 
     private string|null $endpoint = null;
     private string|null $blackfireEnvironment = null;
@@ -148,12 +148,12 @@ class ScenarioSet implements \IteratorAggregate, \Stringable
         $this->blackfireEnvironment = $blackfireEnvironment;
     }
 
-    public function getStatus(): BuildStatus
+    public function getStatus(): StepStatus
     {
         return $this->status;
     }
 
-    public function setStatus(BuildStatus $status): void
+    public function setStatus(StepStatus $status): void
     {
         $this->status = $status;
     }

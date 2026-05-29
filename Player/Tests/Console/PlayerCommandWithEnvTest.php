@@ -14,9 +14,7 @@ declare(strict_types=1);
 namespace Blackfire\Player\Tests\Console;
 
 use Blackfire\Player\Console\Application;
-use Blackfire\Player\Enum\BuildStatus;
 use Blackfire\Player\Tests\Adapter\StubbedSdkAdapter;
-use Blackfire\Player\Tests\Http\JsonViewLoggerHttpClient;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -31,8 +29,6 @@ class PlayerCommandWithEnvTest extends TestCase
     private const string FIXTURES_DIR = 'fixtures-run-with-env';
     protected static string $port;
 
-    private JsonViewLoggerHttpClient $jsonViewLoggerHttpClient;
-
     public static function setUpBeforeClass(): void
     {
         self::$port = getenv('BLACKFIRE_WS_PORT') ?: '8399';
@@ -46,8 +42,6 @@ class PlayerCommandWithEnvTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->jsonViewLoggerHttpClient = new JsonViewLoggerHttpClient(new MockHttpClient());
-        $this->jsonViewLoggerHttpClient->resetLastJsonView();
         @unlink(sys_get_temp_dir().'/probe_mock_state.json');
     }
 
@@ -60,7 +54,7 @@ class PlayerCommandWithEnvTest extends TestCase
 
         $application = new Application(
             $sdkAdapter,
-            $this->jsonViewLoggerHttpClient,
+            new MockHttpClient(),
             'a396ccc8-51e1-4047-93aa-ca3f3847f425'
         );
 
@@ -79,10 +73,6 @@ class PlayerCommandWithEnvTest extends TestCase
         $this->assertStringMatchesFormat($expectedOutput, $output);
 
         $this->assertEquals($expectedExitCode, $tester->getStatusCode());
-        $latestJsonView = $this->jsonViewLoggerHttpClient->getLastJsonView();
-
-        $this->assertNotNull($latestJsonView);
-        $this->assertEquals(BuildStatus::DONE->value, $latestJsonView['status']);
 
         // For --json or --full-report, the output is composed of STDOUT + STDERR.
         // That's because the CommandTester use a StreamOutput instead of a ConsoleOutput.

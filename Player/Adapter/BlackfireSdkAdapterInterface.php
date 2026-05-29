@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Blackfire\Player\Adapter;
 
 use Blackfire\ClientConfiguration;
-use Blackfire\Player\Build\Build;
 use Blackfire\Profile;
 use Blackfire\Profile\Configuration;
 use Blackfire\Profile\Request;
@@ -28,6 +27,4 @@ interface BlackfireSdkAdapterInterface
     public function updateProfile(string $uuid, string $title, array|null $metadata = null): bool;
 
     public function getProfile(string $uuid): Profile;
-
-    public function startBuild(string|null $env = null, array $options = []): Build;
 }

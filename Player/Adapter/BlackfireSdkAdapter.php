@@ -16,7 +16,6 @@ namespace Blackfire\Player\Adapter;
 use Blackfire\Client;
 use Blackfire\ClientConfiguration;
 use Blackfire\Exception\ApiException;
-use Blackfire\Player\Build\Build;
 use Blackfire\Player\Exception\ApiCallException;
 use Blackfire\Profile;
 use Blackfire\Profile\Configuration;
@@ -60,17 +59,6 @@ class BlackfireSdkAdapter implements BlackfireSdkAdapterInterface
     {
         try {
             return $this->blackfireClient->getProfile($uuid);
-        } catch (ApiException $e) {
-            throw $this->createApiCallException($e);
-        }
-    }
-
-    public function startBuild(string|null $env = null, array $options = []): Build
-    {
-        try {
-            $sdkBuild = $this->blackfireClient->startBuild($env, $options);
-
-            return new Build($sdkBuild->getUuid(), $sdkBuild->getUrl());
         } catch (ApiException $e) {
             throw $this->createApiCallException($e);
         }

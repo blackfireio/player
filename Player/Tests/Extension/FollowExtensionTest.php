@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Blackfire\Player\Tests\Extension;
 
-use Blackfire\Player\Enum\BuildStatus;
+use Blackfire\Player\Enum\StepStatus;
 use Blackfire\Player\ExpressionLanguage\ExpressionLanguage;
 use Blackfire\Player\ExpressionLanguage\Provider;
 use Blackfire\Player\Extension\FollowExtension;
@@ -84,7 +84,7 @@ class FollowExtensionTest extends TestCase
         $scenarioSet->setLastResponse(new Response(new Request('GET', 'https://app.lan'), 302, ['location' => ['https://redirect-to.local']], 'the response', []));
         $expectedFollowStep = new FollowStep(null, null, $step);
         $expectedFollowStep->followRedirects('true');
-        $expectedFollowStep->setStatus(BuildStatus::TODO);
+        $expectedFollowStep->setStatus(StepStatus::TODO);
         $expectedFollowStep->name("'Auto-following redirect to https://redirect-to.local'");
         yield 'yields a FollowStep with initiator' => [
             $step,

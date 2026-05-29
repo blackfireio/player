@@ -15,7 +15,6 @@ namespace Blackfire\Player\Tests\Adapter;
 
 use Blackfire\ClientConfiguration;
 use Blackfire\Player\Adapter\BlackfireSdkAdapterInterface;
-use Blackfire\Player\Build\Build;
 use Blackfire\Profile;
 use Blackfire\Profile\Configuration;
 use Blackfire\Profile\Request;
@@ -67,10 +66,5 @@ class StubbedSdkAdapter implements BlackfireSdkAdapterInterface
                 ],
             ],
         ], $uuid);
-    }
-
-    public function startBuild(string|null $env = null, array $options = []): Build
-    {
-        return new Build('4444-3333-2222-1111');
     }
 }
