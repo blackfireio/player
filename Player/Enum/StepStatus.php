@@ -11,13 +11,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Blackfire\Player\Build;
+namespace Blackfire\Player\Enum;
 
-readonly class Build
+/**
+ * @internal
+ */
+enum StepStatus: string
 {
-    public function __construct(
-        public string $uuid,
-        public string|null $url = null,
-    ) {
-    }
+    case TODO = 'todo';
+    case IN_PROGRESS = 'in_progress';
+    case DONE = 'done';
 }

@@ -51,9 +51,6 @@ class SentrySupport
             $scope->setTag('transaction_id', $transactionId);
         });
 
-        if ($envVar = getenv('BLACKFIRE_BUILD_UUID')) {
-            self::addBreadcrumb(\sprintf('Starting build uuid "%s"', $envVar));
-        }
         if ($envVar = getenv('BLACKFIRE_ENDPOINT')) {
             self::addBreadcrumb(\sprintf('Running on endpoint %s', $envVar));
         }

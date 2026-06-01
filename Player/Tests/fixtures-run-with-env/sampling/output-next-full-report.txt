@@ -19,115 +19,11 @@ GET http://0:8399/sampling/index.php?id=8399
             "error": null
         }
     ],
-    "message": "Build run successfully",
+    "message": "Player run successfully",
     "code": 0,
     "success": true,
     "input": {
         "path": "%s/Player/Tests/Console/../fixtures-run-with-env/sampling/scenario.bkf",
         "content": "scenario\n    name \"sampling\"\n\n    set id 8399\n\n    visit \"sampling/index.php?id=\"~id\n        samples 5\n"
-    },
-    "blackfire_build": {
-        "version": %f,
-        "name": null,
-        "variables": {
-            "endpoint": "http://0:8399",
-            "blackfire-env": "Blackfire Test"
-        },
-        "endpoint": "http://0:8399",
-        "blackfire_environment": "Blackfire Test",
-        "status": "done",
-        "scenarios": [
-            {
-                "status": "done",
-                "variables": {
-                    "id": "8399"
-                },
-                "steps": [
-                    {
-                        "uri": "\"sampling/index.php?id=\"~id",
-                        "status": "done",
-                        "is_blackfire_enabled": true,
-                        "deprecations": [
-                            "The \"samples\" attribute has no effect, is deprecated and will be removed in version 3. Remove it from your configuration."
-                        ],
-                        "uuid": "%x-%x-%x-%x-%x",
-                        "started_at": %d,
-                        "finished_at": %d,
-                        "file": "%s/Player/Tests/Console/../fixtures-run-with-env/sampling/scenario.bkf",
-                        "line": 6,
-                        "type": "visit",
-                        "blackfire_profile_uuid": "%x-%x-%x-%x-%x",
-                        "steps": [
-                            {
-                                "status": "done",
-                                "initiator_uuid": "%x-%x-%x-%x-%x",
-                                "follow_redirects": "false",
-                                "is_blackfire_enabled": true,
-                                "uuid": "%x-%x-%x-%x-%x",
-                                "started_at": %d,
-                                "finished_at": %d,
-                                "type": "request",
-                                "steps": [
-                                    {
-                                        "status": "done",
-                                        "initiator_uuid": "%x-%x-%x-%x-%x",
-                                        "warmup": "false",
-                                        "follow_redirects": "false",
-                                        "is_blackfire_enabled": false,
-                                        "name": "[Warmup] anonymous",
-                                        "uuid": "%x-%x-%x-%x-%x",
-                                        "started_at": %d,
-                                        "finished_at": %d,
-                                        "type": "request"
-                                    },
-                                    {
-                                        "status": "done",
-                                        "initiator_uuid": "%x-%x-%x-%x-%x",
-                                        "warmup": "false",
-                                        "follow_redirects": "false",
-                                        "is_blackfire_enabled": false,
-                                        "name": "[Warmup] anonymous",
-                                        "uuid": "%x-%x-%x-%x-%x",
-                                        "started_at": %d,
-                                        "finished_at": %d,
-                                        "type": "request"
-                                    },
-                                    {
-                                        "status": "done",
-                                        "initiator_uuid": "%x-%x-%x-%x-%x",
-                                        "warmup": "false",
-                                        "follow_redirects": "false",
-                                        "is_blackfire_enabled": false,
-                                        "name": "[Warmup] anonymous",
-                                        "uuid": "%x-%x-%x-%x-%x",
-                                        "started_at": %d,
-                                        "finished_at": %d,
-                                        "type": "request"
-                                    },
-                                    {
-                                        "status": "done",
-                                        "initiator_uuid": "%x-%x-%x-%x-%x",
-                                        "warmup": "false",
-                                        "follow_redirects": "false",
-                                        "is_blackfire_enabled": false,
-                                        "name": "[Reference] anonymous",
-                                        "uuid": "%x-%x-%x-%x-%x",
-                                        "started_at": %d,
-                                        "finished_at": %d,
-                                        "type": "request"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "name": "sampling",
-                "uuid": "%x-%x-%x-%x-%x",
-                "started_at": %d,
-                "finished_at": %d,
-                "file": "%s/Player/Tests/Console/../fixtures-run-with-env/sampling/scenario.bkf",
-                "line": 1
-            }
-        ]
     }
 }

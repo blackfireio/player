@@ -740,7 +740,6 @@ Variable "env" is not valid around position 1 for expression `env != "prod"`.
 
 Did you forget to declare it?
 You can declare it in your file using the "set" option, or with the "--variable" CLI option.
-If the Player is run through a Blackfire server, you can declare it in the "Variables" panel of the "Builds" tab.
 
 EOF
         );

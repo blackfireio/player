@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Blackfire\Player\Extension;
 
-use Blackfire\Player\Build\Build;
 use Blackfire\Player\Exception\ExpectationFailureException;
 use Blackfire\Player\Exception\NonFatalException;
 use Blackfire\Player\Player;
@@ -177,14 +176,6 @@ class CliFeedbackExtension implements ScenarioSetExtensionInterface, ScenarioExt
 
         if (!$scenarioResult->isErrored()) {
             $this->output->writeln($this->linePrefix($scenarioContext).'<success> </> OK');
-        }
-
-        /** @var Build $build */
-        $build = $scenarioContext->getExtraValue('build');
-
-        // render the current build URL, if any
-        if ($build && $build->url) {
-            $this->output->writeln(\sprintf('Blackfire Report at <comment>%s</>', $build->url));
         }
     }
 

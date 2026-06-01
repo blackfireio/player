@@ -78,7 +78,7 @@ Blackfire\Player\ScenarioSet {
     "user_password" => ""pwdsoupe""
   ]
   -version: 0
-  -status: Blackfire\Player\Enum\BuildStatus {
+  -status: Blackfire\Player\Enum\StepStatus {
     +name: "IN_PROGRESS"
     +value: "in_progress"
   }
@@ -88,7 +88,7 @@ Blackfire\Player\ScenarioSet {
     Blackfire\Player\Scenario {
       #next: null
       #blackfireProfileUuid: null
-      #status: Blackfire\Player\Enum\BuildStatus {#1
+      #status: Blackfire\Player\Enum\StepStatus {#1
         +name: "TODO"
         +value: "todo"
       }
@@ -115,7 +115,7 @@ Blackfire\Player\ScenarioSet {
         #next: Blackfire\Player\Step\VisitStep {
           #next: null
           #blackfireProfileUuid: null
-          #status: Blackfire\Player\Enum\BuildStatus {#1}
+          #status: Blackfire\Player\Enum\StepStatus {#1}
           -name: null
           -failingExpectations: []
           -failingAssertions: []
@@ -145,7 +145,7 @@ Blackfire\Player\ScenarioSet {
           -uri: "url('/integrations')"
         }
         #blackfireProfileUuid: null
-        #status: Blackfire\Player\Enum\BuildStatus {#1}
+        #status: Blackfire\Player\Enum\StepStatus {#1}
         -name: null
         -failingExpectations: []
         -failingAssertions: []
@@ -181,12 +181,11 @@ Blackfire\Player\ScenarioSet {
       ]
       -endpoint: "'http://localhost'"
       -key: null
-      #blackfireBuildUuid: null
     }
     Blackfire\Player\Scenario {
       #next: null
       #blackfireProfileUuid: null
-      #status: Blackfire\Player\Enum\BuildStatus {#1}
+      #status: Blackfire\Player\Enum\StepStatus {#1}
       -name: "'Authenticated'"
       -failingExpectations: []
       -failingAssertions: []
@@ -209,7 +208,7 @@ Blackfire\Player\ScenarioSet {
       -blockStep: Blackfire\Player\Step\VisitStep {
         #next: null
         #blackfireProfileUuid: null
-        #status: Blackfire\Player\Enum\BuildStatus {#1}
+        #status: Blackfire\Player\Enum\StepStatus {#1}
         -name: null
         -failingExpectations: []
         -failingAssertions: []
@@ -245,7 +244,6 @@ Blackfire\Player\ScenarioSet {
       ]
       -endpoint: ""http://tiptop.endpoint.minicontroll""
       -key: null
-      #blackfireBuildUuid: null
     }
   ]
 }

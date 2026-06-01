@@ -13,14 +13,13 @@ declare(strict_types=1);
 
 namespace Blackfire\Player;
 
-use Blackfire\Player\Enum\BuildStatus;
+use Blackfire\Player\Enum\StepStatus;
 use Blackfire\Player\Extension\ExceptionExtensionInterface;
 use Blackfire\Player\Extension\NextStepExtensionInterface;
 use Blackfire\Player\Extension\ProcessedException;
 use Blackfire\Player\Extension\ScenarioExtensionInterface;
 use Blackfire\Player\Extension\ScenarioSetExtensionInterface;
 use Blackfire\Player\Extension\StepExtensionInterface;
-use Blackfire\Player\Reporter\JsonViewReporter;
 use Blackfire\Player\Step\AbstractStep;
 use Blackfire\Player\Step\ConfigurableStep;
 use Blackfire\Player\Step\StepContext;
@@ -40,7 +39,6 @@ class PlayerNext
 
     public function __construct(
         private readonly StepContextFactory $stepContextFactory,
-        private readonly JsonViewReporter|null $reporter,
         private readonly StepProcessorInterface $stepProcessor,
         private readonly VariablesEvaluator $variablesEvaluator,
     ) {
@@ -142,7 +140,7 @@ class PlayerNext
 
     private function handleStep(ConfigurableStep $step, StepContext $stepContext, ScenarioContext $scenarioContext, ScenarioSet $scenarioSet): void
     {
-        $step->setStatus(BuildStatus::IN_PROGRESS);
+        $step->setStatus(StepStatus::IN_PROGRESS);
 
         try {
             $this->currentStep = $step;
@@ -170,8 +168,6 @@ class PlayerNext
                     $extension->beforeStep($step, $stepContext, $scenarioContext);
                 }
             }
-
-            $this->reporter?->report($scenarioSet);
 
             foreach ($this->stepProcessor->process($step, $stepContext, $scenarioContext) as $childStep) {
                 if (!$childStep instanceof ConfigurableStep) {
@@ -223,11 +219,9 @@ class PlayerNext
 
             throw new ProcessedException($exception->getMessage(), $exception->getCode(), $exception);
         } finally {
-            $step->setStatus(BuildStatus::DONE);
+            $step->setStatus(StepStatus::DONE);
 
             $this->variablesEvaluator->evaluate($step, $stepContext, $scenarioContext);
-
-            $this->reporter?->report($scenarioSet);
         }
     }
 
