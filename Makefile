@@ -11,7 +11,7 @@ box_image = registry.lab.plat.farm/platformsh/observability/blackfire/subtree-do
 
 BOX_BIN=bin/tools/box-$(box_version).phar
 PHAR_DIST=bin/blackfire-player.phar
-BASE_PHP=@docker run --rm -e "PHP_CS_FIXER_IGNORE_ENV=1" -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ -i
+BASE_PHP=@docker run --rm -u `id -u`:`id -g` -v "$(HOME)/.composer:/.composer" -v "$(HOME)/.phive:/.phive" -v "$(PWD):/app" -e HOME=/ -i
 BOX=@docker run --rm -v $(PWD):/app -w /app $(box_image)
 ifdef CI
 	PHP= $(BASE_PHP) $(php_image)
