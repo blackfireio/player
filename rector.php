@@ -18,6 +18,7 @@ use Rector\Php84\Rector\Foreach_\ForeachToArrayFindRector;
 use Rector\Php84\Rector\MethodCall\NewMethodCallWithoutParenthesesRector;
 use Rector\Php84\Rector\FuncCall\AddEscapeArgumentRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\AddSeeTestAnnotationRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
@@ -97,6 +98,7 @@ return RectorConfig::configure()
 
         // injected by rectorPreset preset
         FinalizeTestCaseClassRector::class,
+        AddSeeTestAnnotationRector::class,
 
         // injected by phpunitCodeQuality preset
         InlineClassRoutePrefixRector::class,
