@@ -35,9 +35,13 @@ readonly class BlackfireEnvResolver
     /**
      * Resolves the environment from the current StepContext.
      *
-     * When the return value is false, it means that we shouldn't profile the current step.
+     * The return value tells the caller how to profile the current step:
+     *  - false:  don't profile the step;
+     *  - null:   profile the step without an explicit environment (the agent /
+     *            personal collab token decides where the profile lands);
+     *  - string: profile the step in that environment.
      */
-    public function resolve(StepContext $stepContext, ScenarioContext $scenarioContext, AbstractStep $step): string|false
+    public function resolve(StepContext $stepContext, ScenarioContext $scenarioContext, AbstractStep $step): string|false|null
     {
         // let's check if the current step resolves false. In that case, it means that we won't profile the step URL
         $env = $stepContext->getBlackfireEnv();
@@ -60,12 +64,11 @@ readonly class BlackfireEnvResolver
         }
 
         // it resolved true: we'll profile the step using the default environment.
+        // When no default environment is set, we still profile the step but
+        // without an explicit environment (the agent / personal collab token
+        // decides where the profile lands).
         if (true === $env) {
-            if (null === $this->defaultEnv) {
-                throw new \LogicException('--blackfire-env option must be set when using "blackfire: true" in a scenario.');
-            }
-
-            $env = $this->defaultEnv;
+            return $this->defaultEnv;
         }
 
         return $env ?? false;

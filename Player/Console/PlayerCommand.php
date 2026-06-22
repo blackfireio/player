@@ -103,7 +103,7 @@ final class PlayerCommand extends Command
                 new InputOption('disable-internal-network', '', InputOption::VALUE_NONE, 'Disable internal network'),
                 new InputOption('sandbox', '', InputOption::VALUE_NONE, 'Enable the sandbox mode'),
                 new InputOption('ssl-no-verify', '', InputOption::VALUE_NONE, 'Disable SSL certificate verification'),
-                new InputOption('blackfire-env', '', InputOption::VALUE_REQUIRED, 'The blackfire environment to use'),
+                new InputOption('blackfire-env', '', InputOption::VALUE_OPTIONAL, 'The blackfire environment to use'),
                 new InputOption('step', '', InputOption::VALUE_NONE, 'Interactive execution. Ask user validation before every step.'),
                 new InputOption('report', '', InputOption::VALUE_NONE, 'Display profiles reports in the console output.'),
             ])

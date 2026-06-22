@@ -26,7 +26,7 @@ use PHPUnit\Framework\TestCase;
 class BlackfireEnvResolverTest extends TestCase
 {
     #[DataProvider('resolveAnEnvironmentProvider')]
-    public function testResolveAnEnvironment(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool $expectedResult): void
+    public function testResolveAnEnvironment(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment, string|bool|null $expectedResult): void
     {
         [
             $resolver,
@@ -70,6 +70,13 @@ class BlackfireEnvResolverTest extends TestCase
             true,
         ];
 
+        yield 'resolves null when the blackfire step is true but no default env is set' => [
+            null,
+            'true',
+            null,
+            null,
+        ];
+
         yield 'resolves false when no env were found' => [
             null,
             null,
@@ -108,31 +115,6 @@ class BlackfireEnvResolverTest extends TestCase
             '"default env"',
             null,
             'default env',
-        ];
-    }
-
-    #[DataProvider('errorsProvider')]
-    public function testResolveThrowsAnError(string|null $defaultEnv, string|null $stepBlackfire, string|null $scenarioSetEnvironment): void
-    {
-        [
-            $resolver,
-            $stepContext,
-            $scenarioContext,
-            $step,
-        ] = $this->arrange($defaultEnv, $stepBlackfire, $scenarioSetEnvironment);
-
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('--blackfire-env option must be set when using "blackfire: true" in a scenario.');
-
-        $resolver->resolve($stepContext, $scenarioContext, $step);
-    }
-
-    public static function errorsProvider(): \Generator
-    {
-        yield 'no env were found but step resolves true' => [
-            null,
-            'true',
-            null,
         ];
     }
 

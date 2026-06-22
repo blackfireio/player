@@ -172,38 +172,26 @@ class BlackfireExtensionTest extends TestCase
         ];
     }
 
-    #[DataProvider('beforeRequestFailureProvider')]
-    public function testBeforeRequestFailure(Step $step, HttpRequest $request, array $defaultScenarioSetExtraValues, string $exceptionClass, string $exceptionMessage): void
+    public function testBeforeRequestProfilesWhenBlackfireTrueWithoutDefaultEnv(): void
     {
+        // "blackfire: true" without a --blackfire-env must still profile the step:
+        // the agent / personal collab token decides where the profile lands.
         $extension = $this->getBlackfireExtension(null);
+
+        $step = new VisitStep('https://app-under-test.lan');
+        $step->blackfire('true');
 
         $stepContext = new StepContext();
         $stepContext->update($step, []);
 
         $scenarioContext = new ScenarioContext('"foo"', new ScenarioSet());
 
-        foreach ($defaultScenarioSetExtraValues as $k => $v) {
-            $scenarioContext->setExtraValue($k, $v);
-        }
-
-        $this->expectException($exceptionClass);
-        $this->expectExceptionMessage($exceptionMessage);
-
+        $request = new HttpRequest('GET', 'https://app-under-test.lan');
         $extension->beforeStep(new RequestStep($request, $step), $stepContext, $scenarioContext);
-    }
 
-    public static function beforeRequestFailureProvider(): \Generator
-    {
-        $defaultScenarioSetExtraValues = [];
-        $step = new VisitStep('https://app-under-test.lan');
-        $step->blackfire('true');
-        yield 'throws when blackfire env is true but not defined at the ScenarioContext level' => [
-            $step,
-            new HttpRequest('GET', 'https://app-under-test.lan'),
-            $defaultScenarioSetExtraValues,
-            \LogicException::class,
-            '--blackfire-env option must be set when using "blackfire: true" in a scenario.',
-        ];
+        $this->assertArrayHasKey(BlackfireExtension::HEADER_BLACKFIRE_QUERY, $request->headers);
+        $this->assertEquals(['1234'], $request->headers[BlackfireExtension::HEADER_BLACKFIRE_QUERY]);
+        $this->assertEquals(['1111-2222-3333-4444'], $request->headers[BlackfireExtension::HEADER_BLACKFIRE_PROFILE_UUID]);
     }
 
     #[DataProvider('afterResponseFailureProvider')]
