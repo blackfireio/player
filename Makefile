@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-SHELL=/bin/bash
+SHELL?=/bin/bash
 
 image_hash = $(shell sha256sum Dockerfile-dev | cut -c -8)
 php_image = blackfire/player-test:$(image_hash)
@@ -17,6 +17,15 @@ ifdef CI
 	PHP= $(BASE_PHP) $(php_image)
 else
 	PHP= $(BASE_PHP) -t $(php_image)
+endif
+
+# Lint tools (phpstan, php-cs-fixer) are baked into the ci-phive image.
+# Locally we run them through a nested `docker run` on that image; on CI the job
+# already runs inside the ci-phive image, so we invoke the baked binaries directly.
+CI_PHIVE_IMAGE=registry.lab.plat.farm/platformsh/observability/blackfire/subtree-docker/ci-phive:latest
+ON_PHIVE=docker run --rm -i -v "$(PWD):/app" -w /app $(CI_PHIVE_IMAGE)
+ifdef CI
+ON_PHIVE=
 endif
 
 ifdef GITLAB_CI
@@ -50,16 +59,16 @@ endif
 setup: build $(BOX_BIN) composer-install ## Create and initialize containers
 .PHONY: setup
 
-php-cs: bin/tools/php-cs-fixer vendor/autoload.php ## Just analyze PHP code with php-cs-fixer
+php-cs: ## Just analyze PHP code with php-cs-fixer
 	@$(call section_start, $@, "Running PHP-CS-Fixer", false)
 
-	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff
+	@$(ON_PHIVE) php -dmemory_limit=-1 /usr/local/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff
 
 	@$(call section_end, $@)
 .PHONY: php-cs
 
-php-cs-fix: bin/tools/php-cs-fixer vendor/autoload.php ## Analyze and fix PHP code with php-cs-fixer
-	@$(PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php
+php-cs-fix: ## Analyze and fix PHP code with php-cs-fixer
+	@$(ON_PHIVE) php -dmemory_limit=-1 /usr/local/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php
 .PHONY: php-cs-fix
 
 rector-fix: vendor/bin/rector vendor/autoload.php ## Analyze and fix PHP code with rector
@@ -68,10 +77,12 @@ rector-fix: vendor/bin/rector vendor/autoload.php ## Analyze and fix PHP code wi
 
 vendor/bin/rector: vendor/autoload.php
 
-phpstan: bin/tools/phpstan vendor/autoload.php ## Analyze PHP code with phpstan
+phpstan: ## Analyze PHP code with phpstan
+# vendor/ must already be present (composer cache on CI, local install otherwise);
+# no make prerequisite so the bare ci-phive image (no composer) never rebuilds it.
 	@$(call section_start, $@, "Running PHPStan", false)
 
-	@$(PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse Player -c phpstan.neon -l 1
+	@$(ON_PHIVE) php -dmemory_limit=-1 /usr/local/bin/phpstan analyse Player -c phpstan.neon -l 1
 
 	@$(call section_end, $@)
 .PHONY: phpstan
@@ -120,22 +131,6 @@ phpunit: vendor/autoload.php ## Run phpunit
 
 	@$(call section_end, $@)
 .PHONY: phpunit
-
-phive: bin/tools/phpstan bin/tools/php-cs-fixer
-.PHONY: phive
-bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
-	@$(call section_start, $@, "Installing phive dependencies")
-
-	@$(PHP) php -dmemory_limit=-1 /usr/local/bin/phive --home ./.phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
-
-	@$(call section_end, $@)
-
-phive-status: ## In case you need to get the phive tools GPG keys
-	@$(PHP) phive status
-.PHONY: phive-status
-
-phive-update:
-	@$(PHP) php -dmemory_limit=-1 /usr/local/bin/phive --home ./.phive update
 
 help:
 	@grep -hE '(^[a-zA-Z_-]+:.*?##.*$$)|(^###)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m\n/'
