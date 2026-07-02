@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+* 2026.7.0 (2026-07-02)
+
+  - Update dependencies
+  - Internal releasing changes
+  - `--blackfire-env` is now optional
+
 * 2026.6.0 (2026-06-01)
 
   - Update dependencies
