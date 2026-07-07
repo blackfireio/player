@@ -1,7 +1,6 @@
 ARG PHP_VERSION=8.5.8-alpine   # https://hub.docker.com/_/php/tags?page=1&name=8.5
 ARG COMPOSER_VERSION=2.10.2    # https://hub.docker.com/_/composer/tags
 ARG PHPEXTINST_VERSION=2.11.12  # https://github.com/mlocati/docker-php-extension-installer/releases
-ARG UUID_VERSION=1.3.0         # https://pecl.php.net/package/uuid
 
 FROM php:${PHP_VERSION} AS build_installer
 ARG PHPEXTINST_VERSION
@@ -31,15 +30,14 @@ COPY ./. /app/
 RUN rm composer.json composer.lock
 
 FROM php:${PHP_VERSION}
-ARG UUID_VERSION \
-    BLACKFIRE_PLAYER_VERSION
+ARG BLACKFIRE_PLAYER_VERSION
 
 ENV BLACKFIRE_PLAYER_VERSION=$BLACKFIRE_PLAYER_VERSION
 
 COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
 
 RUN install-php-extensions \
-    uuid-${UUID_VERSION} \
+    uuid \
     mbstring \
     intl
 
