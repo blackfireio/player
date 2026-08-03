@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.5.8-alpine   # https://hub.docker.com/_/php/tags?page=1&name=8.5
+ARG PHP_VERSION=8.5.9-alpine   # https://hub.docker.com/_/php/tags?page=1&name=8.5
 ARG COMPOSER_VERSION=2.10.2    # https://hub.docker.com/_/composer/tags
 ARG PHPEXTINST_VERSION=2.11.12  # https://github.com/mlocati/docker-php-extension-installer/releases
 
