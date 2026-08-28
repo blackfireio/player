@@ -36,6 +36,11 @@ ENV BLACKFIRE_PLAYER_VERSION=$BLACKFIRE_PLAYER_VERSION
 
 COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
 
+# The php:*-alpine base ships whatever package versions it was built with, and
+# nothing below upgrades them. Refresh them, otherwise a rebuild keeps publishing
+# known CVEs (openssl & friends).
+RUN apk upgrade --no-cache
+
 RUN install-php-extensions \
     uuid \
     mbstring \
