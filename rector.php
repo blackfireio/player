@@ -21,7 +21,6 @@ use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRecto
 use Rector\PHPUnit\CodeQuality\Rector\Class_\AddSeeTestAnnotationRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
-use Rector\Symfony\CodeQuality\Rector\Class_\InlineClassRoutePrefixRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -99,6 +98,5 @@ return RectorConfig::configure()
         AddSeeTestAnnotationRector::class,
 
         // injected by phpunitCodeQuality preset
-        InlineClassRoutePrefixRector::class,
         AssertEmptyNullableObjectToAssertInstanceofRector::class,
     ]);
