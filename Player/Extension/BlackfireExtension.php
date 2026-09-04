@@ -172,7 +172,7 @@ final readonly class BlackfireExtension implements NextStepExtensionInterface, S
 
             $uuid = $response->request->headers[self::HEADER_BLACKFIRE_PROFILE_UUID][0];
             if (empty($response->headers[self::HEADER_BLACKFIRE_RESPONSE])) {
-                $probeNotFoundOrInvalidSignatureErrorMessage = 'Are you authorized to profile this page? Probe not found or invalid signature. Please read https://support.blackfire.platform.sh/hc/en-us/articles/4843027173778-Are-You-Authorized-to-Profile-this-Page-Probe-Not-Found-or-Invalid-signature-';
+                $probeNotFoundOrInvalidSignatureErrorMessage = 'Are you authorized to profile this page? Probe not found or invalid signature. Please read https://support.blackfire.upsun.com/hc/en-us/articles/37505208498322-Are-You-Authorized-to-Profile-this-Page-Probe-Not-Found-or-Invalid-signature';
                 $step->addError($probeNotFoundOrInvalidSignatureErrorMessage);
 
                 throw new LogicException($probeNotFoundOrInvalidSignatureErrorMessage);
