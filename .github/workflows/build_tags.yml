@@ -4,11 +4,27 @@ on:
   push:
     tags:
       - '*'
+  # The Dockerfile pins no alpine package versions, so the image published for a
+  # tag keeps shipping whatever packages existed on release day. Rebuilding the
+  # released tag picks up upstream security fixes without cutting a new release.
+  #
+  # Thursday, so a rebuilt image is in place before the monorepo vulnerability
+  # scan runs on Friday at 06:00 UTC.
+  schedule:
+    - cron: '0 4 * * 4'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to rebuild the docker image from (defaults to the most recent tag)'
+        required: false
 
 concurrency: prod
 
 jobs:
   phar:
+    # The phar only depends on the tagged sources, so rebuilding it outside of a
+    # tag push would republish identical files.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       -
@@ -49,10 +65,29 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v7
+        with:
+          # Schedule and manual runs start from the default branch, so the tags
+          # have to be fetched to resolve and check out the released sources.
+          fetch-depth: 0
       -
         name: Get version tag
         id: git_tag
-        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> "$GITHUB_ENV"
+        env:
+          # Through the environment rather than an expression, so a tag name is
+          # never interpolated into the script itself.
+          REQUESTED_TAG: ${{ inputs.tag }}
+        run: |
+          case "$GITHUB_REF" in
+            refs/tags/*) VERSION="${GITHUB_REF#refs/tags/}" ;;
+            *)           VERSION="$REQUESTED_TAG" ;;
+          esac
+          if [ -z "$VERSION" ]; then
+            VERSION="$(git describe --tags --abbrev=0)"
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+      -
+        name: Check out the released sources
+        run: git checkout --detach "refs/tags/$VERSION"
       -
         name: Docker meta
         id: docker_meta
@@ -62,7 +97,7 @@ jobs:
           flavor: |
             latest=true
           tags: |
-            type=semver,pattern={{version}}
+            type=semver,pattern={{version}},value=${{ env.VERSION }}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -85,5 +120,8 @@ jobs:
             BLACKFIRE_PLAYER_VERSION=${{ env.VERSION }}
           push: true
           pull: true
+          # A rebuild exists to refresh the alpine packages, which a cached
+          # `apk upgrade` layer would skip.
+          no-cache: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
