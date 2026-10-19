@@ -33,6 +33,7 @@ class VariableResolver
         $resolved = [];
         while ($toResolve) {
             $succeed = false;
+            $lastException = null;
             foreach ($toResolve as $key => $value) {
                 try {
                     $resolved[$key] = null === $value || '' === $value ? $value : $this->language->evaluate($value, $resolved + $variables);
@@ -43,7 +44,7 @@ class VariableResolver
                 }
             }
 
-            if (false === $succeed && isset($lastException)) {
+            if (false === $succeed && null !== $lastException) {
                 throw $lastException;
             }
         }
