@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
-use Rector\CodeQuality\Rector\Identical\FlipTypeControlToUseExclusiveTypeRector;
+use Rector\CodeQuality\Rector\If_\ExplicitNullableObjectInstanceRector;
 use Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector;
 use Rector\CodingStyle\Rector\Assign\SplitDoubleAssignRector;
 use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
@@ -17,7 +17,6 @@ use Rector\Php84\Rector\Foreach_\ForeachToArrayAllRector;
 use Rector\Php84\Rector\Foreach_\ForeachToArrayFindRector;
 use Rector\Php84\Rector\MethodCall\NewMethodCallWithoutParenthesesRector;
 use Rector\Php84\Rector\FuncCall\AddEscapeArgumentRector;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\AddSeeTestAnnotationRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
@@ -71,9 +70,6 @@ return RectorConfig::configure()
         symfony: true,
     )
     ->withSkip([
-        // injected by php83 preset
-        AddOverrideAttributeToOverriddenMethodsRector::class,
-
         // injected by php84 preset
         NewMethodCallWithoutParenthesesRector::class,
         ForeachToArrayAnyRector::class,
@@ -83,8 +79,8 @@ return RectorConfig::configure()
         AddEscapeArgumentRector::class,
 
         // injected by codeQuality preset
-        FlipTypeControlToUseExclusiveTypeRector::class,
         SimplifyIfReturnBoolRector::class,
+        ExplicitNullableObjectInstanceRector::class,
 
         // injected by codingStyle preset
         CatchExceptionNameMatchingTypeRector::class,
