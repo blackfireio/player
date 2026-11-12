@@ -1,4 +1,4 @@
-ARG COMPOSER_VERSION=2.11.1   # https://hub.docker.com/_/composer#supported-tags-and-respective-dockerfile-links
+ARG COMPOSER_VERSION=2.11.2   # https://hub.docker.com/_/composer#supported-tags-and-respective-dockerfile-links
 ARG PHIVE_VERSION=0.16.0      # https://github.com/phar-io/phive/releases
 ARG PHPEXTINST_VERSION=2.13.1 # https://github.com/mlocati/docker-php-extension-installer/releases
 

@@ -1,5 +1,5 @@
 ARG PHP_VERSION=8.5.12-alpine  # https://hub.docker.com/_/php/tags?page=1&name=8.5
-ARG COMPOSER_VERSION=2.11.1    # https://hub.docker.com/_/composer#supported-tags-and-respective-dockerfile-links
+ARG COMPOSER_VERSION=2.11.2    # https://hub.docker.com/_/composer#supported-tags-and-respective-dockerfile-links
 ARG PHPEXTINST_VERSION=2.13.1  # https://github.com/mlocati/docker-php-extension-installer/releases
 
 FROM php:${PHP_VERSION} AS build_installer
