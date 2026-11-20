@@ -2,39 +2,17 @@ ARG PHP_VERSION=8.5.12-alpine  # https://hub.docker.com/_/php/tags?page=1&name=8
 ARG COMPOSER_VERSION=2.11.2    # https://hub.docker.com/_/composer#supported-tags-and-respective-dockerfile-links
 ARG PHPEXTINST_VERSION=2.13.1  # https://github.com/mlocati/docker-php-extension-installer/releases
 
-FROM php:${PHP_VERSION} AS build_installer
+FROM composer/composer:${COMPOSER_VERSION}-bin AS composer_bin
+
+# Shared by the stage resolving the dependencies and by the final image, so
+# that Composer checks the platform requirements against what really runs.
+FROM php:${PHP_VERSION} AS base
 ARG PHPEXTINST_VERSION
+
+WORKDIR /app
 
 RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHPEXTINST_VERSION}/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions
-
-FROM composer:${COMPOSER_VERSION} AS build_composer
-WORKDIR /app
-
-COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
-RUN install-php-extensions \
-    zip \
-    intl
-
-COPY composer.json composer.lock /app/
-
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-FROM alpine AS sources
-
-WORKDIR /app
-
-COPY --from=build_composer /app/vendor /app/vendor
-COPY ./. /app/
-
-RUN rm composer.json composer.lock
-
-FROM php:${PHP_VERSION}
-ARG BLACKFIRE_PLAYER_VERSION
-
-ENV BLACKFIRE_PLAYER_VERSION=$BLACKFIRE_PLAYER_VERSION
-
-COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
 
 # The php:*-alpine base ships whatever package versions it was built with, and
 # nothing below upgrades them. Refresh them, otherwise a rebuild keeps publishing
@@ -46,13 +24,28 @@ RUN install-php-extensions \
     mbstring \
     intl
 
+FROM base AS sources
+
+COPY --from=composer_bin /composer /usr/bin/composer
+
+COPY composer.json composer.lock /app/
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+COPY ./. /app/
+
+RUN rm composer.json composer.lock
+
+FROM base
+ARG BLACKFIRE_PLAYER_VERSION
+
+ENV BLACKFIRE_PLAYER_VERSION=$BLACKFIRE_PLAYER_VERSION
+
 RUN touch /usr/local/etc/php/conf.d/error_reporting.ini \
     && echo 'display_errors=Off' >> /usr/local/etc/php/conf.d/error_reporting.ini \
     && echo 'display_startup_errors=Off' >> /usr/local/etc/php/conf.d/error_reporting.ini \
     && echo 'error_reporting=0' >> /usr/local/etc/php/conf.d/error_reporting.ini \
     && echo 'memory_limit = 512M' > /usr/local/etc/php/conf.d/memory_limit.ini
-
-WORKDIR /app
 
 COPY --from=sources /app /usr/lib/blackfire
 RUN ln -s /usr/lib/blackfire/bin/blackfire-player.php /bin/blackfire-player

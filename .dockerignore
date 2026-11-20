@@ -6,3 +6,5 @@
 !README.rst
 !bin/
 !Player/
+bin/tools/
+Player/Tests/
